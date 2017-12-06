@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:spring="http://www.springframework.org/tags"
+	class="container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel-heading">
+				<h5>Léocarte extérieure détectée</h5>
+			</div>
+			<div class="panel-body">
+				<p>Vous avez une Léocarte non connue de notre Système de Gestion
+					de Carte. Vous pouvez si vous le souhaitez accepter que nous
+					l'importions dans notre système d'information. Elle pourra ainsi
+					être utilisée dans nos services de contrôle d'accès.</p>
+				<div id="specimenleocarte">
+					<div id="left">
+						<p id="recto1">${externalCard.recto1Printed}</p>
+						<p id="recto2">${externalCard.recto2Printed}</p>
+						<p id="recto3">${externalCard.recto3Printed}</p>
+						<p id="recto4">${externalCard.recto4Printed}</p>
+						<p id="recto5">${externalCard.recto5Printed}</p>
+					</div>
+					<div id="right">
+						<img id="photo" src="data:image/jpeg;base64,${externalCardPhoto}" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-12">
+		 	<spring:url value="/user/externalCardEnable" var="externalCardEnableUrl"/>
+			<form action="${externalCardEnableUrl}" method="post">
+				<div class="form-group">
+					<button class="btn btn-success" type="submit" onclick="return confirm('Vous confirmez ?');">Je souhaite pouvoir utiliser ma Leocarte dans votre établissement</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

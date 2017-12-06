@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0" id="configList">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:url value="/admin/config" var="create_url"/>
+    <spring:url value="/admin/config/tabs" var="tabs_url"/>
+    <script type="text/javascript">
+		var tabsUrl = '${tabs_url}';
+		var configUrl = '${create_url}';
+	</script>
+    <h2>Configurations
+	    <button class="btn btn-primary" data-target="#createConfig" data-toggle="modal">
+            <span class="glyphicon glyphicon-plus"/>
+        </button>
+    </h2>
+   	<form action="${tabs_url}" method="GET" id="tabConfigsForm">
+		<input type="hidden" name="page" value="1"/>
+		<input type="hidden" name="size" value="10"/>
+		<input type="hidden" name="sortFieldName" value="key"/>
+		<input type="hidden" name="sortOrder" value="asc"/>
+		<input type="hidden" name="searchField" value="HTML"/>
+	</form>
+	<ul class="nav nav-tabs" role="tablist" id="tabTypes">
+	    <li role="presentation" class="${empty selectedType ? 'active' : 'sleep' }"><a href="#0"  role="tab" data-toggle="tab"><spring:message code="manager.type.All" htmlEscape="false" /></a></li>
+	    <c:if test="${not empty listTypes}">
+	    	<c:forEach items="${listTypes}" var="type">
+	    		<li role="presentation" class="${selectedType eq type ? 'active' : 'sleep' }"><a href="#${type}" role="tab" data-toggle="tab"><spring:message code="manager.type.${type}" htmlEscape="false" /></a></li>
+	    	</c:forEach>
+	    </c:if>
+  	</ul>
+    <page:list create="true" id="pl_org_esupportail_sgc_domain_AppliConfig" items="${appliconfigs}" z="user-managed">
+        <table:table data="${appliconfigs}" id="l_org_esupportail_sgc_domain_AppliConfig" path="/admin/config" view="false" z="user-managed">
+            <table:column id="c_org_esupportail_sgc_domain_AppliConfig_key" property="key" z="/vSP/Qoraatrvj6rUVxsprE+Tx8="/>
+            <table:column id="c_org_esupportail_sgc_domain_AppliConfig_value" maxLength="500" property="value" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_AppliConfig_description" property="description" z="oBirGc54txXDYbu6uvUR9Eaz/nI="/>
+            <table:column id="c_org_esupportail_sgc_domain_AppliConfig_type" sort="true" property="type" z="user-managed"/>
+        </table:table>
+    </page:list>
+    <div class="modal fade" id="createConfig">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&amp;times;</button>
+                    <h4 class="modal-title">
+						Ajouter une configuration
+					</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="${create_url}" id="createConfigForm" method="POST">
+                        <div class="form-group">
+                            <label class="control-label" for="cle">Clé</label>
+                            <input class="form-control" id="cle" name="key" type="text"/>
+                        </div>
+                        <div class="form-group">
+                        	<h5><strong>Type</strong></h5>
+							<label class="radio-inline">
+							  <input type="radio" name="type" id="typeText" value="TEXT" checked="checked"/> Texte
+							</label>
+							<label class="radio-inline">
+							  <input type="radio" name="type" id="typeHtml" value="HTML" /> Html
+							</label>
+							<label class="radio-inline">
+							  <input type="radio" name="type" id="typeBoolean" value="BOOLEAN" /> Booléen
+							</label>
+						</div>
+                        <div class="form-group">
+                            <label class="control-label" for="valeur" id="areaEditor">Valeur</label>
+							<textarea class="form-control simple-editor" id="valeur" name="value">&amp;nbsp</textarea>
+                        </div>
+ 						<div class="form-group">
+                            <label class="control-label" for="desc">Description</label>
+                         	<textarea class="form-control" id="desc" name="description">&amp;nbsp</textarea>
+                        </div>
+                        <div class="form-group">
+                            <input class="btn btn-success" type="submit" value="Valider"/>
+                        </div>
+                        <input type="hidden" id="hiddenValeur" value="" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

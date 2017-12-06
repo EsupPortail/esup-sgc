@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:url value="/admin/actionmessages?form" var="create_url"/>
+    <h2>Liste des messages
+    <a class="btn btn-primary" href="${create_url}">
+            <span class="glyphicon glyphicon-plus"/>
+        </a>
+    </h2>
+    <page:list id="pl_org_esupportail_sgc_domain_CardActionMessage" items="${cardactionmessages}" z="user-managed">
+        <table:table data="${cardactionmessages}" id="l_org_esupportail_sgc_domain_CardActionMessage" path="/admin/actionmessages" view="false" z="user-managed">
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" property="etatInitial" sort="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_etatFinal" property="etatFinal" sort="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_message" maxLength="500" property="message" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_auto" property="auto" sort="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_defaut" property="defaut" sort="true" z="user-managed"/>
+        </table:table>
+    </page:list>
+</div>

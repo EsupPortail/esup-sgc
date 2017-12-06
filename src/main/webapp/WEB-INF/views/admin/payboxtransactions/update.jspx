@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_org_esupportail_sgc_domain_PayboxTransactionLog" modelAttribute="payboxTransactionLog" path="/admin/payboxtransactions" versionField="Version" z="xcz9ejNp8UcLZgL1plj2/tO5vNQ=">
+        <field:datetime dateTimePattern="${payboxTransactionLog_transactiondate_date_format}" field="transactionDate" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_transactionDate" z="3Nlqs87mE5SCSSptJRKXO7YAlfI="/>
+        <field:input field="eppn" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_eppn" z="jbOBTsFSY0/j7zHku3pcK2HnKwQ="/>
+        <field:input field="reference" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_reference" z="+mESnt/XmrJVii+JQdQm42A8fIM="/>
+        <field:input field="montant" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_montant" z="eq6UjD201d4J5idlBEHZMeRsKWw="/>
+        <field:input field="auto" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_auto" z="piBmvfj/GnjyY/u8Gr1HksZnR9w="/>
+        <field:input field="erreur" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_erreur" z="Q0QIXhK5nAUttsbryW4RaGLbTVg="/>
+        <field:input field="idtrans" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_idtrans" z="HYdHamfHB6yNvJ5KO7CEW4jV1zs="/>
+        <field:input field="signature" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_signature" z="0MWK2HUd2HifzWNxVu6cdDoU/qI="/>
+    </form:update>
+</div>

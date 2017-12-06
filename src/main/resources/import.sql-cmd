@@ -1,0 +1,1 @@
+pg_dump -a -t appli_config --column-inserts esupsgc > import.sql

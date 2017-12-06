@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_org_esupportail_sgc_domain_CrousSmartCard" object="${croussmartcard}" path="/admin/crouscards" z="T9Pz1jiJVzJmqDdPsYBegeh41JA=">
+        <field:display date="true" dateTimePattern="${crousSmartCard_zdccreationdate_date_format}" field="zdcCreationDate" id="s_org_esupportail_sgc_domain_CrousSmartCard_zdcCreationDate" object="${croussmartcard}" z="yA50OCFOLihdI5ydbfYYOKeWWFw="/>
+        <field:display field="idTransmitter" id="s_org_esupportail_sgc_domain_CrousSmartCard_idTransmitter" object="${croussmartcard}" z="WvA3gpo+MZJhGoZbX2mKE8Ht5Xg="/>
+        <field:display field="idMapping" id="s_org_esupportail_sgc_domain_CrousSmartCard_idMapping" object="${croussmartcard}" z="ax7+ewV8ncBm2beR0s1AkYiMTjo="/>
+        <field:display field="idZdc" id="s_org_esupportail_sgc_domain_CrousSmartCard_idZdc" object="${croussmartcard}" z="0nXNPsLLISqmFRJELDEJ8s4ezq8="/>
+        <field:display field="pixSs" id="s_org_esupportail_sgc_domain_CrousSmartCard_pixSs" object="${croussmartcard}" z="W5y2gQF/tbGDyD+C9wfGjpHUtAA="/>
+        <field:display field="pixNn" id="s_org_esupportail_sgc_domain_CrousSmartCard_pixNn" object="${croussmartcard}" z="tjd+7KfLF+buP4YOTewz3Ri9WXM="/>
+        <field:display field="appl" id="s_org_esupportail_sgc_domain_CrousSmartCard_appl" object="${croussmartcard}" z="vUbpYzZ+itEQ0oeH9FNly0Y7j1o="/>
+        <field:display field="uid" id="s_org_esupportail_sgc_domain_CrousSmartCard_uid" object="${croussmartcard}" z="SIoHZl5CaHIezr061V7MMvU6ocU="/>
+        <field:display field="rid" id="s_org_esupportail_sgc_domain_CrousSmartCard_rid" object="${croussmartcard}" z="oBPDjAstmNBkKLLT+JtvCv5EavU="/>
+        <field:display field="crousSmartCardIdGenerator" id="s_org_esupportail_sgc_domain_CrousSmartCard_crousSmartCardIdGenerator" object="${croussmartcard}" z="8flzyoHzqv1/ZppIlNQzjMpv2zs="/>
+    </page:show>
+</div>

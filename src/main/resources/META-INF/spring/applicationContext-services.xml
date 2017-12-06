@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd         
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd         
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd         
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd         
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+	<bean id="shibUserInfoService" class="org.esupportail.sgc.services.userinfos.ShibUserInfoService" p:order="1">
+		<property name="sgcParam2requestHeader">
+			<map>
+				<entry key="email" value="mail"/>
+				<entry key="firstname" value="givenname"/>
+				<entry key="name" value="sn"/>
+				<entry key="eduPersonPrimaryAffiliation" value="eduPersonPrimaryAffiliation"/>
+				<entry key="supannEtuId" value="supannEtuId"/>
+				<entry key="supannEmpId" value="supannEmpId"/>
+				<entry key="supannEtuEtape" value="supannEtuEtape"/>
+				<entry key="supannEntiteAffectationPrincipale" value="supannEntiteAffectationPrincipale"/>
+				<entry key="supannEtablissement" value="supannEtablissement"/>
+				<entry key="supannCodeINE" value="supannCodeINE"/>
+                                <entry key="schacDateOfBirth" value="schacDateOfBirth"/>
+                                <entry key="recto2" value="givenname"/>
+				<entry key="recto3" value="sn"/>
+			</map>
+		</property>	
+	</bean>
+
+    <bean id="ldapContextSourcePool" class="org.springframework.ldap.pool.factory.PoolingContextSource">
+      <property name="contextSource" ref="ldapContextSource" />
+      <property name="dirContextValidator" ref="dirContextValidator"/>
+      <property name="testWhileIdle" value="true"/>
+      <property name="testOnBorrow" value="true"/>
+    </bean>
+
+    <bean id="dirContextValidator"
+         class="org.springframework.ldap.pool.validation.DefaultDirContextValidator" />
+    
+    <bean id="ldapContextSource"
+		class="org.springframework.ldap.core.support.LdapContextSource">
+		<property name="url" value="ldap://ldap.univ-ville.fr" />
+		<property name="base" value="dc=univ-ville,dc=fr" />
+		<property name="userDn" value="cn=sgc,dc=univ-ville,dc=fr" />
+		<property name="password" value="pass" />
+	</bean>    
+	
+	<bean id="ldapTemplate" class="org.springframework.ldap.core.LdapTemplate">
+		<constructor-arg ref="ldapContextSourcePool" />
+	</bean>
+	
+	<bean id="ldapUserInfoService" class="org.esupportail.sgc.services.userinfos.LdapUserInfoService" p:order="2">
+            <property name="eppnFilter" value=".*@univ-ville.fr"/>
+		<property name="ldapTemplate" ref="ldapTemplate"/>
+		<property name="sgcParam2ldapAttr">
+			<map>
+				<entry key="email" value="mail"/>
+				<entry key="eduPersonPrimaryAffiliation" value="eduPersonPrimaryAffiliation"/>
+				<entry key="supannEtuId" value="supannEtuId"/>
+				<entry key="supannEmpId" value="supannEmpId"/>
+				<entry key="supannCodeINE" value="supannCodeINE"/>
+				<entry key="supannEntiteAffectationPrincipale" value="supannEntiteAffectationPrincipale"/>
+				<entry key="firstname" value="givenname"/>
+				<entry key="name" value="sn"/>
+				<entry key="schacDateOfBirth" value="schacDateOfBirth"/>
+				<entry key="supannEtablissement" value="supannEtablissement"/>
+				<entry key="supannRefId4ExternalCard" value="supannRefId"/>
+				<entry key="jpegPhoto4ExternalCard" value="jpegPhoto"/>
+				<entry key="recto3" value="givenname"/>
+				<entry key="recto2" value="sn"/>
+				<entry key="schacExpiryDate" value="schacExpiryDate"/>
+				<entry key="secondaryId" value="eduPersonPrincipalName"/> 
+			</map>
+		</property>	
+	</bean>
+	
+	<bean id="groupService" class="org.esupportail.sgc.services.ldap.GroupService">
+		<property name="ldapTemplate" ref="ldapTemplate"/>
+		<property name="groupSearchBase" value="ou=groups" />
+		<property name="groupSearchFilter" value="member={0}"/>
+		<property name="memberSearchBase" value="ou=people"/>
+		<property name="memberSearchFilter" value="memberOf={0}"/>
+	</bean>
+
+    <bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" id="dbExtDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://ext-test-db.univ-ville.fr:3306/siBase?zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true"/>
+        <property name="username" value="toto"/>
+        <property name="password" value="tata"/>
+        <property name="testOnBorrow" value="true" />
+		<property name="testOnReturn" value="true" />
+		<property name="testWhileIdle" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="1800000" />
+		<property name="numTestsPerEvictionRun" value="3" />
+		<property name="minEvictableIdleTimeMillis" value="1800000" />
+		<property name="validationQuery" value="SELECT version();" />
+    </bean>
+	
+	<bean id="univvilleUserInfoService" class="org.esupportail.sgc.services.userinfos.SqlUserInfoService" p:order="3">
+		<property name="dataSource" ref="dbExtDataSource"/>
+		<property name="sqlQuery" value="select ligneTitre as recto1,
+			ligneNom as recto2,
+			lignePrenom as recto3,
+			ligneDateNaissance as recto4,
+			ligneIdentifiant as recto5,
+			divers1 as verso1,
+			divers2 as verso2,
+			divers3 as verso3,
+			divers4 as verso4,
+			ligneAnneeUniv as verso5,
+			typepopulationcrous as referenceStatut,
+			indiceinm as indice,
+			datefindroits + INTERVAL 15 DAY as dateFinDroits,
+			leocode as secondaryId,
+			adresseFilterLibelle as address,
+			'Université de Ville' as institute
+			from SgcTable where eppn=?"/>
+	</bean>
+
+        <!-- 
+	On s'assure que eduPersonPrimaryAffiliation est conservé
+	On fait également en sorte de toujours conserver une email, même si celui-ci n'est plus valide : le crous exige qu'un compte ait toujours un email de présent
+	-->
+	<bean id="spelUserInfoServiceEPPA" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="4">
+		<property name="sgcParam2spelExp">
+			<map>
+				<entry key="eduPersonPrimaryAffiliation" value="#userInfosInComputing['eduPersonPrimaryAffiliation'] == Null or #userInfosInComputing['eduPersonPrimaryAffiliation'] == '' ? 
+							#user.eduPersonPrimaryAffiliation : #userInfosInComputing['eduPersonPrimaryAffiliation'] "/>
+				<entry key="email" value="#userInfosInComputing['email'] != Null and #userInfosInComputing['email'] matches '.*@.*' ? #userInfosInComputing['email'] : #user.email"/>
+			</map>
+		</property>	
+	</bean>
+	
+	
+	<!-- 
+	On calcule l'insitute en fonction de l'eppn
+	On calcule le userType en fonction de eduPersonPrimaryAffiliation
+	-->
+	<bean id="spelUserInfoService" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="5">
+		<property name="sgcParam2spelExp">
+			<map>
+				<entry key="institute" value="#user.eppn matches '.*@univ-ville.fr' ? 'Université de Ville' : 'Extérieur'"/>
+				<entry key="userType" value="!(#user.eppn matches '.*@univ-ville.fr') ? 'Ext' : 
+					#userInfosInComputing['eduPersonPrimaryAffiliation'] == 'student' ? 'E' : 
+					#userInfosInComputing['eduPersonPrimaryAffiliation'] == 'staff' or #userInfosInComputing['eduPersonPrimaryAffiliation'] == 'teacher' or #userInfosInComputing['eduPersonPrimaryAffiliation'] == 'employee' ? 'P' : 
+					'I'"/>
+			</map>
+		</property>	
+	</bean>
+
+        
+	<bean id="cardIdService" class="org.esupportail.sgc.services.cardid.ComueNuCardIdService">
+		<property name="cardNfcIdCounterBegin" value="107000000100000"/>
+		<property name="cardCrousIdCounterBegin" value="66900000"/>
+		<property name="crousEncodeEnabled" value="true"/>
+	</bean>
+	
+	<bean id="esupNfcTagService" class="org.esupportail.sgc.services.EsupNfcTagService">
+		<property name="restTemplate" ref="restTemplate"/>
+		<property name="webUrl" value="https://esup-nfc-tag.univ-ville.fr"/>
+		<property name="applicationName" value="Ecriture SGC"/>	
+		<property name="location" value="Encodage ESUP SGC"/>
+	</bean>
+	
+
+        <bean id="ldapContextSourceWritePool" class="org.springframework.ldap.pool.factory.PoolingContextSource">
+            <property name="contextSource" ref="ldapContextSourceWrite" />
+            <property name="dirContextValidator" ref="dirContextValidator"/>
+            <property name="testWhileIdle" value="true"/>
+            <property name="testOnBorrow" value="true"/>
+        </bean>
+                
+	<bean id="ldapContextSourceWrite"
+		class="org.springframework.ldap.core.support.LdapContextSource">
+		<property name="url" value="ldap://ldap.univ-ville.fr" />
+		<property name="base" value="dc=univ-ville,dc=fr" />
+		<property name="userDn" value="cn=sgc-write,dc=univ-ville,dc=fr" />
+		<property name="password" value="pass" />
+	</bean>    
+	
+	<bean id="ldapTemplateWrite" class="org.springframework.ldap.core.LdapTemplate">
+		<constructor-arg ref="ldapContextSourceWritePool" />
+	</bean>
+	
+
+	<bean id="ldapValidateService" class="org.esupportail.sgc.services.ldap.LdapValidateService">
+		<property name="ldapTemplate" ref="ldapTemplateWrite"/>
+		<property name="peopleSearchFilter" value="(eduPersonPrincipalName={0})"/>
+		<property name="ldapCardIdsMappingMultiValues">
+		    <map>
+                        <entry key="supannRefId">
+                            <list>
+                                <value>{ISO15693}%csn%</value>
+                                <value>{UNIV-VILLE:ACCESS-CONTROL}%desfireId%</value>
+                            </list>
+                        </entry>
+		    </map>
+		</property>
+	</bean>
+
+	 
+   <bean id="adContextSource"
+		class="org.springframework.ldap.core.support.LdapContextSource">
+		<property name="url" value="ldaps://ad.univ-ville.fr:636" />
+		<property name="base" value="DC=univ-ville,DC=fr"/>
+		<property name="pooled" value="true" />
+		<property name="userDn"	value="cn=Administrateur,cn=users,dc=ur,dc=univ-ville,dc=fr"/>
+		<property name="password" value="passepasse" />
+	</bean>
+	
+	<bean id="adLdapTemplate" class="org.springframework.ldap.core.LdapTemplate">  
+      <constructor-arg ref="adContextSource" />
+      <property name="ignorePartialResultException" value="true"/>
+   </bean>
+   
+
+	<bean id="adValidateService" class="org.esupportail.sgc.services.ldap.LdapValidateService">
+		<property name="ldapTemplate" ref="adLdapTemplate"/>
+		<property name="peopleSearchFilter" value="(&amp;(objectClass=person)(cn={1}))"/>
+		<property name="ldapCardIdsMappingValue">
+			<map>
+				<entry key="pager">
+					<value>%csn%</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="ipService" class="org.esupportail.sgc.services.IpService">
+	    <property name="maps">
+			<bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+				<property name="location" value="classpath:ip.properties"/>
+			</bean>
+		</property>
+	</bean>
+	 
+	<task:scheduler id="sgcScheduler" pool-size="5"/>
+	 
+	<task:scheduled-tasks>
+    	<task:scheduled ref="ldapGroup2UserRoleService" method="syncAllGroupsOnDb" fixed-delay="300000" initial-delay="10000"/>
+		<!-- <task:scheduled ref="resynchronisationService" method="synchronizeAllUsersInfos" cron="01 16 * * * *"/> -->
+	</task:scheduled-tasks>
+
+	<task:annotation-driven executor="exceptionHandlingTaskExecutor" mode="aspectj"/>
+    <bean id="exceptionHandlingTaskExecutor" class="org.esupportail.sgc.tools.ExceptionHandlingAsyncTaskExecutor">
+        <constructor-arg ref="defaultExecutor" />
+        </bean>
+    <task:executor id="defaultExecutor" pool-size="25"/>
+
+    <bean class="org.springframework.mail.javamail.JavaMailSenderImpl" id="mailSender">
+        <property name="host" value="${email.host}"/>
+        <property name="protocol" value="${email.protocol}"/>
+    </bean>
+    
+	<bean id="emailService" class="org.esupportail.sgc.services.EmailService">
+		<property name="mailSender" ref="mailSender"/>
+		<property name="isEnabled" value="false"/>
+	</bean>
+	
+	
+	<bean id="synchroExecutor" class="org.esupportail.sgc.tools.ExceptionHandlingAsyncTaskExecutor">
+        <constructor-arg ref="synchroExecutorPool" />
+    </bean>
+    <task:executor id="synchroExecutorPool" pool-size="5"/>
+	
+</beans>

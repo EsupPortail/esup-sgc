@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div  xmlns:c="http://java.sun.com/jsp/jstl/core">
+	<fieldset class="scheduler-border">	
+		<legend class="scheduler-border">Adresse</legend>	
+		<p>Adresse à laquelle la carte doit être retournée :</p>
+			<c:if test="${user.userType ne 'I' and user.userType ne 'E'}">
+				<div class="col-lg-7 col-xs-12">	
+					<div class="radio">
+						<label for="radio3">					
+						<input type="radio" name="flagAdresse" id="radio3" value="INT" checked="checked"/>
+								Courrier Interne</label> 
+					</div>
+					
+					<p class="text-primary">Merci de vérifier/modifier/compléter l'adresse de retour de la léocarte :</p>
+					<textarea rows="4" name="addressRequested" id="address">${user.address}</textarea>
+				</div>
+				<div class="col-lg-5 col-xs-12">	
+					<div class="radio">
+						<label for="radio4">
+						<input value="EXT" type="radio" name="flagAdresse" id="radio4" />
+								Domicile</label> 	
+					</div>
+					<pre>${adresseExterne}</pre>
+				</div>
+			</c:if>
+			<c:if test="${user.userType eq 'I'or user.userType eq 'E'}">
+				<textarea rows="3" cols="25" name="addressRequested" id="address">&amp;nbsp</textarea>
+				<input type="hidden" value="EXT" name="flagAdresse" />
+			</c:if>
+	</fieldset>	
+</div>

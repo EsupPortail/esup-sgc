@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:sec="http://www.springframework.org/security/tags" xmlns:spring="http://www.springframework.org/tags" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" id="cardList" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:url value="/manager/photo/" var="photoLocalPrefix"/>
+    <spring:url value="/manager/stats" var="statsPage"/>
+    <h2>Gestion des cartes 
+	    <a class="btn btn-warning navbar-btn navbar-right" href="${statsPage}" id="btnStats" title="Statistiques">
+            <span class="glyphicon glyphicon-stats"/>
+        </a>
+        <button class="btn btn-primary navbar-btn navbar-right" data-target="#noticeEtats" data-toggle="modal" title="Etats" type="button">
+            <span class="glyphicon glyphicon-info-sign"/>
+        </button>
+        <button class="btn btn-default navbar-btn navbar-right" data-target="#settings" data-toggle="modal" title="Préférences" type="button">
+            <span class="glyphicon glyphicon-cog"/>
+        </button>        
+        <button class="btn btn-info navbar-btn navbar-right hidden-lg hidden-md" data-target="#searchCollapse" data-toggle="collapse" type="button">
+            <span class="glyphicon glyphicon-search"/>
+        </button>
+    </h2>
+    <jsp:include page="includes/megamenu.jspx"/>
+    <jsp:include page="includes/header.jspx"/>
+    <c:set value="false" var="displayCheckbox"/>
+    <sec:authorize access="hasRole('ROLE_MANAGER')">
+        <c:set value="true" var="displayCheckbox"/>
+    </sec:authorize>
+    <page:list id="pl_org_esupportail_sgc_domain_Card" items="${cards}" z="BJPyWcDg3O3cxcyUVzdb93Qn9gQ=">
+        <table:table checkbox="${displayCheckbox}" create="false" data="${cards}" delete="false" id="l_org_esupportail_sgc_domain_Card" path="/manager" update="false" z="user-managed">
+            <table:column cssClass="hidden" id="c_org_esupportail_sgc_domain_Card_id" label="id" property="id" z="user-managed"/>
+            <table:column btLabel="card.label" cssClass="etat centerCell" id="c_org_esupportail_sgc_domain_Card_etat" property="etat" sort="true" translation="true" z="user-managed"/>
+            <table:column breakpoints="xs" id="c_org_esupportail_sgc_domain_Card_eppn" property="eppn" sort="true" z="user-managed"/>
+            <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_name" label="Nom" property="displayName" sort="true"/>
+            <table:column breakpoints="xs" btLabel="card.label/badge" cssClass="type centerCell" id="c_org_esupportail_sgc_domain_Card_userType" property="userType"/>
+            <table:column cssClass="photo centerCell" id="c_org_esupportail_sgc_domain_Card_photo" image="true" imagePrefix="${photoLocalPrefix}" label="Photo" property="id" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="crous centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_crous" property="crous" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="cnil centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_cnil" property="difPhoto" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="editable centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_userEditable" label="Editable" property="userEditable" z="user-managed"/>
+            <table:column breakpoints="sm" cssClass="livraison centerCell" date="true" dateTimePattern="dd/MM/yy HH:mm" glyphCheck="/true/ok/false/remove/pop" render="${livraison}" id="c_org_esupportail_sgc_domain_Card_deliveredDate" label="Livraison" property="deliveredDate" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="centerCell bold" id="c_org_esupportail_sgc_domain_Card_nbCards" label="Nb Cartes" property="nbCards" sort="true" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="centerCell bold" id="c_org_esupportail_sgc_domain_Card_nbRejets" property="nbRejets" z="user-managed" sort="true"/>
+            <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_etatEppn" label="Modificateur" property="etatEppn" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="adress" id="c_org_esupportail_sgc_domain_Card_address" label="Adresse" property="address" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="paiement centerCell" glyphCheck="/true/ok/false/remove/@leaveempty@" id="c_org_esupportail_sgc_domain_Card_payCmdNum" label="Paiement" property="payCmdNum" z="user-managed"/>
+            <table:column breakpoints="md" btLabel="card.label" cssClass="motif centerCell" id="c_org_esupportail_sgc_domain_Card_motifDisable" label="Motif" property="motifDisable" render="true" translation="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_desfireId" property="desfireId" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_csn" property="csn" render="false" z="user-managed"/>
+            <table:column breakpoints="xs" date="true" dateTimePattern="dd/MM/yy HH:mm" id="c_org_esupportail_sgc_domain_Card_requestDate" label="Demande" property="requestDate" sort="true" z="user-managed"/>
+            <table:column breakpoints="sm" date="true" dateTimePattern="dd/MM/yy HH:mm" id="c_org_esupportail_sgc_domain_Card_dateEtat" label="Modification" property="dateEtat" sort="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_commentaire" property="commentaire" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_namePrinted" property="namePrinted" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_firstnamePrinted" property="firstnamePrinted" render="false" z="user-managed"/>
+            <table:column date="true" dateTimePattern="${card_birthdayprinted_date_format}" id="c_org_esupportail_sgc_domain_Card_birthdayPrinted" property="birthdayPrinted" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_recto1Printed" property="recto1Printed" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_recto2Printed" property="recto2Printed" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_recto3Printed" property="recto3Printed" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_isPhotoEditable" property="isPhotoEditable" render="false" z="user-managed"/>
+        </table:table>
+    </page:list>
+    <jsp:include page="includes/modals.jspx"/>
+</div>

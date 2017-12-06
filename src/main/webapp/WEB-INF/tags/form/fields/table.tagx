@@ -1,0 +1,412 @@
+<jsp:root xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util"
+	xmlns:spring="http://www.springframework.org/tags" xmlns:form="http://www.springframework.org/tags/form" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+	<jsp:directive.tag import="java.util.ArrayList" />
+	<jsp:output omit-xml-declaration="yes" />
+
+	<jsp:directive.attribute name="id" type="java.lang.String" required="true" rtexprvalue="true"
+		description="The identifier for this tag (do not change!)" />
+	<jsp:directive.attribute name="data" type="java.util.Collection" required="true" rtexprvalue="true"
+		description="The collection to be displayed in the table" />
+	<jsp:directive.attribute name="path" type="java.lang.String" required="true" rtexprvalue="true" description="Specify the URL path" />
+	<jsp:directive.attribute name="typeIdFieldName" type="java.lang.String" required="false" rtexprvalue="true"
+		description="The identifier field name for the type (defaults to 'id')" />
+	<jsp:directive.attribute name="create" type="java.lang.Boolean" required="false" rtexprvalue="true"
+		description="Include 'create' link into table (default true)" />
+	<jsp:directive.attribute name="update" type="java.lang.Boolean" required="false" rtexprvalue="true"
+		description="Include 'update' link into table (default true)" />
+	<jsp:directive.attribute name="delete" type="java.lang.Boolean" required="false" rtexprvalue="true"
+		description="Include 'delete' link into table (default true)" />
+	<jsp:directive.attribute name="view" type="java.lang.Boolean" required="false" rtexprvalue="true"
+		description="Include 'view' link into table (default true)" />
+	<jsp:directive.attribute name="render" type="java.lang.Boolean" required="false" rtexprvalue="true"
+		description="Indicate if the contents of this tag and all enclosed tags should be rendered (default 'true')" />
+	<jsp:directive.attribute name="z" type="java.lang.String" required="false"
+		description="Used for checking if element has been modified (to recalculate simply provide empty string value)" />
+	<jsp:directive.attribute name="classFieldName" type="java.lang.String" required="false"
+		description="classFieldName ..." />
+	<jsp:directive.attribute name="print" type="java.lang.Boolean" required="false"
+		description="Display print button - must be configure in javascript file..." />
+	<jsp:directive.attribute name="classUpdate" type="java.lang.String" required="false"
+		description="classFieldName for update button" />
+	<jsp:directive.attribute name="classView" type="java.lang.String" required="false"
+		description="classFieldName for view button" />
+	<jsp:directive.attribute name="classDelete" type="java.lang.String" required="false"
+		description="classFieldName for delete button" />	
+	<jsp:directive.attribute name="classPrint" type="java.lang.String" required="false"
+		description="classFieldName for print button" />
+	<jsp:directive.attribute name="customBtn" type="java.lang.String" required="false"
+		description="url for custom button" />	
+	<jsp:directive.attribute name="customColumn" type="java.lang.String" required="false"
+		description="title for custom button/column" />
+	<jsp:directive.attribute name="checkbox" type="java.lang.Boolean" required="false"
+		description="column of checkboxes" />		
+		
+	<c:if test="${empty render or render}">
+
+		<c:set var="columnProperties" scope="request" />
+		<c:set var="columnLabels" scope="request" />
+		<c:set var="columnMaxLengths" scope="request" />
+		<c:set var="columnTypes" scope="request" />
+		<c:set var="columnDatePatterns" scope="request" />
+		<c:set var="columnSortProperties" scope="request" />
+		<c:set var="columnLinkPrefixes" scope="request" />
+		<c:set var="columnImagePrefixes" scope="request" />
+		<c:set var="columnCssClasses" scope="request" />
+		<c:set var="columnBreakpoints" scope="request" />
+		<c:set var="columnDataTypes" scope="request" />
+		<c:set var="columnBtLabels" scope="request" />
+		<c:set var="columnTranslations" scope="request" />
+		<c:set var="columnGlyphChecks" scope="request" />
+				
+		<jsp:doBody />
+		
+		<c:if test="${empty checkbox}">
+			<c:set var="checkbox" value="false" />
+		</c:if>
+
+		<c:if test="${empty typeIdFieldName}">
+			<c:set var="typeIdFieldName" value="id" />
+		</c:if>
+
+		<c:if test="${empty update}">
+			<c:set var="update" value="true" />
+		</c:if>
+
+		<c:if test="${empty delete}">
+			<c:set var="delete" value="true" />
+		</c:if>
+
+		<c:if test="${empty view}">
+			<c:set var="view" value="true" />
+		</c:if>
+		
+		<c:if test="${empty view}">
+			<c:set var="view" value="true" />
+		</c:if>
+        <c:if test="${empty classFieldName}">
+            <c:set var="classFieldName" value="" />
+		</c:if>
+        <c:if test="${empty classUpdate}">
+            <c:set var="classUpdate" value="" />
+		</c:if>
+        <c:if test="${empty classView}">
+            <c:set var="classView" value="" />
+		</c:if>
+        <c:if test="${empty classDelete}">
+            <c:set var="classDelete" value="" />
+		</c:if>	
+        <c:if test="${empty classPrint}">
+            <c:set var="classPrint" value="" />
+		</c:if>			
+		<c:if test="${empty print}">
+			<c:set var="print" value="false" />
+		</c:if>
+		
+		<c:if test="${empty create}">
+			<c:set var="create" value="false" />
+		</c:if>
+		
+		<spring:message var="typeName" code="menu_item_${fn:toLowerCase(fn:split(id,'_')[fn:length(fn:split(id,'_')) - 1])}_new_label" htmlEscape="false" />
+		<c:set var="lengths" value="${fn:split(columnMaxLengths, '&#9999;')}" scope="request" />
+		<c:set var="types" value="${fn:split(columnTypes, '&#9999;')}" scope="request" />
+		<c:set var="patterns" value="${fn:split(columnDatePatterns, '&#9999;')}" scope="request" />
+		<c:set var="properties" value="${fn:split(columnProperties, '&#9999;')}" scope="request" />
+		<c:set var="sortProperties" value="${fn:split(columnSortProperties, '&#9999;')}" scope="request" />
+		<c:set var="linkPrefixes" value="${fn:split(columnLinkPrefixes, '&#9999;')}" scope="request" />
+		<c:set var="imagePrefixes" value="${fn:split(columnImagePrefixes, '&#9999;')}" scope="request" />
+		<c:set var="cssClasses" value="${fn:split(columnCssClasses, '&#9999;')}" scope="request" />
+		<c:set var="breakpoints" value="${fn:split(columnBreakpoints, '&#9999;')}" scope="request" />
+		<c:set var="datatypes" value="${fn:split(columnDataTypes, '&#9999;')}" scope="request" />
+		<c:set var="btLabels" value="${fn:split(columnBtLabels, '&#9999;')}" scope="request" />
+		<c:set var="translations" value="${fn:split(columnTranslations, '&#9999;')}" scope="request" />
+		<c:set var="glyphChecks" value="${fn:split(columnGlyphChecks, '&#9999;')}" scope="request" />
+		<spring:eval var="colCounter" expression="1" />
+		
+		<div id="preload" style="display:none;">
+			<c:forTokens items="${columnProperties}" delims="${'&#9999;'}" var="column" varStatus="num">
+				<c:if test="${columnType eq 'image'}">
+					<img  width="1" height="1" src="${columnImagePrefixe}${item[column]}"/>
+				</c:if>
+			</c:forTokens>
+		</div>
+		<c:if test="${create}">
+			<span class="new">
+				<spring:url value="${path}" var="create_url">
+					<spring:param name="form" />
+				</spring:url>
+				<spring:message arguments="${typeName}" code="global_menu_new" var="add_message" htmlEscape="false" />
+				<a href="${create_url}" class="btn btn-primary"> ${fn:escapeXml(add_message)} </a>
+			</span>
+			<c:out value=" " />
+			<br /><br />
+		</c:if>
+		
+		<table class="table table-striped table-bordered" data-cascade="true">
+			<c:if test="${not empty data}">
+				<thead>
+					<tr>
+						<th></th>
+						<c:if test="${checkbox}">
+							<th data-type="html"><input type="checkbox" id="selectall"/></th>
+						</c:if>		
+						<c:forTokens items="${columnLabels}" delims="${'&#9999;'}" var="columnHeading" varStatus="num">
+							<c:set var="columnProperty" value="${properties[num.count-1]}" />
+							<c:set var="columnCssClass" value="${cssClasses[num.count-1]}" />
+							<c:set var="arrayCssClass" value="${fn:split(fn:trim(columnCssClass),' ')}" />
+							<c:set var="columnBreakpoint" value="${breakpoints[num.count-1]}" />
+							<c:set var="columnDataType" value="${datatypes[num.count-1]}" />
+							<c:set var="columnBtLabel" value="${btLabels[num.count-1]}" />
+							<c:set var="columnTranslation" value="${translations[num.count-1]}" />
+							<c:set var="columnGlyphCheck" value="${glyphChecks[num.count-1]}" />
+							<c:set var="thCss" value="" />
+							<c:forEach var="i" begin="0" end="6">
+								<c:if test="${fn:contains(arrayCssClass[i], 'visible') or fn:contains(arrayCssClass[i], 'hidden')}">
+									  <c:set var="thCss" value="${thCss} ${arrayCssClass[i]}" />
+								</c:if>
+							</c:forEach>
+							<c:set var="thCss" value="${fn:trim(thCss)}" />
+							<c:if test="${empty thCss}">
+								<c:set var="thCss" value="none" />
+							</c:if>
+							<c:set var="sort" value="false" />
+							<c:forEach var="sortFieldName" items="${sortProperties}">
+							  <c:if test="${columnProperty eq sortFieldName}">
+							    <c:set var="sort" value="true" />
+							  </c:if>
+							</c:forEach>
+							<c:choose>
+								<c:when test="${sort}">
+									<c:set var="sortOrderSet" value="false" />
+									<c:set var="sortOrderClass" value="sorting" />
+									<spring:url value="" var="querySortUrl"  htmlEscape="false">
+										<c:forEach items="${paramValues}" var="p">
+											<c:if test="${p.key ne 'sortFieldName' and p.key ne 'sortOrder'}">
+												<c:forEach var='value' items='${p.value}'>
+													<spring:param name="${p.key}" value="${value}" />
+												</c:forEach>
+											</c:if>
+											<c:if test="${p.key eq 'sortOrder' and paramValues['sortFieldName'][0] eq columnProperty}">
+												<c:set var="sortOrderSet" value="true" />
+												<c:if test="${p.value[0] eq 'asc'}">
+													<spring:param name="sortOrder" value="desc" />
+													<c:set var="sortOrderClass" value="sorting_desc" />
+												</c:if>
+												<c:if test="${p.value[0] eq 'desc'}">
+													<spring:param name="sortOrder" value="asc" />
+													<c:set var="sortOrderClass" value="sorting_asc" />
+												</c:if>
+											</c:if>
+										</c:forEach>
+										<spring:param name="sortFieldName" value="${columnProperty}" />
+										<c:if test="${not sortOrderSet}">
+											<spring:param name="sortOrder" value="asc" />
+										</c:if>
+									</spring:url>
+									<c:choose>
+										<c:when test="${empty columnBreakpoint}">
+											<th class="${thCss}" data-type="${columnDataType}"><a href="${querySortUrl}" class="${sortOrderClass}"><c:out value="${columnHeading}" /> <spring:eval var="colCounter" expression="colCounter  + 1" /></a></th>
+										</c:when>
+										<c:otherwise>
+											<th class="${thCss}" data-type="${columnDataType}" data-breakpoints="${columnBreakpoint}"><a href="${querySortUrl}" class="${sortOrderClass}"><c:out value="${columnHeading}" /> <spring:eval var="colCounter" expression="colCounter  + 1" /></a></th>
+										</c:otherwise>
+									</c:choose>
+								</c:when>
+								<c:otherwise>
+									<c:choose>
+										<c:when test="${empty columnBreakpoint}">
+											<th class="${thCss}" data-type="${columnDataType}"><c:out value="${columnHeading}" /> <spring:eval var="colCounter" expression="colCounter  + 1" /></th>
+										</c:when>
+										<c:otherwise>
+											<th class="${thCss}" data-type="${columnDataType}" data-breakpoints="${columnBreakpoint}"><c:out value="${columnHeading}" /> <spring:eval var="colCounter" expression="colCounter  + 1" /></th>
+										</c:otherwise>
+									</c:choose>
+								</c:otherwise>
+							</c:choose>
+						</c:forTokens>
+						<c:if test="${view}">
+							<th class="${classView}" data-type="html">Voir</th>
+						</c:if>
+						<c:if test="${update}">
+							<th class="${classUpdate}" data-type="html">Modifier</th>
+							<spring:eval var="colCounter" expression="colCounter  + 1" />
+						</c:if>
+						<c:if test="${delete}">
+							<th class="${classDelete}" data-type="html">Supprimer</th>
+							<spring:eval var="colCounter" expression="colCounter  + 1" />
+						</c:if>
+						<c:if test="${print}">
+							<th class="${classPrint}" data-type="html">Imprimer</th>
+							<spring:eval var="colCounter" expression="colCounter  + 1" />
+						</c:if>	
+						<c:if test="${not empty customBtn and not empty customColumn}">
+							<th>${customColumn}</th>
+							<spring:eval var="colCounter" expression="colCounter  + 1" />
+						</c:if>							
+					</tr>
+				</thead>
+			</c:if>
+			<tfoot>
+				<tr class="footer">
+					<td colspan="${colCounter}"> <c:if test="${not empty maxPages}">
+							<util:pagination maxPages="${maxPages}" page="${not empty page ? page : param.page}" size="${not empty size ? size : param.size}" />
+						</c:if></td>
+				</tr>
+			</tfoot>
+			<tbody>
+				<c:forEach items="${data}" var="item">
+					<c:set var="itemClass">
+						<spring:eval expression="classFieldName == '' ? 'roocol' : 'roocol_' + classFieldName + '_' + item[classFieldName]" />
+					</c:set>
+					<c:set var="itemId">
+						<spring:eval expression="item[typeIdFieldName]" />
+					</c:set>
+					<tr class="${itemClass}">
+							<td></td>
+							<c:if test="${checkbox}">
+								<td> <input class="case" type="checkbox" name="case" value="${itemId}" /></td>
+							</c:if>		
+						<c:forTokens items="${columnProperties}" delims="${'&#9999;'}" var="column" varStatus="num">
+							<c:set var="columnMaxLength" value="${lengths[num.count-1]}" />
+							<c:set var="columnType" value="${types[num.count-1]}" />
+							<c:set var="columnDatePattern" value="${patterns[num.count-1]}" />
+							<c:set var="columnLinkPrefixe" value="${linkPrefixes[num.count-1]}" />
+							<c:set var="columnImagePrefixe" value="${imagePrefixes[num.count-1]}" />
+							<c:set var="columnCssClass" value="${cssClasses[num.count-1]}" />
+							<c:set var="columnBtLabel" value="${btLabels[num.count-1]}" />
+							<c:set var="columnTranslation" value="${translations[num.count-1]}" />
+							<c:set var="columnGlyphCheck" value="${glyphChecks[num.count-1]}" />
+							<td class="${columnCssClass}">
+								<c:choose>
+									<c:when test="${columnType eq 'date'}">
+										<spring:escapeBody>
+											<fmt:formatDate value="${item[column]}" pattern="${fn:escapeXml(columnDatePattern)}" var="colTxt" />
+										</spring:escapeBody>
+									</c:when>
+									<c:when test="${columnType eq 'calendar'}">
+										<spring:escapeBody>
+											<fmt:formatDate value="${item[column].time}" pattern="${fn:escapeXml(columnDatePattern)}" var="colTxt" />
+										</spring:escapeBody>
+									</c:when>
+									<c:when test="${columnType eq 'link'}">
+										<c:set var="colTxt">
+											<a href="${columnLinkPrefixe}${item[column]}">
+												${item[column]}
+											</a>
+										</c:set>
+									</c:when>
+									<c:when test="${columnType eq 'image'}">
+										<c:set var="colTxt">
+										<spring:url value="${path}/${itemId}" var="view_url" />
+											<a href="${view_url}"><img  width="40" height="50" src="${columnImagePrefixe}${item[column]}"/></a>
+										</c:set>
+									</c:when>
+									<c:otherwise>
+										<c:set var="colTxt">
+											<spring:eval expression="item[column]" htmlEscape="false" />
+										</c:set>
+									</c:otherwise>
+								</c:choose> 
+								<c:if test="${columnMaxLength ge 0}">
+									<c:set value="${fn:substring(colTxt, 0, columnMaxLength)}" var="colTxt" />
+								</c:if>
+								<c:choose>
+									<c:when test="${columnBtLabel ne 'none'}">
+										<c:set var = "splitLabel" value = "${fn:split(columnBtLabel, '/')}" />
+										<c:set var = "labelType" value = "label" />
+										<c:if test="${not empty splitLabel[1]}">
+											<c:set var = "labelType" value = "${splitLabel[1]}" />
+										</c:if>
+										<c:set var = "labelValue" value = "${columnBtLabel}" />
+										<c:if test="${not empty splitLabel[1]}">
+											<c:set var = "labelValue" value = "${splitLabel[0]}" />
+										</c:if>
+										<span class="${labelType} ${labelType}-${fn:toLowerCase(colTxt)}" title="${colTxt}">
+											<c:if test="${columnTranslation and not empty colTxt}">
+												<c:set var="colTxt">
+													<spring:message code="${labelValue}.${colTxt}"/>
+												</c:set>
+											</c:if>
+											<c:out value="${colTxt}" escapeXml="false"/>
+										</span>
+									</c:when>
+									<c:when test="${columnGlyphCheck ne 'none'}">
+										<c:set var = "splitGlyph" value = "${fn:split(columnGlyphCheck, '/')}" />
+										<c:set var = "pop" value = "" />
+										<c:if test="${not empty splitGlyph[4]}">
+											<c:set var = "pop" value = "${colTxt}" />
+										</c:if>
+										<c:if test="${colTxt eq splitGlyph[0] or (not empty colTxt and not empty pop)}">
+											<span class='text-success glyphicon glyphicon-${splitGlyph[1]}' tabindex="-1" data-html="true" data-toggle="popover" data-placement="top" data-trigger="hover" data-content="${pop}"></span>
+										</c:if>
+										<c:if test="${colTxt eq splitGlyph[2] or (empty colTxt and empty pop and splitGlyph[4] ne '@leaveempty@')}">
+											<span class='text-danger glyphicon glyphicon-${splitGlyph[3]}' tabindex="-1" data-toggle="popover"  data-placement="top" data-trigger="hover" data-content="${pop}"></span>
+										</c:if>
+									</c:when>					
+									<c:otherwise>
+										<c:if test="${columnTranslation and not empty colTxt} ">
+											<c:set var="colTxt">
+												<spring:message code="${labelValue}.${colTxt}"/>
+											</c:set>
+										</c:if>
+										<c:out value="${colTxt}" escapeXml="false"/>
+									</c:otherwise>
+								</c:choose>
+							</td>
+						</c:forTokens>
+						<c:if test="${view}">
+							<td class="utilbox ${classView}"><spring:url value="${path}/${itemId}" var="show_form_url" /> <spring:url value="/resources/images/show.png"
+									var="show_image_url" /> <spring:message arguments="${typeName}" code="entity_show" var="show_label" htmlEscape="false" /> <a
+								href="${show_form_url}" alt="${fn:escapeXml(show_label)}" title="${fn:escapeXml(show_label)}" class="btn btn-success"> <img
+									alt="${fn:escapeXml(show_label)}" class="image" src="${show_image_url}" title="${fn:escapeXml(show_label)}" />
+							</a></td>
+						</c:if>
+						<c:if test="${update}">
+							<td class="utilbox ${classUpdate}"><spring:url value="${path}/${itemId}" var="update_form_url">
+									<spring:param name="form" />
+								</spring:url> <spring:url value="/resources/images/update.png" var="update_image_url" /> <spring:message arguments="${typeName}" code="entity_update"
+									var="update_label" htmlEscape="false" /> <a href="${update_form_url}" alt="${fn:escapeXml(update_label)}"
+								title="${fn:escapeXml(update_label)}" class="btn btn-warning"> <img alt="${fn:escapeXml(update_label)}" class="image"
+									src="${update_image_url}" title="${fn:escapeXml(update_label)}" />
+							</a></td>
+						</c:if>
+						<c:if test="${delete}">
+							<td class="utilbox ${classDelete}"><spring:url value="${path}/${itemId}" var="delete_form_url" /> <spring:url value="/resources/images/delete.png"
+									var="delete_image_url" /> <form:form action="${delete_form_url}" method="DELETE">
+									<spring:message arguments="${typeName}" code="entity_delete" var="delete_label" htmlEscape="false" />
+									<c:set var="delete_confirm_msg">
+										<spring:escapeBody javaScriptEscape="true">
+											<spring:message code="entity_delete_confirm" htmlEscape="false" />
+										</spring:escapeBody>
+									</c:set>
+									<input alt="${fn:escapeXml(delete_label)}" class="btn btn-danger" src="${delete_image_url}" title="${fn:escapeXml(delete_label)}" type="image"
+										value="${fn:escapeXml(delete_label)}" onclick="return confirm('${delete_confirm_msg}');" />
+									<c:if test="${not empty param.page}">
+										<input name="page" type="hidden" value="1" />
+									</c:if>
+									<c:if test="${not empty param.size}">
+										<input name="size" type="hidden" value="${fn:escapeXml(param.size)}" />
+									</c:if>
+								</form:form></td>
+						</c:if>
+						<c:if test="${print}">
+							<td class="utilbox ${classPrint}"><spring:url value="/resources/images/print.png"
+									var="print_image_url" /><spring:url value="${path}/print/${itemId}" var="print_form_url" /> <spring:message arguments="${typeName}" code="entity_print" var="print_label" htmlEscape="false" /> <a
+								 alt="${fn:escapeXml(print_label)}" title="${fn:escapeXml(print_label)}" class="btn btn-primary btnPrint" href="${print_form_url}"> <img
+									alt="${fn:escapeXml(print_label)}" class="image" src="${print_image_url}" title="${fn:escapeXml(print_label)}" />
+							</a></td>
+						</c:if>
+						<c:if test="${not empty customBtn and not empty customColumn}">
+							<td class="utilbox "><spring:url value="${customBtn}/${itemId}" var="show_page_url" /><spring:url value="/resources/images/show.png"
+									var="show_image_url" /><a alt="${customColumn}" class="btn btn-primary" href="${show_page_url}"> <img
+									alt="${customColumn}" class="image" src="${show_image_url}" title="${customColumn}" />
+							</a></td>
+						</c:if>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+
+	</c:if>
+
+</jsp:root>

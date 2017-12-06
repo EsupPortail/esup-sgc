@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:page="urn:jsptagdir:/WEB-INF/tags/form"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:spring="http://www.springframework.org/tags" id="cardShow">
+	<jsp:directive.page contentType="text/html;charset=UTF-8" />
+	<jsp:output omit-xml-declaration="yes" />
+	
+	<dl>
+		<dt>identifier</dt>
+		<dd>${rightHolder.identifier}</dd>	
+		<dt>firstName</dt>
+		<dd>${rightHolder.firstName}</dd>	
+		<dt>lastName</dt>
+		<dd>${rightHolder.lastName}</dd>	
+		<dt>email</dt>
+		<dd>${rightHolder.email}</dd>	
+		<dt>dueDate</dt>
+		<dd>${rightHolder.dueDate}</dd>	
+		<dt>idCompanyRate</dt>
+		<dd>${rightHolder.idCompanyRate}</dd>	
+		<dt>idRate</dt>
+		<dd>${rightHolder.idRate}</dd>	
+	</dl>
+	
+</div>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <h2>Erreurs CROUS</h2>
+    <!-- 
+		<div class="panel-group help" id="panel-groupfilter">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					 Filtrer
+				</div>
+				<div class="panel-collapse" id="collapseFilter">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-3">
+								todo
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+		</div>
+		-->
+    <page:list id="pl_org_esupportail_sgc_services_crous_CrousErrorLog" items="${crouserrorlogs}" z="n84WdWGHJIfxccPMFdIEq74xOX8=">
+        <table:table data="${crouserrorlogs}" delete="false" id="l_org_esupportail_sgc_services_crous_CrousErrorLog" path="/admin/crouserrorlogs" update="false" view="true" z="user-managed">
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_card" link="true" linkPrefix="/manager/" property="cardId" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_userAccount" link="true" linkPrefix="/manager/?eppn=" property="userEppn" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_userDisplayName" label="Nom" property="userDisplayName" z="kytEIF30AmaTzqGYJ1VmzPckqpY="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_userEmail" label="Mail" property="userEmail" z="kytEIF30AmaTzqGYJ1VmzPckqpY="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_cardCsn" label="CSN" property="cardCsn" z="kytEIF30AmaTzqGYJ1VmzPckqpY="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_code" property="code" z="Vp49o8V5IZu/0fcLnc9Ja+23cmw="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_message" property="message" z="TI/UJM88A5KMpH+hRkEA3RhxNZI="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_field" property="field" z="dAIrbrkDb9fOWTAa/BrBIoUUUdI="/>
+            <table:column date="true" dateTimePattern="dd/MM/yy HH:mm" id="c_org_esupportail_sgc_services_crous_CrousErrorLog_date" property="date" z="user-managed"/>
+        </table:table>
+    </page:list>
+</div>

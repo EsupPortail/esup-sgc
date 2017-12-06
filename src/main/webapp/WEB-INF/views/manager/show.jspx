@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:sec="http://www.springframework.org/security/tags" xmlns:spring="http://www.springframework.org/tags" id="cardShow" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:url value="/manager?index=first" var="listeUrl"/>
+    <spring:url value="/manager/photo/" var="photoRootUrl"/>
+    <spring:url value="/manager/getCrousRightHolderHtmlPart?eppn=${user.eppn}" var="getCrousRightHolderUrl"/>
+    <script type="text/javascript">
+		var photorUrl = '${photoRootUrl}';
+		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
+	</script>
+    <style>
+	#specimenleocarte #qrcode {
+		width: ${qrcodeWidth};
+	}		
+	</style>
+    <h2>Utilisateur
+		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
+            <span class="glyphicon glyphicon-home">
+                <!--  -->
+            </span>
+        </a>
+    </h2>
+    <div class="row ">
+        <div class="col-lg-12">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h5>
+                    ${user.eppn}
+                    <spring:url value="/j_spring_security_switch_user" var="su_url"/>
+                        <sec:authorize access="hasRole('ROLE_ADMIN')">
+                            <form action="${su_url}" class="form-horizontal" method="POST" style="display:inline">
+                                <input name="j_username" type="hidden" value="${user.eppn}"/>
+                                <button class="btn btn-danger" type="submit">SU</button>
+                            </form>
+                            <spring:url htmlEscape="false" value="/admin/logs?find=ByEppnCibleEquals&amp;eppn=${user.eppn}&amp;page=1&amp;size=10&amp;sortFieldName=logDate&amp;sortOrder=desc" var="urlLogs"/>
+                            <a class=" btn btn-info pull-right" href="${urlLogs}">
+                                <span class="glyphicon glyphicon-time"/>
+                            </a>
+                        </sec:authorize>
+                    </h5>
+                </div>
+                <div class="panel-body ">
+                    <div class="col-lg-4">
+                        <div class="well">
+                            <h3>Infos Perso</h3>
+                            <dl class="dl-horizontal displayWs">
+                                <dt>Prénom : </dt>
+                                <dd>${user.firstname}</dd>
+                                <dt>Nom : </dt>
+                                <dd>${user.name}</dd>
+                                <dt>Date de naissance : </dt>
+                                <dd>
+                                    <fmt:formatDate pattern="dd/MM/yyyy" value="${user.birthday}"/>
+                                </dd>
+                                <dt>Type : </dt>
+                                <dd>${user.userType}</dd>
+                                <!-- 
+                                <dt>Indice : </dt>
+                                <dd>${user.indice}</dd>
+                                 -->
+                                <dt>Email : </dt>
+                                <dd>${user.email}</dd>
+                                <dt>Adresse : </dt>
+                                <dd>${user.address}</dd>
+                                <dt>Demande de nouvelle carte gratuite : </dt>
+                                <dd>
+                                    ${user.requestFree ? 'oui' : 'non'}
+                                </dd>
+                                <dt>Editable : </dt>
+                                <dd>
+                                    ${user.editable ? 'oui' : 'non'}
+                                </dd>
+                                <dt class="fieldWs">Crous : </dt>
+                                <dd class="fieldWs">
+                                    ${user.crous ? 'oui' : 'non'}
+                                </dd>
+                                <c:if test="${user.crous}">
+                                	<button type="button" id="getCrousRighHolder">Visualiser les données côté CROUS</button>
+                                	<div id="getCrousRighHolderDiv"><!--  --></div>
+                                </c:if>
+                                <dt class="fieldWs">European Student Card : </dt>
+                                <dd class="fieldWs">
+                                    ${user.europeanStudentCard ? 'oui' : 'non'}
+                                </dd>
+                                <dt class="fieldWs">Diffusion Photo : </dt>
+                                <dd class="fieldWs">
+                                    ${user.difPhoto ? 'oui' : 'non'}
+                                </dd>
+                                <dt>Institut : </dt>
+                                <dd>${user.institute}</dd>
+                                <dt>Etablissement Rne : </dt>
+                                <dd>${user.rneEtablissement}</dd>
+                                <dt class="fieldWs">Statut Cnous : </dt>
+                                <dd class="fieldWs">${user.cnousReferenceStatut}</dd>
+                                <dt>Date limite : </dt>
+                                <dd>
+                                    <fmt:formatDate pattern="dd/MM/yyyy" value="${user.dueDate}"/>
+                                </dd>
+                                <dt class="fieldWs">Société crous : </dt>
+                                <dd class="fieldWs">${user.idCompagnyRate}</dd>
+                                <dt class="fieldWs">Tarif crous : </dt>
+                                <dd class="fieldWs">${user.idRate}</dd>
+                                <dt>eduPersonPrimaryAffiliation</dt>
+                                <dd>${user.eduPersonPrimaryAffiliation}</dd>
+                                <dt>supannEmpId</dt>
+                                <dd>${user.supannEmpId}</dd>
+                                <dt>supannEtuId</dt>
+                                <dd>${user.supannEtuId}</dd>
+                                <dt>supannCodeINE</dt>
+                                <dd>${user.supannCodeINE}</dd>
+                                <dt>supannEntiteAffectationPrincipale</dt>
+                                <dd>${user.supannEntiteAffectationPrincipale}</dd>
+                                <dt>secondaryId</dt>
+                                <dd>${user.secondaryId}</dd>
+                                <dt>recto1</dt>
+                                <dd>${user.recto1}</dd>
+                                <dt>recto2</dt>
+                                <dd>${user.recto2}</dd>
+                                <dt>recto3</dt>
+                                <dd>${user.recto3}</dd>
+                                <dt>recto4</dt>
+                                <dd>${user.recto4}</dd>
+                                <dt>recto5</dt>
+                                <dd>${user.recto5}</dd>
+                                <dt>verso1</dt>
+                                <dd>${user.verso1}</dd>
+                                <dt>verso2</dt>
+                                <dd>${user.verso2}</dd>
+                                <dt>verso3</dt>
+                                <dd>${user.verso3}</dd>
+                                <dt>verso4</dt>
+                                <dd>${user.verso4}</dd>
+                                <dt>verso5</dt>
+                                <dd>${user.verso5}</dd>
+                            </dl>
+                            <sec:authorize access="hasRole('ROLE_MANAGER')">
+                                <spring:url value="/manager/${currentCard.id}/resync-user/${user.eppn}" var="resynchUrl"/>
+                                <a class="btn btn-danger" href="${resynchUrl}">Resynchronisation</a>
+                            </sec:authorize>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="well" id="allCards">
+                            <h3>Cartes</h3>
+                            <c:if test="${user.cards eq null}">
+                                <p>Aucune carte à afficher.</p>
+                            </c:if>
+                            <c:forEach items="${user.cards}" var="card" varStatus="i">
+                                <c:set value="" var="collapseState"/>
+                                <c:set value="collapsed" var="collapsed"/>
+                                <c:if test="${card.id eq currentCard.id}">
+                                    <c:set value="in" var="collapseState"/>
+                                    <c:set value="" var="collapsed"/>
+                                </c:if>
+                                <div aria-multiselectable="true" class="panel-group" id="accordion" role="tablist">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading" id="headingOne" role="tab">
+                                            <h5 class="panel-title">
+                                                <a class="accordion-toggle ${collapsed}" data-parent="#accordion" data-toggle="collapse" href="#collapseCard${i.index}" role="button">
+                                                    <span class="etat">
+                                                        <spring:message code="card.step.${card.etat}"/> - <fmt:formatDate pattern="dd/MM/yyyy" value="${card.dateEtat}"/>
+                                                    </span>
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <div class="panel-collapse collapse ${collapseState}" id="collapseCard${i.index}">
+                                            <div class="panel-body">
+                                                <spring:url value="/manager/photo/${card.id}" var="photoUrl"/>
+                                                <spring:url value="/manager/updatePhoto" var="updatePhototUrl"/>
+                                                <div class="col-lg-2">
+                                                    <img class="img-thumbnail center" src="${photoUrl}"/>
+                                                    <sec:authorize access="hasRole('ROLE_MANAGER')">
+                                                        <c:if test="${card.isPhotoEditable}">
+                                                            <button class="btn btn-default btn-block" data-target="#retouche" data-toggle="modal" id="btnRetouche" type="button">
+	                                                        Retoucher
+	                                                    </button>
+                                                            <div class="modal fade" id="retouche">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&amp;times;</button>
+                                                                            <h3 class="modal-title">Modification Photo</h3>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form action="${updatePhototUrl}" enctype="multipart/form-data" id="updatePhoto" method="post">
+                                                                                <div id="image-cropper">
+                                                                                    <div class="col-lg-4">
+                                                                                        <div class="cropit-preview col-lg-4" id="cropit-preview">&amp;nbsp</div>
+                                                                                        <div id="container">
+                                                                                            <!--  -->
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-8">
+                                                                                        <div class="cropit-info well">
+                                                                                            <label>Zoom</label>
+                                                                                            <input class="cropit-image-zoom-input" type="range"/>
+                                                                                            <label>Rotation</label>
+                                                                                            <br/>
+                                                                                            <button class="rotate-ccw" type="button">
+                                                                                                <span aria-hidden="true" class="glyphicon glyphicon-repeat icon-flipped"/>
+                                                                                            </button>
+                                                                                            <button class="rotate-cw" type="button">
+                                                                                                <span aria-hidden="true" class="glyphicon glyphicon-repeat"/>
+                                                                                            </button>
+                                                                                            <br/>
+                                                                                        </div>
+                                                                                        <div class="well" id="filterSliders">
+                                                                                            <label for="brighten">Luminosité</label>
+                                                                                            <input id="brighten" max="1" min="-1" step="0.05" type="range" value="0"/>
+                                                                                            <label for="enhance">Amélioration</label>
+                                                                                            <input id="enhance" max="1" min="-1" step="0.05" type="range" value="0"/>
+                                                                                            <label for="rotate">Rotation libre</label>
+                                                                                            <input id="rotate" max="360" min="0" step="1" type="range" value="0"/>
+                                                                                        </div>
+                                                                                        <div class="form-group">
+                                                                                            <button class="btn btn-primary" id="btnColors" type="button">Filtres</button>&amp;nbsp
+                                                                                    	<button class="btn btn-warning" id="scaleBtn" type="button">Echelle</button>&amp;nbsp
+                                                                                    	<button class="btn btn-default" id="resetBtn" type="button">Effacer</button>&amp;nbsp
+                                                                                        <button class="exportAdmin btn btn-success" onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
+                                                                                        </div>
+                                                                                        <input id="cardId" name="cardId" type="hidden" value="${card.id}"/>
+                                                                                        <input class="cropit-image-data" name="imageData" type="hidden"/>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                            <hr/>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </c:if>
+                                                    </sec:authorize>
+                                                    <button class="preview btn btn-warning btn-block" data-target="#previewCarte${i.index}" data-toggle="modal" type="button">
+														Prévisualiser</button>
+                                                    <div class="modal fade" id="previewCarte${i.index}">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&amp;times;</button>
+                                                                    <h3 class="modal-title">Prévisualisation de la carte</h3>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div id="specimenleocarte">
+                                                                        <div id="left">
+                                                                            <p id="recto1">${card.user.recto1}</p>
+                                                                            <p id="recto2">${card.user.recto2}</p>
+                                                                            <p id="recto3">${card.user.recto3}</p>
+                                                                            <p id="recto4">${card.user.recto4}</p>
+                                                                            <p id="recto5">${card.user.recto5}</p>
+                                                                            <spring:url value="/manager/QRCode?cardId=${card.id}" var="QRCodeUrl"/>
+                                                                            <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
+                                                                        </div>
+                                                                        <div id="right">
+                                                                            <spring:url value="/manager/photo/${card.id}" var="photoUrl"/>
+                                                                            <spring:url value="/resources/images/logo-univ-rouen-normandie-couleur.png" var="logoUrl"/>
+                                                                            <img id="photo" src="${photoUrl}"/>
+                                                                            <img id="logo-ur" src="${logoUrl}"/>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- sec:authorize access="hasRole('ROLE_ADMIN')
+                                                    <form action="${delete_form_url}" id="formDelete" method="POST">
+                                                        <input name="_method" type="hidden" value="DELETE"/>
+                                                        <button alt="${fn:escapeXml(delete_label)}" class="btn btn-danger btn-block" onclick="return confirm('Confirmez la modification');" title="${fn:escapeXml(delete_label)}" type="submit">
+									                    Supprimer
+									                </button>
+                                                    </form>
+                                                    /sec:authorize-->
+                                                    <sec:authorize access="hasRole('ROLE_LIVREUR')">
+                                                        <c:if test="${card.etat eq 'ENABLED' and empty card.deliveredDate}">
+                                                            <spring:url value="/manager/deliver/${card.id}" var="deliverUrl"/>
+                                                            <form action="${deliverUrl}" method="POST">
+                                                                <button class="btn btn-primary btn-block" type="submit">
+	                                                                Noter comme livré
+	                                                            </button>
+                                                            </form>
+                                                        </c:if>
+                                                    </sec:authorize>
+                                                    <sec:authorize access="hasRole('ROLE_MANAGER')">
+                                                        <div id="btnBlock">
+                                                            <spring:url value="/manager/action/${card.id}" var="etatActionUrl"/>
+                                                            <c:forEach items="${card.etatsAvailable}" var="etatAvailable" varStatus="j">
+                                                                <form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
+                                                                    <c:choose>
+                                                                        <c:when test="${not empty actionMessages[etatAvailable]}">
+                                                                            <button class="btn btn-success btn-block" data-target="#commentEtat${i.index}-${j.index}" data-toggle="modal" type="button">
+                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+                                                                            </button>
+                                                                            <div class="modal fade" id="commentEtat${i.index}-${j.index}">
+                                                                                <div class="modal-dialog">
+                                                                                    <div class="modal-content">
+                                                                                        <div class="modal-header">
+                                                                                            <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&amp;times;</button>
+                                                                                            <h3 class="modal-title">Commentaire</h3>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                            <div class="form-group">
+                                                                                                <textarea class="form-control" id="comment" name="comment" rows="5">
+                                                                                                    <c:forEach items="${actionMessages}" var="message" varStatus="loop">
+                                                                                                        <c:if test="${message.key eq  etatAvailable}">
+                                                                                                            <c:forEach items="${message.value}" var="msg" varStatus="loop">
+                                                                                                                <c:if test="${msg.defaut}">${msg.message}
+																												</c:if>
+                                                                                                            </c:forEach>
+                                                                                                        </c:if>
+                                                                                                    </c:forEach>
+                                                                                                </textarea>
+                                                                                            </div>
+                                                                                            <button class="btn btn-success btn-block" id="${etatAvailable}">
+                                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+                                                                                            </button>
+                                                                                            <h4>Messages prédéfinis</h4>
+                                                                                            <div class="panel-default">
+                                                                                                <div class="panel-heading">
+                                                                                                    <a class="accordion-toggle" data-parent="#accordionfilter" data-toggle="collapse" href="#msgChoice">
+                                                                                                        <span class="glyphicon glyphicon-plus">&amp;nbsp;</span>
+                                                                                                    </a>Choisir
+																							</div>
+                                                                                                <div class="panel-collapse collapse well" id="msgChoice">
+                                                                                                    <ul>
+                                                                                                        <c:forEach items="${actionMessages}" var="message" varStatus="loop">
+                                                                                                            <c:if test="${message.key eq  etatAvailable}">
+                                                                                                                <c:forEach items="${message.value}" var="msg" varStatus="loop">
+                                                                                                                    <li>
+                                                                                                                        <button class="btn btn-default btn-xs" id="msg_${loop.index}" type="button">
+                                                                                                                            <span aria-hidden="true" class="glyphicon glyphicon-edit"/>
+                                                                                                                        </button>
+                                                                                                                        <span id="span_${loop.index}">${msg.message}</span>
+                                                                                                                    </li>
+                                                                                                                </c:forEach>
+                                                                                                            </c:if>
+                                                                                                        </c:forEach>
+                                                                                                    </ul>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="modal-footer">
+                                                                                            <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <button class="btn btn-success btn-block" type="submit">
+                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+                                                                            </button>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+                                                                </form>
+                                                            </c:forEach>
+                                                        </div>
+                                                    </sec:authorize>
+                                                </div>
+                                                <dl class="dl-horizontal col-lg-5">
+                                                    <h4>Recto/verso</h4>
+                                                    <dt>recto1</dt>
+                                                    <dd>${card.recto1Printed}</dd>
+                                                    <dt>recto2</dt>
+                                                    <dd>${card.recto2Printed}</dd>
+                                                    <dt>recto3</dt>
+                                                    <dd>${card.recto3Printed}</dd>
+                                                    <dt>recto4</dt>
+                                                    <dd>${card.recto4Printed}</dd>
+                                                    <dt>recto5</dt>
+                                                    <dd>${card.recto5Printed}</dd>
+                                                    <dt>QRCode : </dt>
+                                                    <dd>${card.qrcode}</dd>
+                                                    <dt>Verso Texte : </dt>
+                                                    <dd>
+                                                        <pre>${card.versoTextPrinted}</pre>
+                                                    </dd>
+                                                    <h4>Dates</h4>
+                                                    <dt>Date de demande : </dt>
+                                                    <dd>
+                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.requestDate}"/>
+                                                    </dd>
+                                                    <dt>Date d'encodage : </dt>
+                                                    <dd>
+                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.encodedDate}"/>
+                                                    </dd>
+                                                    <dt>Date du dernier réencodage (maj) : </dt>
+                                                    <dd>
+                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.lastEncodedDate}"/>
+                                                    </dd>
+                                                    <dt>Date du dernier changement d'état : </dt>
+                                                    <dd>
+                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.dateEtat}"/>
+                                                    </dd>
+                                                    <c:if test="${livraison}">
+	                                                    <dt>Date de livraison : </dt>
+	                                                    <dd>
+	                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.deliveredDate}"/>
+	                                                    </dd>
+                                                    </c:if>
+                                                    <dt>Date d'activation : </dt>
+                                                    <dd>
+                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.ennabledDate}"/>
+                                                    </dd>
+                                                    <dt>Date limite / de fin : </dt>
+                                                    <dd>
+                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.dueDate}"/>
+                                                    </dd>
+                                                    <h4>Numéros</h4>
+                                                    <dt>Csn : </dt>
+                                                    <dd>${card.csn}</dd>
+                                                    <dt>Desfire Id : </dt>
+                                                    <dd>${card.desfireId}</dd>
+                                                    <dt>Paybox : </dt>
+                                                    <dd>${card.payCmdNum}</dd>
+                                                    <dt>Motif : </dt>
+                                                    <dd>${card.motifDisable}</dd>
+                                                    <h4>Modification</h4>
+                                                    <dt>Etat Eppn : </dt>
+                                                    <dd>${card.etatEppn}</dd>
+                                                    <dt>Commentaire : </dt>
+                                                    <dd>${card.commentaire}</dd>
+                                                </dl>
+                                                <dl class="dl-horizontal col-lg-5">
+                                                    <h4>Demande</h4>
+                                                    <dt>Structure : </dt>
+                                                    <dd>${card.structure}</dd>
+                                                    <dt>Adresse de livraison demandée : </dt>
+                                                    <dd>${card.flagAdresse}, ${card.addressRequested}</dd>
+                                                    <dt>Nombre de rejets : </dt>
+                                                    <dd>${card.nbRejets == null ? 0 : card.nbRejets}</dd>
+                                                    <dt>Navigateur: </dt>
+                                                    <dd>${card.requestBrowser}</dd>
+                                                    <dt>OS: </dt>
+                                                    <dd>${card.requestOs}</dd>
+                                                    <c:if test="${not empty card.crousSmartCard}">
+                                                        <h4>Restauration CROUS</h4>
+                                                        <dt>Numéro Crous : </dt>
+                                                        <dd>${card.crousSmartCard.idZdc}</dd>
+                                                        <dt>Date de création : </dt>
+                                                        <dd>
+                                                            <fmt:formatDate pattern="dd/MM/yyyy" value="${card.crousSmartCard.zdcCreationDate}"/>
+                                                        </dd>
+                                                        <dt>Emetteur : </dt>
+                                                        <dd>${card.crousSmartCard.idTransmitter}</dd>
+                                                    </c:if>
+                                                    <h4>Carte d'étudiant européenne</h4>
+                                                    <dt>Numéro de carte d'étudiant européenne : </dt>
+                                                    <dd>${card.escnUid}</dd>
+                                                </dl>
+                                                <sec:authorize access="hasRole('ROLE_ADMIN')">
+                                                    <div class="col-lg-5">
+                                                        <h4>Historique</h4>
+                                                        <spring:url htmlEscape="false" value="/admin/logs?find=ByCardIdEquals&amp;cardId=${card.id}&amp;page=1&amp;size=10&amp;sortFieldName=logDate&amp;sortOrder=desc" var="urlLogs"/>
+                                                        <a class="btn btn-info btn-block" href="${urlLogs}">Voir logs</a>
+                                                    </div>
+                                                    <div class="col-lg-5">
+                                                        <c:if test="${card.etat eq 'ENABLED' or card.etat eq 'CADUC' or card.etat eq 'DISABLED'}">
+                                                            <spring:url value="/manager/replayValidationOrInvalidation/${card.id}" var="replayValidationOrInvalidationUrl"/>
+                                                            <form action="${replayValidationOrInvalidationUrl}" method="POST" onsubmit="return confirm('Attention, avec cette action, pour la partie CROUS, Izly pourra renvoyer un mail à l\'utilisateur');">
+                                                                <c:forEach items="${validateServicesNames}" var="validateServicesName">
+                                                                    <div class="checkbox">
+                                                                        <label>
+                                                                            <input name="validateServicesNames" type="checkbox" value="${validateServicesName}"/>${validateServicesName}
+																	  </label>
+                                                                    </div>
+                                                                </c:forEach>
+                                                                <div class="checkbox">
+                                                                    <label>
+                                                                        <input checked="checked" name="resynchro" type="checkbox" value="true"/>Resynchronisation préalable
+																 	</label>
+                                                                </div>
+                                                                <button class="btn btn-danger" type="submit">
+	                                                                Rejouer la procédure de validation / invalidation
+	                                                            </button>
+                                                            </form>
+                                                        </c:if>
+                                                    </div>
+                                                </sec:authorize>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <page:show id="ps_org_esupportail_sgc_domain_Card" object="${card}" path="/manager" render="false" z="user-managed">
+        <field:display field="etat" id="s_org_esupportail_sgc_domain_Card_etat" object="${card}" z="WHiT3krWO1A0P6JO8brFdX6ak/8="/>
+        <field:display field="eppn" id="s_org_esupportail_sgc_domain_Card_eppn" object="${card}" z="djTqAwHSJZLwb9o6XSQiz02t79A="/>
+        <field:display field="desfireId" id="s_org_esupportail_sgc_domain_Card_desfireId" object="${card}" z="PQm0Vd4Jr3inJtigY3ljkzZeUOQ="/>
+        <field:display field="csn" id="s_org_esupportail_sgc_domain_Card_csn" object="${card}" z="lWMwL8cKuroPGH3SxSp9NKDmmUU="/>
+        <field:display field="etatEppn" id="s_org_esupportail_sgc_domain_Card_etatEppn" object="${card}" z="sNFCIZp9h6p6RWfsv7OWY0YI1/0="/>
+        <field:display date="true" dateTimePattern="${card_requestdate_date_format}" field="requestDate" id="s_org_esupportail_sgc_domain_Card_requestDate" object="${card}" z="ADpT1n80Ae/Osgjp0oZmhMTjLNg="/>
+        <field:display date="true" dateTimePattern="${card_dateetat_date_format}" field="dateEtat" id="s_org_esupportail_sgc_domain_Card_dateEtat" object="${card}" z="PCDSEXyRhiPB/pNakVqa+NBM6GQ="/>
+        <field:display field="commentaire" id="s_org_esupportail_sgc_domain_Card_commentaire" object="${card}" z="DUv9YBdUwYE+IZ9ryaBnt+jrxAg="/>
+        <field:display field="flagAdresse" id="s_org_esupportail_sgc_domain_Card_flagAdresse" object="${card}" z="Ux+nFVz6s59LkojW2t1CJit613Q="/>
+        <field:display field="structure" id="s_org_esupportail_sgc_domain_Card_structure" object="${card}" z="0PM2QMwaW1lmZSv4Fb0mk86SiwE="/>
+        <field:display field="payCmdNum" id="s_org_esupportail_sgc_domain_Card_payCmdNum" object="${card}" z="II2wuk5PlY2JTgTTs76mQd8CQJk="/>
+        <field:display field="motifDisable" id="s_org_esupportail_sgc_domain_Card_motifDisable" object="${card}" z="K27iV6xMNPpllnChc/aIGrg08N4="/>
+        <field:display field="requestBrowser" id="s_org_esupportail_sgc_domain_Card_requestBrowser" object="${card}" z="Vv4C7V9FKzHXPdQ2dyGAIhUyv54="/>
+        <field:display field="requestOs" id="s_org_esupportail_sgc_domain_Card_requestOs" object="${card}" z="aPmraY+tNM0iO//iyF9w01/n58E="/>
+        <field:display date="true" dateTimePattern="${card_delivereddate_date_format}" field="deliveredDate" id="s_org_esupportail_sgc_domain_Card_deliveredDate" object="${card}" z="cqlHrIjKtz6yaEuVj0exdyfmLkA="/>
+        <field:display field="photoFile" id="s_org_esupportail_sgc_domain_Card_photoFile" object="${card}" z="TSbtBWrLeqXK/CQ6JvI3rc9uFJ4="/>
+        <field:display field="etatsAvailable" id="s_org_esupportail_sgc_domain_Card_etatsAvailable" object="${card}" z="nMOKTgpzsYcSlpnc50yL968yte8="/>
+        <field:display field="cardIdGenerator" id="s_org_esupportail_sgc_domain_Card_cardIdGenerator" object="${card}" z="7+YnnqKl9MtESbD0ThPuNx2HQ14="/>
+        <field:display date="true" dateTimePattern="${card_duedate_date_format}" field="dueDate" id="s_org_esupportail_sgc_domain_Card_dueDate" object="${card}" z="CifvIsvQXmdFkUF+Ag0aCP8iKPA="/>
+        <field:display field="versoTextPrinted" id="s_org_esupportail_sgc_domain_Card_versoTextPrinted" object="${card}" z="tKbQNzhBw8IjEUIOFGXFUht0/9I="/>
+        <field:display date="true" dateTimePattern="${card_ennableddate_date_format}" field="ennabledDate" id="s_org_esupportail_sgc_domain_Card_ennabledDate" object="${card}" z="fBHUD+ufJx+sueQqe5QAd/P8JKI="/>
+        <field:display field="userAccount" id="s_org_esupportail_sgc_domain_Card_userAccount" object="${card}" z="69aMu5ouWdq/MAYdj5yVSMxB2Ag="/>
+        <field:display field="crousTransient" id="s_org_esupportail_sgc_domain_Card_crousTransient" object="${card}" z="doWxLPaeExdEDsO0EAzlgXWzj2A="/>
+        <field:display field="difPhotoTransient" id="s_org_esupportail_sgc_domain_Card_difPhotoTransient" object="${card}" z="A8I+66WYEKpCoy28WZcDw91ZR40="/>
+        <field:display date="true" dateTimePattern="${card_encodeddate_date_format}" field="encodedDate" id="s_org_esupportail_sgc_domain_Card_encodedDate" object="${card}" z="RaLnvng3av9AAmPUTAhC1mjlcR8="/>
+        <field:display field="recto1Printed" id="s_org_esupportail_sgc_domain_Card_recto1Printed" object="${card}" z="PMvydhX9Qzq39DprazomvttQ5P8="/>
+        <field:display field="recto2Printed" id="s_org_esupportail_sgc_domain_Card_recto2Printed" object="${card}" z="QPtelUu/Jv9JmF+KhcXd2WszczQ="/>
+        <field:display field="recto3Printed" id="s_org_esupportail_sgc_domain_Card_recto3Printed" object="${card}" z="zEer7jLj24hBcoDzIRSzMU4kYzs="/>
+        <field:display field="recto4Printed" id="s_org_esupportail_sgc_domain_Card_recto4Printed" object="${card}" z="Yp77GAwweAQlytPtQR+rMzFl0oc="/>
+        <field:display field="recto5Printed" id="s_org_esupportail_sgc_domain_Card_recto5Printed" object="${card}" z="U0sncFSX3d5/H/n93cmAcP9kJQg="/>
+        <field:display field="addressRequested" id="s_org_esupportail_sgc_domain_Card_addressRequested" object="${card}" z="eQsD2ffWkWkeJBgPjAb5Uiir6G0="/>
+        <field:display field="isPhotoEditable" id="s_org_esupportail_sgc_domain_Card_isPhotoEditable" object="${card}" z="2GNGfJfOTNHG0lPGJNK9pSMAiLc="/>
+        <field:display date="true" dateTimePattern="${card_lastencodeddate_date_format}" field="lastEncodedDate" id="s_org_esupportail_sgc_domain_Card_lastEncodedDate" object="${card}" z="NDX+3qFXagkfdFjYHcQ2rEKV63c="/>
+        <field:display field="nbRejets" id="s_org_esupportail_sgc_domain_Card_nbRejets" object="${card}" z="LD88EwgjLN5mJu0/68/f/jrrkKs="/>
+        <field:display field="escnUid" id="s_org_esupportail_sgc_domain_Card_escnUid" object="${card}" z="exBIjPMY50acVWnojNWo8TyH/9M="/>
+        <field:display field="qrcode" id="s_org_esupportail_sgc_domain_Card_qrcode" object="${card}" z="K6oae04CsjVr0+r3xpeBmYrfxV8="/>
+        <field:display field="external" id="s_org_esupportail_sgc_domain_Card_external" object="${card}" z="rSAb/C1rClUGonk4xzczQNb79Zg="/>
+    </page:show>
+</div>

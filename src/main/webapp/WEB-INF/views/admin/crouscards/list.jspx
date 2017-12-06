@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    
+    <h2>Crous</h2>
+    <form:create id="crous_csv_out_file_form" label="CSV CROUS OUT" modelAttribute="file" multipart="true" path="/admin/crouscards/addCrousCsvFile" save_button="Valider">
+	    <fieldset>
+	     	<legend>Ajout d'un CSV CROUS/IZLY</legend>
+	       	<label>Ajout d'un CSV CROUS/IZLY</label>
+	        <input id="crous_csv_out_file" name="file" required="required" type="file"/>
+	        <input name="inverseCsn" type="checkbox">Inverser les CSN</input>
+	     </fieldset>
+    </form:create>
+    
+    <page:list id="pl_org_esupportail_sgc_domain_CrousSmartCard" items="${croussmartcards}" z="39GL4MTnDwaXjZwvosyCeRy8Atg=">
+        <table:table data="${croussmartcards}" id="l_org_esupportail_sgc_domain_CrousSmartCard" path="/admin/crouscards" z="2x8P9R8F/Vj62aiqX3ndHyHI4i4=">
+            <table:column date="true" dateTimePattern="${crousSmartCard_zdccreationdate_date_format}" id="c_org_esupportail_sgc_domain_CrousSmartCard_zdcCreationDate" property="zdcCreationDate" z="51+qQVy8mOaQ3ZNJZd5M+NaWrVI="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_idTransmitter" property="idTransmitter" z="q40UCvNetzmFr+nlVzTVwTKBE58="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_idMapping" property="idMapping" z="4DHnXYaCgpsB9HnqE6MXeYkqa10="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_idZdc" property="idZdc" z="OV8smwgLdzqtJDBQIedwVvEKrl0="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_pixSs" property="pixSs" z="R46k9yINxqWggcJv6ts8dUXAQCE="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_pixNn" property="pixNn" z="hWratFbGdyp53Yn4sFTERq7rmZ4="/>
+        </table:table>
+    </page:list>
+</div>

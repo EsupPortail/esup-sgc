@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="prefses/list">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/list.jspx"/>
+    </definition>
+<definition extends="default" name="prefses/show">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/show.jspx"/>
+    </definition>
+<definition extends="default" name="prefses/create">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/create.jspx"/>
+    </definition>
+<definition extends="default" name="prefses/update">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/update.jspx"/>
+    </definition>
+<definition extends="default" name="admin/prefses/list">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/list.jspx"/>
+    </definition>
+<definition extends="default" name="admin/prefses/show">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/show.jspx"/>
+    </definition>
+<definition extends="default" name="admin/prefses/create">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/create.jspx"/>
+    </definition>
+<definition extends="default" name="admin/prefses/update">
+        <put-attribute name="body" value="/WEB-INF/views/admin/prefses/update.jspx"/>
+    </definition>
+</tiles-definitions>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<fieldset class="scheduler-border" xmlns:spring="http://www.springframework.org/tags">	
+			<legend class="scheduler-border">Enregistrer la demande</legend>															
+		<div class="form-group">
+			<button class="send-leo btn btn-success" type="submit">Enregistrer</button>
+			&amp;nbsp;
+			<spring:url value="/user" var="userHomeUrl" />
+			<a href="${userHomeUrl}" class="btn btn-primary">Annuler</a>
+		</div>
+	</fieldset>	

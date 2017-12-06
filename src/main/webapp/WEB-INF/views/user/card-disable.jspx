@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util" 
+xmlns:c="http://java.sun.com/jsp/jstl/core"  version="2.0">
+  <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+  <jsp:output omit-xml-declaration="yes"/>
+  <spring:url value="/user" var="infoUrl"/>
+  <spring:url value="/user/disable" var="cardDisableUrl"/>
+  <util:panel id="title" title="${title}">
+	<h2>Désactivation de votre carte
+    	<a href="${infoUrl}" type="button" class="btn btn-primary pull-right" title="Informations carte"> 
+    	<span class="glyphicon glyphicon-user"><!--  --></span>
+		</a>
+	</h2>
+
+	<p>
+		Via ce formulaire, votre carte sera déclarée comme désactivée et donc inutilisable dans les différents services tels que :
+		<ul>
+			<li>les services CROUS (restaurants universitaires)</li>
+			<li>les contrôles d'accès aux bâtiments</li>
+			<li>facilité d'emprunt d'ouvrages dans les bibliothèques</li>
+			<li>facilité d'utilisation des copieurs</li>
+			<li>l'opération carte culture</li>
+		</ul>  
+	</p>
+	
+	<p>
+		Une fois désactivée, votre carte peut être réactivée depuis cette même interface.
+	</p>
+	
+	<div class="alert alert-info">
+		<strong>Vous pouvez désactiver votre carte en cochant l'un des motifs suivants :</strong>
+	</div>
+	
+	<div class="well">
+		<form action="${cardDisableUrl}" method="post" id="cardDisableForm">
+			<c:forEach items="${motifsList}" var="motif" varStatus="i">
+	 			<div class="radio">
+				  <label>
+					<c:choose>
+						<c:when test="${i.index eq 0}">
+							<input type="radio" name="motif" value="${motif}" id="radio${i.index}" checked="checked"/>
+						</c:when>
+						<c:otherwise>
+							<input type="radio" name="motif" value="${motif}" id="radio${i.index}"/>
+						</c:otherwise>
+					</c:choose>		  
+				    <spring:message code="user.motif.${motif}" htmlEscape="false" />
+				  </label>
+				</div>	
+			</c:forEach>
+			<br />
+			<input type="hidden" value="${id}" name="id" />
+			<div class="form-group">
+				<button class="btn btn-success" type="submit" onclick="return confirm('Confirmez la désactivation');">Désactiver cette carte</button>
+			</div>
+		</form>
+	</div>	
+
+  </util:panel>
+	
+</div>
+

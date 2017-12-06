@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util" 
+xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframework.org/security/tags" version="2.0">
+  <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+  <jsp:output omit-xml-declaration="yes"/>
+  <spring:url value="/user/photo" var="photoUrl"/>
+  <spring:url value="/user/card-disable" var="disableUrl"/>
+  <spring:url value="/user/enable" var="enableUrl"/>
+  <spring:url value="/user/card-request-form" var="renewalUrl"/>
+  <spring:url value="/user/card-payment" var="PaymentUrl"/>
+  <spring:url value="/user/forcedFreeRenewal" var="forcedFreeRenewalUrl"/>
+  <util:panel id="title" title="${title}">
+	<h2>Informations Carte</h2>
+ 	<c:if test="${not empty message}">
+		<div class="alert alert-danger">
+			<strong>${message}</strong>
+			<c:if test="${not empty comment}">
+				<br />
+				<pre>${comment}</pre>
+			</c:if>
+		</div>
+	</c:if>
+	
+	<div class="col-lg-8">
+		<div class="well" id="allCards">
+			<div class="row">
+				<div class="col-lg-6">
+					<h3>Utilisateur</h3>
+					<dl class="dl-horizontal">
+						<dt>Prénom : </dt><dd>${user.firstname}</dd>
+						<dt>Nom : </dt><dd>${user.name}</dd>
+						<dt>Date de naissance : </dt><dd><fmt:formatDate pattern="dd/MM/yyyy" value="${user.birthday}" /></dd>
+						<!-- <dt>Statut : </dt><dd>${user.cnousReferenceStatut}</dd> -->
+						<dt>Email : </dt><dd>${user.email}</dd>
+						<dt>Restauration Crous :</dt>
+						<dd>${user.crous  ? 'Oui' : 'Non'}
+						
+						<c:if test="${!user.crous}">
+							<button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#crousCollapse">Modifier</button>
+						</c:if>
+						
+						</dd>
+						<dt>Diffusion photo pour usage interne :</dt>
+						<dd>${user.difPhoto  ? 'Oui' : 'Non'} &amp;nbsp<button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#difPhotoCollapse">Modifier</button></dd>
+					</dl>
+					<div class="collapse" id="difPhotoCollapse">
+					<spring:url value="/user/difPhoto" var="difPĥotoUrl" />
+						<form action="${difPĥotoUrl}" method="post" id="pĥotoform">
+							<div class="alert alert-warning"><strong>J’autorise la diffusion de la photo pour un usage interne:</strong>
+								<div class="form-group">
+									<div class="radio">
+										<label for="radio1">
+										<c:choose>
+											<c:when test="${user.difPhoto}">
+												<input checked="checked"
+													type="radio" name="diffusionphoto" id="radio1" value="true" />
+											</c:when>
+											<c:otherwise>
+												<input
+													type="radio" name="diffusionphoto" id="radio1" value="true" />
+											</c:otherwise>
+										</c:choose>
+											Oui</label> 
+									</div>
+									<div class="radio">
+										<label for="radio2">
+										<c:choose>
+											<c:when test="${!user.difPhoto}">
+												<input checked="checked"
+													value="false" type="radio" name="diffusionphoto" id="radio2" />
+											</c:when>
+											<c:otherwise>
+												<input 
+													value="false" type="radio" name="diffusionphoto" id="radio2" />
+											</c:otherwise>
+										</c:choose>
+											Non</label>
+									</div>
+								</div>
+								<input type="hidden" value="${user.eppn}" name="eppn" />
+								<input type="submit" class="btn btn-success" value="Valider"/>
+							</div>
+						</form>
+					</div>
+					
+					<div class="collapse" id="crousCollapse">
+						<spring:url value="/user/enableCrous" var="crousUrl" />
+						<form action="${crousUrl}" method="post" id="crousForm">
+							<div class="alert alert-warning"><strong>Je souhaite bénéficier du
+								service de restauration CROUS sur ma léocarte.</strong>
+								<div class="alert alert-info">En acceptant, j’autorise
+									l’Université à transmettre les données : nom – prénom– code tarif
+									– code société – adresse mail institutionnelle au CROUS de Rouen,
+									ces données étant obligatoires pour le fonctionnement du service.
+								</div>
+								<input type="hidden" value="${user.eppn}" name="eppn" />
+								<input type="submit" class="btn btn-success" value="Valider"/>
+							</div>
+						</form>
+					</div>
+					<c:if test="${not empty payboxList}">
+					 <h4>Historique des paiements</h4>
+						<table class="table table-striped" id="tablePaybox">
+							<thead>
+								<th>Date</th><th>Montant</th><th>Statut</th>
+							</thead>
+						    <tbody>
+								<c:forEach items="${payboxList}" var="transac">
+									<c:choose>
+										<c:when test="${transac.erreur eq '00000'}">
+											<c:set var="somme">PAYE</c:set>
+										</c:when>
+										<c:otherwise>
+											<c:set var="somme">NON PAYE</c:set>
+										</c:otherwise>
+									</c:choose>
+									<tr><td><fmt:formatDate pattern="dd/MM/yyyy HH:mm:ss" value="${transac.transactionDate}" /></td><td>${transac.montant/100} €</td><td>${somme}</td></tr>
+								</c:forEach>
+							</tbody>
+						</table>
+					</c:if>
+				</div>			
+				<div class="col-lg-6">
+					<h3>Cartes</h3>
+                    <c:if test="${user.cards eq null}">
+                    	<p>Aucune carte à afficher.</p>
+                    </c:if>
+					<c:forEach items="${user.cards}" var="card" varStatus="i">
+						<c:set var="collapseState" value="" />
+						<c:set var="collapsed" value="collapsed" />
+						<c:if test="${i.index eq 0 or card.etat ne 'CADUC' and card.etat ne 'DISABLED'}">
+							<c:set var="collapseState" value="in" />
+							<c:set var="collapsed" value="" />
+						</c:if>
+						<div class="panel-group" id="accordion" role="tablist"
+							aria-multiselectable="true">
+							<div class="panel panel-primary">
+								<div class="panel-heading" role="tab" id="headingOne">
+									<h5 class="panel-title">
+										<a role="button" data-toggle="collapse"
+											href="#collapseCard${i.index}"
+											class="accordion-toggle ${collapsed}" data-parent="#accordion">
+											<span class="etat"><spring:message code="card.step.${card.etat}"/> - <fmt:formatDate
+													pattern="dd/MM/yyyy" value="${card.dateEtat}" /></span>
+										</a>
+									</h5>
+								</div>
+								<div id="collapseCard${i.index}"
+									class="panel-collapse collapse ${collapseState}">
+									<div class="panel-body">
+										<c:if test="${card.etat eq 'NEW'}">
+											<div class="alert alert-success">
+												<p>${configUserMsgs['newCardMsg']}</p>
+											</div>
+										</c:if>
+										<c:if test="${card.etat eq 'REQUEST_CHECKED' or card.etat  eq 'ENCODED'}">
+											<div class="alert alert-success">
+												<p>${configUserMsgs['checkedOrEncodedCardMsg']}</p>
+											</div>
+										</c:if>
+										<c:if test="${card.etat eq 'REJECTED'}">
+											<div class="alert alert-success">
+												<p>${configUserMsgs['rejectedCardMsg']}</p>
+											</div>
+										</c:if>		
+										<c:if test="${card.etat eq 'ENABLED' and empty card.deliveredDate}">
+											<div class="alert alert-warning">
+												<c:choose>
+													<c:when test="${not empty card.userAccount.supannEtuId}">
+														<p>${configUserMsgs['enabledCardMsg']}</p>
+													</c:when>
+													<c:otherwise>
+														<p>${configUserMsgs['enabledCardPersMsg']}</p>
+													</c:otherwise>
+												</c:choose>
+											</div>
+											<c:if test="${livraison}">
+												<div class="alert alert-info">
+													<p>
+														Si votre carte vous a bien été remise, veuillez le
+														signaler ci-dessous
+														<spring:url value="/user/deliver/${card.id}"
+															var="deliverUrl" />
+													<form action="${deliverUrl}" method="POST">
+														<button class="btn btn-warning" type="submit">
+															Noter comme livré</button>
+													</form>
+													</p>
+												</div>
+											</c:if>
+										</c:if>
+										<c:if test="${card.etat ne 'DISABLED' and card.etat ne 'REJECTED' and card.etat ne 'ENABLED' and card.etat ne 'CADUC'}">
+											<div class="well">
+												<ul class="progress-indicator">
+													<c:set var="testEtat" value="0" />
+													<c:forEach items="${steps}" var="step" varStatus="i">
+													<c:set var="stepMsg"> <spring:message code="card.step.${step}" htmlEscape="false"/></c:set>
+														<c:choose>
+															<c:when test="${testEtat eq '0' and step ne card.etat}">
+																<li class="completed"> <span class="bubble" title="${stepMsg}"></span> <span class="textBubble hidden-xs">${stepMsg}</span></li>
+															</c:when>
+															<c:when test="${testEtat eq '0' and step eq card.etat}">
+																<li class="active"> <span class="bubble"  title="${stepMsg}"></span> <span class="textBubble ">${stepMsg}</span></li>
+																<c:set var="testEtat" value="1" />
+															</c:when>
+															<c:otherwise>
+																<li><span class="bubble"  title="${stepMsg}"></span> <span class="textBubble hidden-xs">${stepMsg}</span></li>
+															</c:otherwise>
+														</c:choose>
+													</c:forEach>
+												</ul>
+												<hr />
+											</div>
+										</c:if>
+										<spring:url value="/user/photo/${card.id}" var="photoUrl" />
+										<img class="img-thumbnail center col-lg-3" src="${photoUrl}" />
+										<dl class="col-lg-9">
+											<dt>Date de demande :</dt>
+											<dd>
+												<fmt:formatDate pattern="dd/MM/yyyy"
+													value="${card.requestDate}" />
+											</dd>
+											<c:if test="${not empty card.commentaire}">
+												<dt>Message :</dt>
+												<dd>${card.commentaire}</dd>
+											</c:if>
+											<c:if test="${card.etat eq 'ENABLED'}">
+												<dt>
+													<form action="${disableUrl}" method="post">
+														<input type="hidden" value="${card.id}" name="id" />
+														<input type="submit" class="btn btn-danger" value="Désactiver" />
+													</form>
+												</dt>
+											</c:if>
+											<c:if test="${card.etat eq 'DISABLED'}">
+												<dt>
+													<form action="${enableUrl}" method="post">
+														<input type="hidden" value="${card.id}" name="id" />
+														<input type="submit" class="btn btn-danger" value="Réactiver" onclick="return confirm('Confirmez la réactivation');"/>
+													</form>
+												</dt>
+											</c:if>
+											<c:if test="${card.etat eq 'ENCODED'}">
+												<dt>
+													<form action="${enableUrl}" method="post">
+														<input type="hidden" value="${card.id}" name="id" />
+														<input type="submit" class="btn btn-danger" value="activer" onclick="return confirm('Confirmez l\'activation');"/>
+													</form>
+												</dt>
+											</c:if>
+											<c:if test="${card.etat eq 'REJECTED'}">
+											<div class="alert alert-warning">Votre demande a été rejetée.
+												<p>Veuillez modifier votre demande.</p>
+											</div>
+												<dt>
+													<spring:url value="/user/rejectedCase" var="rejectedCaseUrl" />
+													<form action="${rejectedCaseUrl}" method="post">
+														<input type="hidden" value="${card.id}" name="id" />
+														<input type="submit" class="btn btn-danger" value="Modifier" />
+													</form>
+												</dt>											
+											</c:if>
+										</dl>
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<sec:authorize access="hasRole('ROLE_PREVIOUS_ADMINISTRATOR')">
+			<c:if test="${!displayFormParts['isFreeRenewal']}">
+				<div class="alert alert-danger">
+				${configUserMsgs['userFreeForcedRenewal']}
+					<form action="${forcedFreeRenewalUrl}" method="post">
+						<input type="hidden" value="${user.eppn}" name="eppn" />
+						<button type="submit" class="btn btn-danger" onclick="return confirm('Confirmez la modification');">Changer les droits</button>
+					</form>
+				</div>
+			</c:if>
+		</sec:authorize>	
+		<div class="alert alert-info">	
+			${configUserMsgs['helpMsg']}
+		</div>
+		<c:if test="${displayFormParts['hasDeliveredCard']}">
+
+			<div class="alert alert-danger">
+				${configUserMsgs['userTipMsg']}
+			</div>
+			<c:if test="${displayFormParts['isFreeRenewal']}">
+				<div class="alert alert-info">
+					<p>${configUserMsgs['freeRenewalMsg']}
+					<a href="${renewalUrl}" class="btn btn-danger">Formulaire de renouvellement de carte</a></p>
+				</div>
+			</c:if>
+			<c:if test="${displayFormParts['canPaidRenewal']}">
+				<div class="alert alert-info">
+					${configUserMsgs['canPaidRenewalMsg']}
+					<a href="${PaymentUrl}" class="btn btn-primary">Accéder au paiement</a>
+				</div>
+			</c:if>
+			<c:if test="${displayFormParts['isPaidRenewal']}">
+				<div class="alert alert-info">
+					${configUserMsgs['paidRenewalMsg']}
+					<a href="${renewalUrl}" class="btn btn-warning">Formulaire de renouvellement de carte</a>
+				</div>
+			</c:if>
+		</c:if>
+	</div>
+	</util:panel>
+	
+</div>
+

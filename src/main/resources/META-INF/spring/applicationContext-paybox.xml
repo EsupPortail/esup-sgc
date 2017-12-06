@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd                              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd                              http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+
+	<bean class="org.esupportail.sgc.services.paybox.PayBoxService">
+
+		<property name="site" value="${paybox.prod.site}" />
+		<property name="rang" value="${paybox.prod.rang}" />
+		<property name="identifiant" value="${paybox.prod.identifiant}" />
+		<property name="devise" value="${paybox.prod.devise}" />
+		<property name="reponseServerUrl" value="${paybox.prod.responseUrl}" />
+		<property name="payboxActionUrls">
+			<list>
+				<value>https://preprod-tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi
+				</value>
+				<value>https://tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi
+				</value>
+				<value>https://tpeweb1.paybox.com/cgi/MYchoix_pagepaiement.cgi
+				</value>
+			</list>
+		</property>
+		<property name="derPayboxPublicKeyFile" value="META-INF/security/paybox-pubkey.der" />
+
+		<property name="hashService">
+
+			<bean class="org.esupportail.sgc.services.paybox.HashService">
+
+				<property name="hmacKey"
+					value="${paybox.prod.hmacKey}"></property>
+
+			</bean>
+
+		</property>
+
+	</bean>
+
+
+</beans>

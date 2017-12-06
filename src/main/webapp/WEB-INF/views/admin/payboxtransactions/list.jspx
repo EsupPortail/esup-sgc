@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <h2>Transactions Paybox</h2>
+    <page:list id="pl_org_esupportail_sgc_domain_PayboxTransactionLog" items="${payboxtransactionlogs}" z="hHqBHiZUm1o7RmTBffWxc92yMQw=">
+        <table:table data="${payboxtransactionlogs}" delete="false" id="l_org_esupportail_sgc_domain_PayboxTransactionLog" path="/admin/payboxtransactions" z="IJvSr0nvw8MQmCCwSsfShk/WdUY=">
+            <table:column date="true" dateTimePattern="${payboxTransactionLog_transactiondate_date_format}" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_transactionDate" property="transactionDate" sort="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_eppn" property="eppn" z="mxyJGWAQJDeKIBKUKfdesaZrVn0="/>
+            <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_reference" property="reference" z="fC1od3nfpbfa4Lz2jN9DuMQB5h8="/>
+            <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_montant" property="montant" z="4UClpVhbyzGhw+X06CQdSyWgS/o="/>
+            <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_auto" property="auto" z="L03XZuQr5WySbPZeAWe6QJ4iTfQ="/>
+            <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_erreur" property="erreur" z="hT/3aHDLI+BDi8bNASSbSj0GAn8="/>
+        </table:table>
+    </page:list>
+</div>

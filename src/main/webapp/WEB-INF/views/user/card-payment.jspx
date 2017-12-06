@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<div xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:jsp="http://java.sun.com/JSP/Page"
+		xmlns:spring="http://www.springframework.org/tags" id="paymentDiv">
+		<spring:url value="/user/card" var="cardRequestUrl" />
+		<spring:url value="/images/loader2.gif" var="imageUrl" />
+		
+		<script type="text/javascript">
+			var displayPayboxForm = '${displayPayboxForm}';
+		</script>
+		<h2>Paiement</h2>
+		<c:if test="${not empty payBoxForm}">
+			<div class="col-lg-2">
+				<form method="POST" action="${payBoxForm.actionUrl}" id="payboxForm">
+					<c:forEach items="${payBoxForm.orderedParams}"
+							var="payBoxParam">
+						<input type="hidden" name="${payBoxParam.key}"
+								value="${payBoxParam.value}" />
+					</c:forEach>
+					<input type="hidden" name="PBX_HMAC"
+						value="${payBoxForm.hmac}" />
+				</form>
+			</div>
+		</c:if>
+		<div class="jumbotron">
+			<strong>Vous allez être redirigé vers la page de paiement! <br />
+				<img src="${imageUrl}" />
+			</strong>
+		</div>
+	</div>

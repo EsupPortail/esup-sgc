@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" 
+ 	xmlns:spring="http://www.springframework.org/tags"
+ 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	version="2.0" class="container-fluid">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    
+    <spring:url value="/manager?eppn=${crouserrorlog.userEppn}" var="userLink"/>
+    <h1><a href="${userLink}">${crouserrorlog.userEppn}</a></h1>
+    
+    <page:show create="false" delete="false" id="ps_org_esupportail_sgc_services_crous_CrousErrorLog" list="false" object="${crouserrorlog}" path="/admin/crouserrorlogs" update="false" z="user-managed">
+        <field:display field="card" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_card" object="${crouserrorlog}" render="false" z="user-managed"/>
+        <field:display field="userAccount" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_userAccount" object="${crouserrorlog}" render="false" z="user-managed"/>
+        <field:display field="code" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_code" object="${crouserrorlog}" z="6mUkTpy1G+WLKp6JRK6tDeBf6+o="/>
+        <field:display field="message" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_message" object="${crouserrorlog}" z="Nht4dvavMo9h0CQ9c4L+x8L8dBs="/>
+        <field:display field="field" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_field" object="${crouserrorlog}" z="kaXF9XJrhGm04Y1pYjUsTf1O5lk="/>
+        <field:display date="true" dateTimePattern="${crousErrorLog_date_date_format}" field="date" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_date" object="${crouserrorlog}" z="0uskcz/AeIm2LTAJJDTpV7+gpVE="/>
+    </page:show>
+    <div class="row">
+       <div class="col-lg-3 well">
+            <h3>${crouserrorlog.userEppn}</h3>
+            <span class="text-warning">[ESUP-SGC - correspond à ce que ESUP-SGC souhaite envoyer (enverrait) dans l'API CROUS pour cet EPPN]</span>
+            <c:choose>
+				<c:when test="${not empty esupSgcRightHolder}">
+				  <dl>
+					<dt>identifier</dt>
+					<dd>${esupSgcRightHolder.identifier}</dd>
+		
+					<dt>email</dt>
+					<dd>${esupSgcRightHolder.email}</dd>
+		
+					<dt>firstName</dt>
+					<dd>${esupSgcRightHolder.firstName}</dd>
+		
+					<dt>lastName</dt>
+					<dd>${esupSgcRightHolder.lastName}</dd>
+		
+					<dt>birthDate</dt>
+					<dd>${esupSgcRightHolder.birthDate}</dd>
+		
+					<dt>dueDate</dt>
+					<dd>${esupSgcRightHolder.dueDate}</dd>
+		
+					<dt>idCompanyRate</dt>
+					<dd>${esupSgcRightHolder.idCompanyRate}</dd>
+		
+					<dt>idRate</dt>
+					<dd>${esupSgcRightHolder.idRate}</dd>
+				  </dl>
+				</c:when>
+				<c:otherwise>
+					<span class="warning">Not Found</span>
+				</c:otherwise>
+			</c:choose>
+        </div>
+        <div class="col-lg-1">&amp;nbsp;</div>
+        <div class="col-lg-3 well">
+            <h3>${crouserrorlog.userEppn}</h3>
+            <span class="text-warning">[CROUS - recherche sur identifiant eppn]</span>
+            <c:choose>
+				<c:when test="${not empty crousEppnRightHolder}">
+				  <dl>
+					<dt>identifier</dt>
+					<dd>${crousEppnRightHolder.identifier}</dd>
+		
+					<dt>email</dt>
+					<dd>${crousEppnRightHolder.email}</dd>
+		
+					<dt>firstName</dt>
+					<dd>${crousEppnRightHolder.firstName}</dd>
+		
+					<dt>lastName</dt>
+					<dd>${crousEppnRightHolder.lastName}</dd>
+		
+					<dt>birthDate</dt>
+					<dd>${crousEppnRightHolder.birthDate}</dd>
+		
+					<dt>dueDate</dt>
+					<dd>${crousEppnRightHolder.dueDate}</dd>
+		
+					<dt>idCompanyRate</dt>
+					<dd>${crousEppnRightHolder.idCompanyRate}</dd>
+		
+					<dt>idRate</dt>
+					<dd>${crousEppnRightHolder.idRate}</dd>
+				  </dl>
+				</c:when>
+				<c:otherwise>
+					<span class="warning">Not Found</span>
+				</c:otherwise>
+			</c:choose>
+        </div>
+        <div class="col-lg-1">&amp;nbsp;</div>
+        <div class="col-lg-3 well">
+            <h3>${crouserrorlog.userEmail}</h3>
+            <span class="text-warning">[CROUS - recherche sur email]</span>
+              <c:choose>
+				<c:when test="${not empty crousEmailRightHolder}">
+				  <dl>
+					<dt>identifier</dt>
+					<dd>${crousEmailRightHolder.identifier}</dd>
+		
+					<dt>email</dt>
+					<dd>${crousEmailRightHolder.email}</dd>
+		
+					<dt>firstName</dt>
+					<dd>${crousEmailRightHolder.firstName}</dd>
+		
+					<dt>lastName</dt>
+					<dd>${crousEmailRightHolder.lastName}</dd>
+		
+					<dt>birthDate</dt>
+					<dd>${crousEmailRightHolder.birthDate}</dd>
+		
+					<dt>dueDate</dt>
+					<dd>${crousEmailRightHolder.dueDate}</dd>
+		
+					<dt>idCompanyRate</dt>
+					<dd>${crousEmailRightHolder.idCompanyRate}</dd>
+		
+					<dt>idRate</dt>
+					<dd>${crousEmailRightHolder.idRate}</dd>
+				  </dl>
+				</c:when>
+				<c:otherwise>
+					<span class="warning">Not Found</span>
+				</c:otherwise>
+			</c:choose>
+        </div> 
+    </div>
+    <c:if test="${empty crousEppnRightHolder and not empty crousEmailRightHolder and crousEmailRightHolder.identifier ne crouserrorlog.userEppn}">
+	    <div class="row well danger">
+	        <h3>Modification/Migration de l'identifiant ...</h3>
+	        <p>Au niveau du CROUS, l'identifiant derrière le mail de l'utilisateur ne correspond pas à son eppn et aucun utilisateur n'a pour identifiant cet eppn</p>
+	        <p>Vous avez ici la possibilité de changer l'identifiant du compte utilisateur pour qu'il corresponde à l'eppn cité ; ESUP-SGC pourra alors mettre à jour ce compte avec les informations qu'il a sur cet utilisateur.</p>
+	        <p>Assurez-vous avant de procéder à cette modification que ce changement de compte ne pénalisera pas l'utilisateur (tarif étudiant, cnrs ...)</p>
+	        <spring:url value="/admin/crouserrorlogs/${crouserrorlog.id}/patchIdentifier" var="patchIdentifierUrl"/>
+	        <form action="${patchIdentifierUrl}" class="form-horizontal" method="POST">
+	        	<div class="form-group">
+	        		<label class="col-md-3">currentIdentifier</label>
+	        		<input class="col-lg-6" type="text" name="currentIdentifier" value="${crousEmailRightHolder.identifier}"/>
+	        	</div>
+	        	<div class="form-group">
+	        		<label class="col-md-3">email</label>
+	        		<input class="col-lg-6" type="text" name="email" value="${crouserrorlog.userEmail}"/>
+	        	</div>
+	        	<div class="form-group">
+	        		<label class="col-md-3">newIdentifier</label>
+	        		<input class="col-lg-6" type="text" name="newIdentifier" value="${crouserrorlog.userEppn}"/>
+	        	</div>
+	        	<div class="col-md-offset-3 col-md-9">
+	        		<input class="btn btn-danger" value="Valider" type="submit" id="proceed" onclick="return confirm('Êtes-vous sûr de précéder à cette modification d'identifiants ?');"/>
+	        	</div>
+	        </form>
+	    </div>
+    </c:if>
+     <div class="row well danger">
+		 <h3>Désactivation CROUS</h3>
+		 <p>Dans certains cas particuliers, et même si l'utilisateur a demandé explicitement d'avoir le service CROUS d'activé, il est en fait préférable de désactiver le service CROUS pour cette carte / personne.</p>
+		  <spring:url value="/admin/crouserrorlogs/${crouserrorlog.id}/desactivateCrous" var="desactivateCrousUrl"/>
+	      <form action="${desactivateCrousUrl}" class="form-horizontal" method="POST">
+	        	<div class="col-md-offset-3 col-md-9">
+	        		<input class="btn btn-danger" value="Désactiver l'option CROUS" type="submit" id="proceed" onclick="return confirm('Êtes-vous sûr ?');"/>
+	        	</div>
+	        </form>
+	</div>
+    
+</div>

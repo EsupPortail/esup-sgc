@@ -1,0 +1,33 @@
+package org.esupportail.sgc.web.admin;
+
+import javax.annotation.Resource;
+
+import org.esupportail.sgc.services.AppliConfigService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/admin/su")
+@Controller
+public class SwitchUserController {
+	
+	@Resource
+	AppliConfigService appliConfigService;
+	
+	@ModelAttribute("help")
+	public String getHelp() {
+		return appliConfigService.getHelpAdmin();
+	}
+	
+	@ModelAttribute("active")
+	String getCurrentMenu() {
+		return "su";
+	}
+	
+	@RequestMapping
+	public String index(Model uiModel) {		
+		return "admin/su";
+	}
+
+}

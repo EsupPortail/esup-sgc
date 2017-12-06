@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_org_esupportail_sgc_domain_Log" modelAttribute="log" path="/admin/logs" versionField="Version" z="ilcF73i3VFVgdCJ5gJRB8jMST18=">
+        <field:datetime dateTimePattern="${log_logdate_date_format}" field="logDate" id="c_org_esupportail_sgc_domain_Log_logDate" z="0pgCM4Y97AsXSdCdZb6peX6Cvqw="/>
+        <field:input field="eppn" id="c_org_esupportail_sgc_domain_Log_eppn" z="wtMQMGsPU/C05/9PteBtXcod/ps="/>
+        <field:input field="type" id="c_org_esupportail_sgc_domain_Log_type" z="ybtZMxfjd/FmuZnIg8f40km9KeM="/>
+        <field:input field="cardId" id="c_org_esupportail_sgc_domain_Log_cardId" validationMessageCode="field_invalid_integer" z="YNJAwDaPnfgsVVmuYuxTCYDKY/A="/>
+        <field:input field="action" id="c_org_esupportail_sgc_domain_Log_action" z="vR14N91snGFF1HRLncvHhyf6tEA="/>
+        <field:input field="retCode" id="c_org_esupportail_sgc_domain_Log_retCode" z="1FmVmRd9Z3Zj+Ca/Gx3jXWIlBIA="/>
+        <field:input field="comment" id="c_org_esupportail_sgc_domain_Log_comment" z="xLKKF37XsQDrEiVfOor30vl8Q7Y="/>
+        <field:input field="remoteAddress" id="c_org_esupportail_sgc_domain_Log_remoteAddress" z="LL/uKrphQC9ojg/HPKVyE9K08qo="/>
+        <field:input field="eppnCible" id="c_org_esupportail_sgc_domain_Log_eppnCible" z="LJznHwOny9zoQFXTTA1coJyDHAE="/>
+    </form:update>
+</div>

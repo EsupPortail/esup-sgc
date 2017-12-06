@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:spring="http://www.springframework.org/tags" 
+	 xmlns:jsp="http://java.sun.com/JSP/Page">
+    <spring:url value="/manager/getMultiUpdateForm" var="multiUpdateFormUrl" />
+    <spring:url value="/manager/searchEppn" var="searchEppnUrl" />
+    <spring:url value="/manager/filterAdress" var="filterAdressUrl" />
+    <spring:url value="/manager" var="rootManagerUrl"/>
+    <script type="text/javascript">
+		var multiUpdateFormUrl = '${multiUpdateFormUrl}';
+		var searchEppnUrl = '${searchEppnUrl}';
+		var rootManagerUrl = '${rootManagerUrl}';
+		var filterAdressUrl = '${filterAdressUrl}';
+	</script>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+	<p class="text-info"><strong>Nb de résultats : ${countCards}</strong><button type="button" title="Export CSV" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button></p>
+	<ul class="nav nav-tabs" role="tablist" id="tabTypes">
+	    <li role="presentation" class="${empty selectedType ? 'active' : 'sleep' }"><a href="#${type}"  role="tab" data-toggle="tab"><spring:message code="manager.type.All" htmlEscape="false" /></a></li>
+	    <c:if test="${not empty types}">
+	    	<c:forEach items="${types}" var="type">
+	    		<li role="presentation" class="${selectedType eq type ? 'active' : 'sleep' }"><a href="#${type}" role="tab" data-toggle="tab"><spring:message code="manager.type.${type}" htmlEscape="false" /></a></li>
+	    	</c:forEach>
+	    </c:if>
+  	</ul>
+  	</div>
+</div>

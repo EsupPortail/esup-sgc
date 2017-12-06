@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="admin/logs/list">
+        <put-attribute name="body" value="/WEB-INF/views/admin/logs/list.jspx"/>
+    </definition>
+<definition extends="default" name="admin/logs/show">
+        <put-attribute name="body" value="/WEB-INF/views/admin/logs/show.jspx"/>
+    </definition>
+
+<definition extends="default" name="admin/logs/update">
+        <put-attribute name="body" value="/WEB-INF/views/admin/logs/update.jspx"/>
+    </definition>
+</tiles-definitions>

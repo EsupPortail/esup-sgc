@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<div class="well">
+	     <h4>Règlement :</h4>
+		<button type="button" class="btn btn-info"
+			data-toggle="modal" data-target="#reglementCarte">
+			Consulter le règlement</button>		
+		  <div class="checkbox alert alert-warning">
+		    <label>
+		      <input type="checkbox" name="reglement" id="reglement"/> <strong> J'ai lu le règlement</strong>
+		    </label>
+		  </div>
+		 <h4>Remise de la carte :</h4>
+		${configUserMsgs['userFormRules']}	
+	</div>

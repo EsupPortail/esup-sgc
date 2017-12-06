@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+            <pattern>[%-5level] %date{dd/MM/yyyy HH:mm:ss} %logger{36} (%file:%line\) - %msg%n</pattern>
+        </encoder>
+	</appender>
+	
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+       <file>/opt/tomcat-esup-sgc/logs/esup-sgc.log</file>
+        <encoder>
+            <pattern>[%-5level] %date{dd/MM/yyyy HH:mm:ss} %logger{36} (%file:%line\)  - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
+        <smtpHost>smtp.univ-ville.fr</smtpHost>
+        <smtpPort>25</smtpPort>
+        <to>esup-sgc-logs@univ-ville.fr</to>
+        <from>esup-sgc-logs@univ-ville.fr</from>
+        <subject>%-5level - esup-sgc %date{dd/MM/yyyy HH:mm:ss}</subject>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>[%-5level] %date{dd/MM/yyyy HH:mm:ss} [%-20thread] %logger{36} - %msg%n</pattern>
+        </layout>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+    </appender>
+
+	<root level="WARN" >
+		<appender-ref ref="STDOUT" />
+	</root>
+
+	<logger name="org.esupportail.sgc.security" additivity="false" level="INFO">
+		<appender-ref ref="STDOUT" />
+		<!-- <appender-ref ref="EMAIL" /> -->
+	</logger>
+
+	<logger name="org.esupportail" additivity="false" level="DEBUG">
+		<appender-ref ref="STDOUT" />
+		<!-- <appender-ref ref="EMAIL" /> -->
+	</logger>
+	
+</configuration>

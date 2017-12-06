@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Licensed to ESUP-Portail under one or more contributor license
+    agreements. See the NOTICE file distributed with this work for
+    additional information regarding copyright ownership.
+
+    ESUP-Portail licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file except in
+    compliance with the License. You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form"
+    xmlns:spring="http://www.springframework.org/tags"
+	>
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+	<jsp:output omit-xml-declaration="yes" />
+	<h2>Sessions</h2>
+		<c:set var="nbP" value="0" /> 
+		<c:set var="nbE" value="0"/>
+		<c:set var="nbI" value="0"/>
+	
+		<spring:url value="/manager?eppn=" var="userLinkPrefix"/>
+		<div class="jumbotron" id="sessionsUsers">
+			<ul>
+				<c:forEach items="${users}" var="session">
+					<c:choose>
+					<c:when test="${session.eduPersonPrimaryAffiliation eq 'staff' or session.eduPersonPrimaryAffiliation eq 'teacher'}">
+						<c:set var="nbP" value="${nbP +1}"/><c:set var="type" value="P"/>
+					</c:when>
+					<c:when test="${session.eduPersonPrimaryAffiliation eq 'student'}">
+						<c:set var="nbE" value="${nbE +1}"/><c:set var="type" value="E"/>
+					</c:when>
+					<c:otherwise>
+						<c:set var="nbI" value="${nbI +1}"/><c:set var="type" value="I"/>
+					</c:otherwise>
+					</c:choose>			
+					<li class="session${type}"><a href="${userLinkPrefix}${session.eppn}">${session.eppn}</a></li>
+				</c:forEach>
+			</ul>
+		</div>
+		<div class="alert alert-info" id="sessionsdiv">
+			<h3>Utilisateurs connectés.</h3>
+			<p><strong>${fn:length(users)} session(s) active(s)</strong></p>
+			<br />
+			<div class="well">
+				<ul class="list-inline">
+					<li class="sessionP">Personnel : <span class="badge">${nbP}</span></li> 
+					<li class="sessionE">Etudiant : <span class="badge">${nbE}</span></li> 
+					<li class="sessionI">Invité : <span class="badge">${nbI}</span></li>
+				</ul>
+			</div>
+		</div>
+	
+</div>

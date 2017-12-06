@@ -1,0 +1,523 @@
+@media (min-width: 1280px) {
+	.modal-dialog-large {
+	    width: 1200px;
+	}
+}
+
+#main {
+	margin: 50px 0px 0px 0px;
+	position: relative;
+}
+
+.menuTools {
+	min-width: 200px;
+}
+
+.pageSizeSelected {
+	color: red;	
+}
+
+#esupNfcTagDesktopJarUrlIcon,
+#esupNfcTagDroidApkUrlIcon,
+#clientJwsUrlIcon {
+	height: 40px;
+	float:left;
+}
+
+#footer {
+	text-align: center;
+	background-color: #000;
+	color: #FFF;
+	/* padding: 10px; */
+	margin-top:50px;
+
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+}
+dd {
+    margin-bottom: 10px;
+}
+
+hr{
+	clear: left
+}
+
+h2{
+	margin: 1em 0 0.5em 0;
+	font-weight: normal;
+	position: relative;
+	text-shadow: 0 -1px rgba(0,0,0,0.6);
+	font-size: 20px;
+	line-height: 40px;
+	background: rgba(57, 119, 155, 0.8);
+	border: 1px solid #fff;
+	padding: 5px 15px;
+	color: white;
+	border-radius: 0 10px 0 10px;
+	box-shadow: inset 0 0 5px rgba(53,86,129, 0.5);
+	font-family: 'Muli', sans-serif;
+}
+
+h2 a{
+	margin-top: 6px;
+	margin-left: 10px;
+}
+h3{
+	border-bottom: 1px solid #ccc
+}
+h4{
+	background-color: #d9edf7;
+}
+.modal-body h4{
+	margin-top: 10px;
+}
+
+/*fieldset demande carte*/
+fieldset.scheduler-border {
+    border: 1px groove #3BA2C0 !important;
+    padding: 0 .2em .4em .2em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+}
+legend.scheduler-border {
+    font-size: 1.2em !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    width:auto;
+    padding:0 10px;
+    border-bottom:none;
+    margin-bottom: 10px;
+    color: red;
+}
+
+/*cropit*/
+#image-cropper .cropit-preview {
+  background-color: #fff;
+  background-size: auto;
+  background-image: url("../images/No_image_s.jpg");
+  background-repeat: no-repeat;
+  border: 1px dashed #ccc;
+  border-radius: 3px;
+  margin-right: 25px;
+/*  margin-left: 20px;*/
+  margin-bottom: 10px;
+  width: 155px;
+  height: 188px;
+  cursor: move;
+  display: block;
+  text-align: center;
+}
+
+#image-cropper .cropit-info p {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#image-cropper .cropit-image-zoom-input {
+  width : 170px;
+  margin-left: 10px
+  }
+
+/* masque leocarte pour screen uniquement */
+@media screen {
+	#specimenleocarte {
+		background: url("/resources/images/leocarte-masque.png");
+		 background-size: cover;
+
+	}
+}
+ /*previsualisatio carte*/
+ #specimenleocarte {
+	position: relative;
+	font-family: arial;
+ }
+#specimenleocarte #recto1 {
+	font-family: arial;
+	font-weight: bold;
+}
+#specimenleocarte #qrcode {
+	position: relative;	
+}
+#specimenleocarte #left {
+	position: relative;
+	float: left;
+}
+#specimenleocarte #right {
+	float: right;
+	position: relative; 
+}
+
+#specimenleocarte #recto2 {
+/*	font-weight: bold; */
+	padding-bottom: 0.02cm;
+	position: relative;
+	top: -15px;	
+}
+#specimenleocarte #recto3{
+/*	font-weight: bold; */
+	position: relative;
+	top: -28px;
+}
+
+#specimenleocarte #recto4 {
+	padding-bottom: 0.1cm;
+	position: relative;	
+	bottom: 40px;
+}
+
+#specimenleocarte #recto5 {
+	padding-bottom: 0.1cm;
+	position: relative;	
+	bottom: 55px;
+}
+#specimenleocarte #logo-ur, #specimenleocarte #photo {
+	display: block;
+}
+@media screen and (min-width: 451px) {
+	#specimenleocarte {
+		width: 8.56cm;
+		height: 5.37cm;
+		font-size: 0.3cm;
+	}
+	#specimenleocarte #left {
+		padding-top: 1.5cm;
+		padding-left: 0.5cm;
+	}
+	#specimenleocarte #right {
+		padding-top: 1.7cm;
+		padding-right: 0.35cm;
+	}
+	#specimenleocarte #recto1 {
+		font-size: 0.35cm;
+		padding-bottom: 0.1cm;
+		padding-left: 2.2cm;
+	}
+	#specimenleocarte #logo-ur, #specimenleocarte #photo {
+		width: 2.25cm;
+	}
+	#specimenleocarte #photo {
+		height: 2.7cm;
+	}
+	#specimenleocarte #qrcode {
+		bottom: 50px;
+		width: 1.2cm;
+	}
+}
+@media screen and (max-width: 450px) {
+	#specimenleocarte {
+		width: 6.56cm;
+		height: 4.15cm;
+		font-size: 0.25cm;
+	}
+	#specimenleocarte #left {
+		padding-top: 1.15cm;
+		padding-left: 0.4cm;
+	}
+	#specimenleocarte #right {
+		padding-top: 1.3cm;
+		padding-right: 0.2cm;
+	}
+	#specimenleocarte #recto1 {
+		font-size: 0.29cm;
+		padding-bottom: 0.1cm;
+		padding-left: 1.5cm;
+	}
+	#specimenleocarte #logo-ur, #specimenleocarte #photo {
+		width: 1.7cm;
+	}
+	#specimenleocarte #photo {
+		height: 2.05cm;
+	}
+	#specimenleocarte #qrcode {
+		bottom: 57px;
+		width: 0.9cm;
+	}
+}
+
+.dl-horizontal dt {
+	white-space: initial;
+}
+  
+.panel-heading h5 {
+    margin: 0;
+    font-weight: bold;
+}
+#cardShow .img-thumbnail, #cardShow .btn-block{
+	margin-bottom: 15px;
+}
+.navbar-right-custom {
+margin-top: -35px;
+margin-right: 10px!important;
+color: white;
+font-weight: bold;
+}
+.navbar-btn{
+	margin-left: 10px;
+}
+.esupsgc-supervisor-nav {
+position: absolute;
+right: 0;
+}
+#cardList #searchBar{
+	background-color: rgb(91, 192, 222,0.8);
+}
+#cardList  .navbar-default .navbar-brand{
+	color: white;
+}
+#cardList  .navbar-right{
+	margin-right: 0px;
+}
+.nav .active {
+    font-weight: bold;
+}
+.centerCell{
+	vertical-align: middle !important;
+	text-align: center;
+}
+#msgChoice ul {
+	list-style-type: none;
+}
+#msgChoice ul li{
+	margin-bottom: 10px;
+}
+.panel-heading .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+    float: right;        /* adjust as needed */
+    color: black;         /* adjust as needed */
+}
+.panel-heading .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}
+#cardList .badge {
+    min-width: 25px;
+}
+.badge-e {
+    background-color: #333;
+}
+.badge-p {
+    background-color: #FFF;
+    border: 1px #ccc solid;
+    color: black;
+}
+.sorting {
+	padding-right: 20px;
+	background: url("images/sort_both.png") no-repeat center right;
+}
+.sorting_asc {
+	padding-right: 20px;
+	background: url("images/sort_asc.png") no-repeat center right;
+}
+.sorting_desc {
+	padding-right: 20px;
+	background: url("images/sort_desc.png") no-repeat center right;
+}
+#paymentDiv .jumbotron{
+	text-align: center;
+	font-size: 2.5em;
+	margin: 0 20px;
+	background-color: white;
+	border: 1px dashed #ccc;
+}
+#traitementLot h3{
+	border: none;
+}
+#traitementLot .modal-body{
+	font-weight: bold;
+}
+#traitementLot #btnBlock form {
+	float: left;
+	margin-left: 5px;
+}
+#traitementLot .btn-block  {
+	margin-bottom: 0px;
+}
+#cardList hr {
+	margin-bottom: 0;
+	visibility: hidden;
+}
+#selectNb{
+	float: left;
+	margin-bottom: 10px;
+}
+.editForbidden {
+	color: #800;
+	border: solid 1px #800;
+	padding-left: 10px;
+}
+#searchBar .form-group{
+	margin-right: 7px;
+}
+#searchBar  button{
+	margin-right: 2px;
+}
+.chartjs-tooltip {
+	opacity: 3;
+	position: absolute;
+	background: rgba(0, 0, 0, .7);
+	border-radius: 3px;
+	-webkit-transition: all .1s ease;
+	transition: all .1s ease;
+	pointer-events: none;
+	-webkit-transform: translate(-50%, 0);
+	transform: translate(-50%, 0);
+}
+
+.chartjs-tooltip table{
+	color: white;
+	font-weight: bold;
+}
+
+.chartjs-tooltip-key {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	margin-right: 10px;
+}
+#searchBar .form-control{
+	padding: 6px 6px;
+}
+h2 .btn{
+	margin-bottom: 8px;
+}
+#imports .well{
+	padding-bottom: 50px;
+}
+#imports #proceed{
+	margin-top: 10px;
+}
+#cardList .navbar-collapse{
+	padding: 0;
+}
+.popover{
+	word-wrap: break-word;
+}
+#container canvas, .konvajs-content{
+	height: 188px!important;
+	width: 150px!important;
+}
+#container canvas{
+	border: 1px dashed #ccc;
+}
+#cardList .navbar-form{
+	padding: 0;
+}
+.textBubble{
+	position: relative;
+	top: 20px;
+	font-weight: bold;
+}
+#accordion hr{
+	visibility: hidden;
+}
+.sessionP{
+	color:blue;
+	margin-right: 5px;
+}
+.sessionE{
+	color:red;
+	margin-right: 5px;
+}
+.sessionI{
+	color:green;
+	margin-right: 5px;
+}
+#collapseEtat .btn {
+	margin-left: 10px;
+}
+#collapseEtat form {
+	margin-bottom: 0
+}
+ .navbar-inverse button.btn{
+	background-color: #101010;
+	color: black;
+}
+.bold{
+	font-weight: bold;
+}
+
+.label-request_checked{
+	 background-color: #286090;
+}
+.label-disabled{
+	 background-color: #12254d;
+}
+.label-rejected, .label-lost{
+	 background-color: #d9534f;
+}
+.label-in_encode, .label-theft{
+	 background-color: #9b59b6;
+}
+.label-encoded, .label-out_of_order{
+	 background-color: #777;
+}
+.label-new{
+	 background-color: #f0ad4e;
+}
+.label-in_print{
+	 background-color: #becc00;
+}
+.label-printed{
+	 background-color: #31b0d5;
+}
+.label-caduc{
+	 background-color: #F127CB;
+}
+.label-enabled{
+	 background-color: #5cb85c;
+}
+#requestDiv .thumbnail{
+	width: 150px;
+	padding: 0;
+	margin-left: 160px;
+	float: left;
+}
+@media screen and (max-width: 359px) {
+	#requestDiv .thumbnail{
+		width: 120px;
+	}
+}
+.titleStats{
+	font-weight: bold;
+	text-align: center;
+	color: white;
+}
+.editedStats{
+	background-color: #6092af;
+}
+.majStats{
+	background-color: #E88D0C;
+}
+#tableStats thead{
+	background-color: #ccc;
+}
+.adress{
+	font-size: .85em;
+}
+.downloadBtn{
+	margin-top: -4px;
+	float: right;
+}
+h4.modal-title{
+	background: none;
+}
+.text-info strong{
+	margin-right: 10px;
+}
+
+#modalValidation form{
+	float: none!important;
+}
+.prefCaps{
+	text-transform: capitalize
+}
+
+#getCrousRighHolderDiv dl {
+margin-left: 10px;
+border: 1px solid #800;
+background-color: #fff;
+}

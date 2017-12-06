@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<div xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:form="urn:jsptagdir:/WEB-INF/tags/form"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:spring="http://www.springframework.org/tags" version="2.0">
+
+
+	<script>
+		// reload of opener so that states actions are refreshed
+	    window.opener.location.reload();
+	</script>
+
+	<spring:url
+					value="/resources/images/leocarte-masque.png"
+					var="leocarteMasqueUrl" />
+					
+	<style>
+	
+	/* masque leocarte pour screen uniquement */
+	@media screen {
+		#specimenleocarte {
+			background: url(${leocarteMasqueUrl});
+			/* background-size: cover; */
+			background-size: 8.56cm 5.398cm;
+		}
+	}
+	
+@page {
+	margin: 0
+}
+
+body {
+	padding: 0cm;
+	margin: 0cm;
+}
+
+p {
+	padding: 0cm;
+	margin: 0cm;
+}
+
+span {
+	display: inline-block;
+}
+
+#pagebreak {
+	page-break-after: always;
+}
+
+#specimenleocarte {
+	width: 8.56cm;
+	height: 5.37cm;
+	position: relative;
+	font-family : arial;
+	font-size: 0.32cm;
+}
+
+#specimenleocarte #recto1 {
+	font-weight: bold;
+	padding-left: 2.2cm;
+	padding-bottom: 0.14cm;
+}
+
+#specimenleocarte #left {
+	padding-top: 1.55cm;
+	float: left;
+	width: 5.4cm;
+	height: 3.75cm;
+	padding-left: 0.5cm;
+	position: relative;
+}
+
+#specimenleocarte #right {
+	padding-top: 1.7cm;
+	padding-right: 0.35cm;
+	height: 3.6cm;
+	float: right;
+	position: relative; 
+}
+
+#specimenleocarte #recto2, #specimenleocarte #recto3  {
+/*	font-weight: bold; */
+	padding-bottom: 0.02cm;
+}
+
+
+#specimenleocarte #recto4, #specimenleocarte #recto5 {
+	padding-bottom: 0.05cm;
+}
+
+#specimenleocarte #logo-ur, #specimenleocarte #photo {
+	display: block;
+	width: 2.2cm;
+}
+#specimenleocarte #logo-ur {
+	position: absolute;	
+	bottom: 0cm;
+}
+
+#specimenleocarte #qrcode {
+	position: absolute;	
+	bottom: 0cm;
+	width: ${qrcodeWidth};
+}
+
+</style>
+
+	<c:forEach items="${cards}" var="card" varStatus="loop">
+
+		<div id="specimenleocarte">
+			<div id="left">
+				<p id="recto1">${card.user.recto1}</p>
+				<p id="recto2">${card.user.recto2}</p>
+				<p id="recto3">${card.user.recto3}</p>
+				<p id="recto4">${card.user.recto4}</p>
+				<p id="recto5">${card.user.recto5}</p>
+
+				<spring:url value="/manager/QRCode?cardId=${card.id}"
+							var="QRCodeUrl" />
+				<img alt="qrcode"
+					src="${QRCodeUrl}"
+					id="qrcode" /> 
+
+			</div>
+			<div id="right">
+				<spring:url
+					value="/manager/photo/${card.id}"
+					var="photoUrl" />
+				<spring:url
+					value="/resources/images/logo-univ-rouen-normandie-couleur.png"
+					var="logoUrl" />
+				<img src="${photoUrl}" id="photo" /><img src="${logoUrl}"
+					id="logo-ur" />
+			</div>
+		</div>
+
+		<c:if test="${!loop.last}"><div id="pagebreak"><!--  --></div></c:if>
+
+	</c:forEach>
+
+</div>

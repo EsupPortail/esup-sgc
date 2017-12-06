@@ -1,0 +1,84 @@
+<div xmlns:sec="http://www.springframework.org/security/tags" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" id="tableStats">
+	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
+	<jsp:output omit-xml-declaration="yes" />
+	<spring:url value="/manager?index=first" var="listeUrl"/>
+	<spring:url value="/manager/stats" var="statsPage"/>	
+		<spring:url value="/admin/import/exportCsvFile" var="downloadUrl"/>
+    <h2>Statistiques - tableaux
+		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+        <a class="btn btn-warning pull-right" href="${statsPage}" id="btnStats" title="Statistiques">
+    		<span class="glyphicon glyphicon-stats"></span>
+    	</a>
+		<a href="${downloadUrl}/tableStats" class="btn btn-primary pull-right" id="statsEdit" title="Télécharger csv" >
+			<span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+		</a>
+    </h2>
+	<div class="well">
+	    <h3>Statistiques LEOCARTE -- Université de Rouen</h3>
+		<h4>Année universitaire débutant au ${dates['formatYear']}</h4>
+		<c:set var="colspanVal" value="${populationCrous.size()+1}" />
+		<table class="table table-bordered">
+		  <thead>
+		  <tr>
+		  	<c:forEach items="${populationCrous}" var="popu">
+		  		<th>${popu.value}</th>
+		  	</c:forEach>
+		  	<th><b>TOTAL</b></th>
+		  </tr></thead>
+		  <tbody>
+		  	<th colspan="${colspanVal}" class="titleStats editedStats"><spring:message code="stats.table.edited.yesterday" /> ${dates['yesterday']}</th> 
+		  	<tr id="cartesJour">
+			  	<c:forEach items="${yesterdayCards}" var="yes">
+			  		<c:set var="loopYes" value="${loopYes + yes.value}" />
+			  		<td>${yes.value}</td>
+			  	</c:forEach>
+			  	<td class="bold">${loopYes}</td>
+		  	</tr>
+		  	<th colspan="${colspanVal}" class="titleStats editedStats"><spring:message code="stats.table.edited.month" /> ${dates['month']}</th>
+		  	<tr id="cartesPeriode">
+			  	<c:forEach items="${monthCards}" var="month">
+			  		<c:set var="loopMonth" value="${loopMonth + month.value}" />
+			  		<td>${month.value}</td>
+			  	</c:forEach>
+			  	<td class="bold">${loopMonth}</td>
+		  	</tr>
+		  	<th colspan="${colspanVal}" class="titleStats editedStats"><spring:message code="stats.table.edited.year" /> ${dates['formatYear']}</th>
+		  	<tr id="cartesPeriode">
+			  	<c:forEach items="${yearCards}" var="year">
+			  		<c:set var="loopYear" value="${loopYear + year.value}" />
+			  		<td>${year.value}</td>
+			  	</c:forEach>
+			  	<td class="bold">${loopYear}</td>
+		  	</tr>
+			<c:if test="${bornes}"> 	
+			  	<th colspan="${colspanVal}" class="titleStats majStats"><spring:message code="stats.table.maj.yesterday" /> ${dates['yesterday']}</th> 
+			  	<tr id="cartesJour">
+				  	<c:forEach items="${yesterdayMajCards}" var="yesMaj">
+				  		<c:set var="loopYesMaj" value="${loopYesMaj + yesMaj.value}" />
+				  		<td>${yesMaj.value}</td>
+				  	</c:forEach>
+				  	<td class="bold">${loopYesMaj}</td>
+			  	</tr>
+			  	<th colspan="${colspanVal}" class="titleStats majStats"><spring:message code="stats.table.maj.month" /> ${dates['month']}</th>
+			  	<tr id="cartesPeriode">
+				  	<c:forEach items="${monthMajCards}" var="monthMaj">
+				  		<c:set var="loopMonthMaj" value="${loopMonthMaj + monthMaj.value}" />
+				  		<td>${monthMaj.value}</td>
+				  	</c:forEach>
+				  	<td class="bold">${loopMonthMaj}</td>
+			  	</tr>
+			  	<th colspan="${colspanVal}" class="titleStats majStats"><spring:message code="stats.table.maj.year" /> ${dates['formatYear']}</th>
+			  	<tr id="cartesPeriode">
+				  	<c:forEach items="${yearMajCards}" var="yearMaj">
+				  		<c:set var="loopYearMaj" value="${loopYearMaj + yearMaj.value}" />
+				  		<td>${yearMaj.value}</td>
+				  	</c:forEach>
+				  	<td class="bold">${loopYearMaj}</td>
+			  	</tr>
+		  	</c:if>
+		  </tbody>
+		</table>
+	 </div>
+</div>

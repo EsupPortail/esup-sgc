@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+	<definition extends="manager" name="manager/cards">
+		<put-attribute name="body" value="/WEB-INF/views/manager/cards.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/list">
+		<put-attribute name="body" value="/WEB-INF/views/manager/list.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/show">
+		<put-attribute name="body" value="/WEB-INF/views/manager/show.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/create">
+		<put-attribute name="body" value="/WEB-INF/views/manager/create.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/update">
+		<put-attribute name="body" value="/WEB-INF/views/manager/update.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/edit">
+		<put-attribute name="body" value="/WEB-INF/views/manager/edit.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/stats">
+		<put-attribute name="body" value="/WEB-INF/views/manager/stats.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/stats/table">
+		<put-attribute name="body" value="/WEB-INF/views/manager/tableStats.jspx" />
+	</definition>	
+	<definition extends="print-card" name="manager/print-card">
+		<put-attribute name="body"
+			value="/WEB-INF/views/manager/print-card.jspx" />
+	</definition>
+	
+	<definition name="manager/esup-sgc-jnlp" template="/WEB-INF/views/manager/esup-sgc-jnlp.jspx"/>
+	<definition name="manager/esup-sgc-jnlp-r2d2" template="/WEB-INF/views/manager/esup-sgc-jnlp-r2d2.jspx"/>
+	
+	<definition name="manager/multiUpdateForm" template="/WEB-INF/views/manager/multiUpdateForm.jspx"/>
+	
+	<definition name="manager/rightHolder" template="/WEB-INF/views/manager/rightHolder.jspx"/>
+	
+	
+</tiles-definitions>

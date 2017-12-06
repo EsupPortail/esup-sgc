@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Licensed to ESUP-Portail under one or more contributor license
+    agreements. See the NOTICE file distributed with this work for
+    additional information regarding copyright ownership.
+
+    ESUP-Portail licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file except in
+    compliance with the License. You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div xmlns:sec="http://www.springframework.org/security/tags" xmlns:c="http://java.sun.com/jsp/jstl/core"  xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form"
+    xmlns:spring="http://www.springframework.org/tags"
+	>
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+	<jsp:output omit-xml-declaration="yes" />
+	<h2>Supervision - Switch User</h2>
+    <div class="jumbotron well">
+        <p>Cette page vous permet de vous connecter au nom d'un autre utilisateur.</p>
+        <p>Pour cela rentrez son nom d'utilisateur (eppn) dans le formulaire et cliquez sur SU ("Switch User").</p>
+        <p>Cette fonctionnalité n'est disponible que pour les admins, elle permet de "voir" précisément l'interface de l'uttilisateur, "ce que voit" l'utilisateur.</p>
+        <p>Les actions effectuées seront journalisées dans la base en votre nom (avec le nom de l'utilisateur cible mentionné également)</p>
+    </div>
+    
+    <spring:url value="/manager/searchEppn" var="searchEppnUrl" />
+    <script type="text/javascript">
+		var searchEppnUrl = '${searchEppnUrl}';
+	</script>
+ 
+    <spring:url value="/j_spring_security_switch_user" var="su_url"/>
+    <form class="form-horizontal" action="${su_url}" method="POST" id="searchEppnForm">
+     <div class="jumbotron">
+     <div class="from-group">
+	      <label for="j_username" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible : </label>
+	      <div class="col-lg-2 col-md-2 col-xs-4">
+	      <input type="text" class="form-control"  placeholder="eppn" id="searchEppn"  name="j_username" maxlength="100"/>
+	      </div>
+	      <button type="submit" class="btn btn-success col-lg-1 col-md-1">SU</button>
+	      </div>
+      </div>
+    </form>
+  
+
+</div>

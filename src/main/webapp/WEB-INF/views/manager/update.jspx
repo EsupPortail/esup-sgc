@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_org_esupportail_sgc_domain_Card" modelAttribute="card" path="/manager" versionField="none" z="fe+u644bmv0jdDSeV77FVBcypI8=">
+        <field:input field="etat" id="c_org_esupportail_sgc_domain_Card_etat" z="9u8dsorAJ1eNikdHawaQglfxyuA="/>
+        <field:input field="eppn" id="c_org_esupportail_sgc_domain_Card_eppn" z="iwqUrUHpw93uSpLXiyqtk2PthV0="/>
+        <field:datetime dateTimePattern="${card_requestdate_date_format}" field="requestDate" id="c_org_esupportail_sgc_domain_Card_requestDate" z="86u+3McejOunv1cD/CgzYRDUmBo="/>
+        <field:datetime dateTimePattern="${card_dateetat_date_format}" field="dateEtat" id="c_org_esupportail_sgc_domain_Card_dateEtat" z="1/IlnHtv4kelk+P7bBt18YHVwa4="/>
+        <field:input field="commentaire" id="c_org_esupportail_sgc_domain_Card_commentaire" z="Z8ad8Hf77xp2S5MX5PkKsTtIlj4="/>
+        <field:input field="flagAdresse" id="c_org_esupportail_sgc_domain_Card_flagAdresse" z="h39kAV0gr+HMV9+lAvvPUN94Nnw="/>
+        <field:input field="structure" id="c_org_esupportail_sgc_domain_Card_structure" z="dTFNywrzYajRVh+SHD0WnPBgJqo="/>
+        <field:input field="payCmdNum" id="c_org_esupportail_sgc_domain_Card_payCmdNum" z="kR7SYG/TTuP0c7X3Harbf/9Oxt4="/>
+        <field:input field="requestBrowser" id="c_org_esupportail_sgc_domain_Card_requestBrowser" z="j9Lnj3pfejBFt+eU9M18E1YrTzA="/>
+        <field:input field="requestOs" id="c_org_esupportail_sgc_domain_Card_requestOs" z="gEKkYbuSBJDncEckukOHuQwnDcY="/>
+        <field:select field="photoFile" id="c_org_esupportail_sgc_domain_Card_photoFile" itemValue="id" items="${photofiles}" path="/photofiles" z="9B+fN/8WX7op+uS+KiXDLwPJLs4="/>
+        <field:input field="desfireId" id="c_org_esupportail_sgc_domain_Card_desfireId" z="xry2n4FoZWXibKr8CiCU8qM0+CA="/>
+        <field:input field="csn" id="c_org_esupportail_sgc_domain_Card_csn" z="nzKOrLk29L5TygfKhY5t/Q8gqS8="/>
+        <field:input field="etatEppn" id="c_org_esupportail_sgc_domain_Card_etatEppn" z="oqEU+JHdVuTvsV8CRqhH+BXaNiU="/>
+        <field:input field="motifDisable" id="c_org_esupportail_sgc_domain_Card_motifDisable" z="VbfmB7Uqe18Cls4q8abDKECbvdY="/>
+        <field:datetime dateTimePattern="${card_delivereddate_date_format}" field="deliveredDate" id="c_org_esupportail_sgc_domain_Card_deliveredDate" z="naFmZ90hlT89+cSUWbnY4A/54FA="/>
+        <field:input field="etatsAvailable" id="c_org_esupportail_sgc_domain_Card_etatsAvailable" z="o1HITHHA9vzCMTRR5kZ/OYOO4+o="/>
+        <field:select field="cardIdGenerator" id="c_org_esupportail_sgc_domain_Card_cardIdGenerator" itemValue="id" items="${cardidgenerators}" path="/cardidgenerators" z="evpyO/WtJwoZEhLuCBwK+HaLX8g="/>
+        <field:datetime dateTimePattern="${card_duedate_date_format}" field="dueDate" id="c_org_esupportail_sgc_domain_Card_dueDate" z="qDCmateJQJGfFFj1x563rT+93jQ="/>
+        <field:input field="versoTextPrinted" id="c_org_esupportail_sgc_domain_Card_versoTextPrinted" z="XyemFDCww3vlKVbh9dcJREoWMGE="/>
+        <field:datetime dateTimePattern="${card_ennableddate_date_format}" field="ennabledDate" id="c_org_esupportail_sgc_domain_Card_ennabledDate" z="Sk5EOLDsTX9YhL2Igca1T6FQdFU="/>
+        <field:select field="userAccount" id="c_org_esupportail_sgc_domain_Card_userAccount" itemValue="id" items="${users}" path="/users" z="xlM978gg0y6kRsabYYPFAjIfVF0="/>
+        <field:checkbox field="crousTransient" id="c_org_esupportail_sgc_domain_Card_crousTransient" z="//Y4TQPvU/WW7ydGKFfaS76tS0c="/>
+        <field:checkbox field="difPhotoTransient" id="c_org_esupportail_sgc_domain_Card_difPhotoTransient" z="I0R6h6tS9TL73KsSZ3uc6FPestU="/>
+        <field:datetime dateTimePattern="${card_encodeddate_date_format}" field="encodedDate" id="c_org_esupportail_sgc_domain_Card_encodedDate" z="7+G24eK8iayxyW4fHMwaesgmEbk="/>
+        <field:input field="recto1Printed" id="c_org_esupportail_sgc_domain_Card_recto1Printed" z="8+co0h/6umfc+fiQzYkBBBXcDG8="/>
+        <field:input field="recto2Printed" id="c_org_esupportail_sgc_domain_Card_recto2Printed" z="fYsIqh2Cjz/qz36fWYLWYn1JFmg="/>
+        <field:input field="recto3Printed" id="c_org_esupportail_sgc_domain_Card_recto3Printed" z="NEpRgPm1IC4ruXtCZHTzO2LbcLE="/>
+        <field:input field="recto4Printed" id="c_org_esupportail_sgc_domain_Card_recto4Printed" z="UgprIrPAFN7WYXIKDG1lESwYBHU="/>
+        <field:input field="recto5Printed" id="c_org_esupportail_sgc_domain_Card_recto5Printed" z="Sp9D/cffPoYczxRayLDsuuM15/0="/>
+        <field:input field="addressRequested" id="c_org_esupportail_sgc_domain_Card_addressRequested" z="Ui1zB8lmQ5tfaCUG/TDh7ZHtJ6k="/>
+        <field:checkbox field="isPhotoEditable" id="c_org_esupportail_sgc_domain_Card_isPhotoEditable" z="qAJEgQi/7RtsjaN2nPyj/94P9zY="/>
+        <field:datetime dateTimePattern="${card_lastencodeddate_date_format}" field="lastEncodedDate" id="c_org_esupportail_sgc_domain_Card_lastEncodedDate" z="JV4l2KJLPC4KeX51DC4LR0pLq5I="/>
+        <field:input field="nbRejets" id="c_org_esupportail_sgc_domain_Card_nbRejets" validationMessageCode="field_invalid_integer" z="VCCWd9mhyyVNwomVEfqIKzy40Lc="/>
+        <field:input field="escnUid" id="c_org_esupportail_sgc_domain_Card_escnUid" z="xxKzkvLxqbw12/24cNFT8ZtHWxU="/>
+        <field:input field="qrcode" id="c_org_esupportail_sgc_domain_Card_qrcode" z="nMHFM0kyMMSj5U5ajXxHY0axRiQ="/>
+        <field:checkbox field="external" id="c_org_esupportail_sgc_domain_Card_external" z="ZYUPXpbH47E75wsv0ht18BtBAzA="/>
+    </form:update>
+</div>

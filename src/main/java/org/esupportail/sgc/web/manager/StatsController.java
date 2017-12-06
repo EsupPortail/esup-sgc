@@ -1,0 +1,197 @@
+package org.esupportail.sgc.web.manager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.domain.Prefs;
+import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.PreferencesService;
+import org.esupportail.sgc.services.StatsService;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import flexjson.JSONSerializer;
+
+
+@RequestMapping("/manager/stats")
+@Controller
+public class StatsController {
+	
+	private static final Logger log = LoggerFactory.getLogger(StatsController.class);
+	
+	private static final String KEY = "STATS";
+	private static final String KEYRM = "STATSRM";
+	
+	@Resource
+	StatsService statsService;	
+	
+	@Resource
+	UserInfoService userInfoService;
+	
+	@Resource
+	AppliConfigService appliConfigService;	
+	
+	@Resource
+	PreferencesService preferencesService;
+	
+	@ModelAttribute("active")
+	public String getActiveMenu() {
+		return "stats";
+	}
+	
+	@ModelAttribute("types")
+	public List<String> getTypes() {
+		return userInfoService.getListExistingType();
+	}
+	
+	@ModelAttribute("livraison")
+	public String getLivraisonConfig() {
+		return appliConfigService.getModeLivraison();
+	}
+	
+	@ModelAttribute("bornes")
+	public String getBornesConfig() {
+		return appliConfigService.getModeBornes();
+	}
+	
+	@RequestMapping
+	public String index(HttpServletRequest httpServletRequest, Model uiModel, @RequestParam(value = "type", required = false) String type) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		
+    	if(uiModel.containsAttribute("type")){
+        	Map<String, ?> flashInputMap = RequestContextUtils.getInputFlashMap(httpServletRequest);
+        	if(flashInputMap.containsKey("type")){
+        		type = (String) flashInputMap.get("type");
+        	}	
+    	}
+    	if(type==null){
+    		type="";
+    	}
+		uiModel.addAttribute("selectedType", type);
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonStats = "";
+		String jsonStatsRm = "";
+		List<String> prefsStats = new ArrayList<>();
+		List<String> prefsStatsRm = new ArrayList<>();
+		try {
+			if(preferencesService.getPrefs(eppn, KEY)!=null){
+				prefsStats = Arrays.asList(preferencesService.getPrefs(eppn, KEY).getValue().split("\\s*,\\s*"));
+			}
+			jsonStats = mapper.writeValueAsString(prefsStats);
+			if(preferencesService.getPrefs(eppn, KEYRM)!=null){
+				prefsStatsRm = Arrays.asList(preferencesService.getPrefs(eppn, KEYRM).getValue().split("\\s*,\\s*"));
+			}
+			jsonStatsRm = mapper.writeValueAsString(prefsStatsRm);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		uiModel.addAttribute("prefs",jsonStats);
+		uiModel.addAttribute("prefsRm",jsonStatsRm);
+		uiModel.addAttribute("prefsRmList",prefsStatsRm);
+		return "manager/stats";
+	}
+	
+	@RequestMapping(value = "/tabs/{type}", produces = "text/html")
+    public String redirectTab(@PathVariable("type") String type, final RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest){
+	  
+		redirectAttributes.addFlashAttribute("type", type);
+	  
+	    return "redirect:/manager/stats";
+    }
+	
+	@RequestMapping(value="jsonStats", headers = "Accept=application/json; charset=utf-8")
+	@ResponseBody 
+	public String getStats(@RequestParam String typeInd) {
+		String flexJsonString = "Aucune statistique à récupérer";
+		
+		try {
+			JSONSerializer serializer = new JSONSerializer();
+			flexJsonString = serializer.deepSerialize(statsService.getStats(typeInd)); 
+			
+		} catch (Exception e) {
+			log.warn("Impossible de récupérer les statistiques", e);
+		}
+		
+    	return flexJsonString;
+	}
+	
+	@RequestMapping(value="/table", produces = "text/html")
+	public String getTableStats( Model uiModel) {
+		uiModel.addAttribute("dates", statsService.getDates());
+		uiModel.addAttribute("populationCrous", statsService.getPopulationCrous());
+		uiModel.addAttribute("yesterdayCards", statsService.getYesterdayCardsByPopulationCrous("encoded_date", false));
+		uiModel.addAttribute("monthCards", statsService.getMonthCardsByPopulationCrous("encoded_date", false));
+		uiModel.addAttribute("yearCards", statsService.getYearEnabledCardsByPopulationCrous("request_date", false));
+		uiModel.addAttribute("yesterdayMajCards", statsService.getYesterdayCardsByPopulationCrous("log_date", true));
+		uiModel.addAttribute("monthMajCards", statsService.getMonthCardsByPopulationCrous("log_date", true));
+		uiModel.addAttribute("yearMajCards", statsService.getYearEnabledCardsByPopulationCrous("log_date", true));
+		return "manager/stats/table";
+	}
+	
+	@RequestMapping(value="/prefs", headers = "Accept=application/json; charset=utf-8")
+	@ResponseBody
+	public void savePrefs(@RequestParam List<String> values, @RequestParam String key) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		
+		try {
+			preferencesService.setPrefs(eppn, key, StringUtils.join(values, ","));
+			if(KEYRM.equals(key)){
+				List <String>  prefsStats = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, KEY).getValue().split("\\s*,\\s*")));
+				prefsStats.remove(values.get(0));
+			}
+			
+		} catch (Exception e) {
+			log.warn("Impossible de sauvegarder les préférences", e);
+		}
+	}
+	
+	@RequestMapping(value="/savePrefs")
+	public String  savePrefs(@RequestParam(value="prefsRm", required=false) List<String> prefsRm,  Model uiModel) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		uiModel.asMap().clear();
+		try {
+			if(prefsRm!=null){
+				List<String> prefsStatsRm = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, KEYRM).getValue().split("\\s*,\\s*")));
+				List<String> prefsStats = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, KEY).getValue().split("\\s*,\\s*")));
+				for(String pref :prefsRm){
+					prefsStatsRm.remove(pref);
+					prefsStats.add(pref);
+				}
+				preferencesService.setPrefs(eppn, KEYRM, StringUtils.join(prefsStatsRm.toArray(), ","));
+				preferencesService.setPrefs(eppn, KEY, StringUtils.join(prefsStats.toArray(), ","));
+				if( Prefs.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult().getValue().isEmpty()){
+					Prefs pref = Prefs.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult();
+					pref.remove();
+				}
+			}
+		} catch (Exception e) {
+			log.warn("Impossible de sauvegarder les préférences", e);
+		}
+
+		return "redirect:/manager/stats";
+	}
+}

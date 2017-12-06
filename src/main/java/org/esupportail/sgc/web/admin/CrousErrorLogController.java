@@ -1,0 +1,110 @@
+package org.esupportail.sgc.web.admin;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.LogService;
+import org.esupportail.sgc.services.LogService.ACTION;
+import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.services.crous.ApiCrousService;
+import org.esupportail.sgc.services.crous.CrousErrorLog;
+import org.esupportail.sgc.services.crous.CrousService;
+import org.esupportail.sgc.services.crous.PatchIdentifier;
+import org.esupportail.sgc.services.crous.RightHolder;
+import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@RequestMapping("/admin/crouserrorlogs")
+@Controller
+@RooWebScaffold(path = "admin/crouserrorlogs", formBackingObject = CrousErrorLog.class)
+public class CrousErrorLogController {
+	
+	@Resource
+	CrousService crousService;
+	
+	@Resource
+	ApiCrousService apiCrousService;
+	
+	@Resource
+	LogService logService;
+	
+	@Resource
+	AppliConfigService appliConfigService;
+	
+	@ModelAttribute("help")
+	public String getHelp() {
+		return appliConfigService.getHelpAdmin();
+	}
+	
+    @RequestMapping(produces = "text/html")
+    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, 
+    		@RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel, HttpServletRequest request) {
+    	if(sortFieldName == null) {
+    		sortFieldName = "date";
+    		sortOrder = "desc";
+    	}
+    	if(size == null) {
+    		Object sizeInSession = request.getSession().getAttribute("size_in_session");
+    		size = sizeInSession != null ? (Integer)sizeInSession : 10;
+    		page = 1;
+    	}
+    	if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findCrousErrorLogEntries(firstResult, sizeNo, sortFieldName, sortOrder));
+            float nrOfPages = (float) CrousErrorLog.countCrousErrorLogs() / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findAllCrousErrorLogs(sortFieldName, sortOrder));
+        }
+        return "admin/crouserrorlogs/list";
+    }
+    
+    
+    @RequestMapping(value = "/{id}", produces = "text/html")
+    public String show(@PathVariable("id") Long id, Model uiModel) {
+    	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
+        uiModel.addAttribute("crouserrorlog", CrousErrorLog.findCrousErrorLog(id));
+        uiModel.addAttribute("itemId", id);
+        RightHolder crousEppnRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEppn());
+        RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail());
+        RightHolder esupSgcRightHolder =  apiCrousService.computeEsupSgcRightHolder(crousErrorLog.getUserEppn());
+        uiModel.addAttribute("crousEppnRightHolder", crousEppnRightHolder);
+        uiModel.addAttribute("crousEmailRightHolder", crousEmailRightHolder);
+        uiModel.addAttribute("esupSgcRightHolder", esupSgcRightHolder);
+        
+        return "admin/crouserrorlogs/show";
+    }
+
+    
+    @RequestMapping(value = "/{id}/patchIdentifier", produces = "text/html", method = RequestMethod.POST)
+    public String  patchIdentifier(@PathVariable("id") Long id, @Valid PatchIdentifier patchIdentifier, BindingResult bindingResult, Model uiModel) {
+    	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
+    	crousService.patchIdentifier(patchIdentifier);
+    	logService.log(crousErrorLog.getCardId(), ACTION.CROUS_PATCH_IDENTIFIER, RETCODE.SUCCESS, "PatchIdentifier CROUS : " + patchIdentifier, crousErrorLog.getUserEppn(), null);
+        return "redirect:/admin/crouserrorlogs/" + id;
+    }
+    
+
+    @Transactional
+    @RequestMapping(value = "/{id}/desactivateCrous", produces = "text/html", method = RequestMethod.POST)
+    public String  desactivateCrous(@PathVariable("id") Long id, Model uiModel) {
+    	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
+    	User user = crousErrorLog.getUserAccount();
+    	user.setCrous(false);
+    	user.merge();
+    	logService.log(crousErrorLog.getCardId(), ACTION.CROUS_DESACTIVATION, RETCODE.SUCCESS, "Désactivation CROUS suite à erreur API : " + crousErrorLog.toString(), user.getEppn(), null);
+        return "redirect:/manager?eppn=" + user.getEppn();
+    }
+    
+}

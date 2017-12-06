@@ -1,0 +1,73 @@
+<jsp:root xmlns:c="http://java.sun.com/jsp/jstl/core" 
+          xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+          xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:sec="http://www.springframework.org/security/tags"
+          xmlns:spring="http://www.springframework.org/tags" version="2.0">
+
+  	<jsp:output omit-xml-declaration="yes" />
+
+	<spring:url value="/resources/css/bootstrap.min.css" var="bootstrap_css_url" />
+	<spring:url value="/resources/css/footable.bootstrap.min.css" var="footable_css_url" />
+	<spring:url value="/resources/css/awesomplete.css" var="awesome_css_url" />
+	<spring:url value="/resources/css/progress-wizard.min.css" var="progress_css_url" />
+	<spring:url value="/resources/css/trumbowyg.min.css" var="trumbowyg_css_url" />
+	<spring:url value="/resources/css/trumbowyg.colors.min.css" var="trumbowygColor_css_url" />
+	<spring:url value="/resources/css/dragula.min.css" var="dragula_css_url" />
+	<spring:url value="/resources/css/esup-sgc.css" var="esupSgc_css_url" />
+
+	<spring:url value="/resources/js/jquery.min.js" var="jquery_url" />
+	<spring:url value="/resources/js/bootstrap.min.js" var="bootstrap_js__url" />
+	<spring:url value="/resources/js/jquery.cropit.js" var="cropit_js_url" />
+	<spring:url value="/resources/js/footable.min.js" var="footable_js_url" />
+	<spring:url value="/resources/js/konva.min.js" var="konva_js_url" />
+	<spring:url value="/resources/js/Chart.min.js" var="chart_js_url" />
+	<spring:url value="/resources/js/esup-sgc_msg_fr.js" var="esup_sgc_msg_fr_url" />
+	<spring:url value="/resources/js/awesomplete.min.js" var="awesome_js_url" />
+	<spring:url value="/resources/js/trumbowyg.min.js" var="trumbowyg_js_url" />
+	<spring:url value="/resources/js/trumbowyg.colors.min.js" var="trumbowygColor_js_url" />
+	<spring:url value="/resources/js/dragula.min.js" var="dragula_js_url" />
+	<spring:url value="/resources/js/esup-sgc.js" var="esupSgc_js_url" />
+	<spring:url value="/resources/images/favicon.png" var="favicon" />
+	
+	<link rel="SHORTCUT ICON" href="${favicon}" />
+	
+	<link rel="icon" type="image/png" href="/resources/images/favicon.png" />
+	<link rel="manifest" href="/resources/images/manifest.json" />
+	<meta name="msapplication-TileColor" content="#da532c" />
+	<meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+	<meta name="theme-color" content="#ffffff" />
+  
+	<link rel="stylesheet" type="text/css" href="${bootstrap_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${footable_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${esupSgc_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${awesome_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${trumbowyg_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${trumbowygColor_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${progress_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${dragula_css_url}" />
+  
+	<link rel="SHORTCUT ICON" href="${favicon}" />
+
+	<script src="${jquery_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${bootstrap_js__url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${cropit_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${footable_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>	
+	<script src="${konva_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${chart_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${awesome_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${trumbowyg_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${trumbowygColor_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${esup_sgc_msg_fr_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${dragula_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${esupSgc_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	
+	
+	<script type="text/javascript">
+		<sec:authorize access="hasRole('ROLE_MANAGER') || hasRole('ROLE_CONSULT')">
+		 	var sgcRootUrl = '<spring:url value="/"/>';
+		</sec:authorize>
+	</script>
+	
+</jsp:root>
+
+

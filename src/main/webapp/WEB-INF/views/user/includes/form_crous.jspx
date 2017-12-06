@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<fieldset class="scheduler-border">
+		<legend class="scheduler-border">Crous</legend>
+		<div class="radio">
+			<label for="radio1"> <input type="radio"
+				name="crousTransient" id="radio1" value="false" /> Je
+				ne souhaite pas bénéficier du service de restauration CROUS sur
+				ma léocarte
+			</label>
+		</div>
+		<div class="radio">
+			<label for="radio2"> <input value="true" type="radio"
+				name="crousTransient" id="radio2" /> Je souhaite bénéficier du
+				service de restauration CROUS sur ma léocarte
+			</label>
+		</div>
+		<div class="alert alert-info">En acceptant, j’autorise
+			l’Université à transmettre les données : nom – prénom– code tarif
+			– code société – adresse mail institutionnelle au CROUS de Rouen,
+			ces données étant obligatoires pour le fonctionnement du service.
+		</div>
+	</fieldset>
