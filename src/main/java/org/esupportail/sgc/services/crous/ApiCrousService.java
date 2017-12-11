@@ -140,9 +140,9 @@ public class ApiCrousService {
 				log.info("Getting RightHolder for " + eppn +" : " + response.toString());
 				RightHolder oldRightHolder = response.getBody();
 				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn);
-				if(!newRightHolder.fieldEquals(oldRightHolder)) {
+				if(!newRightHolder.fieldWoDueDateEquals(oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
 					updateRightHolder(eppn);
-				}
+				} 
 			} catch(HttpClientErrorException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					postRightHolder(eppn);
@@ -237,6 +237,22 @@ public class ApiCrousService {
 			rightHolder.setBirthDate(user.getBirthday());
 		}
 		return rightHolder;
+	}
+	
+	private boolean mustUpdateDueDateCrous(RightHolder oldRightHolder, String eppn) {
+		// dueDate can't be past in IZLY -> hack ...
+		List<User> users = User.findUsersByEppnEquals(eppn).getResultList();
+		if(!users.isEmpty()) {
+			User user = users.get(0);			
+			Date now = new Date();
+			Date duedateCrous = oldRightHolder.getDueDate();
+			Date realDueDate = user.getDueDate();
+			if(duedateCrous!=null && realDueDate.before(now) && duedateCrous.before(now)) {
+				return false;
+			}
+			return !realDueDate.equals(duedateCrous);
+		}
+		return false;
 	}
 	
 	

@@ -692,6 +692,8 @@ $(document).ready(function() {
 	var radio2 = $("#radio2");
 	var radioCnil1= $("#radioCnil1");
 	var radioCnil2 = $("#radioCnil2");
+	var radioEurope1= $("#radioEurope1");
+	var radioEurope2 = $("#radioEurope2");
 	var reglement = $("#reglement");
     $("#cardRequest").on("submit",function() {
     	 if(imageData == "" ){
@@ -705,7 +707,11 @@ $(document).ready(function() {
      	if((!radio1.is(":checked"))&&(!radio2.is(":checked"))&&radio1.length>0){
     		alert (messages['alertCrous']);
     		return false;
-    	} 
+    	}
+     	if((!radioEurope1.is(":checked"))&&(!radioEurope2.is(":checked"))&&radioEurope1.length>0){
+    		alert (messages['alertEurope']);
+    		return false;
+    	}      	
      	if((!radioCnil1.is(":checked"))&&(!radioCnil2.is(":checked"))&&radioCnil1.length>0){
     		alert (messages['alertCnil']);
     		return false;

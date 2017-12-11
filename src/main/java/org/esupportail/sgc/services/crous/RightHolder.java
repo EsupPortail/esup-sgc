@@ -43,7 +43,7 @@ public class RightHolder {
 		return birthDate;
 	}
 
-	public boolean fieldEquals(RightHolder obj) {
+	public boolean fieldWoDueDateEquals(RightHolder obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -55,11 +55,6 @@ public class RightHolder {
 			if (other.birthDate != null)
 				return false;
 		} else if (!birthDate.equals(other.birthDate))
-			return false;
-		if (dueDate == null) {
-			if (other.dueDate != null)
-				return false;
-		} else if (!dueDate.equals(other.dueDate))
 			return false;
 		if (email == null) {
 			if (other.email != null)

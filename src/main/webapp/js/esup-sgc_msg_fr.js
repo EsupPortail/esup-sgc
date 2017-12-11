@@ -7,6 +7,7 @@ var messages = {
 		confirmPreview: "Vous avez bien prévisualisé la photo",
 		alertPhoto: "Vous devez choisir et valider une photo",
 		alertCrous: "Vous devez choisir l'option CROUS",
+		alertEurope: "Vous devez choisir l'option Carte européenne",
 		alertCnil: "Vous devez répondre à la question CNIL",
 		alertRules:	"Vous devez confirmer avoir lu le règlement",
 		alertTooChar: "Vous ne devez pas dépasser 250 caractères!",

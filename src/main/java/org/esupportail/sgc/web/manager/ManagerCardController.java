@@ -173,7 +173,7 @@ public class ManagerCardController {
         		cardItem.setIsPhotoEditable(cardEtatService.isPhotoEditable(cardItem));
         	}
         }
-        
+        uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
         uiModel.addAttribute("user", user);
         uiModel.addAttribute("currentCard", card);
         
@@ -267,6 +267,7 @@ public class ManagerCardController {
 			if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
 				uiModel.addAttribute("cards", Arrays.asList(new Card[]{card}));
 			}
+	        uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
 			return "manager/print-card";
 		} else {
 			uiModel.asMap().clear();
@@ -382,6 +383,7 @@ public class ManagerCardController {
 
     	if(Etat.IN_PRINT.equals(etatFinal)) {
     		uiModel.addAttribute("cards", cards);
+    		uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
     		return "manager/print-card";
     	}
 

@@ -32,7 +32,7 @@
         <table:table data="${appliconfigs}" id="l_org_esupportail_sgc_domain_AppliConfig" path="/admin/config" view="false" z="user-managed">
             <table:column id="c_org_esupportail_sgc_domain_AppliConfig_key" property="key" z="/vSP/Qoraatrvj6rUVxsprE+Tx8="/>
             <table:column id="c_org_esupportail_sgc_domain_AppliConfig_value" maxLength="500" property="value" z="user-managed"/>
-            <table:column id="c_org_esupportail_sgc_domain_AppliConfig_description" property="description" z="oBirGc54txXDYbu6uvUR9Eaz/nI="/>
+            <table:column id="c_org_esupportail_sgc_domain_AppliConfig_description" property="description" z="user-managed" maxLength="500"/>
             <table:column id="c_org_esupportail_sgc_domain_AppliConfig_type" sort="true" property="type" z="user-managed"/>
         </table:table>
     </page:list>

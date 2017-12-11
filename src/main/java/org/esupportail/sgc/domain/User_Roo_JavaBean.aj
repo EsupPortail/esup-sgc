@@ -307,20 +307,20 @@ privileged aspect User_Roo_JavaBean {
         this.userType = userType;
     }
     
-    public Card User.getExternalCard() {
-        return this.externalCard;
-    }
-    
-    public void User.setExternalCard(Card externalCard) {
-        this.externalCard = externalCard;
-    }
-    
     public Set<String> User.getRoles() {
         return this.roles;
     }
     
     public void User.setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+    
+    public Card User.getExternalCard() {
+        return this.externalCard;
+    }
+    
+    public void User.setExternalCard(Card externalCard) {
+        this.externalCard = externalCard;
     }
     
 }

@@ -284,6 +284,14 @@ privileged aspect Card_Roo_JavaBean {
         this.crousTransient = crousTransient;
     }
     
+    public Boolean Card.getEuropeanTransient() {
+        return this.europeanTransient;
+    }
+    
+    public void Card.setEuropeanTransient(Boolean europeanTransient) {
+        this.europeanTransient = europeanTransient;
+    }
+    
     public Boolean Card.getDifPhotoTransient() {
         return this.difPhotoTransient;
     }

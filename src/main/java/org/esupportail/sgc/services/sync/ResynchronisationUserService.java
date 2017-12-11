@@ -53,6 +53,11 @@ public class ResynchronisationUserService {
 		User dummyUser = new User();
 		dummyUser.setEppn(user.getEppn());
 		dummyUser.setCrous(user.getCrous());
+		dummyUser.setEditable(user.isEditable());
+		dummyUser.setEuropeanStudentCard(user.getEuropeanStudentCard());
+		dummyUser.setExternalCard(user.getExternalCard());
+		dummyUser.setNbCards(user.getNbCards());
+		dummyUser.setRequestFree(user.isRequestFree());
 		userInfoService.setAdditionalsInfo(dummyUser, null);
 		boolean accessControlMustUpdate = false;
 		if(!dummyUser.fieldsEquals(user) && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {

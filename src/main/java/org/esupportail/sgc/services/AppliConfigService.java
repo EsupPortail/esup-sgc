@@ -55,6 +55,11 @@ public class AppliConfigService {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_RULES");
 		return appliConfig.getValue();
 	}
+	
+	public String displayFormEuropeanCard() {
+		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_EUROPEAN");
+		return appliConfig.getValue();
+	}
 
 	//
 	public Double getMontantRenouvellement() {
@@ -115,19 +120,6 @@ public class AppliConfigService {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_CAN_PAID_RENEWAL");
 		return appliConfig.getValue();
 	}
-	
-	
-	public String getDeliveredCardlMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_DELIVERED_CARD");
-		return appliConfig.getValue();
-	}
-	
-	
-	public String getEditedCardlMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_EDITED_CARD");
-		return appliConfig.getValue();
-	}
-	
 	
 	public String getNewCardlMsg() {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_NEW_CARD");
@@ -248,6 +240,11 @@ public class AppliConfigService {
 		
 	public String getModeBornes() {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MODE_BORNES");
+		return appliConfig.getValue();
+	}
+	
+	public String getCardMask() {
+		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("CARD_MASK");
 		return appliConfig.getValue();
 	}
 

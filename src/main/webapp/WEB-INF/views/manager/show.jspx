@@ -5,14 +5,22 @@
     <spring:url value="/manager?index=first" var="listeUrl"/>
     <spring:url value="/manager/photo/" var="photoRootUrl"/>
     <spring:url value="/manager/getCrousRightHolderHtmlPart?eppn=${user.eppn}" var="getCrousRightHolderUrl"/>
+    <spring:url value="/resources/images/${cardMask}" var="leocarteMasqueUrl" />
     <script type="text/javascript">
 		var photorUrl = '${photoRootUrl}';
 		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
 	</script>
     <style>
-	#specimenleocarte #qrcode {
-		width: ${qrcodeWidth};
-	}		
+	   /* masque leocarte pour screen uniquement */
+		@media screen {
+			#specimenleocarte {
+				background: url(${leocarteMasqueUrl});
+				background-size: cover;
+			}
+		}
+		#specimenleocarte #qrcode {
+			width: ${qrcodeWidth};
+		}
 	</style>
     <h2>Utilisateur
 		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
@@ -76,8 +84,10 @@
                                     ${user.crous ? 'oui' : 'non'}
                                 </dd>
                                 <c:if test="${user.crous}">
-                                	<button type="button" id="getCrousRighHolder">Visualiser les données côté CROUS</button>
-                                	<div id="getCrousRighHolderDiv"><!--  --></div>
+                                    <button id="getCrousRighHolder" type="button">Visualiser les données côté CROUS</button>
+                                    <div id="getCrousRighHolderDiv">
+                                        <!--  -->
+                                    </div>
                                 </c:if>
                                 <dt class="fieldWs">European Student Card : </dt>
                                 <dd class="fieldWs">
@@ -398,10 +408,10 @@
                                                         <fmt:formatDate pattern="dd/MM/yyyy" value="${card.dateEtat}"/>
                                                     </dd>
                                                     <c:if test="${livraison}">
-	                                                    <dt>Date de livraison : </dt>
-	                                                    <dd>
-	                                                        <fmt:formatDate pattern="dd/MM/yyyy" value="${card.deliveredDate}"/>
-	                                                    </dd>
+                                                        <dt>Date de livraison : </dt>
+                                                        <dd>
+                                                            <fmt:formatDate pattern="dd/MM/yyyy" value="${card.deliveredDate}"/>
+                                                        </dd>
                                                     </c:if>
                                                     <dt>Date d'activation : </dt>
                                                     <dd>
@@ -531,5 +541,6 @@
         <field:display field="escnUid" id="s_org_esupportail_sgc_domain_Card_escnUid" object="${card}" z="exBIjPMY50acVWnojNWo8TyH/9M="/>
         <field:display field="qrcode" id="s_org_esupportail_sgc_domain_Card_qrcode" object="${card}" z="K6oae04CsjVr0+r3xpeBmYrfxV8="/>
         <field:display field="external" id="s_org_esupportail_sgc_domain_Card_external" object="${card}" z="rSAb/C1rClUGonk4xzczQNb79Zg="/>
+        <field:display field="europeanTransient" id="s_org_esupportail_sgc_domain_Card_europeanTransient" object="${card}" z="d426Wc391tiqC857dVhSh5SGrJU="/>
     </page:show>
 </div>

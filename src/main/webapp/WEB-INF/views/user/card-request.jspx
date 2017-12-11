@@ -5,12 +5,22 @@
 		<spring:url value="/user" var="cardRequestUrl" />
 		<spring:url value="/user/photo/${id}" var="rejectedPhotoUrl" />
 		<spring:url value="/user/photo/${lastId}" var="lastPhotoUrl" />
+		<spring:url value="/resources/images/${cardMask}" var="leocarteMasqueUrl" />
 		<script type="text/javascript">
 			var isRejected = '${isRejected}';
 			var rejectedPhotoUrl = '${rejectedPhotoUrl}';
 			var lastId = '${lastId}';
 			var lastPhotoUrl = '${lastPhotoUrl}';
-		</script>		
+		</script>
+	    <style>
+		   /* masque leocarte pour screen uniquement */
+			@media screen {
+				#specimenleocarte {
+					background: url(${leocarteMasqueUrl});
+					background-size: cover;
+				}
+			}
+		</style>
 		<c:if test="${!isEsupSgcUser}">
 		<div class="alert alert-danger">
 			<p>Vous ne pouvez pas demander actuellement de Leocarte.</p>
@@ -37,7 +47,14 @@
 						<input type="hidden" name="crousTransient" value="true" />
 					</c:otherwise>
 				</c:choose>
-				
+				<c:choose>
+					<c:when test="${displayFormParts['displayEuropeanCard']}">
+						<jsp:include page="includes/form_europeanCard.jspx"/>
+					</c:when>
+					<c:otherwise>
+						<input type="hidden" name="europeanTransient" value="false" />
+					</c:otherwise>
+				</c:choose>
 				<c:if test="${displayFormParts['displayAdresse']}">
 					<jsp:include page="includes/form_adress.jspx"/>
 				</c:if>

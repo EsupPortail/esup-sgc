@@ -181,6 +181,7 @@ public class UserCardController {
 		uiModel.addAttribute("configUserMsgs", getConfigMsgsUser());
 		uiModel.addAttribute("lastId", id);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(eppn));
+		uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
 		Map<String, Boolean> displayFormParts = displayFormParts(eppn, user.getUserType());
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
@@ -358,6 +359,10 @@ public class UserCardController {
 							user.setCrous(true);
 							userInfoService.setAdditionalsInfo(user, request);
 						}
+						if(card.getEuropeanTransient()!=null && card.getEuropeanTransient()) {
+							user.setEuropeanStudentCard(true);
+							userInfoService.setAdditionalsInfo(user, request);
+						}
 						user.setDifPhoto(card.getDifPhotoTransient());
 						String reference = cardService.getPaymentWithoutCard(eppn);
 						if(!reference.isEmpty()){
@@ -397,6 +402,7 @@ public class UserCardController {
 		displayFormParts.put("isPaidRenewal",  userService.isPaidRenewal(eppn));
 		displayFormParts.put("canPaidRenewal",  userService.canPaidRenewal(eppn));
 		displayFormParts.put("hasDeliveredCard",  userService.hasDeliveredCard(eppn));
+		displayFormParts.put("displayEuropeanCard", cardService.displayFormEuropeanCard(type));
 		return displayFormParts;
 		
 	}
@@ -474,8 +480,6 @@ public class UserCardController {
 		getConfigMsgsUser.put("freeRenewalMsg", appliConfigService.getUseFreeRenewalMsg());
 		getConfigMsgsUser.put("paidRenewalMsg", appliConfigService.getUserPaidRenewalMsg());
 		getConfigMsgsUser.put("canPaidRenewalMsg", appliConfigService.getUserCanPaidRenewalMsg());
-		getConfigMsgsUser.put("deliveredCardMsg", appliConfigService.getDeliveredCardlMsg());
-		getConfigMsgsUser.put("editedCardMsg", appliConfigService.getEditedCardlMsg());
 		getConfigMsgsUser.put("newCardMsg", appliConfigService.getNewCardlMsg());
 		getConfigMsgsUser.put("checkedOrEncodedCardMsg", appliConfigService.getCheckedOrEncodedCardMsg());
 		getConfigMsgsUser.put("rejectedCardMsg", appliConfigService.getRejectedCardMsg());
@@ -520,6 +524,16 @@ public class UserCardController {
 		user.merge();
 		logService.log(user.getCards().get(0).getId(), ACTION.ENABLECROUS, RETCODE.SUCCESS, "", eppn, null);
 		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "crous");
+		return "redirect:/user";
+	}
+	
+	@RequestMapping(value="/enableEuropeanCard", method=RequestMethod.POST)
+	public String enableEuropeanCard(@RequestParam("eppn")String eppn, final RedirectAttributes redirectAttributes) {
+		User user = User.findUser(eppn);
+		user.setEuropeanStudentCard(true);
+		user.merge();
+		logService.log(user.getCards().get(0).getId(), ACTION.ENABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
+		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european");
 		return "redirect:/user";
 	}
 }

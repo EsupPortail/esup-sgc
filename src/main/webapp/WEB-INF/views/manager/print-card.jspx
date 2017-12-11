@@ -16,7 +16,7 @@
 	</script>
 
 	<spring:url
-					value="/resources/images/leocarte-masque.png"
+					value="/resources/images/${cardMask}"
 					var="leocarteMasqueUrl" />
 					
 	<style>

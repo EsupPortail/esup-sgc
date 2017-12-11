@@ -161,6 +161,9 @@ public class Card {
 
     @Transient
     Boolean crousTransient;
+    
+    @Transient
+    Boolean europeanTransient;
 
     @Transient
     Boolean difPhotoTransient;

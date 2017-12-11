@@ -120,14 +120,6 @@ legend.scheduler-border {
   margin-left: 10px
   }
 
-/* masque leocarte pour screen uniquement */
-@media screen {
-	#specimenleocarte {
-		background: url("/resources/images/leocarte-masque.png");
-		 background-size: cover;
-
-	}
-}
  /*previsualisatio carte*/
  #specimenleocarte {
 	position: relative;

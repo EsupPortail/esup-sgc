@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<fieldset class="scheduler-border">
+		<legend class="scheduler-border">Carte européenne</legend>
+		<div class="alert alert-info">
+		<p>Souhaitez-vous adhérer au projet de carte étudiante européenne?
+			<a href="http://europeanstudentcard.eu/fr/" target="blank"><strong>>> Plus d'informations</strong></a>
+		</p> 
+		</div>		
+		<div class="radio">
+			<label for="radioEurope1"> <input type="radio"
+				name="europeanTransient" id="radioEurope1" value="true" /> Oui
+			</label>
+		</div>
+		<div class="radio">
+			<label for="radioEurope2"> <input value="false" type="radio"
+				name="europeanTransient" id="radioEurope2" />Non
+			</label>
+		</div>
+	</fieldset>
