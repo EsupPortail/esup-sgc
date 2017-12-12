@@ -72,7 +72,8 @@
 
 	<beans:bean id="authUserDetailsService"
 		class="org.esupportail.sgc.security.ShibAuthenticatedUserDetailsService">
-		<beans:property name="mappingGroupesRoles" ref="sgcMappingGroupesRoles"/>
+	    <beans:property name="mappingGroupesRoles" ref="sgcMappingGroupesRoles"/>
+            <beans:property name="ldapGroup2UserRoleService" ref="ldapGroup2UserRoleService"/>
 	</beans:bean>
 
 	<beans:bean id="switchUserProcessingFilter"

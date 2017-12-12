@@ -35,16 +35,21 @@ public class LdapGroup2UserRoleService {
 		this.mappingGroupesRoles = mappingGroupesRoles;
 	}
 	
-	@Transactional
-	public void syncUser(String eppn) {
-		User user = User.findUser(eppn);
-		Set<String> rolesTarget = new HashSet<String>();
+	public Set<String> getRoles(String eppn) {
+		Set<String> roles = new HashSet<String>();
 		for(String groupName : groupService.getGroupOfNamesForEppn(eppn)) {
 			if(mappingGroupesRoles.containsKey(groupName)) {
 				String role = mappingGroupesRoles.get(groupName);
-				rolesTarget.add(role);
+				roles.add(role);
 			}
 		}
+		return roles;
+	}
+	
+	@Transactional
+	public void syncUser(String eppn) {
+		User user = User.findUser(eppn);
+		Set<String> rolesTarget = getRoles(eppn);
 		Set<String> roles2Add = new HashSet<String>(rolesTarget);
 		roles2Add.removeAll(user.getRoles());
 		Set<String> roles2Remove = new HashSet<String>(user.getRoles());

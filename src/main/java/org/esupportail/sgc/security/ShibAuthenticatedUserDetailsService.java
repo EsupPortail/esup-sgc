@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,8 +21,14 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 
 	protected Map<String, String> mappingGroupesRoles;
 	
+	protected LdapGroup2UserRoleService ldapGroup2UserRoleService;;
+	
 	public void setMappingGroupesRoles(Map<String, String> mappingGroupesRoles) {
 		this.mappingGroupesRoles = mappingGroupesRoles;
+	}
+
+	public void setLdapGroup2UserRoleService(LdapGroup2UserRoleService ldapGroup2UserRoleService) {
+		this.ldapGroup2UserRoleService = ldapGroup2UserRoleService;
 	}
 
 	public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token) throws AuthenticationException {
@@ -31,6 +38,9 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 			if(mappingGroupesRoles != null && mappingGroupesRoles.containsKey(credential)){ 
 				authorities.add(new SimpleGrantedAuthority(mappingGroupesRoles.get(credential)));
 			}
+		}
+		for(String roleFromLdap : ldapGroup2UserRoleService.getRoles(token.getName())) {
+			authorities.add(new SimpleGrantedAuthority(roleFromLdap));
 		}
 		return createUserDetails(token, authorities);
 	}
@@ -45,7 +55,7 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 			if("ROLE_MANAGER".equals(mappingGroupesRoles.get(group))) {
 				groups.add(group);
 			}
-		}
+		}		
 		return groups;
 	}
 	
