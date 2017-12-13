@@ -17,7 +17,7 @@
       <c:set var="size" value="10" />
     </c:if>
     
-    <spring:url value="" var="queryUrl">
+    <spring:url value="" var="queryUrl" htmlEscape="false">
 		<c:forEach items="${paramValues}" var="p">
 			<c:if test="${p.key ne 'page' and p.key ne 'size'}">
 				<c:forEach var='value' items='${p.value}'>

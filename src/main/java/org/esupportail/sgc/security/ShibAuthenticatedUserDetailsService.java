@@ -2,11 +2,15 @@ package org.esupportail.sgc.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +23,8 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 public class ShibAuthenticatedUserDetailsService
 implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
+	private final Logger log = LoggerFactory.getLogger(getClass());
+	
 	protected Map<String, String> mappingGroupesRoles;
 	
 	protected LdapGroup2UserRoleService ldapGroup2UserRoleService;;
@@ -32,7 +38,7 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	}
 
 	public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token) throws AuthenticationException {
-		List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+		Set<SimpleGrantedAuthority> authorities = new HashSet<SimpleGrantedAuthority>();
 		String credentials = (String)token.getCredentials();
 		for(String credential : StringUtils.split(credentials, ";")) {
 			if(mappingGroupesRoles != null && mappingGroupesRoles.containsKey(credential)){ 
@@ -42,6 +48,7 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		for(String roleFromLdap : ldapGroup2UserRoleService.getRoles(token.getName())) {
 			authorities.add(new SimpleGrantedAuthority(roleFromLdap));
 		}
+		log.info("Shib & Ldap Credentials for " + token.getName() + " -> " + authorities);
 		return createUserDetails(token, authorities);
 	}
 
@@ -101,4 +108,6 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		return isPreviousAdmin;
 	}
 
+	
+	
 }

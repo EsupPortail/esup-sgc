@@ -1,8 +1,15 @@
 package org.esupportail.sgc.web.admin;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.LogService.ACTION;
+import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.services.LogService.TYPE;
+import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/admin/logs")
 @Controller
 @RooWebScaffold(path = "admin/logs", formBackingObject = Log.class, create=false, delete=false)
+@RooWebFinder
 public class LogsController {
 	
 	@Resource
@@ -27,6 +35,24 @@ public class LogsController {
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "logs";
+	}
+	
+	@ModelAttribute("enumTypes")
+	public List<TYPE> getEnumTypes() {
+		List<TYPE> types = Arrays.asList(TYPE.values());
+		return types;
+	}
+	
+	@ModelAttribute("enumRetCodes")
+	public List<RETCODE> getEnumRetCodes() {
+		List<RETCODE> retCodes = Arrays.asList(RETCODE.values());
+		return retCodes;
+	}
+	
+	@ModelAttribute("enumActions")
+	public List<ACTION> getEnumActions() {
+		List<ACTION> actions = Arrays.asList(ACTION.values());
+		return actions;
 	}
 	
     @RequestMapping(produces = "text/html")
@@ -50,49 +76,52 @@ public class LogsController {
         return "admin/logs/list";
     }
     
-    
-    @RequestMapping(params = "find=ByCardIdEquals", method = RequestMethod.GET)
-    public String findLogsByCardIdEqual(@RequestParam("cardId") Long cardId, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
-    	if (page != null || size != null) {
+    @RequestMapping(params = "find=ByActionEquals", method = RequestMethod.GET)
+    public String findLogsByActionEquals(@RequestParam("action") String action, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("logs", Log.findLogsByCardIdEquals(cardId, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
-            float nrOfPages = (float)  Log.countFindLogsByCardIdEquals(cardId) / sizeNo;
+            uiModel.addAttribute("logs", Log.findLogsByActionEquals(action, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Log.countFindLogsByActionEquals(action) / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("logs", Log.findLogsByCardIdEquals(cardId, sortFieldName, sortOrder).getResultList());
+            uiModel.addAttribute("logs", Log.findLogsByActionEquals(action, sortFieldName, sortOrder).getResultList());
         }
+        uiModel.addAttribute("actionSelected",action);
         addDateTimeFormatPatterns(uiModel);
         return "admin/logs/list";
     }
     
-    @RequestMapping(params = "find=ByEppnEquals", method = RequestMethod.GET)
-    public String findLogsByEppnEqual(@RequestParam("eppn") String eppn, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
-    	if (page != null || size != null) {
+    @RequestMapping(params = "find=ByTypeEquals", method = RequestMethod.GET)
+    public String findLogsByTypeEquals(@RequestParam("type") String type, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("logs", Log.findLogsByEppnEquals(eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
-            float nrOfPages = (float)  Log.countFindLogsByEppnEquals(eppn) / sizeNo;
+            uiModel.addAttribute("logs", Log.findLogsByTypeEquals(type, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Log.countFindLogsByTypeEquals(type) / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("logs", Log.findLogsByEppnEquals(eppn, sortFieldName, sortOrder).getResultList());
+            uiModel.addAttribute("logs", Log.findLogsByTypeEquals(type, sortFieldName, sortOrder).getResultList());
         }
+        uiModel.addAttribute("typeSelected",type);
         addDateTimeFormatPatterns(uiModel);
         return "admin/logs/list";
     }
     
-    @RequestMapping(params = "find=ByEppnCibleEquals", method = RequestMethod.GET)
-    public String findLogsByEppnCibleEqual(@RequestParam("eppn") String eppn, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
-    	if (page != null || size != null) {
+    @RequestMapping(params = "find=ByRetCodeEquals", method = RequestMethod.GET)
+    public String findLogsByRetCodeEquals(@RequestParam("retCode") String retCode, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("logs", Log.findLogsByEppnCibleEquals(eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
-            float nrOfPages = (float)  Log.countFindLogsByEppnCibleEquals(eppn) / sizeNo;
+            uiModel.addAttribute("logs", Log.findLogsByRetCodeEquals(retCode, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Log.countFindLogsByRetCodeEquals(retCode) / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("logs", Log.findLogsByEppnCibleEquals(eppn, sortFieldName, sortOrder).getResultList());
+            uiModel.addAttribute("logs", Log.findLogsByRetCodeEquals(retCode, sortFieldName, sortOrder).getResultList());
         }
         addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("retCodeSelected",retCode);
         return "admin/logs/list";
     }
+        
 }

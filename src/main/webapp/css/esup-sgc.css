@@ -513,3 +513,7 @@ margin-left: 10px;
 border: 1px solid #800;
 background-color: #fff;
 }
+
+#logsList table {
+    font-size: 14px;
+}

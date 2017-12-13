@@ -41,7 +41,7 @@
                                 <input name="j_username" type="hidden" value="${user.eppn}"/>
                                 <button class="btn btn-danger" type="submit">SU</button>
                             </form>
-                            <spring:url htmlEscape="false" value="/admin/logs?find=ByEppnCibleEquals&amp;eppn=${user.eppn}&amp;page=1&amp;size=10&amp;sortFieldName=logDate&amp;sortOrder=desc" var="urlLogs"/>
+                            <spring:url htmlEscape="false" value="/admin/logs?find=ByEppnCibleEquals&amp;eppnCible=${user.eppn}&amp;page=1&amp;size=10&amp;sortFieldName=logDate&amp;sortOrder=desc" var="urlLogs"/>
                             <a class=" btn btn-info pull-right" href="${urlLogs}">
                                 <span class="glyphicon glyphicon-time"/>
                             </a>

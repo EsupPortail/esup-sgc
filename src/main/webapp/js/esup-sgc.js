@@ -1125,7 +1125,14 @@ $(document).ready(function() {
 			})
 		}
 	});
-	
-	
+   $("#typeLogs").on('change', function () {
+	   $("#formTypeLogs").submit();
+   });
+   $("#actionLogs").on('change', function () {
+	   $("#formActionLogs").submit();
+   });
+   $("#retCodeLogs").on('change', function () {
+	   $("#formRetCodeLogs").submit();
+   });   
 });
 	

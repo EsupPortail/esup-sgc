@@ -37,7 +37,12 @@
 	
 	
 	<bean id="esistCrousService" class="org.esupportail.sgc.services.crous.EsistCrousService">
-		<property name="esistFile" value="ESIST1eravril.xml" />
+		<property name="esistFiles">
+			<list>
+				<!-- value>ESIST-cnrs.xml</value-->
+				<value>ESIST1eravril.xml</value>
+			</list>
+		</property>
 	</bean>
 
 

@@ -34,10 +34,40 @@ privileged aspect Log_Roo_Finder {
         return ((Long) q.getSingleResult());
     }
     
+    public static Long Log.countFindLogsByEppnCibleLike(String eppnCible) {
+        if (eppnCible == null || eppnCible.length() == 0) throw new IllegalArgumentException("The eppnCible argument is required");
+        eppnCible = eppnCible.replace('*', '%');
+        if (eppnCible.charAt(0) != '%') {
+            eppnCible = "%" + eppnCible;
+        }
+        if (eppnCible.charAt(eppnCible.length() - 1) != '%') {
+            eppnCible = eppnCible + "%";
+        }
+        EntityManager em = Log.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Log AS o WHERE LOWER(o.eppnCible) LIKE LOWER(:eppnCible)", Long.class);
+        q.setParameter("eppnCible", eppnCible);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static Long Log.countFindLogsByEppnEquals(String eppn) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         EntityManager em = Log.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Log AS o WHERE o.eppn = :eppn", Long.class);
+        q.setParameter("eppn", eppn);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long Log.countFindLogsByEppnLike(String eppn) {
+        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
+        eppn = eppn.replace('*', '%');
+        if (eppn.charAt(0) != '%') {
+            eppn = "%" + eppn;
+        }
+        if (eppn.charAt(eppn.length() - 1) != '%') {
+            eppn = eppn + "%";
+        }
+        EntityManager em = Log.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Log AS o WHERE LOWER(o.eppn) LIKE LOWER(:eppn)", Long.class);
         q.setParameter("eppn", eppn);
         return ((Long) q.getSingleResult());
     }
@@ -135,6 +165,43 @@ privileged aspect Log_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<Log> Log.findLogsByEppnCibleLike(String eppnCible) {
+        if (eppnCible == null || eppnCible.length() == 0) throw new IllegalArgumentException("The eppnCible argument is required");
+        eppnCible = eppnCible.replace('*', '%');
+        if (eppnCible.charAt(0) != '%') {
+            eppnCible = "%" + eppnCible;
+        }
+        if (eppnCible.charAt(eppnCible.length() - 1) != '%') {
+            eppnCible = eppnCible + "%";
+        }
+        EntityManager em = Log.entityManager();
+        TypedQuery<Log> q = em.createQuery("SELECT o FROM Log AS o WHERE LOWER(o.eppnCible) LIKE LOWER(:eppnCible)", Log.class);
+        q.setParameter("eppnCible", eppnCible);
+        return q;
+    }
+    
+    public static TypedQuery<Log> Log.findLogsByEppnCibleLike(String eppnCible, String sortFieldName, String sortOrder) {
+        if (eppnCible == null || eppnCible.length() == 0) throw new IllegalArgumentException("The eppnCible argument is required");
+        eppnCible = eppnCible.replace('*', '%');
+        if (eppnCible.charAt(0) != '%') {
+            eppnCible = "%" + eppnCible;
+        }
+        if (eppnCible.charAt(eppnCible.length() - 1) != '%') {
+            eppnCible = eppnCible + "%";
+        }
+        EntityManager em = Log.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Log AS o WHERE LOWER(o.eppnCible) LIKE LOWER(:eppnCible)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Log> q = em.createQuery(queryBuilder.toString(), Log.class);
+        q.setParameter("eppnCible", eppnCible);
+        return q;
+    }
+    
     public static TypedQuery<Log> Log.findLogsByEppnEquals(String eppn) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         EntityManager em = Log.entityManager();
@@ -147,6 +214,43 @@ privileged aspect Log_Roo_Finder {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         EntityManager em = Log.entityManager();
         StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Log AS o WHERE o.eppn = :eppn");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Log> q = em.createQuery(queryBuilder.toString(), Log.class);
+        q.setParameter("eppn", eppn);
+        return q;
+    }
+    
+    public static TypedQuery<Log> Log.findLogsByEppnLike(String eppn) {
+        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
+        eppn = eppn.replace('*', '%');
+        if (eppn.charAt(0) != '%') {
+            eppn = "%" + eppn;
+        }
+        if (eppn.charAt(eppn.length() - 1) != '%') {
+            eppn = eppn + "%";
+        }
+        EntityManager em = Log.entityManager();
+        TypedQuery<Log> q = em.createQuery("SELECT o FROM Log AS o WHERE LOWER(o.eppn) LIKE LOWER(:eppn)", Log.class);
+        q.setParameter("eppn", eppn);
+        return q;
+    }
+    
+    public static TypedQuery<Log> Log.findLogsByEppnLike(String eppn, String sortFieldName, String sortOrder) {
+        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
+        eppn = eppn.replace('*', '%');
+        if (eppn.charAt(0) != '%') {
+            eppn = "%" + eppn;
+        }
+        if (eppn.charAt(eppn.length() - 1) != '%') {
+            eppn = eppn + "%";
+        }
+        EntityManager em = Log.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Log AS o WHERE LOWER(o.eppn) LIKE LOWER(:eppn)");
         if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
             queryBuilder.append(" ORDER BY ").append(sortFieldName);
             if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {

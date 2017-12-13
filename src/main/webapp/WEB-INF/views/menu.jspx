@@ -16,7 +16,17 @@
             </menu:category>
             <menu:item activeMenu="${active=='nfc'}" id="i_esupnfcsgcjwsdevice_list" label="Esup-nfc" url="/admin/jwsdevices?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:category id="c_esupnfcsgcjwsdevice" render="false" z="user-managed"/>
-            <menu:category id="c_log" render="false" z="user-managed"/>
+            <menu:category id="c_log" render="false" z="user-managed">
+                <menu:item id="fi_log_actionequals" messageCode="global_menu_find" url="/admin/logs?find=ByActionEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="d2CqQXHt8LaYRpKwBUTg/v86sDs="/>
+                <menu:item id="fi_log_cardidequals" messageCode="global_menu_find" url="/admin/logs?find=ByCardIdEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="LtSw+tVZZUFnVweiD3K+vQmJw+g="/>
+                <menu:item id="fi_log_eppncibleequals" messageCode="global_menu_find" url="/admin/logs?find=ByEppnCibleEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="PVgwUCuRQPsUjh/jRufr1Ge5mUU="/>
+                <menu:item id="fi_log_eppnciblelike" messageCode="global_menu_find" url="/admin/logs?find=ByEppnCibleLike&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="+fG3bGp84IxQ/K849pbUGLPuIHQ="/>
+                <menu:item id="fi_log_eppnequals" messageCode="global_menu_find" url="/admin/logs?find=ByEppnEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="LkC7yoAjyNshZtGbCZvtAOuvtPE="/>
+                <menu:item id="fi_log_eppnlike" messageCode="global_menu_find" url="/admin/logs?find=ByEppnLike&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="NSvOD7Hdfc/dEly+uUF/hRLnia8="/>
+                <menu:item id="fi_log_logdatelessthan" messageCode="global_menu_find" url="/admin/logs?find=ByLogDateLessThan&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="kUW5/al5pavH93/4C0NQwpkQdIc="/>
+                <menu:item id="fi_log_retcodeequals" messageCode="global_menu_find" url="/admin/logs?find=ByRetCodeEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="GgszM9zQ9DDUS/w/Pk91jGoGl2g="/>
+                <menu:item id="fi_log_typeequals" messageCode="global_menu_find" url="/admin/logs?find=ByTypeEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="x7coza/+jO4/7iKr/RkZjSYiRYw="/>
+            </menu:category>
             <menu:item activeMenu="${active=='logs'}" id="i_log_list" label="Logs" url="/admin/logs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='paybox'}" id="i_payboxtransactionlog_list" label="Transactions Paybox" url="/admin/payboxtransactions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:category id="c_payboxtransactionlog" render="false" z="user-managed"/>
@@ -32,9 +42,9 @@
             <menu:item id="i_cardactionmessage_new" messageCode="global_menu_new" url="/admin/actionmessages?form" z="pZnZ6jYKfu0DMR+I0O3eDphyeOw="/>
         </menu:category>
         <menu:category id="c_crouserrorlog" render="false" z="user-managed">
-            <menu:item id="i_crouserrorlog_new" messageCode="global_menu_new" url="/admin/crouserrorlogs?form" z="VrA6nF9bJVdV5O9opq5MTazS7fI="/>
+            <menu:item  id="i_crouserrorlog_new" messageCode="global_menu_new" url="/admin/crouserrorlogs?form" z="VrA6nF9bJVdV5O9opq5MTazS7fI="/>
         </menu:category>
-        <menu:item id="i_crouserrorlog_list" label="Erreurs CROUS" messageCode="global_menu_list" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+        <menu:item activeMenu="${active=='crousError'}"  id="i_crouserrorlog_list" label="Erreurs CROUS" messageCode="global_menu_list" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
         <menu:category id="c_prefs" render="false" z="user-managed">
             <menu:item id="i_prefs_list" messageCode="global_menu_list" url="/admin/prefses?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item id="i_prefs_new" messageCode="global_menu_new" url="/prefses?form" z="yQY2P8SHwnz4tytRPPu/4L37fXM="/>

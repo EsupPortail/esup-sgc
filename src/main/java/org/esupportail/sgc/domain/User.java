@@ -533,6 +533,21 @@ public class User {
 		Query q = em.createNativeQuery("SELECT DISTINCT user_type FROM user_account");
 		return q.getResultList();
 	}
+
+    /**
+     * @return Date + 30H00 - so that 31/08/2017 is 01/09/2017 - 06H00
+     */
+    public Date getDueDateIncluded() {
+        Date dueDateIncluded = null;
+        Date dueDate = this.getDueDate();
+        if (dueDate != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dueDate);
+            cal.add(Calendar.HOUR, +30);
+            dueDateIncluded = cal.getTime();
+        }
+        return dueDateIncluded;
+    }
 	
 }
 

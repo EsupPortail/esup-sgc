@@ -125,7 +125,7 @@ public class ResynchronisationUserService {
 				cardEtatService.setCardEtat(card, Etat.DISABLED, null, null, false, true);
 			}
 			// if card must be out_of_date we invalidate it
-			if((Etat.ENABLED.equals(card.getEtat()) || Etat.DISABLED.equals(card.getEtat()) || Etat.ENCODED.equals(card.getEtat())) && user.getDueDate().before(new Date())) {
+			if((Etat.ENABLED.equals(card.getEtat()) || Etat.DISABLED.equals(card.getEtat()) || Etat.ENCODED.equals(card.getEtat())) && user.getDueDateIncluded().before(new Date())) {
 				cardEtatService.setCardEtat(card, Etat.CADUC, null, null, false, true);
 			}
 			

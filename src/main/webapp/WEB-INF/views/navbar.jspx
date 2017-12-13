@@ -23,7 +23,7 @@
 			<c:set var="role" value="supervisor" />
 		</c:when>
 		<c:when
-			test="${active == 'admin' || active =='sessions'|| active =='paybox'|| active =='logs'|| active =='nfc' 
+			test="${active == 'admin' || active =='sessions'|| active =='paybox'|| active =='logs'|| active =='nfc'  || active =='crousError' 
 			|| active =='configs' || active =='crous'|| active =='import' || active =='actionmsgs' || active =='tools' || active =='prefs'}">
 			<c:set var="role" value="admin" />
 		</c:when>
