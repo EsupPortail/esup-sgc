@@ -156,7 +156,7 @@
 	<bean id="cardIdService" class="org.esupportail.sgc.services.cardid.ComueNuCardIdService">
 		<property name="cardNfcIdCounterBegin" value="107000000100000"/>
 		<property name="cardCrousIdCounterBegin" value="66900000"/>
-		<property name="crousEncodeEnabled" value="true"/>
+		<property name="crousEncodeEnabled" value="false"/>
 	</bean>
 	
 	<bean id="esupNfcTagService" class="org.esupportail.sgc.services.EsupNfcTagService">
