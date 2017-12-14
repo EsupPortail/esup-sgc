@@ -45,8 +45,8 @@
 		class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="ldap://ldap.univ-ville.fr" />
 		<property name="base" value="dc=univ-ville,dc=fr" />
-		<property name="userDn" value="cn=sgc,dc=univ-ville,dc=fr" />
-		<property name="password" value="pass" />
+		<property name="userDn" value="cn=admin,dc=univ-ville,dc=fr" />
+		<property name="password" value="esup" />
 	</bean>    
 	
 	<bean id="ldapTemplate" class="org.springframework.ldap.core.LdapTemplate">
@@ -178,8 +178,8 @@
 		class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="ldap://ldap.univ-ville.fr" />
 		<property name="base" value="dc=univ-ville,dc=fr" />
-		<property name="userDn" value="cn=sgc-write,dc=univ-ville,dc=fr" />
-		<property name="password" value="pass" />
+		<property name="userDn" value="cn=admin,dc=univ-ville,dc=fr" />
+		<property name="password" value="esup" />
 	</bean>    
 	
 	<bean id="ldapTemplateWrite" class="org.springframework.ldap.core.LdapTemplate">
