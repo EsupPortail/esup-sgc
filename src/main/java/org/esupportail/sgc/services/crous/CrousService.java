@@ -28,7 +28,7 @@ public class CrousService extends ValidateService {
 	@Override
 	public void validate(Card card) {
 		User user = User.findUser(card.getEppn());
-		if(user.getCrous()) {
+		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			try {
 				authApiCrousService.postOrUpdateRightHolder(card.getEppn());
 			} catch(CrousAccountLockException ex) {
@@ -48,7 +48,7 @@ public class CrousService extends ValidateService {
 	@Override
 	public void invalidate(Card card) {
 		User user = User.findUser(card.getEppn());
-		if(user.getCrous()) {
+		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			try {
 				authApiCrousService.postOrUpdateRightHolder(card.getEppn());
 			} catch(CrousAccountLockException ex) {

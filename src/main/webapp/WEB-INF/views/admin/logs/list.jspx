@@ -41,6 +41,7 @@
 						<label for="basic-url">Type d'utilisateur</label>
 						 <div class="input-group">
 							<select id="typeLogs" name="type" class="form-control">
+								<option value="">--Choisir--</option>
 								<c:forEach items="${enumTypes}" var="type">
 									<c:choose>
 										<c:when test="${type eq typeSelected}">
@@ -67,6 +68,7 @@
 						<label for="basic-url">Action</label>
 						 <div class="input-group">
 							<select id="actionLogs" name="action" class="form-control">
+								<option value="">--Choisir--</option>
 								<c:forEach items="${enumActions}" var="action">
 									<c:choose>
 										<c:when test="${action eq  actionSelected}">
@@ -93,6 +95,7 @@
 						<label for="basic-url">Ret Code</label>
 						 <div class="input-group">
 							<select id="retCodeLogs" name="retCode" class="form-control">
+								<option value="">--Choisir--</option>
 								<c:forEach items="${enumRetCodes}" var="retCode">
 									<c:choose>
 										<c:when test="${retCode eq  retCodeSelected}">
@@ -124,7 +127,7 @@
             <table:column id="c_org_esupportail_sgc_domain_Log_type" property="type" z="9EhS13/ArBV6YDWE6Wn6hL4LAjs="/>
             <table:column id="c_org_esupportail_sgc_domain_Log_cardId" link="true" linkPrefix="/manager/" property="cardId" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Log_action" property="action" z="wVqcc3DltSO1ydDe4W/Oyk3cWDk="/>
-            <table:column id="c_org_esupportail_sgc_domain_Log_retCode" label="Commentaire" property="retCode" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Log_retCode" label="Ret Code" property="retCode" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Log_comment" label="Commentaire" property="comment" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Log_remoteAddress" label="IP" property="remoteAddress" z="user-managed"/>
         </table:table>

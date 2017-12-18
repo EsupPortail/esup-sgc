@@ -393,6 +393,10 @@ public class ApiCrousService {
 		return dateFormat.format(new Date());
 	}
 
+	public boolean isEnabled() {
+		return enable;
+	}
+
 }
 
 

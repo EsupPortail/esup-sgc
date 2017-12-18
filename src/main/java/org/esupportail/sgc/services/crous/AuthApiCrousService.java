@@ -136,5 +136,10 @@ public class AuthApiCrousService {
 		}
 	}
 
+
+	public boolean isEnabled() {
+		return apiCrousService.isEnabled();
+	}
+
 }
 
