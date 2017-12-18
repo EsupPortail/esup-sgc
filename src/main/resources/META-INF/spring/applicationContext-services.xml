@@ -203,7 +203,7 @@
 		</property>
 	</bean>
 
-	 
+<!--	 
    <bean id="adContextSource"
 		class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="ldaps://ad.univ-ville.fr:636" />
@@ -230,7 +230,7 @@
 			</map>
 		</property>
 	</bean>
-
+-->
 	<bean id="ipService" class="org.esupportail.sgc.services.IpService">
 	    <property name="maps">
 			<bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
