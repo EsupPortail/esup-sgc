@@ -70,8 +70,8 @@
 				<entry key="supannEtablissement" value="supannEtablissement"/>
 				<entry key="supannRefId4ExternalCard" value="supannRefId"/>
 				<entry key="jpegPhoto4ExternalCard" value="jpegPhoto"/>
-				<entry key="recto3" value="givenname"/>
 				<entry key="recto2" value="sn"/>
+				<entry key="recto3" value="givenname"/>
 				<entry key="schacExpiryDate" value="schacExpiryDate"/>
 				<entry key="secondaryId" value="eduPersonPrincipalName"/> 
 			</map>
@@ -153,6 +153,22 @@
 		</property>	
 	</bean>
 
+        <!--
+            Si recto1 et recot4 non trouvé/configuré encore on les calcule en fonction du userType et de schacDateOfBirth
+        -->
+        <bean id="spelUserInfoServiceRecto1Recto4" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="6">
+            <property name="sgcParam2spelExp">
+                <map>
+                    <entry key="recto1" value="#userInfosInComputing['recto1'] != Null ? #userInfosInComputing['recto1'] :
+                        #userInfosInComputing['userType']  == 'E' ? 'étudiant' :
+                        #userInfosInComputing['userType'] == 'P' ? 'professionnelle' :
+                        #userInfosInComputing['userType'] == 'I' ? 'invité' :
+                        'extérieur'"/>
+                    <entry key="recto4" value="#userInfosInComputing['recto4'] != Null ? #userInfosInComputing['recto4'] :
+                                               #userInfosInComputing['schacDateOfBirth']  != Null ? 'Né le : ' + #dateUtils.schadDateOfBirthDay2FrenchDate(#userInfosInComputing['schacDateOfBirth']) : ''"/>
+                </map>
+            </property>
+        </bean>
         
 	<bean id="cardIdService" class="org.esupportail.sgc.services.cardid.ComueNuCardIdService">
 		<property name="cardNfcIdCounterBegin" value="107000000100000"/>
