@@ -9,14 +9,6 @@ import org.esupportail.sgc.domain.Card;
 
 privileged aspect Card_Roo_Finder {
     
-    public static Long Card.countFindCardsByDesfireId(String desfireId) {
-        if (desfireId == null || desfireId.length() == 0) throw new IllegalArgumentException("The desfireId argument is required");
-        EntityManager em = Card.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.desfireId = :desfireId", Long.class);
-        q.setParameter("desfireId", desfireId);
-        return ((Long) q.getSingleResult());
-    }
-    
     public static Long Card.countFindCardsByEppnAndEtatEquals(String eppn, Etat etat) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         if (etat == null) throw new IllegalArgumentException("The etat argument is required");
@@ -58,29 +50,6 @@ privileged aspect Card_Roo_Finder {
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE LOWER(o.eppn) LIKE LOWER(:eppn)", Long.class);
         q.setParameter("eppn", eppn);
         return ((Long) q.getSingleResult());
-    }
-    
-    public static TypedQuery<Card> Card.findCardsByDesfireId(String desfireId) {
-        if (desfireId == null || desfireId.length() == 0) throw new IllegalArgumentException("The desfireId argument is required");
-        EntityManager em = Card.entityManager();
-        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.desfireId = :desfireId", Card.class);
-        q.setParameter("desfireId", desfireId);
-        return q;
-    }
-    
-    public static TypedQuery<Card> Card.findCardsByDesfireId(String desfireId, String sortFieldName, String sortOrder) {
-        if (desfireId == null || desfireId.length() == 0) throw new IllegalArgumentException("The desfireId argument is required");
-        EntityManager em = Card.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE o.desfireId = :desfireId");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("desfireId", desfireId);
-        return q;
     }
     
     public static TypedQuery<Card> Card.findCardsByEppnAndEtatEquals(String eppn, Etat etat) {

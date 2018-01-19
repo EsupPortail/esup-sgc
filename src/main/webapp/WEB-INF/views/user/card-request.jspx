@@ -11,6 +11,7 @@
 			var rejectedPhotoUrl = '${rejectedPhotoUrl}';
 			var lastId = '${lastId}';
 			var lastPhotoUrl = '${lastPhotoUrl}';
+			var isISmartPhone = '${isISmartPhone}';
 		</script>
 	    <style>
 		   /* masque leocarte pour screen uniquement */

@@ -130,4 +130,14 @@ public class UserService {
 		}
 		return hasDeliveredCard;
 	}
+	
+	public boolean isISmartphone(String userAgent){
+		boolean isISmartphone = false;
+		
+		if(userAgent.contains("iPhone") || userAgent.contains("iPad")){
+			isISmartphone = true;
+		}
+		
+		return isISmartphone;
+	}
 }

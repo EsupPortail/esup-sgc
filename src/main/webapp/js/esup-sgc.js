@@ -348,12 +348,12 @@ function chartPieorDoughnut(data, id, type, option){
  	} 	
 }
 
-function chartBar(data, id, transTooltip, formatDate){
+function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
 	if(typeof $(id).get(0) != "undefined"){
     	var listLabels = [];
     	var listValeurs = [];
     	var listTooltipLabels = [];
-    	$.each(data, function(index, value) {
+    	$.each(data1, function(index, value) {
     		if(formatDate){
     			index = formatDateString(index);
     		}
@@ -369,16 +369,29 @@ function chartBar(data, id, transTooltip, formatDate){
     		listLabels.push(index);
     		listValeurs.push(value);
         });
+    	var datasets = [{
+	            label: label1,
+    			backgroundColor: generateColors[3],
+	            borderColor: generateBorderColors[3],
+	            borderWidth: 1,
+	            data : listValeurs
+    	}];
+    	if(data2 !=null){
+    		var listValeurs2 = [];
+    		$.each(data2, function(index, value) {
+    			listValeurs2.push(value);
+    		});
+    		datasets.push({
+	            label: label2,
+    			backgroundColor: generateColors[4],
+	            borderColor: generateBorderColors[4],
+	            borderWidth: 1,
+    			data : listValeurs2
+    	})
+    	}
         var  barChartData = {
             	labels : listLabels,
-            	datasets : [
-            		{
-    		            backgroundColor: generateColors[3],
-    		            borderColor: generateBorderColors[3],
-    		            borderWidth: 1,
-            			data : listValeurs
-            		}
-            	]
+            	datasets : datasets
             }
      	var ctx = $(id).get(0).getContext("2d");
     	myBar = new Chart(ctx, {
@@ -389,7 +402,7 @@ function chartBar(data, id, transTooltip, formatDate){
     				display: false
     			},
     			tooltips: {
-    				bodyFontSize :  30,
+    				bodyFontSize : 22,
     				callbacks: {
                         title: function (t, e) {
                         	tootipTitle = listTooltipLabels[t[0].index];
@@ -557,15 +570,25 @@ $(document).ready(function() {
 	var filterSliders = $("#filterSliders");
 	var container = $("#container");
 	var cropitInfo = $(".cropit-info");
+	var orientation = "1";
 	
-	imageCropper.cropit({onImageError : function(e) {
+	imageCropper.cropit({
+		onImageError : function(e) {
     	if(e.code==1){
     		alert(messages['photoTooSmall']);
     		return false;
     	}
-	  }
+	  },onFileChange: function(e) {
+          var file = e.target.files[0]
+          if (file && file.name) {
+              EXIF.getData(file, function() {
+                  var exifData = EXIF.pretty(this);
+                  orientation = EXIF.getTag(file, "Orientation");
+              });
+          }
+      }
 	});
-	
+
 	imageCropper.cropit('previewSize', { width: 150, height: 188});
 	$("#btnRetouche").on("click",function() {
 		$("#filterSliders").hide();
@@ -575,7 +598,7 @@ $(document).ready(function() {
 		imageCropper.cropit('imageSrc', lastPhotoUrl);
 	}
 	imageCropper.cropit('maxZoom', 1.8);
-	imageCropper.cropit('minZoom', 'fit');
+	imageCropper.cropit('minZoom', 'fill');
 	cropitPreview.on('dragover', function(e) {
 		cropitPreview.css({"border" : "2px dashed black"});
 	});
@@ -618,11 +641,22 @@ $(document).ready(function() {
     	if(currentImg == ""){
           	 alert(messages['fileRequired']);      	 
           	 return false;
-           }
-    	imageCropper.cropit('exportZoom', 2);
-    	var image = imageCropper.cropit('export', { type: 'image/jpeg', originalSize: false,  quality: .9 });  
-    	$('#specimenleocarte img#photo').attr("src", image);
-    	imageData.val(image); 
+         }
+    	 imageCropper.find('.cropit-preview-image').attr("id","image-preview");
+    	 var imageExif = document.getElementById('image-preview');
+    	 //hack iphone,iPad
+    	 if(isISmartPhone == "true" && orientation == "6"){
+    		 imageCropper.cropit('rotateCW');
+    	 }
+    	 imageCropper.cropit('exportZoom', 2);
+    	 var image = imageCropper.cropit('export', { type: 'image/jpeg', originalSize: false,  quality: .9 });
+    	
+    	 $('#specimenleocarte img#photo').attr("src", image);
+    	 imageData.val(image);
+    	 //hack iphone,iPad
+    	 if(isISmartPhone == "true" && orientation == "6"){
+    		imageCropper.cropit('rotateCCW');
+    	 }
     });
     
     exportAdminBtn.on("click",function() {
@@ -890,24 +924,28 @@ $(document).ready(function() {
 	        	multiChartStackBar(data.cardsByYearEtat, "#cardsByYearEtat",3, "etat");
 	        	chartPieorDoughnut(data.crous, "#crous", "pie", null);
 	        	chartPieorDoughnut(data.difPhoto, "#difPhoto", "pie", null);
-				chartBar(data.cardsByDay, "#cardsByDay", null, true);
+				chartBar(data.cardsByDay, "", "#cardsByDay", null, true);
 				multiChartStackBar(data.paybox, "#paybox",3);
-				chartBar(data.motifs, "#motifs", "motif");
+				chartBar(data.motifs, "", "#motifs", "motif");
 				lineChart(data.dates, "#dates", true, monthsArray, true);
-				chartBar(data.deliveredCardsByDay, "#deliveredCardsByDay", null, true);
-				chartBar(data.encodedCardsByday, "#encodedCardsByday", null, true);
+				chartBar(data.deliveredCardsByDay, "", "#deliveredCardsByDay", null, true);
+				chartBar(data.encodedCardsByday, "", "#encodedCardsByday", null, true);
 				chartPieorDoughnut(data.nbCards, "#nbCards", "doughnut", null);
-				chartBar(data.editable, "#editable");
+				chartBar(data.editable, "", "#editable");
 				chartPieorDoughnut(data.verso5, "#verso5", "doughnut", null);
 				chartPieorDoughnut(data.browsers, "#browsers", "pie", null);
 				chartPieorDoughnut(data.os, "#os", "pie", null);
 				chartPieorDoughnut(data.nbRejets, "#nbRejets", "doughnut", null);
-				chartBar(data.notDelivered, "#notDelivered");
+				chartBar(data.notDelivered, "", "#notDelivered");
 				multiChartStackBar(data.cardsMajByDay, "#cardsMajByDay",3, null,true);
 				chartPieorDoughnut(data.cardsMajByIp, "#cardsMajByIp", "doughnut", null);
 				lineChart(data.cardsMajByDay2, "#lineCardsMajByDay", false, oneMonthBefore, false, true);
 				chartPieorDoughnut(data.deliveryByAdress, "#deliveryByAdress", "pie", "legend");
-				chartBar(data.userDeliveries, "#userDeliveries", null, true);
+				chartBar(data.userDeliveries, "", "#userDeliveries", null, true);
+				multiChartStackBar(data.tarifsCrous, "#tarifsCrousBars",3, null,false);
+				chartBar(data.cardsByMonth, "Demandes", "#cardsByMonth", null, false, data.encodedCardsByMonth, "Carte encodées");
+				chartBar(data.nbRejetsByMonth, "", "#nbRejetsByMonth", null, false);
+				multiChartStackBar(data.requestFree, "#requestFree",3, null,false);
 	        }
 	    });    
 	}
@@ -1125,14 +1163,15 @@ $(document).ready(function() {
 			})
 		}
 	});
-   $("#typeLogs").on('change', function () {
-	   $("#formTypeLogs").submit();
-   });
-   $("#actionLogs").on('change', function () {
-	   $("#formActionLogs").submit();
-   });
-   $("#retCodeLogs").on('change', function () {
-	   $("#formRetCodeLogs").submit();
-   });   
+	
+	$("#typeLogs").on('change', function () {
+		$("#formTypeLogs").submit();
+	 });
+	$("#actionLogs").on('change', function () {
+		$("#formActionLogs").submit();
+	});
+	$("#retCodeLogs").on('change', function () {
+		$("#formRetCodeLogs").submit();
+	});
 });
 	

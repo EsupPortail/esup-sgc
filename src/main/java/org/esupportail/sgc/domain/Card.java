@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -58,11 +61,12 @@ public class Card {
     @Column
     private String eppn;
 
+    @ElementCollection(fetch=FetchType.LAZY)
     @Column
-    private String desfireId = "";
+    private Map<String, String> desfireIds = new HashMap<String, String>();
 
-    @Column
-    private String csn = "";
+    @Column(unique=true,nullable=true)
+    private String csn = null;
 
     private String recto1Printed = "";
 
@@ -137,9 +141,6 @@ public class Card {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private PhotoFile photoFile = new PhotoFile();
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-    private CardIdGenerator cardIdGenerator;
 
     @Column
     private Long nbRejets;
@@ -353,11 +354,15 @@ public class Card {
     }
 
     public String getReverseCsn() {
-        String csnPapercutRetourne = new String();
-        for (int i = 1; i < csn.length(); i = i + 2) {
-            csnPapercutRetourne = csnPapercutRetourne + csn.charAt(csn.length() - i - 1) + csn.charAt(csn.length() - i);
-        }
-        return csnPapercutRetourne;
+    	if(csn==null) {
+    		return null;
+    	} else {
+	        String csnReverse = new String();
+	        for (int i = 1; i < csn.length(); i = i + 2) {
+	            csnReverse = csnReverse + csn.charAt(csn.length() - i - 1) + csn.charAt(csn.length() - i);
+	        }
+	        return csnReverse;
+    	}
     }
 
     public boolean isEnabled() {
@@ -768,4 +773,52 @@ public class Card {
         Query q = em.createNativeQuery(sql);
         return q.getResultList();
 	}
+	
+    public static List<Object> countNbCardRequestByMonth(String userType, Date date) {
+        String sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card WHERE request_date>=:date GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
+        if (!userType.isEmpty()) {
+            sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND request_date>=:date AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
+        }
+        EntityManager em = Card.entityManager();
+
+        Query q = em.createNativeQuery(sql);
+        q.setParameter("date", date);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return q.getResultList();
+    }
+    
+    public static List<Object> countNbCardEncodedByMonth(String userType, Date date) {
+        String sql = "SELECT to_char(encoded_date, 'MM-YYYY') tochar, count(*) FROM card WHERE encoded_date>=:date GROUP BY tochar ORDER BY to_date(to_char(encoded_date, 'MM-YYYY'), 'MM-YYYY')";
+        if (!userType.isEmpty()) {
+            sql = "SELECT to_char(encoded_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND encoded_date>=:date AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(encoded_date, 'MM-YYYY'), 'MM-YYYY')";
+        }
+        EntityManager em = Card.entityManager();
+
+        Query q = em.createNativeQuery(sql);
+        q.setParameter("date", date);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }        
+
+        return q.getResultList();
+    }
+    
+    public static List<Object> countNbRejetsByMonth(String userType) {
+        String sql = "SELECT to_char(date_etat, 'MM-YYYY') tochar, count(*) FROM card WHERE etat='REJECTED' GROUP BY tochar ORDER BY to_date(to_char(date_etat, 'MM-YYYY'), 'MM-YYYY')";
+        if (!userType.isEmpty()) {
+            sql = "SELECT to_char(date_etat, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND etat='REJECTED' AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(date_etat, 'MM-YYYY'), 'MM-YYYY')";
+        }
+        EntityManager em = Card.entityManager();
+
+        Query q = em.createNativeQuery(sql);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }        
+
+        return q.getResultList();
+    }
+
 }
+

@@ -76,9 +76,6 @@ public class ManagerCardController {
 	
 	@Resource
 	LogService logService;
-
-	@Resource
-	EsupNfcEncodeController esupNfcEncodeController;
 	
 	@Resource
 	ResynchronisationUserService resynchronisationUserService;
@@ -174,6 +171,7 @@ public class ManagerCardController {
         	}
         }
         uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
+        uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
         uiModel.addAttribute("user", user);
         uiModel.addAttribute("currentCard", card);
         
@@ -268,6 +266,7 @@ public class ManagerCardController {
 				uiModel.addAttribute("cards", Arrays.asList(new Card[]{card}));
 			}
 	        uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
+	        uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
 			return "manager/print-card";
 		} else {
 			uiModel.asMap().clear();
@@ -384,6 +383,7 @@ public class ManagerCardController {
     	if(Etat.IN_PRINT.equals(etatFinal)) {
     		uiModel.addAttribute("cards", cards);
     		uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
+    		uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
     		return "manager/print-card";
     	}
 

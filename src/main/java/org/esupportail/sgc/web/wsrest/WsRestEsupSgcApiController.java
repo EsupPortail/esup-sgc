@@ -18,7 +18,7 @@ import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.UserService;
-import org.esupportail.sgc.services.cardid.ComueNuCardIdService;
+import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class WsRestEsupSgcApiController {
 	CardService cardService;
 	
 	@Resource
-	ComueNuCardIdService comueNuCardIdService;
+	CardIdsService cardIdsService;
 	
 	@Resource 
 	UserInfoService userInfoService;
@@ -96,7 +96,7 @@ public class WsRestEsupSgcApiController {
 					card.setRequestDate(new Date());
 					card.setRequestBrowser(navigateur);
 					card.setRequestOs(systeme);
-					comueNuCardIdService.generateQrcode4Card(card);
+					cardIdsService.generateQrcode4Card(card);
 			
 					if (card.getPhotoFile().getFile().isEmpty()) {
 						log.info("Aucune photo pour lda demande de " + eppn);

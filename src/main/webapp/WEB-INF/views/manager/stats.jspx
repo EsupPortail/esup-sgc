@@ -76,6 +76,19 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="demandesParMois">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Demandes et encodage de carte par mois 
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="cardsByMonth" width="400" height="400">&amp;nbsp;</canvas>
+				</div>
+			</div>
+		</div>
 		<c:if test="${livraison}">
 			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDeLivraison">
 				<div class="panel panel-primary">
@@ -260,6 +273,19 @@
 				</div>
 			</div>
 		</div>	
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="rejetsEnAttente">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Demandes rejetées en attente 
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="nbRejetsByMonth" width="400" height="400">&amp;nbsp;</canvas>
+				</div>
+			</div>
+		</div>
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="rejets">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -315,6 +341,19 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="tarifsCrous">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Tarifs Crous
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="tarifsCrousBars" width="400" height="400">&amp;nbsp;</canvas>
+				</div>
+			</div>
+		</div>
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="diffusionPhoto">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -366,6 +405,19 @@
 							<!--  -->
 						</table>
 					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDemandeEtEtat">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Flag 'demande nouvelle carte gratuite'
+						<button class="btn btn-xs btn-primary pull-right remove" title="demandesNonPayantes">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="requestFree" width="400" height="400">&amp;nbsp;</canvas>
 				</div>
 			</div>
 		</div>

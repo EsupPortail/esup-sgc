@@ -5,7 +5,6 @@ package org.esupportail.sgc.domain;
 
 import java.util.Date;
 import org.esupportail.sgc.domain.CrousSmartCard;
-import org.esupportail.sgc.domain.CrousSmartCardIdGenerator;
 
 privileged aspect CrousSmartCard_Roo_JavaBean {
     
@@ -75,14 +74,6 @@ privileged aspect CrousSmartCard_Roo_JavaBean {
     
     public void CrousSmartCard.setRid(String rid) {
         this.rid = rid;
-    }
-    
-    public CrousSmartCardIdGenerator CrousSmartCard.getCrousSmartCardIdGenerator() {
-        return this.crousSmartCardIdGenerator;
-    }
-    
-    public void CrousSmartCard.setCrousSmartCardIdGenerator(CrousSmartCardIdGenerator crousSmartCardIdGenerator) {
-        this.crousSmartCardIdGenerator = crousSmartCardIdGenerator;
     }
     
 }

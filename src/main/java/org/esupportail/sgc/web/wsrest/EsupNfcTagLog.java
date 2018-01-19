@@ -17,8 +17,6 @@ public class EsupNfcTagLog {
 	
 	String eppn;
 	
-	String desfireId;
-	
 	String lastname;
 	
 	String firstname;

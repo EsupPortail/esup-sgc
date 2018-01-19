@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
+import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
@@ -34,25 +35,22 @@ public class LdapValidateService extends ValidateService {
 	
 	private String CSN_RETURN = "%reverse_csn%";
 	
-	private String DESFIRE_ID = "%desfireId%";
-	
 	private String PHOTO = "%photo%";
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private LdapTemplate ldapTemplate;
 	
+	private String peopleSearchFilter = "(eduPersonPrincipalName={0})";
+	
 	Map<String, List<String>> ldapCardIdsMappingMultiValues;
 	
 	Map<String, String> ldapCardIdsMappingValue;
-	
-	private String peopleSearchFilter = "(eduPersonPrincipalName={0})";
 	
 	public void setLdapTemplate(LdapTemplate ldapTemplate) {
 		this.ldapTemplate = ldapTemplate;
 	}
 	
-
 	public void setLdapCardIdsMappingMultiValues(Map<String, List<String>> ldapCardIdsMappingMultiValues) {
 		this.ldapCardIdsMappingMultiValues = ldapCardIdsMappingMultiValues;
 	}
@@ -144,7 +142,9 @@ public class LdapValidateService extends ValidateService {
 		Object ldapValue = null;
 		ldapValueRef = ldapValueRef.replaceAll(CSN, card.getCsn());
 		ldapValueRef = ldapValueRef.replaceAll(CSN_RETURN, card.getReverseCsn());
-		ldapValue = ldapValueRef.replaceAll(DESFIRE_ID, card.getDesfireId());
+		for(String appName : card.getDesfireIds().keySet()) {
+			ldapValueRef = ldapValueRef.replaceAll("%" + appName + "%", card.getDesfireIds().get(appName));
+		}		
 		
 		if(PHOTO.equals(ldapValueRef)) {
 			InputStream photoStream;
@@ -154,6 +154,9 @@ public class LdapValidateService extends ValidateService {
 			} catch (SQLException | IOException e) {
 				log.error("Can't get photo for ldap", e);
 			}
+		} else {	
+			// nettoyage des %xxx% qui resteraient et ne seraient pas informés ... ->  ldapValue
+			ldapValue = ldapValueRef.replaceAll("%.*%", "");
 		}
 		
 		return ldapValue;

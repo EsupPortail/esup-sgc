@@ -549,5 +549,24 @@ public class User {
         return dueDateIncluded;
     }
 	
+    public static List<Object> countTarifCrousByType() {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT CONCAT(id_rate, '/', id_compagny_rate) as rate, user_type, COUNT(id_rate) FROM user_account WHERE id_rate IS NOT NULL GROUP BY rate, user_type ORDER BY rate";
+
+        Query q = em.createNativeQuery(sql);
+
+        return q.getResultList();
+    }
+    
+    public static List<Object> countNbRequestFree() {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT CASE WHEN request_free THEN 'GRATUIT' ELSE 'PAYANT' END AS request_free, user_type, count(*) FROM user_account GROUP BY request_free, user_type ORDER BY request_free";
+
+        Query q = em.createNativeQuery(sql);
+
+        return q.getResultList();
+    }
+    
+    
 }
 

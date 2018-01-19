@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.EsupNfcTagService;
-import org.esupportail.sgc.services.cardid.ComueNuCardIdService;
+import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -37,7 +37,7 @@ public class ClientJWSController {
 	EsupNfcTagService esupNfcTagService;
 
 	@Resource
-	ComueNuCardIdService cardIdService;
+	CardIdsService cardIdsService;
 	
 	@RequestMapping
 	public String getJnlp(HttpServletRequest request, HttpServletResponse response, Model uiModel) {
@@ -66,7 +66,7 @@ public class ClientJWSController {
 		uiModel.addAttribute("authToken", authToken);
 		uiModel.addAttribute("esupNfcTagUrl", esupNfcTagUrl);
 		uiModel.addAttribute("sgcUrl", sgcUrl);
-		uiModel.addAttribute("cnousEncode", cardIdService.isCrousEncodeEnabled());
+		uiModel.addAttribute("cnousEncode", cardIdsService.isCrousEncodeEnabled());
 		
 		return "manager/esup-sgc-jnlp";
 		
@@ -99,7 +99,7 @@ public class ClientJWSController {
 		uiModel.addAttribute("authToken", authToken);
 		uiModel.addAttribute("esupNfcTagUrl", esupNfcTagUrl);
 		uiModel.addAttribute("sgcUrl", sgcUrl);
-		uiModel.addAttribute("cnousEncode", cardIdService.isCrousEncodeEnabled());
+		uiModel.addAttribute("cnousEncode", cardIdsService.isCrousEncodeEnabled());
 		
 		return "manager/esup-sgc-jnlp-r2d2";
 		

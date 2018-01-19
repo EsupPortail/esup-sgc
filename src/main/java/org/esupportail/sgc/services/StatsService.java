@@ -87,7 +87,7 @@ public class StatsService {
 			
 		LinkedHashMap<String, Object> results = new LinkedHashMap<String, Object>() {
 			   
-			   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+			   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			   Date date = formatter.parse(getCurrentAnneUniv());
 			
 	        {
@@ -112,6 +112,11 @@ public class StatsService {
 	        	put("cardsMajByDay2",mapField(Log.countNbLogByDay2("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 3));
 	        	put("deliveryByAdress",mapField(Card.countDeliveryByAddress(date).getResultList(),2));
 	        	put("userDeliveries",mapField(Log.countUserDeliveries(),2));
+	        	put("tarifsCrous",mapField(User.countTarifCrousByType(),3));
+	        	put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd, date), 2));
+	        	put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd, date), 2));
+	        	put("nbRejetsByMonth",mapField(Card.countNbRejetsByMonth(typeInd), 2));
+	        	put("requestFree",mapField(User.countNbRequestFree(),3));
 	        }
 	    };
 		return results;

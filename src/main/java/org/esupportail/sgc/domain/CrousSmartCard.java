@@ -41,11 +41,6 @@ public class CrousSmartCard {
     String uid;
 
     String rid;
-    
-
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional=true)
-	private CrousSmartCardIdGenerator crousSmartCardIdGenerator;
-    
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     public Date getZdcCreationDate() {

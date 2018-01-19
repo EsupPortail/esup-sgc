@@ -14,7 +14,7 @@ privileged aspect CrousSmartCard_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager CrousSmartCard.entityManager;
     
-    public static final List<String> CrousSmartCard.fieldNames4OrderClauseFilter = java.util.Arrays.asList("idTransmitter", "idMapping", "idZdc", "zdcCreationDate", "pixSs", "pixNn", "appl", "uid", "rid", "crousSmartCardIdGenerator");
+    public static final List<String> CrousSmartCard.fieldNames4OrderClauseFilter = java.util.Arrays.asList("idTransmitter", "idMapping", "idZdc", "zdcCreationDate", "pixSs", "pixNn", "appl", "uid", "rid");
     
     public static final EntityManager CrousSmartCard.entityManager() {
         EntityManager em = new CrousSmartCard().entityManager;

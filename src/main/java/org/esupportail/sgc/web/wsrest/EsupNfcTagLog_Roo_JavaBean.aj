@@ -23,14 +23,6 @@ privileged aspect EsupNfcTagLog_Roo_JavaBean {
         this.eppn = eppn;
     }
     
-    public String EsupNfcTagLog.getDesfireId() {
-        return this.desfireId;
-    }
-    
-    public void EsupNfcTagLog.setDesfireId(String desfireId) {
-        this.desfireId = desfireId;
-    }
-    
     public String EsupNfcTagLog.getLastname() {
         return this.lastname;
     }

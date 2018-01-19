@@ -13,7 +13,7 @@
         </button>
         <button class="btn btn-default navbar-btn navbar-right" data-target="#settings" data-toggle="modal" title="Préférences" type="button">
             <span class="glyphicon glyphicon-cog"/>
-        </button>        
+        </button>
         <button class="btn btn-info navbar-btn navbar-right hidden-lg hidden-md" data-target="#searchCollapse" data-toggle="collapse" type="button">
             <span class="glyphicon glyphicon-search"/>
         </button>
@@ -35,9 +35,9 @@
             <table:column breakpoints="md" cssClass="crous centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_crous" property="crous" z="user-managed"/>
             <table:column breakpoints="md" cssClass="cnil centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_cnil" property="difPhoto" z="user-managed"/>
             <table:column breakpoints="md" cssClass="editable centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_userEditable" label="Editable" property="userEditable" z="user-managed"/>
-            <table:column breakpoints="sm" cssClass="livraison centerCell" date="true" dateTimePattern="dd/MM/yy HH:mm" glyphCheck="/true/ok/false/remove/pop" render="${livraison}" id="c_org_esupportail_sgc_domain_Card_deliveredDate" label="Livraison" property="deliveredDate" z="user-managed"/>
+            <table:column breakpoints="sm" cssClass="livraison centerCell" date="true" dateTimePattern="dd/MM/yy HH:mm" glyphCheck="/true/ok/false/remove/pop" id="c_org_esupportail_sgc_domain_Card_deliveredDate" label="Livraison" property="deliveredDate" render="${livraison}" z="user-managed"/>
             <table:column breakpoints="md" cssClass="centerCell bold" id="c_org_esupportail_sgc_domain_Card_nbCards" label="Nb Cartes" property="nbCards" sort="true" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="centerCell bold" id="c_org_esupportail_sgc_domain_Card_nbRejets" property="nbRejets" z="user-managed" sort="true"/>
+            <table:column breakpoints="md" cssClass="centerCell bold" id="c_org_esupportail_sgc_domain_Card_nbRejets" property="nbRejets" sort="true" z="user-managed"/>
             <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_etatEppn" label="Modificateur" property="etatEppn" z="user-managed"/>
             <table:column breakpoints="md" cssClass="adress" id="c_org_esupportail_sgc_domain_Card_address" label="Adresse" property="address" z="user-managed"/>
             <table:column breakpoints="md" cssClass="paiement centerCell" glyphCheck="/true/ok/false/remove/@leaveempty@" id="c_org_esupportail_sgc_domain_Card_payCmdNum" label="Paiement" property="payCmdNum" z="user-managed"/>
@@ -54,6 +54,7 @@
             <table:column id="c_org_esupportail_sgc_domain_Card_recto2Printed" property="recto2Printed" render="false" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Card_recto3Printed" property="recto3Printed" render="false" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Card_isPhotoEditable" property="isPhotoEditable" render="false" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_Card_desfireIds" property="desfireIds" render="false" z="user-managed"/>
         </table:table>
     </page:list>
     <jsp:include page="includes/modals.jspx"/>

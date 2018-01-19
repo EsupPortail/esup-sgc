@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.esupportail.sgc.domain.CrousSmartCard;
-import org.esupportail.sgc.domain.CrousSmartCardIdGenerator;
 import org.esupportail.sgc.web.admin.CrousSmartCardController;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -87,7 +86,6 @@ privileged aspect CrousSmartCardController_Roo_Controller {
     
     void CrousSmartCardController.populateEditForm(Model uiModel, CrousSmartCard crousSmartCard) {
         uiModel.addAttribute("crousSmartCard", crousSmartCard);
-        uiModel.addAttribute("croussmartcardidgenerators", CrousSmartCardIdGenerator.findAllCrousSmartCardIdGenerators());
     }
     
     String CrousSmartCardController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

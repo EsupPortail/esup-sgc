@@ -17,6 +17,7 @@ import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.User.CnousReferenceStatut;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.HexStringUtils;
 import org.slf4j.Logger;
@@ -62,8 +63,8 @@ public class ImportExportCardService {
 			eppn = fields[19];
 		}
 		if(eppn != null && User.findUser(eppn) != null) {
-			log.warn(eppn + " exists already ?");
-			return false;
+			log.info(eppn + " exists already ?");
+			//return false;
 		}
 		
 		Date printedDate = null;
@@ -87,8 +88,8 @@ public class ImportExportCardService {
 		if(eppn != null) {
 			User user = User.findUser(eppn);
 			if(user != null) {
-				log.warn(eppn + " exists already ?");
-				return false;
+				log.info(eppn + " exists already ?");
+				//return false;
 			} else {
 				user = new User();
 			}
@@ -98,7 +99,7 @@ public class ImportExportCardService {
 			Card card = new Card();
 			card.setEppn(eppn);
 			card.setCsn(csn);
-			card.setDesfireId(desfireId);
+			card.getDesfireIds().put(AccessControlService.AC_APP_NAME, desfireId);
 			card.setDeliveredDate(printedDate);
 			card.setEnnabledDate(printedDate);
 			card.setRequestDate(printedDate);

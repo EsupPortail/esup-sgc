@@ -25,6 +25,7 @@
 	<spring:url value="/resources/js/awesomplete.min.js" var="awesome_js_url" />
 	<spring:url value="/resources/js/trumbowyg.min.js" var="trumbowyg_js_url" />
 	<spring:url value="/resources/js/trumbowyg.colors.min.js" var="trumbowygColor_js_url" />
+	<spring:url value="/resources/js/exif.js" var="exif_js_url" />
 	<spring:url value="/resources/js/dragula.min.js" var="dragula_js_url" />
 	<spring:url value="/resources/js/esup-sgc.js" var="esupSgc_js_url" />
 	<spring:url value="/resources/images/favicon.png" var="favicon" />
@@ -59,6 +60,7 @@
 	<script src="${trumbowygColor_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esup_sgc_msg_fr_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${dragula_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${exif_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esupSgc_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	
 	

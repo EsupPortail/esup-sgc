@@ -247,6 +247,11 @@ public class AppliConfigService {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("CARD_MASK");
 		return appliConfig.getValue();
 	}
+	
+	public String getCardLogo() {
+		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("CARD_LOGO");
+		return appliConfig.getValue();
+	}
 
 }
 

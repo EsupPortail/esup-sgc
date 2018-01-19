@@ -14,13 +14,11 @@
         <field:input field="requestBrowser" id="c_org_esupportail_sgc_domain_Card_requestBrowser" z="j9Lnj3pfejBFt+eU9M18E1YrTzA="/>
         <field:input field="requestOs" id="c_org_esupportail_sgc_domain_Card_requestOs" z="gEKkYbuSBJDncEckukOHuQwnDcY="/>
         <field:select field="photoFile" id="c_org_esupportail_sgc_domain_Card_photoFile" itemValue="id" items="${photofiles}" path="/photofiles" z="9B+fN/8WX7op+uS+KiXDLwPJLs4="/>
-        <field:input field="desfireId" id="c_org_esupportail_sgc_domain_Card_desfireId" z="xry2n4FoZWXibKr8CiCU8qM0+CA="/>
         <field:input field="csn" id="c_org_esupportail_sgc_domain_Card_csn" z="nzKOrLk29L5TygfKhY5t/Q8gqS8="/>
         <field:input field="etatEppn" id="c_org_esupportail_sgc_domain_Card_etatEppn" z="oqEU+JHdVuTvsV8CRqhH+BXaNiU="/>
         <field:input field="motifDisable" id="c_org_esupportail_sgc_domain_Card_motifDisable" z="VbfmB7Uqe18Cls4q8abDKECbvdY="/>
         <field:datetime dateTimePattern="${card_delivereddate_date_format}" field="deliveredDate" id="c_org_esupportail_sgc_domain_Card_deliveredDate" z="naFmZ90hlT89+cSUWbnY4A/54FA="/>
         <field:input field="etatsAvailable" id="c_org_esupportail_sgc_domain_Card_etatsAvailable" z="o1HITHHA9vzCMTRR5kZ/OYOO4+o="/>
-        <field:select field="cardIdGenerator" id="c_org_esupportail_sgc_domain_Card_cardIdGenerator" itemValue="id" items="${cardidgenerators}" path="/cardidgenerators" z="evpyO/WtJwoZEhLuCBwK+HaLX8g="/>
         <field:datetime dateTimePattern="${card_duedate_date_format}" field="dueDate" id="c_org_esupportail_sgc_domain_Card_dueDate" z="qDCmateJQJGfFFj1x563rT+93jQ="/>
         <field:input field="versoTextPrinted" id="c_org_esupportail_sgc_domain_Card_versoTextPrinted" z="XyemFDCww3vlKVbh9dcJREoWMGE="/>
         <field:datetime dateTimePattern="${card_ennableddate_date_format}" field="ennabledDate" id="c_org_esupportail_sgc_domain_Card_ennabledDate" z="Sk5EOLDsTX9YhL2Igca1T6FQdFU="/>
@@ -41,6 +39,7 @@
         <field:input field="qrcode" id="c_org_esupportail_sgc_domain_Card_qrcode" z="nMHFM0kyMMSj5U5ajXxHY0axRiQ="/>
         <field:checkbox field="external" id="c_org_esupportail_sgc_domain_Card_external" z="ZYUPXpbH47E75wsv0ht18BtBAzA="/>
         <field:checkbox field="europeanTransient" id="c_org_esupportail_sgc_domain_Card_europeanTransient" z="KV32jxslvlfPkKEyAP8wHhH37ZQ="/>
+        <field:input field="desfireIds" id="c_org_esupportail_sgc_domain_Card_desfireIds" z="Oro3KpysyaTQNQgc4/rz9t81x08="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_esupportail_sgc_domain_Card" render="${not empty dependencies}" z="VaQZ+z/eumj8mQOHZMndu5OLDYg="/>
 </div>

@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.CardIdGenerator;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.web.manager.ManagerCardController;
@@ -74,7 +73,6 @@ privileged aspect ManagerCardController_Roo_Controller {
     void ManagerCardController.populateEditForm(Model uiModel, Card card) {
         uiModel.addAttribute("card", card);
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("cardidgenerators", CardIdGenerator.findAllCardIdGenerators());
         uiModel.addAttribute("photofiles", PhotoFile.findAllPhotoFiles());
         uiModel.addAttribute("users", User.findAllUsers());
     }

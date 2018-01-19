@@ -17,7 +17,7 @@
 		<intercept-url pattern="/wsrest/nfc/cnousCardId" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/addCrousCsvFile" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/eppnAndNumeroId" access="permitAll" />
-		<intercept-url pattern="/wsrest/nfc/select4encode" access="permitAll" />
+		<intercept-url pattern="/wsrest/nfc/check4encode" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/getVersoText" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/getSecondaryId" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/**" access="hasIpAddress('127.0.0.1')" /> <!-- Esup-Nfc-Tag IP Address -->

@@ -107,8 +107,8 @@ public class CsvExportTilService implements Export2AccessControlService {
 		fields.add(user.getName());	
 		fields.add(user.getFirstname());
 		
-		String idP2S = card.getDesfireId();
-		fields.add(idP2S);
+		String desfireId = card.getDesfireIds().get(AccessControlService.AC_APP_NAME);
+		fields.add(desfireId);
 		
 		fields.add(formatDate(card.getEnnabledDate()));
 		fields.add(formatDate(card.getDueDate()));

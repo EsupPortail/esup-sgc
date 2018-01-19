@@ -16,7 +16,7 @@
     
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:META-INF/spring/applicationContext*.xml</param-value>
+        <param-value>classpath*:META-INF/spring/applicationContext*.xml,classpath*:META-INF/spring/applicationTasksContext.xml</param-value>
     </context-param>
     
     <filter>
@@ -88,6 +88,11 @@
     <filter-mapping>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <url-pattern>/user/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+        <url-pattern>/wsrest/view/*</url-pattern>
     </filter-mapping>
     
     <!-- Creates the Spring Container shared by all Servlets and Filters -->

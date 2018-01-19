@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services.sync;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.User;
@@ -8,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
+import antlr.debug.TraceAdapter;
+
 @Service
 public class ResynchronisationService {
 	
@@ -15,6 +18,15 @@ public class ResynchronisationService {
 	
 	@Resource
 	private ResynchronisationUserService resynchronisationUserService;
+	
+	private Boolean shutdownCalled = false; 
+	
+	@PreDestroy
+	public void shouldShutdownNow() throws InterruptedException {
+		log.warn("shutdown called during synchroization of all users ...");
+		shutdownCalled = true;
+		Thread.currentThread().sleep(1000);
+	}
 	
 	public void synchronizeAllUsersInfos() {
 		log.info("Synchronize of all users called");
@@ -33,6 +45,16 @@ public class ResynchronisationService {
 			} catch(Exception ex) {
 				log.error("Error during synchronize " + user.getEppn(), ex);
 				 nbError++;
+			}
+			if(shutdownCalled) {
+				log.warn("shutdown called during synchroization of all users - we stop it");
+				break;
+			}
+			try {
+				// on temporise un peu ... 
+				Thread.currentThread().sleep(2);
+			} catch (InterruptedException e) {
+				//
 			}
 		}
 		stopWatch.stop();

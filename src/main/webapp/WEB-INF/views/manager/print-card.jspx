@@ -132,7 +132,7 @@ span {
 					value="/manager/photo/${card.id}"
 					var="photoUrl" />
 				<spring:url
-					value="/resources/images/logo-univ-rouen-normandie-couleur.png"
+					value="/resources/images/${cardLogo}"
 					var="logoUrl" />
 				<img src="${photoUrl}" id="photo" /><img src="${logoUrl}"
 					id="logo-ur" />

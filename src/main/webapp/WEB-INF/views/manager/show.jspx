@@ -5,7 +5,7 @@
     <spring:url value="/manager?index=first" var="listeUrl"/>
     <spring:url value="/manager/photo/" var="photoRootUrl"/>
     <spring:url value="/manager/getCrousRightHolderHtmlPart?eppn=${user.eppn}" var="getCrousRightHolderUrl"/>
-    <spring:url value="/resources/images/${cardMask}" var="leocarteMasqueUrl" />
+    <spring:url value="/resources/images/${cardMask}" var="leocarteMasqueUrl"/>
     <script type="text/javascript">
 		var photorUrl = '${photoRootUrl}';
 		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
@@ -266,7 +266,7 @@
                                                                         </div>
                                                                         <div id="right">
                                                                             <spring:url value="/manager/photo/${card.id}" var="photoUrl"/>
-                                                                            <spring:url value="/resources/images/logo-univ-rouen-normandie-couleur.png" var="logoUrl"/>
+                                                                            <spring:url value="/resources/images/${cardLogo}" var="logoUrl"/>
                                                                             <img id="photo" src="${photoUrl}"/>
                                                                             <img id="logo-ur" src="${logoUrl}"/>
                                                                         </div>
@@ -424,8 +424,14 @@
                                                     <h4>Numéros</h4>
                                                     <dt>Csn : </dt>
                                                     <dd>${card.csn}</dd>
-                                                    <dt>Desfire Id : </dt>
-                                                    <dd>${card.desfireId}</dd>
+                                                    <dt>Reversed Csn : </dt>
+                                                    <dd>${card.reverseCsn}</dd>
+                                                    <dt>Desfire Ids (générés): </dt>
+                                                    <dd>
+                                                    	<c:forEach var="desfireId" items="${card.desfireIds}">
+                                                    		<b>${desfireId.key} :</b> ${desfireId.value}<br />
+                                                    	</c:forEach>
+                                                    </dd>
                                                     <dt>Paybox : </dt>
                                                     <dd>${card.payCmdNum}</dd>
                                                     <dt>Motif : </dt>
@@ -506,7 +512,6 @@
     <page:show id="ps_org_esupportail_sgc_domain_Card" object="${card}" path="/manager" render="false" z="user-managed">
         <field:display field="etat" id="s_org_esupportail_sgc_domain_Card_etat" object="${card}" z="WHiT3krWO1A0P6JO8brFdX6ak/8="/>
         <field:display field="eppn" id="s_org_esupportail_sgc_domain_Card_eppn" object="${card}" z="djTqAwHSJZLwb9o6XSQiz02t79A="/>
-        <field:display field="desfireId" id="s_org_esupportail_sgc_domain_Card_desfireId" object="${card}" z="PQm0Vd4Jr3inJtigY3ljkzZeUOQ="/>
         <field:display field="csn" id="s_org_esupportail_sgc_domain_Card_csn" object="${card}" z="lWMwL8cKuroPGH3SxSp9NKDmmUU="/>
         <field:display field="etatEppn" id="s_org_esupportail_sgc_domain_Card_etatEppn" object="${card}" z="sNFCIZp9h6p6RWfsv7OWY0YI1/0="/>
         <field:display date="true" dateTimePattern="${card_requestdate_date_format}" field="requestDate" id="s_org_esupportail_sgc_domain_Card_requestDate" object="${card}" z="ADpT1n80Ae/Osgjp0oZmhMTjLNg="/>
@@ -521,7 +526,6 @@
         <field:display date="true" dateTimePattern="${card_delivereddate_date_format}" field="deliveredDate" id="s_org_esupportail_sgc_domain_Card_deliveredDate" object="${card}" z="cqlHrIjKtz6yaEuVj0exdyfmLkA="/>
         <field:display field="photoFile" id="s_org_esupportail_sgc_domain_Card_photoFile" object="${card}" z="TSbtBWrLeqXK/CQ6JvI3rc9uFJ4="/>
         <field:display field="etatsAvailable" id="s_org_esupportail_sgc_domain_Card_etatsAvailable" object="${card}" z="nMOKTgpzsYcSlpnc50yL968yte8="/>
-        <field:display field="cardIdGenerator" id="s_org_esupportail_sgc_domain_Card_cardIdGenerator" object="${card}" z="7+YnnqKl9MtESbD0ThPuNx2HQ14="/>
         <field:display date="true" dateTimePattern="${card_duedate_date_format}" field="dueDate" id="s_org_esupportail_sgc_domain_Card_dueDate" object="${card}" z="CifvIsvQXmdFkUF+Ag0aCP8iKPA="/>
         <field:display field="versoTextPrinted" id="s_org_esupportail_sgc_domain_Card_versoTextPrinted" object="${card}" z="tKbQNzhBw8IjEUIOFGXFUht0/9I="/>
         <field:display date="true" dateTimePattern="${card_ennableddate_date_format}" field="ennabledDate" id="s_org_esupportail_sgc_domain_Card_ennabledDate" object="${card}" z="fBHUD+ufJx+sueQqe5QAd/P8JKI="/>
@@ -542,5 +546,6 @@
         <field:display field="qrcode" id="s_org_esupportail_sgc_domain_Card_qrcode" object="${card}" z="K6oae04CsjVr0+r3xpeBmYrfxV8="/>
         <field:display field="external" id="s_org_esupportail_sgc_domain_Card_external" object="${card}" z="rSAb/C1rClUGonk4xzczQNb79Zg="/>
         <field:display field="europeanTransient" id="s_org_esupportail_sgc_domain_Card_europeanTransient" object="${card}" z="d426Wc391tiqC857dVhSh5SGrJU="/>
+        <field:display field="desfireIds" id="s_org_esupportail_sgc_domain_Card_desfireIds" object="${card}" z="mCW/Db/z0fE30nvCsLwF/19K74Y="/>
     </page:show>
 </div>

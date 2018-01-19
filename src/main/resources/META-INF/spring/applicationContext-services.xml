@@ -78,7 +78,7 @@
 		</property>	
 	</bean>
 	
-	<bean id="groupService" class="org.esupportail.sgc.services.ldap.GroupService">
+	<bean id="groupService" class="org.esupportail.sgc.services.ldap.LdapGroupService">
 		<property name="ldapTemplate" ref="ldapTemplate"/>
 		<property name="groupSearchBase" value="ou=groups" />
 		<property name="groupSearchFilter" value="member={0}"/>
@@ -170,11 +170,26 @@
             </property>
         </bean>
         
-	<bean id="cardIdService" class="org.esupportail.sgc.services.cardid.ComueNuCardIdService">
-		<property name="cardNfcIdCounterBegin" value="107000000100000"/>
-		<property name="cardCrousIdCounterBegin" value="66900000"/>
-		<property name="crousEncodeEnabled" value="false"/>
-	</bean>
+        <bean id="cardIdsService" class="org.esupportail.sgc.services.cardid.CardIdsService">
+            <property name="cardIdServices">
+                <list>
+                    <bean class="org.esupportail.sgc.services.cardid.GenericCardIdService">
+                        <!-- warning : access-control is a keyword for access-control services :
+                             org.esupportail.sgc.services.ac.AccessControlService.AC_APP_NAME = 'access-control'
+                        -->
+                        <property name="appName" value="access-control"/>
+                        <property name="idCounterBegin" value="1234500000000000"/>
+                        <property name="postgresqlSequence" value="card_sequence"/>
+                    </bean>
+                    <bean class="org.esupportail.sgc.services.cardid.CnousCardIdService">
+                        <property name="appName" value="crous"/>
+                        <property name="idCounterBegin" value="99990000"/>
+                        <property name="postgresqlSequence" value="crous_smart_card_sequence"/>
+                        <property name="crousEncodeEnabled" value="true"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
 	
 	<bean id="esupNfcTagService" class="org.esupportail.sgc.services.EsupNfcTagService">
 		<property name="restTemplate" ref="restTemplate"/>
@@ -212,7 +227,7 @@
                         <entry key="supannRefId">
                             <list>
                                 <value>{ISO15693}%csn%</value>
-                                <value>{UNIV-VILLE:ACCESS-CONTROL}%desfireId%</value>
+                                <value>{UNIV-VILLE:ACCESS-CONTROL}%access-control%</value>
                             </list>
                         </entry>
 		    </map>
@@ -255,19 +270,6 @@
 		</property>
 	</bean>
 	 
-	<task:scheduler id="sgcScheduler" pool-size="5"/>
-	 
-	<task:scheduled-tasks>
-    	<task:scheduled ref="ldapGroup2UserRoleService" method="syncAllGroupsOnDb" fixed-delay="300000" initial-delay="10000"/>
-		<!-- <task:scheduled ref="resynchronisationService" method="synchronizeAllUsersInfos" cron="01 16 * * * *"/> -->
-	</task:scheduled-tasks>
-
-	<task:annotation-driven executor="exceptionHandlingTaskExecutor" mode="aspectj"/>
-    <bean id="exceptionHandlingTaskExecutor" class="org.esupportail.sgc.tools.ExceptionHandlingAsyncTaskExecutor">
-        <constructor-arg ref="defaultExecutor" />
-        </bean>
-    <task:executor id="defaultExecutor" pool-size="25"/>
-
     <bean class="org.springframework.mail.javamail.JavaMailSenderImpl" id="mailSender">
         <property name="host" value="${email.host}"/>
         <property name="protocol" value="${email.protocol}"/>
@@ -278,10 +280,5 @@
 		<property name="isEnabled" value="false"/>
 	</bean>
 	
-	
-	<bean id="synchroExecutor" class="org.esupportail.sgc.tools.ExceptionHandlingAsyncTaskExecutor">
-        <constructor-arg ref="synchroExecutorPool" />
-    </bean>
-    <task:executor id="synchroExecutorPool" pool-size="5"/>
 	
 </beans>

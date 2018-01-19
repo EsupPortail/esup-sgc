@@ -12,7 +12,6 @@
         <field:input field="appl" id="c_org_esupportail_sgc_domain_CrousSmartCard_appl" z="xjdkUc7DB7/+4Q3v3/Ra7J0a+6M="/>
         <field:input field="uid" id="c_org_esupportail_sgc_domain_CrousSmartCard_uid" required="true" z="moYAZxHZ6O4lNVdLASx2VPv3AsY="/>
         <field:input field="rid" id="c_org_esupportail_sgc_domain_CrousSmartCard_rid" z="CpRaknfNNXp8XoQTJ4CfROhuZ4o="/>
-        <field:select field="crousSmartCardIdGenerator" id="c_org_esupportail_sgc_domain_CrousSmartCard_crousSmartCardIdGenerator" itemValue="id" items="${croussmartcardidgenerators}" path="/croussmartcardidgenerators" z="ZeViGfetw4/gDdlFQFUrU5voNEc="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_esupportail_sgc_domain_CrousSmartCard" render="${not empty dependencies}" z="cZlMA3vvLBewFqfH4LGD8xXyTas="/>
 </div>

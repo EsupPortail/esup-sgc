@@ -41,7 +41,7 @@
 						</div>
 						<div id="right">
 							<spring:url
-								value="/resources/images/logo-univ-rouen-normandie-couleur.png"
+								value="/resources/images/${cardLogo}"
 								var="logoUrl" />
 							 <img id="photo" src="" />
 							 <img src="${logoUrl}" id="logo-ur" />

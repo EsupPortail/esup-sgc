@@ -82,7 +82,7 @@ public class ResynchronisationUserService {
 			log.trace("Synchronize of user was needed : done.");
 			updated = true;
 		}
-		if(!dummyUser.getExternalCard().getCsn().isEmpty()) {
+		if(dummyUser.getExternalCard().getCsn() != null && !dummyUser.getExternalCard().getCsn().isEmpty()) {
 			Card externalCard = null;
 			for(Card card : user.getCards()) {
 				if(card.getExternal()) {
@@ -98,7 +98,7 @@ public class ResynchronisationUserService {
 						accessControlMustUpdate = true;
 					}
 					externalCard.setCsn(dummyUser.getExternalCard().getCsn());
-					externalCard.setDesfireId(dummyUser.getExternalCard().getDesfireId());
+					externalCard.setDesfireIds(dummyUser.getExternalCard().getDesfireIds());
 					PhotoFile photo = dummyUser.getExternalCard().getPhotoFile();
 					externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
 					externalCard.getPhotoFile().setFileSize(photo.getFileSize());

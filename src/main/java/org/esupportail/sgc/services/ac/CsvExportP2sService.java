@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.apache.commons.io.IOUtils;
@@ -23,22 +22,26 @@ import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CsvExportP2sService implements Export2AccessControlService {
+public class CsvExportP2sService implements Export2AccessControlService, SmartLifecycle {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	final static String ENCODING_P2S = "ISO-8859-1";
+	
+	private boolean isRunning = false;
 	
 	@Resource
 	AccessService p2sVfsAccessService;
 	
 	@Resource
 	CardEtatService cardEtatService;
-	
+
 	private Set<String> queueEppns2Update = new HashSet<String>();
 	
 	public void sync() throws IOException {
@@ -100,7 +103,7 @@ public class CsvExportP2sService implements Export2AccessControlService {
 		}
 	}
 	
-	@PreDestroy
+	@Transactional
 	@Scheduled(cron="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * *")
 	private void export2P2Squeue() throws IOException {
 		synchronized (queueEppns2Update) {
@@ -112,7 +115,6 @@ public class CsvExportP2sService implements Export2AccessControlService {
 			}
 		}
 	}
-
 	
 	private void export2P2S4EppnWoQueue(String eppn) throws IOException {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("P2S_EXPORT_CSV_FILE_NAME");
@@ -163,7 +165,8 @@ public class CsvExportP2sService implements Export2AccessControlService {
 		fields.add(user.getName());	
 		fields.add(user.getFirstname());
 
-		fields.add(card.getDesfireId());
+		String desfireId = card.getDesfireIds().get(AccessControlService.AC_APP_NAME);
+		fields.add(desfireId);
 		fields.add(formatDate(card.getEnnabledDate()));
 		fields.add(formatDate(card.getDueDate()));
 		
@@ -196,5 +199,45 @@ public class CsvExportP2sService implements Export2AccessControlService {
 		return dateFt;
 	}
 	
+
+	@Override
+	public void start() {
+		isRunning = true;
+	}
+
+	@Override
+	public void stop() {
+		try {
+			log.info("Serveur stoppé ... maj P2S par paquet appellé si besoin");
+			export2P2Squeue();
+		} catch (IOException e) {
+			log.error("Error during export2P2Squeue", e);
+		}
+		isRunning = false;
+	}
+	
+
+	@Override
+	public void stop(Runnable callback) {
+		stop();
+		callback.run();
+	}
+
+	@Override
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	/** Run as early as possible so the shutdown method can still use transactions. */
+	@Override
+	public int getPhase() {
+		return Integer.MIN_VALUE;
+	}
+
+	@Override
+	public boolean isAutoStartup() {
+		return true;
+	}
+
 
 }

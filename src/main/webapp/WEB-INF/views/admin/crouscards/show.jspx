@@ -12,6 +12,5 @@
         <field:display field="appl" id="s_org_esupportail_sgc_domain_CrousSmartCard_appl" object="${croussmartcard}" z="vUbpYzZ+itEQ0oeH9FNly0Y7j1o="/>
         <field:display field="uid" id="s_org_esupportail_sgc_domain_CrousSmartCard_uid" object="${croussmartcard}" z="SIoHZl5CaHIezr061V7MMvU6ocU="/>
         <field:display field="rid" id="s_org_esupportail_sgc_domain_CrousSmartCard_rid" object="${croussmartcard}" z="oBPDjAstmNBkKLLT+JtvCv5EavU="/>
-        <field:display field="crousSmartCardIdGenerator" id="s_org_esupportail_sgc_domain_CrousSmartCard_crousSmartCardIdGenerator" object="${croussmartcard}" z="8flzyoHzqv1/ZppIlNQzjMpv2zs="/>
     </page:show>
 </div>

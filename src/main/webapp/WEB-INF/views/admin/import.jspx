@@ -25,6 +25,17 @@
 	    
     <h2>Import</h2>
     <h3>Import CSV</h3>
+    <div>
+    	Le CSV attendu doit avoir une entête (la première ligne est en fait ici simplement ignorée) et les lignes suivantes peuvent être de cette forme :
+    	<pre>Valide;08/09/2016 14:20:16;28/01/2015 14:40:35;14/06/2017 23:05:29;30/11/2017 00:00:00;20/01/2015 10:06:22;Test;Justin;01/01/1959 00:00:00;professionnelle;2017;Université de Rouen;1;justin.test@univ-rouen.fr;803412abcd5704;12060834;Autorisée;1123000000014;100020000002120;testju@univ-rouen.fr</pre>
+Cependant, en l'état, seuls les champs 0,2, 3, 14, 16, 18 et 19 sont en fait utilisés ici. Les autres informations sont en effet récupérées depuis le SI par ESUP-SGC (ldap, base de données ; le lien étant fait via l'eppn) ou encore depuis l'import csv crous 
+(pour la récupération des identifiants crous ; le lien étant fait via le CSN).
+On se contente donc de : 
+<pre>Valide;;28/01/2015 14:40:35;14/06/2017 23:05:29;;;;;;;;;;;803412abcd5704;;Autorisée;;100020000002120;testju@univ-rouen.fr</pre>
+qui correspondent à :
+<pre>état de la carte (si ce n'est pas égal à 'Valide', l'entrée est ignorée);;date d'impression/encodage;date de dernière modification;;;;;;;;;;;;CSN;;Autorisation données crous (Autorisée/Interdite);;Identifiant Desfire;eppn</pre>
+
+    </div>
     <div class="well">
 	    <form:create submitClass="col-lg-1" id="import_file_form" label="Importation CSV" modelAttribute="file" multipart="true" path="/admin/import/importCsvFile" save_button="Valider">
 	     	<div class="form-group">

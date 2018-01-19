@@ -141,5 +141,18 @@ Avec l'utilisateur postgres
 backup : pg_dump -b -F d -f /backup/esupsgc-dump esupsgc
 restauration : pg_restore -d esupsgc /backup/esupsgc-dump
 
+
+# Contraintes postgresql supplémentaires :
+```
+alter table card_desfire_ids ADD CONSTRAINT unique_desfire_ids_desfire_ids_key  UNIQUE (desfire_ids, desfire_ids_key);
+```
+
+# Mises à jour
+Lors d'une mise à jour majeure de l'application, lancez la commande suivant pour mettre à jour la base : 
+ ```
+ mvn compile exec:java -Dexec.args="dbupgrade"
+ ```
+
+
 ## Screenshots
 ...

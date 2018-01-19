@@ -12,6 +12,6 @@ public class LoggingExceptionResolver extends SimpleMappingExceptionResolver {
 
 	@Override
 	protected void logException(Exception ex, HttpServletRequest request) {
-		this.log.error(buildLogMessage(ex, request), ex);
+		log.error(buildLogMessage(ex, request), ex);
 	}
 }

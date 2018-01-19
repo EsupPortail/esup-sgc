@@ -18,6 +18,7 @@ import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.User.CnousReferenceStatut;
+import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.EsistCrousService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.tools.DateUtils;
@@ -187,7 +188,7 @@ public class UserInfoService {
 					// TODO : {LEOCARTE:ACCESS-CONTROL} en dur :(
 					if(StringUtils.contains(supannRefId, "{LEOCARTE:ACCESS-CONTROL}")) {
 						String desfireIdExternalCard = supannRefId.replaceAll("\\{LEOCARTE:ACCESS-CONTROL\\}", "");
-						user.getExternalCard().setDesfireId((desfireIdExternalCard));
+						user.getExternalCard().getDesfireIds().put(AccessControlService.AC_APP_NAME, desfireIdExternalCard);
 					}
 				}
 			} else if("jpegPhoto4ExternalCard".equalsIgnoreCase(key)) {

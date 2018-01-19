@@ -48,7 +48,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Card, String> ApplicationConversionServiceFactoryBean.getCardToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.Card, java.lang.String>() {
             public String convert(Card card) {
-                return new StringBuilder().append(card.getNbRejets()).append(' ').append(card.getEppn()).append(' ').append(card.getDesfireId()).append(' ').append(card.getCsn()).toString();
+                return new StringBuilder().append(card.getNbRejets()).append(' ').append(card.getEppn()).append(' ').append(card.getCsn()).append(' ').append(card.getRecto1Printed()).toString();
             }
         };
     }

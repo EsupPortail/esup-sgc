@@ -34,8 +34,7 @@ import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.UserService;
-import org.esupportail.sgc.services.cardid.ComueNuCardIdService;
-import org.esupportail.sgc.services.crous.ApiCrousService;
+import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.paybox.PayBoxForm;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
@@ -117,14 +116,14 @@ public class UserCardController {
 	ShibAuthenticatedUserDetailsService shibService;
 	
 	@Resource
-	ComueNuCardIdService comueNuCardIdService;
+	CardIdsService cardIdsService;
 	
 	@Resource
 	ExternalCardService externalCardService;
 	
 	
 	@RequestMapping
-	public String index(Locale locale, HttpServletRequest request, Model uiModel) throws UnsupportedEncodingException {
+	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) throws UnsupportedEncodingException {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
@@ -134,7 +133,7 @@ public class UserCardController {
 			if(externalCard != null) {
 				return viewExternalCardRequestForm(uiModel, request, externalCard);
 			} else {
-				return viewCardRequestForm(uiModel, request);
+				return viewCardRequestForm(uiModel, request, userAgent);
 			}
 		} else {
 			return viewCardInfo(locale, uiModel, request);
@@ -169,7 +168,7 @@ public class UserCardController {
 	}
 
 	@RequestMapping(value="/card-request-form")
-	public String viewCardRequestForm(Model uiModel, HttpServletRequest request) {
+	public String viewCardRequestForm(Model uiModel, HttpServletRequest request, @RequestHeader("User-Agent") String userAgent) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		User user = User.findUser(eppn);
@@ -182,6 +181,8 @@ public class UserCardController {
 		uiModel.addAttribute("lastId", id);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(eppn));
 		uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
+		uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
+		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
 		Map<String, Boolean> displayFormParts = displayFormParts(eppn, user.getUserType());
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
@@ -206,11 +207,11 @@ public class UserCardController {
 	}
 	
 	@RequestMapping(value="/rejectedCase")
-	public String rejectedCardForm(@RequestParam("id") Long id, Model uiModel, HttpServletRequest request) {
+	public String rejectedCardForm(@RequestParam("id") Long id, Model uiModel, HttpServletRequest request, @RequestHeader("User-Agent") String userAgent) {
 		uiModel.addAttribute("configUserMsgs", getConfigMsgsUser());
 		uiModel.addAttribute("id", id);
 		uiModel.addAttribute("isRejected", true);
-		return viewCardRequestForm(uiModel, request);
+		return viewCardRequestForm(uiModel, request, userAgent);
 	}	
 	
 	@RequestMapping(value="/card-disable")
@@ -322,7 +323,7 @@ public class UserCardController {
 					card.setRequestDate(new Date());
 					card.setRequestBrowser(navigateur);
 					card.setRequestOs(systeme);
-					comueNuCardIdService.generateQrcode4Card(card);
+					cardIdsService.generateQrcode4Card(card);
 			
 					if (card.getPhotoFile().getImageData().isEmpty()) {
 						log.info("Aucun fichier sélectionné");

@@ -14,6 +14,8 @@ public class AccessControlService extends ValidateService {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	public static String AC_APP_NAME = "access-control";
+	
 	@Autowired
 	List<Export2AccessControlService> acServices;
 	

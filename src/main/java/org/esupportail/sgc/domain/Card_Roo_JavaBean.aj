@@ -5,8 +5,8 @@ package org.esupportail.sgc.domain;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.CardIdGenerator;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
 
@@ -20,12 +20,12 @@ privileged aspect Card_Roo_JavaBean {
         this.eppn = eppn;
     }
     
-    public String Card.getDesfireId() {
-        return this.desfireId;
+    public Map<String, String> Card.getDesfireIds() {
+        return this.desfireIds;
     }
     
-    public void Card.setDesfireId(String desfireId) {
-        this.desfireId = desfireId;
+    public void Card.setDesfireIds(Map<String, String> desfireIds) {
+        this.desfireIds = desfireIds;
     }
     
     public String Card.getCsn() {
@@ -234,14 +234,6 @@ privileged aspect Card_Roo_JavaBean {
     
     public void Card.setPhotoFile(PhotoFile photoFile) {
         this.photoFile = photoFile;
-    }
-    
-    public CardIdGenerator Card.getCardIdGenerator() {
-        return this.cardIdGenerator;
-    }
-    
-    public void Card.setCardIdGenerator(CardIdGenerator cardIdGenerator) {
-        this.cardIdGenerator = cardIdGenerator;
     }
     
     public String Card.getEscnUid() {
