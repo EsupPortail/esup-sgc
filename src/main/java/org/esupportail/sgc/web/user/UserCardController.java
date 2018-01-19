@@ -308,9 +308,10 @@ public class UserCardController {
 				.getAuthentication();
 		String eppn = auth.getName();
 		
+		// TODO synchronized
 		synchronized (eppn.intern()) {
 			
-			// check rights 
+			// check rights  sur Sring est global - à éviter
 			if(userService.isFirstRequest(eppn) || userService.isFreeRenewal(eppn) ||  userService.isPaidRenewal(eppn) || cardEtatService.hasRejectedCard(eppn)) {
 			
 				if(!cardEtatService.hasNewCard(eppn)){
@@ -433,8 +434,13 @@ public class UserCardController {
 	
 	@RequestMapping(value="/photo/{cardId}")
 	public void getPhoto(@PathVariable Long cardId, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		
 		Card card = Card.findCard(cardId);
-		if(card.getEppn()!=null) {
+		
+		if(card.getEppn()!=null && eppn.equals(card.getEppn())) {
 			PhotoFile photoFile = card.getPhotoFile();
 			Long size = photoFile.getFileSize();
 			String contentType = photoFile.getContentType();
@@ -465,6 +471,9 @@ public class UserCardController {
 	
 	@RequestMapping(value="/difPhoto")
 	public String updateDifPhoto(@RequestParam("diffusionphoto") boolean diffusionphoto, @RequestParam("eppn") String eppn) {
+		// TODO : remove  @RequestParam("eppn") String eppn
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		eppn = auth.getName();
 		User user = User.findUser(eppn);
 		boolean oldDifPhoto = user.getDifPhoto();
 		user.setDifPhoto(diffusionphoto);
@@ -497,8 +506,9 @@ public class UserCardController {
 	
 	@RequestMapping(value="/forcedFreeRenewal", method = RequestMethod.POST)
 	public String setForcedFreeRenewal(@RequestParam("eppn") String eppn) {
-		
+		// TODO : remove  @RequestParam("eppn") String eppn
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		eppn = auth.getName();
 		if(shibService.isPreviousAdmin(auth)){
 			User user = User.findUser(eppn);
 			user.setRequestFree(true);
@@ -511,15 +521,22 @@ public class UserCardController {
 	@RequestMapping(value="/deliver/{cardId}", method=RequestMethod.POST)
 	@Transactional
 	public String deliver(@PathVariable("cardId") Long cardId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
 		Card card = Card.findCard(cardId);
-		card.setDeliveredDate(new Date());
-		card.merge();
-		logService.log(card.getId(), ACTION.USER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
+		if(eppn.equals(card.getEppn())) {
+			card.setDeliveredDate(new Date());
+			card.merge();
+			logService.log(card.getId(), ACTION.USER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
+		}
 		return "redirect:/user";
 	}
 	
 	@RequestMapping(value="/enableCrous", method=RequestMethod.POST)
 	public String enableCrous(@RequestParam("eppn")String eppn, final RedirectAttributes redirectAttributes) {
+		// TODO : remove  @RequestParam("eppn") String eppn
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		eppn = auth.getName();
 		User user = User.findUser(eppn);
 		user.setCrous(true);
 		user.merge();
@@ -530,6 +547,9 @@ public class UserCardController {
 	
 	@RequestMapping(value="/enableEuropeanCard", method=RequestMethod.POST)
 	public String enableEuropeanCard(@RequestParam("eppn")String eppn, final RedirectAttributes redirectAttributes) {
+		// TODO : remove  @RequestParam("eppn") String eppn
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		eppn = auth.getName();
 		User user = User.findUser(eppn);
 		user.setEuropeanStudentCard(true);
 		user.merge();
@@ -538,3 +558,4 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 }
+
