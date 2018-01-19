@@ -3,7 +3,6 @@ package org.esupportail.sgc.services;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -18,6 +17,7 @@ import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.User;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class StatsService {
@@ -83,7 +83,7 @@ public class StatsService {
     }
     
     @SuppressWarnings("serial")
-	public  LinkedHashMap<String,Object> getStats(String typeInd) throws ParseException {
+	public  LinkedHashMap<String,Object> getStats(String typeInd, String typeStats) throws ParseException {
 			
 		LinkedHashMap<String, Object> results = new LinkedHashMap<String, Object>() {
 			   
@@ -91,32 +91,58 @@ public class StatsService {
 			   Date date = formatter.parse(getCurrentAnneUniv());
 			
 	        {
-	        	put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd), 3));
-	        	put("crous",mapField(User.countNbCrous(typeInd), 2));
-	        	put("difPhoto",mapField(User.countNbDifPhoto(typeInd), 2));
-	        	put("cardsByDay",mapField(Card.countNbCardsByDay(typeInd, "request_date"), 2));
-	        	put("paybox",mapField(PayboxTransactionLog.countNbPayboxByYearEtat(), 3));
-	        	put("motifs",mapField(Card.countNbCardsByMotifsDisable(typeInd), 2));
-	        	put("dates",mapField(Card.countNbCardsByMonthYear(typeInd), 3));
-	        	put("deliveredCardsByDay",mapField(Card.countNbDeliverdCardsByDay(typeInd), 2));
-	        	put("encodedCardsByday",mapField(Card.countNbEncodedCardsByDay(typeInd), 2));
-	        	put("nbCards",mapField(User.countNbCardsByuser(typeInd), 2));
-	        	put("editable",mapField(User.countNbEditable(), 2));
-	        	put("verso5",mapField(User.countNbVerso5(), 2));
-	        	put("browsers",mapField(Card.countBrowserStats(typeInd), 2));
-	        	put("os",mapField(Card.countOsStats(typeInd), 2));
-	        	put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd, date), 2));
-	        	put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(date), 2));
-	        	put("cardsMajByDay",mapField(Log.countNbLogByDay("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 3));
-	        	put("cardsMajByIp",mapField(Log.countNbLogByAction("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 2));
-	        	put("cardsMajByDay2",mapField(Log.countNbLogByDay2("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 3));
-	        	put("deliveryByAdress",mapField(Card.countDeliveryByAddress(date).getResultList(),2));
-	        	put("userDeliveries",mapField(Log.countUserDeliveries(),2));
-	        	put("tarifsCrous",mapField(User.countTarifCrousByType(),3));
-	        	put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd, date), 2));
-	        	put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd, date), 2));
-	        	put("nbRejetsByMonth",mapField(Card.countNbRejetsByMonth(typeInd), 2));
-	        	put("requestFree",mapField(User.countNbRequestFree(),3));
+	        	if("cardsByYearEtat".equals(typeStats)){
+	        		put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd), 3));
+	        	}else if("crous".equals(typeStats)){
+	        		put("crous",mapField(User.countNbCrous(typeInd), 2));
+	        	}else if("difPhoto".equals(typeStats)){
+	        		put("difPhoto",mapField(User.countNbDifPhoto(typeInd), 2));
+	        	}else if("cardsByDay".equals(typeStats)){
+	        		put("cardsByDay",mapField(Card.countNbCardsByDay(typeInd, "request_date"), 2));
+	        	}else if("paybox".equals(typeStats)){
+	        		put("paybox",mapField(PayboxTransactionLog.countNbPayboxByYearEtat(), 3));
+	        	}else if("motifs".equals(typeStats)){
+	        		put("motifs",mapField(Card.countNbCardsByMotifsDisable(typeInd), 2));
+	        	}else if("dates".equals(typeStats)){
+	        		put("dates",mapField(Card.countNbCardsByMonthYear(typeInd), 3));
+	        	}else if("deliveredCardsByDay".equals(typeStats)){
+	        		put("deliveredCardsByDay",mapField(Card.countNbDeliverdCardsByDay(typeInd), 2));
+	        	}else if("encodedCardsByday".equals(typeStats)){
+	        		put("encodedCardsByday",mapField(Card.countNbEncodedCardsByDay(typeInd), 2));
+	        	}else if("nbCards".equals(typeStats)){
+	        		put("nbCards",mapField(User.countNbCardsByuser(typeInd), 2));
+	        	}else if("editable".equals(typeStats)){
+	        		put("editable",mapField(User.countNbEditable(), 2));
+	        	}else if("verso5".equals(typeStats)){
+	        		put("verso5",mapField(User.countNbVerso5(), 2));
+	        	}else if("browsers".equals(typeStats)){
+	        		put("browsers",mapField(Card.countBrowserStats(typeInd), 2));
+	        	}else if("os".equals(typeStats)){
+	        		put("os",mapField(Card.countOsStats(typeInd), 2));
+	        	}else if("nbRejets".equals(typeStats)){
+	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd, date), 2));
+	        	}else if("notDelivered".equals(typeStats)){
+	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(date), 2));
+	        	}else if("cardsMajByDay".equals(typeStats)){
+	        		put("cardsMajByDay",mapField(Log.countNbLogByDay("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 3));
+	        	}else if("cardsMajByIp".equals(typeStats)){
+	        		put("cardsMajByIp",mapField(Log.countNbLogByAction("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 2));
+	        	}else if("lineCardsMajByDay".equals(typeStats)){
+	        		put("lineCardsMajByDay",mapField(Log.countNbLogByDay2("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 3));
+	        	}else if("deliveryByAdress".equals(typeStats)){
+	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress(date).getResultList(),2));
+	        	}else if("userDeliveries".equals(typeStats)){
+	        		put("userDeliveries",mapField(Log.countUserDeliveries(),2));
+	        	}else if("tarifsCrousBars".equals(typeStats)){
+	        		put("tarifsCrousBars",mapField(User.countTarifCrousByType(),3));
+	        	}else if("cardsByMonth".equals(typeStats)){
+	        		put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd, date), 2));
+	        		put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd, date), 2));
+	        	}else if("nbRejetsByMonth".equals(typeStats)){
+	        		put("nbRejetsByMonth",mapField(Card.countNbRejetsByMonth(typeInd), 2));
+	        	}else if("requestFree".equals(typeStats)){
+	        		put("requestFree",mapField(User.countNbRequestFree(),3));
+	        	}
 	        }
 	    };
 		return results;

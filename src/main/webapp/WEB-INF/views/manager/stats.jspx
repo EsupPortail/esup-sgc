@@ -3,13 +3,11 @@
 	<jsp:output omit-xml-declaration="yes" />
 	<spring:url value="/manager?index=first" var="listeUrl"/>
 	<spring:url value="/manager/stats" var="statsRootUrl"/>
-	<spring:url value="/manager/stats/jsonStats" var="statsUrl"/>
 	<spring:url value="/manager/stats/tabs/" var="tabsUrl"/>
 	<spring:url value="/manager/stats/table" var="statsTableUrl"/>
 	<spring:url value="/admin/import/exportCsvFile" var="downloadUrl"/>
 	<script type="text/javascript">
 		var statsRootUrl = '${statsRootUrl}';
-		var statsUrl = '${statsUrl}';
 		var tabsUrl = '${tabsUrl}';
 		var selectedType = '${selectedType}';
 		var prefsStats = ${prefs};

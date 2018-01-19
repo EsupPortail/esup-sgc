@@ -1,5 +1,4 @@
 package org.esupportail.sgc.web.wsrest;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,7 +7,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.apache.commons.codec.binary.Base64;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -19,6 +17,8 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.cardid.CardIdsService;
+import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
+import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.slf4j.Logger;
@@ -64,6 +64,13 @@ public class WsRestEsupSgcApiController {
 	@Resource
 	LogService logService;
 	
+	@Resource
+	LdapGroup2UserRoleService ldapGroup2UserRoleService;
+	
+	@Resource
+	ResynchronisationUserService resynchronisationUserService;
+	
+	
 	/**
 	 * Example to use it :
 	 *  curl   -F "eppn=toto@univ-ville.fr"   -F "difPhotoTransient=true" -F "crousTransient=true"   -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
@@ -82,6 +89,16 @@ public class WsRestEsupSgcApiController {
 		String eppn = card.getEppn();
 		
 		synchronized (eppn.intern()) {
+			
+			User user = User.findUser(eppn);
+			if(user == null) {
+				user = new User();
+				user.setEppn(eppn);
+				user.persist();
+			}
+			
+			resynchronisationUserService.synchronizeUserInfo(eppn);
+			ldapGroup2UserRoleService.syncUser(eppn);
 			
 			// check rights 
 			if(userService.isFirstRequest(eppn) || userService.isFreeRenewal(eppn) ||  userService.isPaidRenewal(eppn) || cardEtatService.hasRejectedCard(eppn)) {
@@ -121,7 +138,6 @@ public class WsRestEsupSgcApiController {
 							card.persist();
 						}
 						
-						User user = User.findUser(eppn);
 						card.setUserAccount(user);
 						card.setDueDate(user.getDueDate());
 						if(card.getCrousTransient()!=null && card.getCrousTransient()) {

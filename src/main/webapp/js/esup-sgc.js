@@ -154,6 +154,59 @@ function rgb2hex(rgb){
 	  ("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
 	  ("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
 }
+//affiche spinner load charts
+function displaySpinner(c,j) {
+    var context=c.getContext("2d");
+    var start = new Date();
+    var lines = 16,  
+        cW = context.canvas.width,
+        cH = context.canvas.height;
+    var draw = function() {
+        var rotation = parseInt(((new Date() - start) / 1000) * lines) / lines;
+        context.save();
+        context.clearRect(0, 0, cW, cH);
+        context.translate(cW / 2, cH / 2);
+        context.rotate(Math.PI * 2 * rotation);
+        for (var i = 0; i < lines; i++) {
+            context.beginPath();
+            context.rotate(Math.PI * 2 / lines);
+            context.moveTo(cW / 10, 0);
+            context.lineTo(cW / 4, 0);
+            context.lineWidth = cW / 30;
+            context.strokeStyle = "rgba(0, 0, 0," + i / lines + ")";
+            context.stroke();
+        }
+        context.restore();
+    };
+    window['p'+j] = setInterval(draw, 1000 / 30);
+};
+//affiche stats
+function getStats(id, chartType, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth){
+	displaySpinner($("canvas#" + id)[0], spinner);
+	$.ajax({
+	    url: statsRootUrl+"/json",
+	    data: {type : id, typeInd: selectedType},
+	    type: 'GET',
+		dataType : 'json',
+		success : function(data) {
+			clearInterval(window['p' + spinner]);
+			if(chartType == "multiBar"){
+				// multiChartStackBar(allData, id, start, transTooltip,formatDate){
+				multiChartStackBar(data[id], "#"+id, 3, transTooltip, formatDate);
+			}else if(chartType == "chartBar"){
+				//chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
+				chartBar(data[id], label1, "#" +id, transTooltip, formatDate, data[data2], label2);
+			}else if(chartType == "pie"){
+				// chartPieorDoughnut(data, id, type, option)
+				chartPieorDoughnut(data[id], "#" +id, chartType, option);
+			}else if(chartType == "doughnut"){
+				chartPieorDoughnut(data[id], "#" +id, chartType, option);
+			}else if(chartType == "lineChart"){
+				lineChart(data[id], "#" +id, fill, arrayDates, byMonth, formatDate)
+			}
+	    }
+	});     
+ }
 
 //Stats bar chart
 function multiChartStackBar(allData, id, start, transTooltip,formatDate){
@@ -819,22 +872,6 @@ $(document).ready(function() {
      $('#cardList .photo img').popover({ trigger: 'hover', placement : 'auto', content: function () {
 	    								return '<img src="'+ $(this)[0].src + '" height="188" width="150"/>';
  									}, html:true});
-    
-   	// SGC Encode
- 	if (typeof sgcRootUrl != "undefined") {
-		$.ajax({
-			url : sgcRootUrl + "manager/nfc/current",
-			context: this,
-			success : function(message) {
-				if (message && message.length) {
-					alertMsg = messages['alertEncoding'] + message + ".";
-					alertMsg += "<br/><a href=\"" + sgcRootUrl + "manager/nfc/clear\">" + messages['cancel'] + "</a>";
-					alert(alertMsg, messages['encodingInprogress']);
-				}
-			},
-			cache : false
-		})
-	}
  	
  	//autocomplete eppn
  	var searchBox = document.querySelector('#searchEppn');
@@ -914,41 +951,35 @@ $(document).ready(function() {
     });  
     
     //stats
-	if(typeof statsUrl != "undefined"){
-	    $.ajax({
-	        url: statsUrl,
-	        type: 'GET',
-	        dataType : 'json',
-	        data: {typeInd: selectedType},
-	        success : function(data) {
-	        	multiChartStackBar(data.cardsByYearEtat, "#cardsByYearEtat",3, "etat");
-	        	chartPieorDoughnut(data.crous, "#crous", "pie", null);
-	        	chartPieorDoughnut(data.difPhoto, "#difPhoto", "pie", null);
-				chartBar(data.cardsByDay, "", "#cardsByDay", null, true);
-				multiChartStackBar(data.paybox, "#paybox",3);
-				chartBar(data.motifs, "", "#motifs", "motif");
-				lineChart(data.dates, "#dates", true, monthsArray, true);
-				chartBar(data.deliveredCardsByDay, "", "#deliveredCardsByDay", null, true);
-				chartBar(data.encodedCardsByday, "", "#encodedCardsByday", null, true);
-				chartPieorDoughnut(data.nbCards, "#nbCards", "doughnut", null);
-				chartBar(data.editable, "", "#editable");
-				chartPieorDoughnut(data.verso5, "#verso5", "doughnut", null);
-				chartPieorDoughnut(data.browsers, "#browsers", "pie", null);
-				chartPieorDoughnut(data.os, "#os", "pie", null);
-				chartPieorDoughnut(data.nbRejets, "#nbRejets", "doughnut", null);
-				chartBar(data.notDelivered, "", "#notDelivered");
-				multiChartStackBar(data.cardsMajByDay, "#cardsMajByDay",3, null,true);
-				chartPieorDoughnut(data.cardsMajByIp, "#cardsMajByIp", "doughnut", null);
-				lineChart(data.cardsMajByDay2, "#lineCardsMajByDay", false, oneMonthBefore, false, true);
-				chartPieorDoughnut(data.deliveryByAdress, "#deliveryByAdress", "pie", "legend");
-				chartBar(data.userDeliveries, "", "#userDeliveries", null, true);
-				multiChartStackBar(data.tarifsCrous, "#tarifsCrousBars",3, null,false);
-				chartBar(data.cardsByMonth, "Demandes", "#cardsByMonth", null, false, data.encodedCardsByMonth, "Carte encodées");
-				chartBar(data.nbRejetsByMonth, "", "#nbRejetsByMonth", null, false);
-				multiChartStackBar(data.requestFree, "#requestFree",3, null,false);
-	        }
-	    });    
-	}
+    if(typeof (statsRootUrl + "/json") != "undefined"){
+    	//getStats(id, chartType, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth)
+    	getStats("cardsByYearEtat", "multiBar", selectedType, 0);
+    	getStats("crous", "pie", selectedType, 1);
+    	getStats("difPhoto", "pie", selectedType, 2);
+    	getStats("cardsByDay", "chartBar", selectedType, 3);
+    	getStats("paybox", "multiBar", selectedType, 4);
+    	getStats("motifs", "chartBar", selectedType, 5);
+    	getStats("dates", "lineChart", selectedType, 6, null, null, false, null, null, null, true, monthsArray, true);
+    	getStats("deliveredCardsByDay", "chartBar", selectedType, 7);
+    	getStats("encodedCardsByday", "chartBar", selectedType, 8);
+    	getStats("nbCards", "doughnut", selectedType, 9);
+    	getStats("editable", "chartBar", selectedType, 10);
+    	getStats("verso5", "doughnut", selectedType, 11);
+    	getStats("browsers", "pie", selectedType, 12);
+    	getStats("os", "pie", selectedType, 13);
+    	getStats("nbRejets", "doughnut", selectedType, 14);
+    	getStats("notDelivered", "chartBar", selectedType, 15);
+    	getStats("cardsMajByDay", "multiBar", selectedType, 16);
+    	getStats("cardsMajByIp", "doughnut", selectedType, 17);
+    	getStats("lineCardsMajByDay", "lineChart", selectedType, 18, null, null, false, null, null, null, false, oneMonthBefore, false);
+    	getStats("deliveryByAdress", "pie", selectedType, 19, "legend");
+    	getStats("userDeliveries", "chartBar", selectedType, 20);
+    	getStats("tarifsCrousBars", "multiBar", selectedType, 21);
+    	getStats("cardsByMonth", "chartBar", selectedType, 22, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
+    	getStats("nbRejetsByMonth", "chartBar", selectedType, 23);
+    	getStats("requestFree", "multiBar", selectedType, 24);
+    }
+
 	$("select#etat").change(function(){
 		if(typeof filterAdressUrl != "undefined"){	
 			var selectedEtat = $("#etat").val();

@@ -121,17 +121,16 @@ public class StatsController {
 	    return "redirect:/manager/stats";
     }
 	
-	@RequestMapping(value="jsonStats", headers = "Accept=application/json; charset=utf-8")
+	@RequestMapping(value="json", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody 
-	public String getStats(@RequestParam String typeInd) {
+	public String getStats( @RequestParam(value="typeInd")  String typeInd, @RequestParam(value="type") String type) {
 		String flexJsonString = "Aucune statistique à récupérer";
-		
 		try {
 			JSONSerializer serializer = new JSONSerializer();
-			flexJsonString = serializer.deepSerialize(statsService.getStats(typeInd)); 
+			flexJsonString = serializer.deepSerialize(statsService.getStats(typeInd, type));
 			
 		} catch (Exception e) {
-			log.warn("Impossible de récupérer les statistiques", e);
+			log.warn("Impossible de récupérer les statistiques " + type , e);
 		}
 		
     	return flexJsonString;
