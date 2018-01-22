@@ -143,7 +143,7 @@ public class Card {
     private PhotoFile photoFile = new PhotoFile();
 
     @Column
-    private Long nbRejets;
+    private Long nbRejets = Long.valueOf(0);
     
     /**
      * European Student Card Number 
@@ -161,16 +161,16 @@ public class Card {
     List<Etat> etatsAvailable = new ArrayList<Etat>();
 
     @Transient
-    Boolean crousTransient;
+    Boolean crousTransient = false;
     
     @Transient
-    Boolean europeanTransient;
+    Boolean europeanTransient = false;
 
     @Transient
-    Boolean difPhotoTransient;
+    Boolean difPhotoTransient = false;
 
     @Transient
-    Boolean isPhotoEditable;
+    Boolean isPhotoEditable = false;
     
 
     @PostPersist
