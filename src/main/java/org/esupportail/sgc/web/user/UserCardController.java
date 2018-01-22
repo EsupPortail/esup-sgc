@@ -365,7 +365,9 @@ public class UserCardController {
 							user.setEuropeanStudentCard(true);
 							userInfoService.setAdditionalsInfo(user, request);
 						}
-						user.setDifPhoto(card.getDifPhotoTransient());
+						if(card.getDifPhotoTransient() != null) {
+							user.setDifPhoto(card.getDifPhotoTransient());
+						}
 						String reference = cardService.getPaymentWithoutCard(eppn);
 						if(!reference.isEmpty()){
 							card.setPayCmdNum(reference);
@@ -475,10 +477,10 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		eppn = auth.getName();
 		User user = User.findUser(eppn);
-		boolean oldDifPhoto = user.getDifPhoto();
+		Boolean oldDifPhoto = user.getDifPhoto();
 		user.setDifPhoto(diffusionphoto);
 		user.merge();
-		logService.log(user.getCards().get(0).getId(), ACTION.DIFPHOTO, RETCODE.SUCCESS, oldDifPhoto + " --> " + diffusionphoto, user.getEppn(), null);
+		logService.log(user.getCards().get(0).getId(), ACTION.DIFPHOTO, RETCODE.SUCCESS, oldDifPhoto == null ? "null" : oldDifPhoto + " --> " + diffusionphoto, user.getEppn(), null);
 		return "redirect:/user";
 	}
 	
