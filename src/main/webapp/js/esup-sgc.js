@@ -182,30 +182,33 @@ function displaySpinner(c,j) {
 };
 //affiche stats
 function getStats(id, chartType, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth){
-	displaySpinner($("canvas#" + id)[0], spinner);
-	$.ajax({
-	    url: statsRootUrl+"/json",
-	    data: {type : id, typeInd: selectedType},
-	    type: 'GET',
-		dataType : 'json',
-		success : function(data) {
-			clearInterval(window['p' + spinner]);
-			if(chartType == "multiBar"){
-				// multiChartStackBar(allData, id, start, transTooltip,formatDate){
-				multiChartStackBar(data[id], "#"+id, 3, transTooltip, formatDate);
-			}else if(chartType == "chartBar"){
-				//chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
-				chartBar(data[id], label1, "#" +id, transTooltip, formatDate, data[data2], label2);
-			}else if(chartType == "pie"){
-				// chartPieorDoughnut(data, id, type, option)
-				chartPieorDoughnut(data[id], "#" +id, chartType, option);
-			}else if(chartType == "doughnut"){
-				chartPieorDoughnut(data[id], "#" +id, chartType, option);
-			}else if(chartType == "lineChart"){
-				lineChart(data[id], "#" +id, fill, arrayDates, byMonth, formatDate)
-			}
-	    }
-	});     
+	var prefId = $("#" + id).parent().parent().parent().prop("id");
+	if((prefsStatsRm!=null && prefsStatsRm !="" && !($.inArray(prefId, prefsStatsRm)>-1)) || (prefsStatsRm==null || prefsStatsRm =="")){
+		displaySpinner($("canvas#" + id)[0], spinner);
+		$.ajax({
+		    url: statsRootUrl+"/json",
+		    data: {type : id, typeInd: selectedType},
+		    type: 'GET',
+			dataType : 'json',
+			success : function(data) {
+				clearInterval(window['p' + spinner]);
+				if(chartType == "multiBar"){
+					// multiChartStackBar(allData, id, start, transTooltip,formatDate){
+					multiChartStackBar(data[id], "#"+id, 3, transTooltip, formatDate);
+				}else if(chartType == "chartBar"){
+					//chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
+					chartBar(data[id], label1, "#" +id, transTooltip, formatDate, data[data2], label2);
+				}else if(chartType == "pie"){
+					// chartPieorDoughnut(data, id, type, option)
+					chartPieorDoughnut(data[id], "#" +id, chartType, option);
+				}else if(chartType == "doughnut"){
+					chartPieorDoughnut(data[id], "#" +id, chartType, option);
+				}else if(chartType == "lineChart"){
+					lineChart(data[id], "#" +id, fill, arrayDates, byMonth, formatDate);
+				}
+		    }
+		});  
+	}
  }
 
 //Stats bar chart
@@ -944,14 +947,14 @@ $(document).ready(function() {
         		window.location.href = 	statsRootUrl;
         	};	
     	}else{
-	    	if(typeof statsUrl != "undefined"){
+	    	if(typeof tabsUrl != "undefined"){
 	    		window.location.href = 	tabsUrl + type;
 	    	};
     	}
     });  
     
     //stats
-    if(typeof (statsRootUrl + "/json") != "undefined"){
+    if(typeof (statsRootUrl) != "undefined"){
     	//getStats(id, chartType, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth)
     	getStats("cardsByYearEtat", "multiBar", selectedType, 0);
     	getStats("crous", "pie", selectedType, 1);
@@ -1082,7 +1085,6 @@ $(document).ready(function() {
 			    data : {values: statsArray.toString(), key: key}
 			})
 	    }
-	    
 	    if(prefsStats!=null && prefsStats !=""){
 	    	$.each(prefsStatsRm, function(index, value){
 	    		$("#statsPanels #" + value).remove();
