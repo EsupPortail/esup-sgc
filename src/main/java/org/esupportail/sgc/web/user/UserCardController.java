@@ -507,10 +507,9 @@ public class UserCardController {
 	}
 	
 	@RequestMapping(value="/forcedFreeRenewal", method = RequestMethod.POST)
-	public String setForcedFreeRenewal(@RequestParam("eppn") String eppn) {
-		// TODO : remove  @RequestParam("eppn") String eppn
+	public String setForcedFreeRenewal() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		eppn = auth.getName();
+		String eppn = auth.getName();
 		if(shibService.isPreviousAdmin(auth)){
 			User user = User.findUser(eppn);
 			user.setRequestFree(true);
@@ -535,10 +534,9 @@ public class UserCardController {
 	}
 	
 	@RequestMapping(value="/enableCrous", method=RequestMethod.POST)
-	public String enableCrous(@RequestParam("eppn")String eppn, final RedirectAttributes redirectAttributes) {
-		// TODO : remove  @RequestParam("eppn") String eppn
+	public String enableCrous(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		eppn = auth.getName();
+		String eppn = auth.getName();
 		User user = User.findUser(eppn);
 		user.setCrous(true);
 		user.merge();
@@ -548,10 +546,9 @@ public class UserCardController {
 	}
 	
 	@RequestMapping(value="/enableEuropeanCard", method=RequestMethod.POST)
-	public String enableEuropeanCard(@RequestParam("eppn")String eppn, final RedirectAttributes redirectAttributes) {
-		// TODO : remove  @RequestParam("eppn") String eppn
+	public String enableEuropeanCard(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		eppn = auth.getName();
+		String eppn = auth.getName();
 		User user = User.findUser(eppn);
 		user.setEuropeanStudentCard(true);
 		user.merge();
