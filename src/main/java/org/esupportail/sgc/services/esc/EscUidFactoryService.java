@@ -5,8 +5,9 @@ import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cnous.esc.UuidFactory;
-import com.cnous.esc.UuidFactoryException;
+import eu.europeanstudentcard.esc.EscnFactory;
+import eu.europeanstudentcard.esc.EscnFactoryException;
+
 
 public class EscUidFactoryService {
 
@@ -32,8 +33,8 @@ public class EscUidFactoryService {
 
 	public synchronized void generateEscnUid(Card card) {
 		try {
-			card.setEscnUid(UuidFactory.getUuid(prefixe, pic));
-		} catch (InterruptedException | UuidFactoryException e) {
+			card.setEscnUid(EscnFactory.getEscn(prefixe, pic));
+		} catch (InterruptedException | EscnFactoryException e) {
 			throw new SgcRuntimeException("Error generating ESNC UID", e); 
 		}
 	}

@@ -654,7 +654,9 @@ $(document).ready(function() {
 		imageCropper.cropit('imageSrc', lastPhotoUrl);
 	}
 	imageCropper.cropit('maxZoom', 1.8);
-	imageCropper.cropit('minZoom', 'fill');
+
+	imageCropper.cropit('minZoom', 'fit');
+		
 	cropitPreview.on('dragover', function(e) {
 		cropitPreview.css({"border" : "2px dashed black"});
 	});

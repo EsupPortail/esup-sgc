@@ -1,11 +1,19 @@
 package org.esupportail.sgc.services;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
@@ -15,6 +23,15 @@ import org.esupportail.sgc.tools.Params;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 
 @Service
@@ -169,4 +186,41 @@ public class CardService {
 			emailService.sendMessage(mailFrom, mailTo, subject, mailMessage);
 		}
 	}
+	
+	public String getQrCodeSvg(String value) throws SVGGraphics2DIOException, WriterException{
+		
+		Map<EncodeHintType, Object> hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+		hints.put(EncodeHintType.MARGIN, 0);	
+		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+		
+		BitMatrix matrix = new QRCodeWriter().encode(value, BarcodeFormat.QR_CODE, 100, 100, hints); 
+		// Get a DOMImplementation.
+		DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
+		// Create an instance of org.w3c.dom.Document.
+		String svgNS = "http://www.w3.org/2000/svg";
+		Document document = domImpl.createDocument(svgNS, "svg", null);
+		// Create an instance of the SVG Generator.
+		SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
+		svgGenerator.setBackground(Color.RED);
+		svgGenerator.setColor(Color.BLACK);
+		svgGenerator.setSVGCanvasSize(new Dimension(100,100));
+		
+		
+		int w = matrix.getWidth();
+		svgGenerator.setSVGCanvasSize(new Dimension(w,w));
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < w; j++) {
+				if (matrix.get(i, j)) {
+					svgGenerator.fillRect(i, j, 1, 1);
+				}
+			}
+		}
+
+		boolean useCSS = false; // we want to use CSS style attributes
+		Writer svgWriter = new StringWriter();
+		svgGenerator.stream(svgWriter, useCSS);
+		return svgWriter.toString();
+	}
+	
 }

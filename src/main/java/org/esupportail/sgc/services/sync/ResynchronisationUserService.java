@@ -58,6 +58,7 @@ public class ResynchronisationUserService {
 		dummyUser.setExternalCard(user.getExternalCard());
 		dummyUser.setNbCards(user.getNbCards());
 		dummyUser.setRequestFree(user.isRequestFree());
+		dummyUser.setDifPhoto(user.getDifPhoto());
 		userInfoService.setAdditionalsInfo(dummyUser, null);
 		boolean accessControlMustUpdate = false;
 		if(!dummyUser.fieldsEquals(user) && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
@@ -67,6 +68,23 @@ public class ResynchronisationUserService {
 						+ "and its recording duedate is at the moment after today -> we should force the dueDate to be today ... ?!");
 				//user.setDueDate(new Date());
 			}
+			
+			// if user is caduc and have only cards caduc we don't synchronize
+			if(user.getDueDateIncluded().before(new Date())) {
+				boolean haveOnlyCaducCards = true; 
+				for(Card card : user.getCards()) {
+					if(!Etat.CADUC.equals(card.getEtat())) {
+						haveOnlyCaducCards = false;
+					}
+				}
+				if(haveOnlyCaducCards) {
+					log.trace(eppn + " is already caduc - no need to synchronize");
+					return false;
+				} else {
+					log.debug(eppn + " is caduc - but he has cards that are not caduc - need to synchronize");
+				}
+			}
+			
 			log.info("Synchronize of user " + eppn + " is needed.");
 			userInfoService.setAdditionalsInfo(user, null);
 			user.merge();

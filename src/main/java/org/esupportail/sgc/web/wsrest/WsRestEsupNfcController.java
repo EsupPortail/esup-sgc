@@ -38,12 +38,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
@@ -155,6 +155,33 @@ public class WsRestEsupNfcController {
 		return locations;
 	}
 	
+	@RequestMapping(value="/locationsVerso",  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public List<String> getLocationsVerso(@RequestParam String eppn) {
+		List<String> locations = new ArrayList<String>();
+		List<String> livreurGroups = shibAuthenticatedUserDetailsService.getUpdaterGroups();
+		List<String> userGroups = groupService.getGroupsForEppn(eppn);
+		for(String livreurGroup : livreurGroups) {
+			if(userGroups.contains(livreurGroup)) {
+				locations.add(EsupNfcTagLog.VERSO_CARTE);
+				break;
+			}
+		}
+		log.info("locations for " + eppn + " -> locations");
+		return locations;
+	}
+	
+	/**
+	 * Example :
+	 * curl -v -X POST -H "Content-Type: application/json" -d '{"eppn":"joe@univ-ville.fr","lastname":"dalton","firstname":"joe","location":"Livraison ESUP SGC","csn":"040F5E12CB4080", "eppnInit":"jack@univ-ville.fr"}' http://localhost:8080/wsrest/nfc/verso 
+	 */
+	@RequestMapping(value="/verso",  method=RequestMethod.POST)
+	public String verso(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
+		Card card = Card.findCardsByCsn(taglog.getCsn()).getSingleResult();
+		uiModel.addAttribute("card", card);
+		return "verso";
+	}
+	
 	/**
 	 * Example :
 	 * curl -v -X POST -H "Content-Type: application/json" -d '{"eppn":"joe@univ-ville.fr","lastname":"dalton","firstname":"joe","location":"Livraison ESUP SGC","csn":"040F5E12CB4080", "eppnInit":"jack@univ-ville.fr"}' http://localhost:8080/wsrest/nfc/isTagable 
@@ -165,34 +192,47 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppn = esupNfcTagLog.getEppn();
 		String csn = esupNfcTagLog.getCsn();
-		if(EsupNfcTagLog.SALLE_UPDATE.equals(esupNfcTagLog.getLocation())){
-			log.debug("try to select card this eppninit : "+ esupNfcTagLog.getEppnInit());
-			log.info("isLeocarteTagable(" + eppn + ", " + csn);
+		
+		if(EsupNfcTagLog.SALLE_ENCODAGE.equals(esupNfcTagLog.getLocation())){
+			log.info("isTagable for encode " + eppn + ", " + csn);
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-		} else if(EsupNfcTagLog.SALLE_ENCODAGE.equals(esupNfcTagLog.getLocation())){
-			log.info("isLeocarteTagable(" + eppn + ", " + csn);
-			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-		} else if(EsupNfcTagLog.SALLE_SEARCH.equals(esupNfcTagLog.getLocation())){
-			log.info("isLeocarteTagable(" + eppn + ", " + csn);
-			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-		} else if(EsupNfcTagLog.SALLE_LIVRAISON.equals(esupNfcTagLog.getLocation())) {
-			try{
-				Card card = Card.findCard(csn);
-				if(card!=null) {
-					if(card.getDeliveredDate()==null){
-						log.info("card "+ csn + " tagableLivreur OK");
-						return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-					}else{
-						log.warn("card "+ csn + "déjà livrée");
-						return new ResponseEntity<String>("Carte déjà livrée", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
-					}
-				} else {
-					log.warn("card "+ csn + "not found");
-					return new ResponseEntity<String>("Carte non trouvée", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-			} catch (Exception e){
+		}
+		
+		Card card = null;
+		try{
+			card = Card.findCard(csn);
+			if(card==null) {
 				log.warn("card "+ csn + "not found");
 				return new ResponseEntity<String>("Carte non trouvée", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e){
+			log.warn("card "+ csn + "find error", e);
+			return new ResponseEntity<String>("Erreur lors de la recherche", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		if(EsupNfcTagLog.SALLE_UPDATE.equals(esupNfcTagLog.getLocation())){
+			log.info("isTagable for update " + eppn + ", " + csn);
+			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+		} else if(EsupNfcTagLog.SALLE_SEARCH.equals(esupNfcTagLog.getLocation())){
+			log.info("isTagable for search " + eppn + ", " + csn);
+			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);		
+		} else if(EsupNfcTagLog.VERSO_CARTE.equals(esupNfcTagLog.getLocation())){
+			log.info("isTagable for verso " + eppn + ", " + csn);
+			if(card.isEnabled()){
+				log.info("card "+ csn + " verso OK");
+				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+			}else{
+				log.warn(eppn + ", " + csn + " carte non active");
+				return new ResponseEntity<String>("Carte non active", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} else if(EsupNfcTagLog.SALLE_LIVRAISON.equals(esupNfcTagLog.getLocation())) {
+			log.info("isTagable for livraison " + eppn + ", " + csn);
+			if(card.getDeliveredDate()==null){
+				log.info(eppn + ", " + csn + " livraison OK");
+				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+			}else{
+				log.warn(eppn + ", " + csn + " déjà livrée");
+				return new ResponseEntity<String>("Carte déjà livrée", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
 			log.error("Salle " + esupNfcTagLog.getLocation() + " inconnue !");
@@ -244,20 +284,54 @@ public class WsRestEsupNfcController {
 			card.setLastEncodedDate(new Date());
 			card.merge();
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+		} else if(EsupNfcTagLog.VERSO_CARTE.equals(esupNfcTagLog.getLocation())) {
+			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else {
 			log.error("Salle " + esupNfcTagLog.getLocation() + " inconnue !");
 		}
 		return new ResponseEntity<String>("KO", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	@RequestMapping(value="/tagIdCheck",  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	@ResponseBody
-	public EsupNfcTagLog tagIdCheck(@RequestParam(required=false) String csn) {
-		log.debug("tagIdCheck with csn = " + csn);
+	
 
-		if(csn==null) {
-			throw new MultipartException("csn or desfireId should not be null");
+	/**
+	 * Example :
+	 * curl -v -H "Content-Type: application/json" 'http://localhost:8080/wsrest/nfc/tagIdCheck?desfireId=12afe3123123133132361a4585f3681e2685b69c324d6322&appName=access-control'
+	 */
+	@RequestMapping(value="/tagIdCheck", params={"desfireId", "appName"},  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public EsupNfcTagLog tagIdCheck4appName(@RequestParam String desfireId, @RequestParam String appName) {
+		
+		log.debug("tagIdCheck with appName = " + appName + " and desfireId = " + desfireId);
+
+		EsupNfcTagLog esupNfcTagLog = null;
+		Card card = null;
+		
+		try {
+			card = cardIdsService.findCardsByDesfireId(desfireId, appName);
+		} catch(Exception e){
+			log.info("card not found ", e);
 		}
+
+		if(card!=null) {
+			esupNfcTagLog = new EsupNfcTagLog();
+			esupNfcTagLog.setCsn(card.getCsn());
+			esupNfcTagLog.setEppn(card.getEppn());
+			esupNfcTagLog.setFirstname(card.getUser().getFirstname());
+			esupNfcTagLog.setLastname(card.getUser().getName());
+			log.info("tagIdCheck OK " + esupNfcTagLog);
+		} else {
+			log.info("tagIdCheck failed, " + desfireId + " on " + appName + " not retrieved");
+		}
+		return esupNfcTagLog;
+	}
+	
+	
+	@RequestMapping(value="/tagIdCheck", params={"csn"}, method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public EsupNfcTagLog tagIdCheck(@RequestParam String csn) {
+
+		log.debug("tagIdCheck with csn = " + csn);
 
 		EsupNfcTagLog esupNfcTagLog = null;
 		Card card = null;
@@ -297,7 +371,7 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value="/idFromCsn", params={"csn"},  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public ResponseEntity<String> idFromCsn(@RequestParam(required=true) String csn, @RequestParam(required=true) String appName) {
-		log.debug("idFromCsn with csn = " + csn + " and appName = " + appName);
+		log.debug("request idFromCsn with csn = " + csn + " and appName = " + appName);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		Card card = null;
 		String id = null;
@@ -310,6 +384,7 @@ public class WsRestEsupNfcController {
 			log.error(errorMsg, e);
 			return new ResponseEntity<String>(errorMsg, responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR); 
 		}
+		log.debug("idFromCsn with csn = " + csn + " and appName = " + appName + " -> id = " + id);
 		return new ResponseEntity<String>(id, responseHeaders, HttpStatus.OK);
 	}
 	
@@ -328,8 +403,7 @@ public class WsRestEsupNfcController {
 			User user = User.findUser(card.getEppn());
 			if("biblio".equals(service)){
 				secondaryId = user.getSecondaryId();
-			}else
-			if("eppn".equals(service)){
+			} else if("eppn".equals(service)){
 				secondaryId = user.getEppn();
 			}
 		}

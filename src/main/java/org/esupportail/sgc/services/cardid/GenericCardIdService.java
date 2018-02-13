@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -24,10 +25,16 @@ public class GenericCardIdService implements CardIdService {
 	
 	private String postgresqlSequence;
 	
+	private int desfireFileLength = 64;
+	
 	public void setIdCounterBegin(Long idCounterBegin) {
 		this.idCounterBegin = idCounterBegin;
 	}
-	
+
+	public void setDesfireFileLength(String desfireFileLengthString) {
+		this.desfireFileLength = Integer.valueOf(desfireFileLengthString);
+	}
+
 	@Override
 	public String getAppName() {
 		return appName;
@@ -66,12 +73,16 @@ public class GenericCardIdService implements CardIdService {
 
 	@Override
 	public String encodeCardId(String desfireId) {
-		return desfireId;
+		String desfireIdWithPad = StringUtils.leftPad(desfireId, desfireFileLength, "0");
+		return desfireIdWithPad;
 	}
 
 	@Override
-	public String decodeCardId(String desfireId) {
-		return desfireId;
+	public String decodeCardId(String desfireIdWithPad) {
+		Long desfireId = Long.valueOf(desfireIdWithPad);
+		return desfireId.toString();
 	}
 
 }
+
+

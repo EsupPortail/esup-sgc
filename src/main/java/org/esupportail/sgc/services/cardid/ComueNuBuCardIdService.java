@@ -36,6 +36,8 @@ public class ComueNuBuCardIdService implements CardIdService {
 		return idComueBuFormatted;
 	}
 
+	/* TODO
+	 */
 	@Override
 	public String decodeCardId(String desfireId) {
 		return desfireId;

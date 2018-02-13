@@ -352,6 +352,17 @@ public class Card {
         Query q = em.createQuery("SELECT etat, COUNT(o) FROM Card AS o  GROUP BY etat ORDER BY etat");
         return q.getResultList();
     }
+    
+    public static TypedQuery<Card> findCardsByDesfireIdAndAppNameEquals(String desfireId, String appName) {
+        if (desfireId == null || desfireId.length() == 0) throw new IllegalArgumentException("The desfireId argument is required");
+        if (appName == null || appName.length() == 0) throw new IllegalArgumentException("The appName argument is required");
+        EntityManager em = Card.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o JOIN o.desfireIds d WHERE key(d) = :appName AND d.id = :desfireId");
+        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
+        q.setParameter("appName", appName);
+        q.setParameter("desfireId", desfireId);
+        return q;
+    }
 
     public String getReverseCsn() {
     	if(csn==null) {

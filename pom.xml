@@ -32,11 +32,7 @@
 			<name>Spring Roo Repository</name>
 			<url>http://spring-roo-repository.springsource.org/release</url>
 		</repository>
-                <repository>
-                    <id>esup-sgc-local-repo</id>
-                    <url>file://${project.basedir}/src/etc/localrepo</url>
-                </repository>
-        </repositories>
+    </repositories>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-maven-release</id>
@@ -498,11 +494,10 @@
 		    <version>2.4.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.cnous.esc</groupId>
-		    <artifactId>esc-uuid</artifactId>
-		    <version>1.0</version>
+		    <groupId>eu.europeanstudentcard</groupId>
+			<artifactId>escn-generator</artifactId>
+			<version>1.1.0</version>	
 		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>

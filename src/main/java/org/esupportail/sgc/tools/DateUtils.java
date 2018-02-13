@@ -1,6 +1,5 @@
 package org.esupportail.sgc.tools;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +21,7 @@ public class DateUtils {
 	
 	private SimpleDateFormat dateFormatterFr = new SimpleDateFormat(DATE_FORMAT_FR);
 
+	
 	public String schadDateOfBirthDay2FrenchDate(String schadDateOfBirthDay) {
     	Date date = parseSchacDateOfBirth(schadDateOfBirthDay);
     	String dateFr = dateFormatterFr.format(date);

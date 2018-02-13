@@ -22,6 +22,9 @@ import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.lang.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.dbre.RooDbManaged;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -32,6 +35,8 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous" })
 public class User {
+	
+	private final static Logger log = LoggerFactory.getLogger(User.class);
 
 	public static enum CnousReferenceStatut {
 		psg, etd, prs, hbg, fct, fpa, stg;
@@ -203,180 +208,180 @@ public class User {
 		User other = (User) obj;
 		if (address == null) {
 			if (other.address != null)
-				return false;
+				{log.trace("address <>"); return false;}
 		} else if (!address.equals(other.address))
-			return false;
+			{log.trace("address <>"); return false;}
 		if (birthday == null) {
 			if (other.birthday != null)
-				return false;
-		} else if (!birthday.equals(other.birthday))
-			return false;
+				{log.trace("birthday <>"); return false;}
+		} else if (!DateUtils.isSameDay(birthday, other.birthday))
+			{log.trace("birthday <>"); return false;}
 		if (cnousReferenceStatut != other.cnousReferenceStatut)
-			return false;
+			{log.trace("cnousReferenceStatut <>"); return false;}
 		if (crous == null) {
 			if (other.crous != null)
-				return false;
+				{log.trace("crous <>"); return false;}
 		} else if (!crous.equals(other.crous))
-			return false;
+			{log.trace("crous <>"); return false;}
 		if (difPhoto == null) {
 			if (other.difPhoto != null)
-				return false;
+				{log.trace("difPhoto <>"); return false;}
 		} else if (!difPhoto.equals(other.difPhoto))
-			return false;
+			{log.trace("difPhoto <>"); return false;}
 		if (dueDate == null) {
 			if (other.dueDate != null)
-				return false;
+				{log.trace("dueDate <>"); return false;}
 		} else if (!dueDate.equals(other.dueDate))
-			return false;
+			{log.trace("dueDate <>"); return false;}
 		if (editable != other.editable)
-			return false;
+			{log.trace("editable <>"); return false;}
 		if (eduPersonPrimaryAffiliation == null) {
 			if (other.eduPersonPrimaryAffiliation != null)
-				return false;
+				{log.trace("eduPersonPrimaryAffiliation <>"); return false;}
 		} else if (!eduPersonPrimaryAffiliation.equals(other.eduPersonPrimaryAffiliation))
-			return false;
+			{log.trace("eduPersonPrimaryAffiliation <>"); return false;}
 		if (email == null) {
 			if (other.email != null)
-				return false;
+				{log.trace("email <>"); return false;}
 		} else if (!email.equals(other.email))
-			return false;
+			{log.trace("email <>"); return false;}
 		if (eppn == null) {
 			if (other.eppn != null)
-				return false;
+				{log.trace("eppn <>"); return false;}
 		} else if (!eppn.equals(other.eppn))
-			return false;
+			{log.trace("eppn <>"); return false;}
 		if (europeanStudentCard == null) {
 			if (other.europeanStudentCard != null)
-				return false;
+				{log.trace("europeanStudentCard <>"); return false;}
 		} else if (!europeanStudentCard.equals(other.europeanStudentCard))
-			return false;
+			{log.trace("europeanStudentCard <>"); return false;}
 		if (externalCard == null) {
 			if (other.externalCard != null)
-				return false;
+				{log.trace("externalCard <>"); return false;}
 		} else if (!externalCard.equals(other.externalCard))
-			return false;
+			{log.trace("externalCard <>"); return false;}
 		if (firstname == null) {
 			if (other.firstname != null)
-				return false;
+				{log.trace("firstname <>"); return false;}
 		} else if (!firstname.equals(other.firstname))
-			return false;
+			{log.trace("firstname <>"); return false;}
 		if (idCompagnyRate == null) {
 			if (other.idCompagnyRate != null)
-				return false;
+				{log.trace("idCompagnyRate <>"); return false;}
 		} else if (!idCompagnyRate.equals(other.idCompagnyRate))
-			return false;
+			{log.trace("idCompagnyRate <>"); return false;}
 		if (idRate == null) {
 			if (other.idRate != null)
-				return false;
+				{log.trace("idRate <>"); return false;}
 		} else if (!idRate.equals(other.idRate))
-			return false;
+			{log.trace("idRate <>"); return false;}
 		if (indice == null) {
 			if (other.indice != null)
-				return false;
+				{log.trace("indice <>"); return false;}
 		} else if (!indice.equals(other.indice))
-			return false;
+			{log.trace("indice <>"); return false;}
 		if (institute == null) {
 			if (other.institute != null)
-				return false;
+				{log.trace("institute <>"); return false;}
 		} else if (!institute.equals(other.institute))
-			return false;
+			{log.trace("institute <>"); return false;}
 		if (name == null) {
 			if (other.name != null)
-				return false;
+				{log.trace("name <>"); return false;}
 		} else if (!name.equals(other.name))
-			return false;
+			{log.trace("name <>"); return false;}
 		if (nbCards == null) {
 			if (other.nbCards != null)
-				return false;
+				{log.trace("nbCards <>"); return false;}
 		} else if (!nbCards.equals(other.nbCards))
-			return false;
+			{log.trace("nbCards <>"); return false;}
 		if (recto1 == null) {
 			if (other.recto1 != null)
-				return false;
+				{log.trace("recto1 <>"); return false;}
 		} else if (!recto1.equals(other.recto1))
-			return false;
+			{log.trace("recto1 <>"); return false;}
 		if (recto2 == null) {
 			if (other.recto2 != null)
-				return false;
+				{log.trace("recto2 <>"); return false;}
 		} else if (!recto2.equals(other.recto2))
-			return false;
+			{log.trace("recto2 <>"); return false;}
 		if (recto3 == null) {
 			if (other.recto3 != null)
-				return false;
+				{log.trace("recto3 <>"); return false;}
 		} else if (!recto3.equals(other.recto3))
-			return false;
+			{log.trace("recto3 <>"); return false;}
 		if (recto4 == null) {
 			if (other.recto4 != null)
-				return false;
+				{log.trace("recto4 <>"); return false;}
 		} else if (!recto4.equals(other.recto4))
-			return false;
+			{log.trace("recto4 <>"); return false;}
 		if (recto5 == null) {
 			if (other.recto5 != null)
-				return false;
+				{log.trace("recto5 <>"); return false;}
 		} else if (!recto5.equals(other.recto5))
-			return false;
+			{log.trace("recto5 <>"); return false;}
 		if (requestFree != other.requestFree)
-			return false;
+			{log.trace("requestFree <>"); return false;}
 		if (rneEtablissement == null) {
 			if (other.rneEtablissement != null)
-				return false;
+				{log.trace("rneEtablissement <>"); return false;}
 		} else if (!rneEtablissement.equals(other.rneEtablissement))
-			return false;
+			{log.trace("requestFree <>"); return false;}
 		if (secondaryId == null) {
 			if (other.secondaryId != null)
-				return false;
+				{log.trace("secondaryId <>"); return false;}
 		} else if (!secondaryId.equals(other.secondaryId))
-			return false;
+			{log.trace("secondaryId <>"); return false;}
 		if (supannCodeINE == null) {
 			if (other.supannCodeINE != null)
-				return false;
+				{log.trace("supannCodeINE <>"); return false;}
 		} else if (!supannCodeINE.equals(other.supannCodeINE))
-			return false;
+			{log.trace("supannCodeINE <>"); return false;}
 		if (supannEmpId == null) {
 			if (other.supannEmpId != null)
-				return false;
+				{log.trace("supannEmpId <>"); return false;}
 		} else if (!supannEmpId.equals(other.supannEmpId))
-			return false;
+			{log.trace("supannEmpId <>"); return false;}
 		if (supannEntiteAffectationPrincipale == null) {
 			if (other.supannEntiteAffectationPrincipale != null)
-				return false;
+				{log.trace(" <>"); return false;}
 		} else if (!supannEntiteAffectationPrincipale.equals(other.supannEntiteAffectationPrincipale))
-			return false;
+			{log.trace("supannEntiteAffectationPrincipale <>"); return false;}
 		if (supannEtuId == null) {
 			if (other.supannEtuId != null)
-				return false;
+				{log.trace("supannEtuId <>"); return false;}
 		} else if (!supannEtuId.equals(other.supannEtuId))
-			return false;
+			{log.trace("supannEtuId <>"); return false;}
 		if (userType == null) {
 			if (other.userType != null)
-				return false;
+				{log.trace("userType <>"); return false;}
 		} else if (!userType.equals(other.userType))
-			return false;
+			{log.trace("userType <>"); return false;}
 		if (verso1 == null) {
 			if (other.verso1 != null)
-				return false;
+				{log.trace("verso1 <>"); return false;}
 		} else if (!verso1.equals(other.verso1))
-			return false;
+			{log.trace("verso1 <>"); return false;}
 		if (verso2 == null) {
 			if (other.verso2 != null)
-				return false;
+				{log.trace("verso2 <>"); return false;}
 		} else if (!verso2.equals(other.verso2))
-			return false;
+			{log.trace("verso2 <>"); return false;}
 		if (verso3 == null) {
 			if (other.verso3 != null)
-				return false;
+				{log.trace("verso3 <>"); return false;}
 		} else if (!verso3.equals(other.verso3))
-			return false;
+			{log.trace("verso3 <>"); return false;}
 		if (verso4 == null) {
 			if (other.verso4 != null)
-				return false;
+				{log.trace("verso4 <>"); return false;}
 		} else if (!verso4.equals(other.verso4))
-			return false;
+			{log.trace("verso4 <>"); return false;}
 		if (verso5 == null) {
 			if (other.verso5 != null)
-				return false;
+				{log.trace("verso5 <>"); return false;}
 		} else if (!verso5.equals(other.verso5))
-			return false;
+			{log.trace("verso5 <>"); return false;}
 		return true;
 	}
 

@@ -45,28 +45,32 @@
   				<menu:item id="adminview" label="Admin" url="/admin/currentsessions" activeMenu="${role=='admin'}"/>
 				<menu:item id="su" label="SU" url="/admin/su" activeMenu="${role=='supervisor'}"/>
 			</sec:authorize>
-			
-							
-			<sec:authorize access="hasRole('ROLE_MANAGER')">
-			     <spring:url value="/manager/clientjws" var="clientJwsUrl"/>
-	    		 <li class="menuTools">
-	    		 	<spring:url value="/resources/images/esup-sgc-client-icon.svg" var="clientJwsUrlIcon"/>
-	    		 	<img id="clientJwsUrlIcon" src="${clientJwsUrlIcon}"/>
-	    		 	<a href="${clientJwsUrl}">Client Java Web Start</a>
-	    		 </li>
-			 </sec:authorize>
 			 <sec:authorize access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT')">
-
-	    		 <li class="menuTools">
-	    		 	<spring:url value="/resources/images/nfctagdroid-icon.svg" var="esupNfcTagDroidApkUrlIcon"/>
-	    		 	<img id="esupNfcTagDroidApkUrlIcon" src="${esupNfcTagDroidApkUrlIcon}"/>
-	    		 	<a href="${esupNfcTagDroidApkUrl}">Android App</a>
-	    		 </li>
-	    		 <li class="menuTools">
-	    		 	<spring:url value="/resources/images/nfctagdroid-icon.svg" var="esupNfcTagDesktopJarUrlIcon"/>
-	    		 	<img id="esupNfcTagDesktopJarUrlIcon" src="${esupNfcTagDesktopJarUrlIcon}"/>
-	    		 	<a href="${esupNfcTagDesktopJarUrl}">Java Desktop App</a>
-	    		 </li>
+			 <li class="dropdown">
+			 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apps<span class="caret"><!--  --></span></a>
+			 	<ul class="dropdown-menu">
+					<sec:authorize access="hasRole('ROLE_MANAGER')">
+					     <spring:url value="/manager/clientjws" var="clientJwsUrl"/>
+			    		 <li class="menuTools">
+			    		 	<spring:url value="/resources/images/esup-sgc-client-icon.svg" var="clientJwsUrlIcon"/>
+			    		 	<a href="${clientJwsUrl}"><span class="glyphicon glyphicon-qrcode"><!--  --></span>Encodeur</a>
+			    		 </li>
+			    		 <li class="menuTools">
+			    		 	<spring:url value="/resources/images/esup-sgc-client-icon.svg" var="clientJwsUrlIcon"/>
+			    		 	<a href="${clientJwsUrl}/r2d2">
+			    		 	<span style="background-size:15px;background-image: url('resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>Encodeur - robot ZXP3</a>
+			    		 </li>
+					 </sec:authorize>
+					<li class="menuTools">
+						<spring:url value="/resources/images/nfctagdroid-icon.svg" var="esupNfcTagDroidApkUrlIcon"/>
+						<a href="${esupNfcTagDroidApkUrl}"><span class="fa fa-android"><!--  --></span>Application Android</a>
+					</li>
+					<li class="menuTools">
+						<spring:url value="/resources/images/nfctagdroid-icon.svg" var="esupNfcTagDesktopJarUrlIcon"/>
+						<a href="${esupNfcTagDesktopJarUrl}"><span class="fa fa-desktop"><!--  --></span>Application Java</a>
+					</li>
+	    		 </ul>
+    		 </li>
 			 </sec:authorize>
 			<menu:item id="test" label="Aide" url="#collapseHelp" bootstrapIcon="question-sign" menuClass="btn" collapse="collapse"/>
 		</menu:menu>

@@ -21,4 +21,12 @@
     <put-attribute name="body" value="/WEB-INF/views/uncaughtException.jspx" />
   </definition>
 
+  <definition name="showCard" extends="view-card">
+    <put-attribute name="body" value="/WEB-INF/views/showCard.jspx" />
+  </definition>
+
+  <definition name="verso" extends="card">
+    <put-attribute name="body" value="/WEB-INF/views/verso.jspx" />
+  </definition>
+  
 </tiles-definitions>

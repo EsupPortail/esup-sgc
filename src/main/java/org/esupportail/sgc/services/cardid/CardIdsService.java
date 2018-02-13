@@ -57,4 +57,19 @@ public class CardIdsService {
 		return cardIdServices.get("crous") != null && ((CnousCardIdService)cardIdServices.get("crous")).isCrousEncodeEnabled();
 	}
 
+	public Card findCardsByDesfireId(String desfireIdEncoded, String appName) {
+		String desfireId = decodeCardNfcId(desfireIdEncoded, appName);
+		
+		// TODO : findCardsByDesfireIdAndAppNameEquals by CardIdService implementation !
+		// Here it's for @GenericCardIdService
+		List<Card> cards = Card.findCardsByDesfireIdAndAppNameEquals(desfireId, appName).getResultList();
+		if(cards.size()==0) {
+			return null;
+		} else {
+			return cards.get(0);
+		}
+		
+	}
+
 }
+

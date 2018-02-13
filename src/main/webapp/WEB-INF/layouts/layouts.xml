@@ -61,5 +61,9 @@
   </definition> 
   
   <definition name="print-card" template="/WEB-INF/layouts/print-card.jspx" />
+  
+  <definition name="view-card" template="/WEB-INF/layouts/view-card.jspx" />
+  
+  <definition name="card" template="/WEB-INF/layouts/card.jspx" />
     
 </tiles-definitions>

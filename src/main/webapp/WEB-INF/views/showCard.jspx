@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:sec="http://www.springframework.org/security/tags" xmlns:spring="http://www.springframework.org/tags" id="cardShow" version="2.0">
+	<jsp:directive.page contentType="text/html;charset=UTF-8" />
+	<jsp:output omit-xml-declaration="yes" />
+<script type="text/javascript">
+$(document).ready(function() {      
+	   $('#myCarousel').carousel('pause');
+	});
+		$('#myCarousel').carousel({
+    		interval: false
+		}); 
+</script>
+<div id="myCarousel" class="carousel slide" style="width: 506px;height: 319px;">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+  </ol>
+
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner">
+    <div class="item active" style="width: 506px;height: 319px; background: url('/resources/images/leorecto.png') no-repeat right top; padding-top:150px; padding-left:50px; padding-right:50px; font-size: 20px">
+      	<div style="float: left;">
+      		<div style="float: left; text-align: left;">
+		      	<b>${card.userAccount.name}</b><br/>
+		      	${card.userAccount.firstname}<br/>
+		      	Né(e) le <fmt:formatDate pattern="dd/MM/yyyy" value="${card.userAccount.birthday}"/>
+	      	</div>
+	      	<div style="float: right;">
+	      		${qrCode}
+	      	</div>
+      	</div>
+      	<div style="float: right;">
+      	<img width="80" src="data:image/png;base64,${photo}"/>
+      	<br/>
+      	<img width="80" src="data:image/png;base64,${logo}"/>
+		</div>
+    </div>
+
+    <div class="item" style="width: 506px;height: 319px; background: url('/resources/images/leoverso.png') no-repeat right top;padding-top:100px; padding-left:60px;font-size: 15px; text-align: left;">
+		<b>      
+		${card.userAccount.verso1}<br/>
+		${card.userAccount.verso2}<br/>
+		${card.userAccount.verso3}<br/>
+		${card.userAccount.verso4}<br/>
+		${card.userAccount.verso5}<br/>
+		</b>
+    </div>
+
+  </div>
+
+  <!-- Left and right controls -->
+  <a class="left carousel-control" style="background-image: none; color: black;" href="#myCarousel" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" style="background-image: none; color: black;" href="#myCarousel" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+
+</div>

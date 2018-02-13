@@ -18,10 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -58,6 +60,9 @@ public class ManagerCardControllerNoHtml {
 
 	@Resource 
 	UserInfoService userInfoService;
+
+	@Resource 
+	CardService cardService;
 	
 	@Resource
 	CrousService crousService;
@@ -88,6 +93,7 @@ public class ManagerCardControllerNoHtml {
 		if(value != null) {
 			
 			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", "image/svg+xml");
 			
 			Map<EncodeHintType, Object> hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
 			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
@@ -98,35 +104,7 @@ public class ManagerCardControllerNoHtml {
 			
 			if("SVG".equalsIgnoreCase(appliConfigService.getQrcodeFormat())) {
 					
-				headers.add("Content-Type", "image/svg+xml");
-				
-				// Get a DOMImplementation.
-				DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
-				// Create an instance of org.w3c.dom.Document.
-				String svgNS = "http://www.w3.org/2000/svg";
-				Document document = domImpl.createDocument(svgNS, "svg", null);
-				// Create an instance of the SVG Generator.
-				SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
-				svgGenerator.setBackground(Color.RED);
-				svgGenerator.setColor(Color.BLACK);
-				svgGenerator.setSVGCanvasSize(new Dimension(100,100));
-				
-				
-				int w = matrix.getWidth();
-				svgGenerator.setSVGCanvasSize(new Dimension(w,w));
-				for (int i = 0; i < w; i++) {
-					for (int j = 0; j < w; j++) {
-						if (matrix.get(i, j)) {
-							svgGenerator.fillRect(i, j, 1, 1);
-						}
-					}
-				}
-	
-				boolean useCSS = false; // we want to use CSS style attributes
-				Writer svgWriter = new StringWriter();
-				svgGenerator.stream(svgWriter, useCSS);
-				
-				return new ResponseEntity<String>(svgWriter.toString(), headers, HttpStatus.OK);	
+				return new ResponseEntity<String>(cardService.getQrCodeSvg(value), headers, HttpStatus.OK);	
 				
 			} else {
 				
@@ -141,6 +119,8 @@ public class ManagerCardControllerNoHtml {
 		return null;
 	}
 	
+	
+
     
 	@RequestMapping(value="/searchEppn")
 	@Transactional
