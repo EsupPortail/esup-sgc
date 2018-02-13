@@ -185,7 +185,7 @@
                         <property name="appName" value="crous"/>
                         <property name="idCounterBegin" value="99990000"/>
                         <property name="postgresqlSequence" value="crous_smart_card_sequence"/>
-                        <property name="crousEncodeEnabled" value="true"/>
+                        <property name="crousEncodeEnabled" value="false"/>
                     </bean>
                 </list>
             </property>
