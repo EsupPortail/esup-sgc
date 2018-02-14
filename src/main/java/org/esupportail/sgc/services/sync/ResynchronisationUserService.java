@@ -70,7 +70,7 @@ public class ResynchronisationUserService {
 			}
 			
 			// if user is caduc and have only cards caduc we don't synchronize
-			if(user.getDueDateIncluded().before(new Date())) {
+			if(dummyUser.getDueDateIncluded() != null && dummyUser.getDueDateIncluded().before(new Date()) || dummyUser.getDueDateIncluded() == null && user.getDueDateIncluded() != null && user.getDueDateIncluded().before(new Date())) {
 				boolean haveOnlyCaducCards = true; 
 				for(Card card : user.getCards()) {
 					if(!Etat.CADUC.equals(card.getEtat())) {
