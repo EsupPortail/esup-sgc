@@ -115,7 +115,7 @@
 			ligneAnneeUniv as verso5,
 			typepopulationcrous as referenceStatut,
 			indiceinm as indice,
-			datefindroits + INTERVAL 15 DAY as dateFinDroits,
+			concat(replace(datefindroits,'-',''),'235959Z') as schacExpiryDate,
 			leocode as secondaryId,
 			adresseFilterLibelle as address,
 			'Université de Ville' as institute
