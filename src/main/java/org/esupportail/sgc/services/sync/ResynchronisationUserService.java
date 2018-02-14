@@ -48,8 +48,11 @@ public class ResynchronisationUserService {
 	
 	public boolean synchronizeUserInfo(String eppn) {
 		boolean updated = false;
-		log.trace("Synchronize of user " + eppn + " called.");
+		log.debug("Synchronize of user " + eppn + " called.");
 		User user = User.findUser(eppn);
+		if(log.isTraceEnabled()) {
+			log.trace("user : " + user);
+		}
 		User dummyUser = new User();
 		dummyUser.setEppn(user.getEppn());
 		dummyUser.setCrous(user.getCrous());
@@ -60,6 +63,9 @@ public class ResynchronisationUserService {
 		dummyUser.setRequestFree(user.isRequestFree());
 		dummyUser.setDifPhoto(user.getDifPhoto());
 		userInfoService.setAdditionalsInfo(dummyUser, null);
+		if(log.isTraceEnabled()) {
+			log.trace("'user' computed from userInfoServices : " + dummyUser);
+		}
 		boolean accessControlMustUpdate = false;
 		if(!dummyUser.fieldsEquals(user) && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
 			if(dummyUser.getDueDate() == null && user.getDueDate().after(new Date())) {
@@ -97,8 +103,13 @@ public class ResynchronisationUserService {
 					apiEscrService.postOrUpdateEscrStudent(user.getEppn());
 				}
 			}
-			log.trace("Synchronize of user was needed : done.");
+			if(log.isTraceEnabled()) {
+				log.trace("user is now : " + user);
+			}
+			log.debug("Synchronize of user " + eppn + " was needed : done.");
 			updated = true;
+		} else {
+			log.debug("Synchronize of user " + eppn + " was not needed.");
 		}
 		if(dummyUser.getExternalCard().getCsn() != null && !dummyUser.getExternalCard().getCsn().isEmpty()) {
 			Card externalCard = null;
