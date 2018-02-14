@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -75,7 +76,7 @@ public class UserInfoService {
 	}
 
 	public void setAdditionalsInfo(User user, HttpServletRequest request) {
-		Map<String, String> userInfos = new HashMap<String, String>(); 
+		Map<String, String> userInfos = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER); 
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
 			if(user.getEppn().matches(extUserInfoService.getEppnFilter())) {
 				userInfos.putAll(extUserInfoService.getUserInfos(user, request, userInfos));
