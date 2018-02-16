@@ -7,7 +7,6 @@
              					 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
                                  http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
     
-    
     <!-- HTTP security configurations -->
     <http disable-url-rewriting="true" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<intercept-url pattern="/j_spring_security_switch_user" access="hasRole('ROLE_ADMIN')"/>
@@ -30,6 +29,7 @@
 		<custom-filter position="SWITCH_USER_FILTER" ref="switchUserProcessingFilter" />
 		<custom-filter ref="concurrencyFilter" position="CONCURRENT_SESSION_FILTER" />
 		<logout logout-success-url="/" />
+		<expression-handler ref="sgcWebSecurityExpressionHandler"/>
     </http>
 
     <beans:bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
@@ -49,8 +49,9 @@
     </beans:bean>
 
     <authentication-manager alias="authenticationManager">
-	<authentication-provider ref="preauthAuthProvider" />	
+		<authentication-provider ref="preauthAuthProvider" />	
     </authentication-manager>
+    
     
     <beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
 		<beans:property name="preAuthenticatedUserDetailsService" ref="authUserDetailsService"/>
@@ -90,11 +91,16 @@
 		<beans:property name="mappingGroupesRoles" ref="sgcMappingGroupesRoles"/>
 		<beans:property name="groupService" ref="groupService"/>
 	</beans:bean>
+
+
+	<beans:bean id="sgcWebSecurityExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
+	    <beans:property name="roleHierarchy" ref="sgcRoleHierarchy"/>
+	</beans:bean>
 	
-	
+
 	<util:map id="sgcMappingGroupesRoles">
 		<beans:entry key="cn=for.esup-sgc.admin,ou=groups,dc=univ-ville,dc=fr" value="ROLE_ADMIN" />
-		<beans:entry key="cn=for.esup-sgc.manager,ou=groups,dc=univ-ville,dc=fr" value="ROLE_MANAGER" />
+		<beans:entry key="cn=for.esup-sgc.super-manager,ou=groups,dc=univ-ville,dc=fr" value="ROLE_SUPER_MANAGER" />
 		<beans:entry key="cn=for.esup-sgc.livreur,ou=groups,dc=univ-ville,dc=fr" value="ROLE_LIVREUR" />
 		<beans:entry key="cn=for.esup-sgc.updater,ou=groups,dc=univ-ville,dc=fr" value="ROLE_UPDATER" />
 		<beans:entry key="cn=for.esup-sgc.consult,ou=groups,dc=univ-ville,dc=fr" value="ROLE_CONSULT" />
@@ -103,5 +109,5 @@
 		<beans:entry key="cn=from.esup-sgc.users-cards-3years-student,ou=groups,dc=univ-ville,dc=fr" value="ROLE_USER_RENEWAL_PAYED" />
 	</util:map>
 	
-
 </beans:beans>
+

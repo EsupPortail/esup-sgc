@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -298,8 +299,15 @@ public class ManagerCardController {
     		size = sizeInSession != null ? (Integer)sizeInSession : 10;
     		page = 1;
     	}
-    	if(searchBean.getType() == null){
+    	if(searchBean.getType() == null) {
     		searchBean.setType("");
+    		// Hack - ROLE_MANAGER_${userType} -> force userType
+    		for(String userType : userInfoService.getListExistingType()) {
+    			if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGER_" + userType))) {
+    				searchBean.setType(userType);
+    				break;
+    			}
+    		}
     	}
     	if(index !=null && "first".equals(index)){
 	    	searchBean.setEditable(preferencesService.getPrefValue(eppn, "EDITABLE"));
@@ -333,7 +341,7 @@ public class ManagerCardController {
     	return "manager/list";
     }
 
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_MANAGER')")
     @RequestMapping("/multiUpdate")
     // No @Transactional here so that exception catching on ManagerController.multiUpdate works well
     public String multiUpdate(@RequestParam(value="comment", defaultValue= "") String comment, 
@@ -490,4 +498,6 @@ public class ManagerCardController {
 
 		return "redirect:/manager?index=first";
 	}
+	
 }
+
