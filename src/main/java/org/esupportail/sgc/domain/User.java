@@ -214,7 +214,7 @@ public class User {
 		if (birthday == null) {
 			if (other.birthday != null)
 				{log.trace("birthday <>"); return false;}
-		} else if (!DateUtils.isSameDay(birthday, other.birthday))
+		} else if (!birthday.equals(other.birthday))
 			{log.trace("birthday <>"); return false;}
 		if (cnousReferenceStatut != other.cnousReferenceStatut)
 			{log.trace("cnousReferenceStatut <>"); return false;}
