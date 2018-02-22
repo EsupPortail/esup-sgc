@@ -37,17 +37,20 @@
             <menu:item activeMenu="${active=='tools'}" id="i_tools" label="Tools" url="/admin/tools"/>
             <menu:item activeMenu="${active=='actionmsgs'}" id="i_cardactionmessage_list" label="Messages" messageCode="global_menu_list" url="/admin/actionmessages?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='prefs'}" id="i_prefs_list" label="Préférences" url="/admin/prefses?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+            <menu:item activeMenu="${active=='template'}" id="i_templatecard_list" label="Thèmes cartes" url="/admin/templatecards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
         </sec:authorize>
         <menu:category id="c_cardactionmessage" render="false" z="user-managed">
             <menu:item id="i_cardactionmessage_new" messageCode="global_menu_new" url="/admin/actionmessages?form" z="pZnZ6jYKfu0DMR+I0O3eDphyeOw="/>
         </menu:category>
-        <menu:category id="c_crouserrorlog" render="false" z="user-managed">
-            <menu:item  id="i_crouserrorlog_new" messageCode="global_menu_new" url="/admin/crouserrorlogs?form" z="VrA6nF9bJVdV5O9opq5MTazS7fI="/>
-        </menu:category>
-        <menu:item activeMenu="${active=='crousError'}"  id="i_crouserrorlog_list" label="Erreurs CROUS" messageCode="global_menu_list" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+        <menu:category id="c_crouserrorlog" render="false" z="user-managed"/>
+        <menu:item activeMenu="${active=='crousError'}" id="i_crouserrorlog_list" label="Erreurs CROUS" messageCode="global_menu_list" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
         <menu:category id="c_prefs" render="false" z="user-managed">
             <menu:item id="i_prefs_list" messageCode="global_menu_list" url="/admin/prefses?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item id="i_prefs_new" messageCode="global_menu_new" url="/prefses?form" z="yQY2P8SHwnz4tytRPPu/4L37fXM="/>
+        </menu:category>
+        <menu:category id="c_templatecard" render="false" z="user-managed">
+            <menu:item id="i_templatecard_new" messageCode="global_menu_new" url="/templatecards?form" z="avwsxpm3MA70XNyXMi6kaUAa20c="/>
+            <menu:item id="i_templatecard_list" messageCode="global_menu_list" url="/templatecards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="SE+xt25+zpm7NBPhR2m1gIPnD+0="/>
         </menu:category>
     </menu:menu>
 </div>

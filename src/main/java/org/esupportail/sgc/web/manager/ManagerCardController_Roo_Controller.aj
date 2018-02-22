@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.springframework.ui.Model;
@@ -74,6 +75,7 @@ privileged aspect ManagerCardController_Roo_Controller {
         uiModel.addAttribute("card", card);
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("photofiles", PhotoFile.findAllPhotoFiles());
+        uiModel.addAttribute("templatecards", TemplateCard.findAllTemplateCards());
         uiModel.addAttribute("users", User.findAllUsers());
     }
     

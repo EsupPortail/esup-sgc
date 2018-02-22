@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/admin/crouscards")
 @Controller
-@RooWebScaffold(path = "admin/crouscards", formBackingObject = CrousSmartCard.class)
+@RooWebScaffold(path = "admin/crouscards", formBackingObject = CrousSmartCard.class, create=false, delete=false, update=false)
 public class CrousSmartCardController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());

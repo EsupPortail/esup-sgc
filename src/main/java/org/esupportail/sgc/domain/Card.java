@@ -82,7 +82,7 @@ public class Card {
 
     @ManyToOne
     private User userAccount;
-
+    
     @Column
     @Enumerated(EnumType.STRING)
     private Etat etat = Etat.NEW;
@@ -172,6 +172,8 @@ public class Card {
     @Transient
     Boolean isPhotoEditable = false;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    private TemplateCard templateCard;
 
     @PostPersist
     public void updateNbCards() {

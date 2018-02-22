@@ -120,114 +120,6 @@ legend.scheduler-border {
   margin-left: 10px
   }
 
- /*previsualisatio carte*/
- #specimenleocarte {
-	position: relative;
-	font-family: arial;
- }
-#specimenleocarte #recto1 {
-	font-family: arial;
-	font-weight: bold;
-}
-#specimenleocarte #qrcode {
-	position: relative;	
-}
-#specimenleocarte #left {
-	position: relative;
-	float: left;
-}
-#specimenleocarte #right {
-	float: right;
-	position: relative; 
-}
-
-#specimenleocarte #recto2 {
-/*	font-weight: bold; */
-	padding-bottom: 0.02cm;
-	position: relative;
-	top: -15px;	
-}
-#specimenleocarte #recto3{
-/*	font-weight: bold; */
-	position: relative;
-	top: -28px;
-}
-
-#specimenleocarte #recto4 {
-	padding-bottom: 0.1cm;
-	position: relative;	
-	bottom: 40px;
-}
-
-#specimenleocarte #recto5 {
-	padding-bottom: 0.1cm;
-	position: relative;	
-	bottom: 55px;
-}
-#specimenleocarte #logo-ur, #specimenleocarte #photo {
-	display: block;
-}
-@media screen and (min-width: 451px) {
-	#specimenleocarte {
-		width: 8.56cm;
-		height: 5.37cm;
-		font-size: 0.3cm;
-	}
-	#specimenleocarte #left {
-		padding-top: 1.5cm;
-		padding-left: 0.5cm;
-	}
-	#specimenleocarte #right {
-		padding-top: 1.7cm;
-		padding-right: 0.35cm;
-	}
-	#specimenleocarte #recto1 {
-		font-size: 0.35cm;
-		padding-bottom: 0.1cm;
-		padding-left: 2.2cm;
-	}
-	#specimenleocarte #logo-ur, #specimenleocarte #photo {
-		width: 2.25cm;
-	}
-	#specimenleocarte #photo {
-		height: 2.7cm;
-	}
-	#specimenleocarte #qrcode {
-		bottom: 50px;
-		width: 1.2cm;
-	}
-}
-@media screen and (max-width: 450px) {
-	#specimenleocarte {
-		width: 6.56cm;
-		height: 4.15cm;
-		font-size: 0.25cm;
-	}
-	#specimenleocarte #left {
-		padding-top: 1.15cm;
-		padding-left: 0.4cm;
-	}
-	#specimenleocarte #right {
-		padding-top: 1.3cm;
-		padding-right: 0.2cm;
-	}
-	#specimenleocarte #recto1 {
-		font-size: 0.29cm;
-		padding-bottom: 0.1cm;
-		padding-left: 1.5cm;
-	}
-	#specimenleocarte #logo-ur, #specimenleocarte #photo {
-		width: 1.7cm;
-	}
-	#specimenleocarte #photo {
-		height: 2.05cm;
-	}
-	#specimenleocarte #qrcode {
-		bottom: 57px;
-		width: 0.9cm;
-	}
-}
-
 .dl-horizontal dt {
 	white-space: initial;
 }
@@ -517,3 +409,31 @@ background-color: #fff;
 #logsList table {
     font-size: 14px;
 }
+
+.thumb-image{
+ float:left;width:100px;
+ position:relative;
+ padding:5px;
+}
+#showTemplate pre {
+    height: auto;
+    max-height: 200px;
+    overflow: auto;
+    background-color: #eeeeee;
+    word-break: normal !important;
+    word-wrap: normal !important;
+    white-space: pre !important;
+}
+span.icon-flipped{
+	transform: scaleX(-1);
+}
+
+#templateCardsList .photo img{
+	width: auto;
+}
+ .popover{
+	max-width: 500px;
+}
+#templateCardsList .popTemplate{
+	max-width: 400px;
+}​

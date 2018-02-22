@@ -8,9 +8,7 @@
         <put-attribute name="body" value="/WEB-INF/views/admin/logs/show.jspx"/>
     </definition>
 
-<definition extends="default" name="admin/logs/update">
-        <put-attribute name="body" value="/WEB-INF/views/admin/logs/update.jspx"/>
-    </definition>
+
 <definition extends="default" name="admin/logs/findLogsByActionEquals">
         <put-attribute name="body" value="/WEB-INF/views/admin/logs/findLogsByActionEquals.jspx"/>
     </definition>

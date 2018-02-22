@@ -24,6 +24,7 @@ import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.PhotoFile;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.security.ShibAuthenticatedUserDetailsService;
 import org.esupportail.sgc.services.AppliConfigService;
@@ -33,6 +34,7 @@ import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.paybox.PayBoxForm;
@@ -121,6 +123,8 @@ public class UserCardController {
 	@Resource
 	ExternalCardService externalCardService;
 	
+	@Resource
+	TemplateCardService templateCardService;
 	
 	@RequestMapping
 	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) throws UnsupportedEncodingException {
@@ -177,11 +181,10 @@ public class UserCardController {
 		if(!user.getCards().isEmpty()){
 			id = user.getCards().get(0).getId();
 		}
+		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user.getEppn()));
 		uiModel.addAttribute("configUserMsgs", getConfigMsgsUser());
 		uiModel.addAttribute("lastId", id);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(eppn));
-		uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
-		uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
 		Map<String, Boolean> displayFormParts = displayFormParts(eppn, user.getUserType());
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
@@ -555,6 +558,29 @@ public class UserCardController {
 		logService.log(user.getCards().get(0).getId(), ACTION.ENABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
 		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european");
 		return "redirect:/user";
+	}
+	
+	@RequestMapping(value="/templatePhoto/{type}/{templateId}")
+	@Transactional
+	public void getPhoto(@PathVariable String type, @PathVariable Long templateId, HttpServletResponse response) throws IOException, SQLException {
+		
+		TemplateCard templateCard = TemplateCard.findTemplateCard(templateId);
+		PhotoFile photoFile = null;
+		if(templateCard != null) {
+			if("logo".equals(type)){
+				photoFile = templateCard.getPhotoFileLogo();
+			}else if("masque".equals(type)){
+				photoFile = templateCard.getPhotoFileMasque();
+			}else if("qrCode".equals(type)){
+				photoFile = templateCard.getPhotoFileQrCode();
+			}
+			
+			Long size = photoFile.getFileSize();
+			String contentType = photoFile.getContentType();
+			response.setContentType(contentType);
+			response.setContentLength(size.intValue());
+			IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
+		}
 	}
 }
 

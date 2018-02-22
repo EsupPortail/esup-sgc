@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/admin/logs")
 @Controller
-@RooWebScaffold(path = "admin/logs", formBackingObject = Log.class, create=false, delete=false)
+@RooWebScaffold(path = "admin/logs", formBackingObject = Log.class, create=false, delete=false, update=false)
 @RooWebFinder
 public class LogsController {
 	

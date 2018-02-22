@@ -5,7 +5,6 @@
 		<spring:url value="/user" var="cardRequestUrl" />
 		<spring:url value="/user/photo/${id}" var="rejectedPhotoUrl" />
 		<spring:url value="/user/photo/${lastId}" var="lastPhotoUrl" />
-		<spring:url value="/resources/images/${cardMask}" var="leocarteMasqueUrl" />
 		<script type="text/javascript">
 			var isRejected = '${isRejected}';
 			var rejectedPhotoUrl = '${rejectedPhotoUrl}';
@@ -13,15 +12,6 @@
 			var lastPhotoUrl = '${lastPhotoUrl}';
 			var isISmartPhone = '${isISmartPhone}';
 		</script>
-	    <style>
-		   /* masque leocarte pour screen uniquement */
-			@media screen {
-				#specimenleocarte {
-					background: url(${leocarteMasqueUrl});
-					background-size: cover;
-				}
-			}
-		</style>
 		<c:if test="${!isEsupSgcUser}">
 		<div class="alert alert-danger">
 			<p>Vous ne pouvez pas demander actuellement de Leocarte.</p>

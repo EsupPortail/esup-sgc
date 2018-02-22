@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 
 privileged aspect Card_Roo_JavaBean {
@@ -290,6 +291,14 @@ privileged aspect Card_Roo_JavaBean {
     
     public void Card.setDifPhotoTransient(Boolean difPhotoTransient) {
         this.difPhotoTransient = difPhotoTransient;
+    }
+    
+    public TemplateCard Card.getTemplateCard() {
+        return this.templateCard;
+    }
+    
+    public void Card.setTemplateCard(TemplateCard templateCard) {
+        this.templateCard = templateCard;
     }
     
 }

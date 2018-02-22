@@ -29,6 +29,7 @@ import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.PreferencesService;
+import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -60,7 +61,7 @@ public class ManagerCardController {
 	public final static String SUCCESS_MSG ="manager.msg.success.";
 	public final static String ERROR_MSG ="manager.msg.error.";
 	public final static String WARNING_MSG ="manager.msg.warning.";
-	public final static String IMG_INTERDIT = "photo_interdite.png";
+	public final static String IMG_INTERDIT = "media/photo_interdite.png";
 	public final static String header[] = new String[]{"eppn", "etat", "displayName", "supannEtuId", "supannEmpId", "userType", "crous", "difPhoto", "userEditable", "deliveredDate", "nbCards", "nbRejets", "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dateEtat"};
 
 	@Resource 
@@ -93,6 +94,9 @@ public class ManagerCardController {
 	
 	@Resource 
 	CardActionMessageService cardActionMessageService;
+	
+	@Resource
+	TemplateCardService templateCardService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -131,11 +135,6 @@ public class ManagerCardController {
 		return cardEtatService.getValidateServicesNames();
 	}
 	
-	@ModelAttribute("qrcodeWidth")
-	public String getQrcodeWith() {
-		return appliConfigService.getQrcodeWith();
-	}
-	
 	@ModelAttribute("userPrefs")
 	public HashedMap getuserPrefs() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -171,8 +170,6 @@ public class ManagerCardController {
         		cardItem.setIsPhotoEditable(cardEtatService.isPhotoEditable(cardItem));
         	}
         }
-        uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
-        uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
         uiModel.addAttribute("user", user);
         uiModel.addAttribute("currentCard", card);
         
@@ -259,6 +256,7 @@ public class ManagerCardController {
 	@Transactional
 	public String actionEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, Model uiModel) {
 		Card card = Card.findCard(cardId);
+		card.merge();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 
@@ -266,8 +264,6 @@ public class ManagerCardController {
 			if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
 				uiModel.addAttribute("cards", Arrays.asList(new Card[]{card}));
 			}
-	        uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
-	        uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
 			return "manager/print-card";
 		} else {
 			uiModel.asMap().clear();
@@ -390,8 +386,6 @@ public class ManagerCardController {
 
     	if(Etat.IN_PRINT.equals(etatFinal)) {
     		uiModel.addAttribute("cards", cards);
-    		uiModel.addAttribute("cardMask",  appliConfigService.getCardMask());
-    		uiModel.addAttribute("cardLogo",  appliConfigService.getCardLogo());
     		return "manager/print-card";
     	}
 

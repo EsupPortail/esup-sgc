@@ -124,6 +124,8 @@ public class User {
 	private Long nbCards = new Long(0);
 	
 	private String userType;
+	
+	private String templateKey;
 
 	@ElementCollection
     @CollectionTable(name="roles", joinColumns=@JoinColumn(name="user_account"))
@@ -382,6 +384,11 @@ public class User {
 				{log.trace("verso5 <>"); return false;}
 		} else if (!verso5.equals(other.verso5))
 			{log.trace("verso5 <>"); return false;}
+		if (templateKey == null) {
+			if (other.templateKey != null)
+				{log.trace("templateKey <>"); return false;}
+		} else if (!templateKey.equals(other.templateKey))
+			{log.trace("templateKey <>"); return false;}
 		return true;
 	}
 
@@ -571,6 +578,15 @@ public class User {
 
         return q.getResultList();
     }
+
+	public TemplateCard getTemplateCard() {
+		String domain =  this.getTemplateKey();
+		if(TemplateCard.findTemplateCardsByKeyEquals(domain).getResultList().size()>0){
+			return TemplateCard.findTemplateCardsByKeyEquals(domain, "numVersion", "DESC").getResultList().get(0);
+		} else {
+			return TemplateCard.findTemplateCardsByKeyEquals("default").getResultList().get(0);	
+		}
+	}
     
     
 }

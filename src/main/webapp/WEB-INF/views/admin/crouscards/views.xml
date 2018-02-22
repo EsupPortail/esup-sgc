@@ -7,10 +7,6 @@
 <definition extends="default" name="admin/crouscards/show">
         <put-attribute name="body" value="/WEB-INF/views/admin/crouscards/show.jspx"/>
     </definition>
-<definition extends="default" name="admin/crouscards/create">
-        <put-attribute name="body" value="/WEB-INF/views/admin/crouscards/create.jspx"/>
-    </definition>
-<definition extends="default" name="admin/crouscards/update">
-        <put-attribute name="body" value="/WEB-INF/views/admin/crouscards/update.jspx"/>
-    </definition>
+
+
 </tiles-definitions>

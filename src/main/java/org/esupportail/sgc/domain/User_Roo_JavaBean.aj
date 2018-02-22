@@ -307,6 +307,14 @@ privileged aspect User_Roo_JavaBean {
         this.userType = userType;
     }
     
+    public String User.getTemplateKey() {
+        return this.templateKey;
+    }
+    
+    public void User.setTemplateKey(String templateKey) {
+        this.templateKey = templateKey;
+    }
+    
     public Set<String> User.getRoles() {
         return this.roles;
     }

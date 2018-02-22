@@ -174,6 +174,9 @@ public class UserInfoService {
 			} else if("userType".equalsIgnoreCase(key)) {
 				String userType  = userInfos.get(key);
 				user.setUserType(userType);
+			} else if("template".equalsIgnoreCase(key)) {
+				String templateKey  = userInfos.get(key);
+				user.setTemplateKey(templateKey);
 			} else if("schacDateOfBirth".equalsIgnoreCase(key)) {
 				Date birthday = dateUtils.parseSchacDateOfBirth(userInfos.get(key));
 				user.setBirthday(birthday);

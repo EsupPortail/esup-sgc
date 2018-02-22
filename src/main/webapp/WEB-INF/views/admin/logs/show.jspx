@@ -2,15 +2,15 @@
 <div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
-    <page:show create="false" delete="false" id="ps_org_esupportail_sgc_domain_Log" object="${log}" path="/admin/logs" z="ruPAL+xTcRt8gFcsfHYMf3I2vyE=">
+    <page:show create="false" delete="false" id="ps_org_esupportail_sgc_domain_Log" object="${log}" path="/admin/logs" update="false" z="Tl34pMrYr0FKFYQg1BbVmbeGlm8=">
         <field:display date="true" dateTimePattern="${log_logdate_date_format}" field="logDate" id="s_org_esupportail_sgc_domain_Log_logDate" object="${log}" z="iEXT5MxLHEnPCopaEECNSYXHvh4="/>
         <field:display field="eppn" id="s_org_esupportail_sgc_domain_Log_eppn" object="${log}" z="DK/jK3XTUcZAHfA90zwfrtebA9k="/>
+        <field:display field="eppnCible" id="s_org_esupportail_sgc_domain_Log_eppnCible" object="${log}" z="+yGaL0kjv7yl/UnXc0nEb0EAXD4="/>
         <field:display field="type" id="s_org_esupportail_sgc_domain_Log_type" object="${log}" z="UG3h5340NTsfB2ftLLl5k5IM9KM="/>
         <field:display field="cardId" id="s_org_esupportail_sgc_domain_Log_cardId" object="${log}" z="QlLcVTDKFcgSEzrc65boeIkoU4I="/>
         <field:display field="action" id="s_org_esupportail_sgc_domain_Log_action" object="${log}" z="+i1q6C9fj3sG+uL5pTlYqAMy4KE="/>
         <field:display field="retCode" id="s_org_esupportail_sgc_domain_Log_retCode" object="${log}" z="NrlB54dZc/u2hRXW/vdNH2c1G+Y="/>
         <field:display field="comment" id="s_org_esupportail_sgc_domain_Log_comment" object="${log}" z="sWQqT2HJT5uu4gOkpGjEF+SeGpA="/>
         <field:display field="remoteAddress" id="s_org_esupportail_sgc_domain_Log_remoteAddress" object="${log}" z="XjtFW9y3kASikRuahOSMvFOOw3A="/>
-        <field:display field="eppnCible" id="s_org_esupportail_sgc_domain_Log_eppnCible" object="${log}" z="+yGaL0kjv7yl/UnXc0nEb0EAXD4="/>
     </page:show>
 </div>

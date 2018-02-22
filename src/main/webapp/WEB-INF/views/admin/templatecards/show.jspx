@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:spring="http://www.springframework.org/tags" id="showTemplate" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <spring:url value="/admin/templatecards/photo/" var="photoLocalPrefix"/>
+    <spring:url value="/manager/searchEppn" var="searchEppnUrl"/>
+    <spring:url value="/admin/templatecards/fillTemplate" var="submitUrl"/>
+    <script type="text/javascript">
+		var searchEppnUrl = '${searchEppnUrl}';
+		var submitUrl = '${submitUrl}';
+	</script>
+    <h2>Template</h2>
+    <div class="col-lg-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h5>Elements</h5>
+            </div>
+            <div class="panel-body">
+                <page:show id="ps_org_esupportail_sgc_domain_TemplateCard" object="${templatecard}" path="/admin/templatecards" z="user-managed">
+                    <field:display field="key" id="s_org_esupportail_sgc_domain_TemplateCard_key" label="Clé" object="${templatecard}" z="user-managed"/>
+                    <field:display field="name" id="s_org_esupportail_sgc_domain_TemplateCard_name" object="${templatecard}" z="uygbb1x7R4FuzZmCRwu+wrMHkz4="/>
+                    <field:display field="numVersion" id="s_org_esupportail_sgc_domain_TemplateCard_numVersion" label="Version" object="${templatecard}" z="user-managed"/>
+                    <field:display field="description" id="s_org_esupportail_sgc_domain_TemplateCard_description" object="${templatecard}" z="nPw5NW/QVxH9DraZvtWL4qGo/6s="/>
+                    <dt>Style css</dt>
+                    <pre>${templatecard.cssStyle}</pre>
+                     <dt>Style mobile css</dt>
+                    <pre>${templatecard.cssMobileStyle}</pre>
+                    <dt>Masque</dt>
+                    <dd>
+                        <img class="thumb-image" src="${photoLocalPrefix}masque/${templatecard.id}"/>
+                    </dd>
+                    <dt>Logo</dt>
+                    <dd>
+                        <img class="thumb-image" src="${photoLocalPrefix}logo/${templatecard.id}"/>
+                    </dd>
+                    <dt>Qr Code</dt>
+                    <dd>
+                        <img class="thumb-image" src="${photoLocalPrefix}qrCode/${templatecard.id}"/>
+                    </dd>
+                    <field:display field="modificateur" id="s_org_esupportail_sgc_domain_TemplateCard_modificateur" object="${templatecard}" z="user-managed"/>
+                    <field:display render="false" field="cssMobileStyle" id="s_org_esupportail_sgc_domain_TemplateCard_cssMobileStyle" object="${templatecard}" z="user-managed"/>
+                    <field:display date="true" dateTimePattern="${templateCard_datemodification_date_format}" field="dateModification" id="s_org_esupportail_sgc_domain_TemplateCard_dateModification" object="${templatecard}" z="vxL1Vc+bxiSdKEX1W7H5xc86khE="/>
+                    <field:display field="cssStyle" id="s_org_esupportail_sgc_domain_TemplateCard_cssStyle" object="${templatecard}" render="false" z="user-managed"/>
+                    <field:display field="masque" id="s_org_esupportail_sgc_domain_TemplateCard_masque" object="${templatecard}" render="false" z="user-managed"/>
+                    <field:display field="logo" id="s_org_esupportail_sgc_domain_TemplateCard_logo" object="${templatecard}" render="false" z="user-managed"/>
+                    <field:display field="photoFileLogo" id="s_org_esupportail_sgc_domain_TemplateCard_photoFileLogo" object="${templatecard}" render="false" z="user-managed"/>
+                    <field:display field="photoFileMasque" id="s_org_esupportail_sgc_domain_TemplateCard_photoFileMasque" object="${templatecard}" render="false" z="user-managed"/>
+                    <field:display field="photoFileQrCode" id="s_org_esupportail_sgc_domain_TemplateCard_photoFileQrCode" object="${templatecard}" render="false" z="user-managed"/>
+                    <field:display field="qrCode" id="s_org_esupportail_sgc_domain_TemplateCard_qrCode" object="${templatecard}" render="false" z="user-managed"/>
+                </page:show>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h5>Prévisualisation</h5>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-6">
+                    <div id="create-preview">
+                        <spring:url value="${photoLocalPrefix}masque/${templatecard.id}" var="masqueUrl"/>
+                        <style>
+							@media screen {
+								#specimenCarte {
+									background: url(${masqueUrl});
+									line-height : 1;
+								}
+							}
+							#specimenCarte * {
+							  -webkit-box-sizing: content-box;
+							     -moz-box-sizing: content-box;
+							          box-sizing: content-box;
+							}			
+	                        @media screen and (min-width: 451px) {
+						    	${templatecard.cssStyle}
+						     }
+						     @media screen and (max-width: 450px) {
+					    		${templatecard.cssMobileStyle}
+					    	 }
+					   </style>
+                        <div id="specimenCarte">
+                            <div id="left">
+                                <p id="recto1">recto1</p>
+                                <p id="recto2">recto2</p>
+                                <p id="recto3">recto3</p>
+                                <p id="recto4">recto4</p>
+                                <p id="recto5">recto5</p>
+                                <spring:url value="${photoLocalPrefix}qrCode/${templatecard.id}" var="QRCodeUrl"/>
+                                <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
+                            </div>
+                            <div id="right">
+                                <spring:url value="/images/NoPhoto.jpg" var="photoUrl"/>
+                                <spring:url value="${photoLocalPrefix}logo/${templatecard.id}" var="logoUrl"/>
+                                <img id="photo" src="${photoUrl}"/>
+                                <img id="logo-ur" src="${logoUrl}"/>
+                            </div>
+                           
+                        </div>
+                         <hr />
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="alert alert-info">
+			    		Les champs "recto" seront bien sûr remplacés par les infos de l'utilisateur.
+			    	</div>
+                    <div class="alert alert-info">
+                        <form action="${submitUrl}" id="searchEppnForm" role="search">
+                            <div class="form-group">
+                                <label>Utilisateur test</label>
+                                <input class="form-control" id="searchEppnTemp" name="searchText" placeholder="Login" type="text" value="${searchBean.searchText}"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

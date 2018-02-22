@@ -1,0 +1,75 @@
+#specimenCarte p {
+	padding: 0cm;
+	margin: 0cm;
+}
+
+#specimenCarte span {
+	display: inline-block;
+}
+
+#specimenCarte #pagebreak {
+	page-break-after: always;
+}
+
+@media screen {
+	#specimenCarte {
+		background-size: 8.56cm 5.398cm;
+	}
+}
+
+#specimenCarte {
+	width: 8.56cm;
+	height: 5.37cm;
+	position: relative;
+	font-family : arial;
+	font-size: 0.32cm;
+	color: inherit;
+}
+
+#specimenCarte #recto1 {
+	font-weight: bold;
+	padding-left: 2.2cm;
+	padding-bottom: 0.14cm;
+}
+
+#specimenCarte #left {
+	padding-top: 1.55cm;
+	float: left;
+	width: 5.4cm;
+	height: 3.75cm;
+	padding-left: 0.5cm;
+	position: relative;
+}
+
+#specimenCarte #right {
+	padding-top: 1.7cm;
+	padding-right: 0.35cm;
+	height: 3.6cm;
+	float: right;
+	position: relative; 
+}
+
+#specimenCarte #recto2, #specimenCarte #recto3  {
+/*	font-weight: bold; */
+	padding-bottom: 0.02cm;
+}
+
+
+#specimenCarte #recto4, #specimenCarte #recto5 {
+	padding-bottom: 0.05cm;
+}
+
+#specimenCarte #logo-ur, #specimenCarte #photo {
+	display: block;
+	width: 2.2cm;
+}
+#specimenCarte #logo-ur {
+	position: absolute;	
+	bottom: 0cm;
+}
+
+#specimenCarte #qrcode {
+	position: absolute;	
+	bottom: 0cm;
+	width: 1.2cm;
+}

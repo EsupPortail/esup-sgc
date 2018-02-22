@@ -35,9 +35,9 @@ public class ImportExportCardService {
 	
 	static DateFormat importDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
-	static final String DEFAULT_PHOTO = "No_image_s.jpg";
+	static final String DEFAULT_PHOTO = "media/nophoto.png";
 	
-	static final public String DEFAULT_PHOTO_MIME_TYPE = "image/jpeg";
+	static final public String DEFAULT_PHOTO_MIME_TYPE = "image/png";
 	
 	@Resource
 	CardEtatService cardEtatService;

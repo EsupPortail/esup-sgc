@@ -4,8 +4,8 @@
     <jsp:output omit-xml-declaration="yes"/>
     <h2>Transactions Paybox</h2>
     <page:list id="pl_org_esupportail_sgc_domain_PayboxTransactionLog" items="${payboxtransactionlogs}" z="hHqBHiZUm1o7RmTBffWxc92yMQw=">
-        <table:table data="${payboxtransactionlogs}" delete="false" id="l_org_esupportail_sgc_domain_PayboxTransactionLog" path="/admin/payboxtransactions" z="IJvSr0nvw8MQmCCwSsfShk/WdUY=">
-            <table:column date="true" dateTimePattern="${payboxTransactionLog_transactiondate_date_format}" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_transactionDate" property="transactionDate" sort="true" z="user-managed"/>
+        <table:table data="${payboxtransactionlogs}" delete="false" id="l_org_esupportail_sgc_domain_PayboxTransactionLog" path="/admin/payboxtransactions" update="false" z="do+EOP3FPHbBdMIVLxq2ej0TrN0=">
+            <table:column date="true" dateTimePattern="${payboxTransactionLog_transactiondate_date_format}" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_transactionDate" property="transactionDate" z="pDGs9jUIP7DKGe947dim2Pxp3UM="/>
             <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_eppn" property="eppn" z="mxyJGWAQJDeKIBKUKfdesaZrVn0="/>
             <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_reference" property="reference" z="fC1od3nfpbfa4Lz2jN9DuMQB5h8="/>
             <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_montant" property="montant" z="4UClpVhbyzGhw+X06CQdSyWgS/o="/>

@@ -17,6 +17,7 @@ import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.Params;
@@ -223,4 +224,5 @@ public class CardService {
 		return svgWriter.toString();
 	}
 	
+
 }

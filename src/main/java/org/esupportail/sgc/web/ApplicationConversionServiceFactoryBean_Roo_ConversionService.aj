@@ -11,6 +11,7 @@ import org.esupportail.sgc.domain.EsupNfcSgcJwsDevice;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.Prefs;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.services.crous.CrousErrorLog;
 import org.esupportail.sgc.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -213,6 +214,30 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<TemplateCard, String> ApplicationConversionServiceFactoryBean.getTemplateCardToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.TemplateCard, java.lang.String>() {
+            public String convert(TemplateCard templateCard) {
+                return new StringBuilder().append(templateCard.getKey()).append(' ').append(templateCard.getName()).append(' ').append(templateCard.getNumVersion()).append(' ').append(templateCard.getCssStyle()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, TemplateCard> ApplicationConversionServiceFactoryBean.getIdToTemplateCardConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.esupportail.sgc.domain.TemplateCard>() {
+            public org.esupportail.sgc.domain.TemplateCard convert(java.lang.Long id) {
+                return TemplateCard.findTemplateCard(id);
+            }
+        };
+    }
+    
+    public Converter<String, TemplateCard> ApplicationConversionServiceFactoryBean.getStringToTemplateCardConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.domain.TemplateCard>() {
+            public org.esupportail.sgc.domain.TemplateCard convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), TemplateCard.class);
+            }
+        };
+    }
+    
     public Converter<CrousErrorLog, String> ApplicationConversionServiceFactoryBean.getCrousErrorLogToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.services.crous.CrousErrorLog, java.lang.String>() {
             public String convert(CrousErrorLog crousErrorLog) {
@@ -262,6 +287,9 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getPrefsToStringConverter());
         registry.addConverter(getIdToPrefsConverter());
         registry.addConverter(getStringToPrefsConverter());
+        registry.addConverter(getTemplateCardToStringConverter());
+        registry.addConverter(getIdToTemplateCardConverter());
+        registry.addConverter(getStringToTemplateCardConverter());
         registry.addConverter(getCrousErrorLogToStringConverter());
         registry.addConverter(getIdToCrousErrorLogConverter());
         registry.addConverter(getStringToCrousErrorLogConverter());

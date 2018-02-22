@@ -220,18 +220,11 @@ public class AppliConfigService {
 		return enableAutoConfig!=null && "true".equalsIgnoreCase(enableAutoConfig.getValue());
 	}
 
-	
-	public String getQrcodeWith() {
-		AppliConfig qrcodeWidth = AppliConfig.findAppliConfigByKey("QRCODE_WIDTH");
-		return qrcodeWidth==null ? "1.2cm" : qrcodeWidth.getValue();
-	}
-	
 	public String getQrcodeFormat() {
 		AppliConfig qrcodeWidth = AppliConfig.findAppliConfigByKey("QRCODE_FORMAT");
 		return qrcodeWidth==null ? "PNG" : qrcodeWidth.getValue();
 	}
-	
-	
+		
 	public String getModeLivraison() {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MODE_LIVRAISON");
 		return appliConfig.getValue();
@@ -240,16 +233,6 @@ public class AppliConfigService {
 		
 	public String getModeBornes() {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MODE_BORNES");
-		return appliConfig.getValue();
-	}
-	
-	public String getCardMask() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("CARD_MASK");
-		return appliConfig.getValue();
-	}
-	
-	public String getCardLogo() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("CARD_LOGO");
 		return appliConfig.getValue();
 	}
 

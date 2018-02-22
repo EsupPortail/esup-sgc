@@ -29,24 +29,47 @@
 					<h3 class="modal-title">Prévisualisation de votre carte</h3>
 				</div>
 				<div class="modal-body">
-					<div id="specimenleocarte">
-						<div id="left">
-							<p id="recto1">${user.recto1}</p>
-							<p id="recto2">${user.recto2}</p>
-							<p id="recto3">${user.recto3}</p>
-							<p id="recto4">${user.recto4}</p>
-							<p id="recto5">${user.recto5}</p>
-							<spring:url value="/resources/images/qr_dummy.png" var="QRCodeUrl" />
-							<img alt="qrcode" src="${QRCodeUrl}" id="qrcode" /> 
-						</div>
-						<div id="right">
-							<spring:url
-								value="/resources/images/${cardLogo}"
-								var="logoUrl" />
-							 <img id="photo" src="" />
-							 <img src="${logoUrl}" id="logo-ur" />
-						</div>
-					</div>
+                    <div id="create-preview">
+                    	<spring:url value="/user/templatePhoto/" var="photoLocalPrefix"/>
+                        <spring:url value="${photoLocalPrefix}masque/${templateCard.id}" var="masqueUrl"/>
+                        <style>
+							@media screen {
+								#specimenCarte {
+									background: url(${masqueUrl});
+									line-height : 1;
+								}
+							}
+							#specimenCarte * {
+								  -webkit-box-sizing: content-box;
+								     -moz-box-sizing: content-box;
+								          box-sizing: content-box;
+								}
+					   	</style>
+                        <style id="mainStyle">
+	                        @media screen and (min-width: 451px) {
+						    	${templateCard.cssStyle}
+						     }
+						     @media screen and (max-width: 450px) {
+					    		${templateCard.cssMobileStyle}
+					    	 }
+					    </style>
+                        <div id="specimenCarte">
+                            <div id="left">
+								<p id="recto1">${user.recto1}</p>
+								<p id="recto2">${user.recto2}</p>
+								<p id="recto3">${user.recto3}</p>
+								<p id="recto4">${user.recto4}</p>
+								<p id="recto5">${user.recto5}</p>
+                                <spring:url value="${photoLocalPrefix}qrCode/${templateCard.id}" var="QRCodeUrl"/>
+                                <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
+                            </div>
+                            <div id="right">
+                                <spring:url value="${photoLocalPrefix}logo/${templateCard.id}" var="logoUrl"/>
+                                <img id="photo" src=""/>
+                                <img id="logo-ur" src="${logoUrl}"/>
+                            </div>
+                        </div>
+                    </div>
 					<br />
 					<div class="alert alert-warning ">
 						<p class="text-center"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true">&amp;nbsp;

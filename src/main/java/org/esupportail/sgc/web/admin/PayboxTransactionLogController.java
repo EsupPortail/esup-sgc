@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/admin/payboxtransactions")
 @Controller
-@RooWebScaffold(path = "admin/payboxtransactions", formBackingObject = PayboxTransactionLog.class, create=false, delete=false)
+@RooWebScaffold(path = "admin/payboxtransactions", formBackingObject = PayboxTransactionLog.class, create=false, delete=false, update=false)
 public class PayboxTransactionLogController {
 	
 	@Resource

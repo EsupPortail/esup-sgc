@@ -8,6 +8,10 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.esupportail.sgc.domain.AppliVersion;
+import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,10 +23,13 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	final static String currentEsupSgcVersion = "0.1.x";
+	final static String currentEsupSgcVersion = "0.1.y";
 		
 	@Resource
 	DataSource dataSource;
+	
+	@Resource
+	UserInfoService userInfoService;
 
 	@Transactional
 	public void upgrade() {
@@ -66,7 +73,29 @@ public class DbToolService {
 	    		
 	    		esupSgcVersion = "0.1.x";
 	    		
-			} else {
+			} 
+			if("0.1.x".equals(esupSgcVersion)) {
+				
+				/*
+				for(User user: User.findAllUsers()) {
+					userInfoService.setAdditionalsInfo(user, null);
+					log.info("update userinfos of " + user.getEppn() + " : template is now " + user.getTemplateKey());
+					for(Card card : user.getCards()) {
+						if(Etat.PRINTED.equals(card.getEtat()) || Etat.ENCODED.equals(card.getEtat()) || Etat.ENABLED.equals(card.getEtat()) || Etat.DISABLED.equals(card.getEtat()) || Etat.CADUC.equals(card.getEtat())) {
+							card.setTemplateCard(user.getTemplateCard());
+						}
+					}
+				}
+				*/
+				// trop long : plus simple/efficace de passer leq requêtes à la main. 
+				// update user_account set template_key = 'univ-rouen' where eppn like '%@univ-rouen.fr';
+				// update card set template_card = (select id from template_card where key = 'univ-rouen') where eppn like '%@univ-rouen.fr' and etat in ('ENCODED', 'ENABLED', 'PRINTED', 'DISABLED', 'CADUC');
+				//
+				
+	    		esupSgcVersion = "0.1.y";
+	    		
+			}
+			else {
 				log.warn("\n\n#####\n\t" +
 	    				"Base de données à jour !" +
 	    				"\n#####\n");

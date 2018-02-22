@@ -3,38 +3,14 @@
 
 package org.esupportail.sgc.web.admin;
 
-import java.io.UnsupportedEncodingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.web.admin.CrousSmartCardController;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.util.UriUtils;
-import org.springframework.web.util.WebUtils;
 
 privileged aspect CrousSmartCardController_Roo_Controller {
-    
-    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
-    public String CrousSmartCardController.create(@Valid CrousSmartCard crousSmartCard, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        if (bindingResult.hasErrors()) {
-            populateEditForm(uiModel, crousSmartCard);
-            return "admin/crouscards/create";
-        }
-        uiModel.asMap().clear();
-        crousSmartCard.persist();
-        return "redirect:/admin/crouscards/" + encodeUrlPathSegment(crousSmartCard.getId().toString(), httpServletRequest);
-    }
-    
-    @RequestMapping(params = "form", produces = "text/html")
-    public String CrousSmartCardController.createForm(Model uiModel) {
-        populateEditForm(uiModel, new CrousSmartCard());
-        return "admin/crouscards/create";
-    }
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String CrousSmartCardController.show(@PathVariable("id") Long id, Model uiModel) {
@@ -55,48 +31,6 @@ privileged aspect CrousSmartCardController_Roo_Controller {
             uiModel.addAttribute("croussmartcards", CrousSmartCard.findAllCrousSmartCards(sortFieldName, sortOrder));
         }
         return "admin/crouscards/list";
-    }
-    
-    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
-    public String CrousSmartCardController.update(@Valid CrousSmartCard crousSmartCard, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        if (bindingResult.hasErrors()) {
-            populateEditForm(uiModel, crousSmartCard);
-            return "admin/crouscards/update";
-        }
-        uiModel.asMap().clear();
-        crousSmartCard.merge();
-        return "redirect:/admin/crouscards/" + encodeUrlPathSegment(crousSmartCard.getId().toString(), httpServletRequest);
-    }
-    
-    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
-    public String CrousSmartCardController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, CrousSmartCard.findCrousSmartCard(id));
-        return "admin/crouscards/update";
-    }
-    
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
-    public String CrousSmartCardController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        CrousSmartCard crousSmartCard = CrousSmartCard.findCrousSmartCard(id);
-        crousSmartCard.remove();
-        uiModel.asMap().clear();
-        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
-        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
-        return "redirect:/admin/crouscards";
-    }
-    
-    void CrousSmartCardController.populateEditForm(Model uiModel, CrousSmartCard crousSmartCard) {
-        uiModel.addAttribute("crousSmartCard", crousSmartCard);
-    }
-    
-    String CrousSmartCardController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-        String enc = httpServletRequest.getCharacterEncoding();
-        if (enc == null) {
-            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-        }
-        try {
-            pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {}
-        return pathSegment;
     }
     
 }

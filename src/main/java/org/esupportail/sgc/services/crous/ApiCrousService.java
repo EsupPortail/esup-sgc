@@ -225,7 +225,7 @@ public class ApiCrousService {
 		    cal.setTime(new Date());
 		    cal.add(Calendar.HOUR_OF_DAY, 3);
 		    Date nowDate =  cal.getTime(); 
-			if(dueDate.before(nowDate)) {
+			if(dueDate!=null && dueDate.before(nowDate)) {
 				dueDate = nowDate;
 			} else {
 				dueDate = user.getDueDate();

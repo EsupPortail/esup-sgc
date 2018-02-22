@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/admin/crouserrorlogs")
 @Controller
-@RooWebScaffold(path = "admin/crouserrorlogs", formBackingObject = CrousErrorLog.class)
+@RooWebScaffold(path = "admin/crouserrorlogs", formBackingObject = CrousErrorLog.class, create=false, delete=false, update=false)
 public class CrousErrorLogController {
 	
 	@Resource

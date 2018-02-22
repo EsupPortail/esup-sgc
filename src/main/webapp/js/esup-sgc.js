@@ -18,6 +18,87 @@ window.alert = function(message, title) {
     $("#bootstrap-alert-box-modal").modal('show');
 };
 
+//autocomplete eppn
+
+function searchEppnAtuocomplete(id) {
+	var searchBox = document.querySelector("#" +id);
+	if(searchBox != null){
+	 	var searchEppn = $("#" +id);
+	 	var awesomplete = new Awesomplete(searchBox, {
+	 		  minChars: 3,
+	 		  maxItems: 10
+	 		});
+		searchEppn.on("keyup", function(){
+			if(this.value.length>2) {
+	 		  $.ajax({
+	 		    url: searchEppnUrl,
+	 		    data : {searchString: this.value},
+	 		    type: 'GET',
+	 		    dataType: 'json'
+	 		  })
+	 		  .success(function(data) {
+	 		    var list = [];
+	 		    $.each(data, function(key, value) {
+	 		      var labelValue =value.eppn;
+		 		  if($.inArray(labelValue, this._list)<0){
+		 			list.push(labelValue);
+		 		  }
+	 		    });
+	 		    awesomplete.list = list;
+	 		  });
+			}
+		});
+	}
+}
+//submit search eppn
+function searchEppnAction(idInputFile) {
+	    $.ajax({
+           url: submitUrl,
+           data: {searchText: $("#" + idInputFile).val()},
+           success: function(data)
+           {
+               $("#recto1").html(data.recto1);
+               $("#recto2").html(data.recto2);
+               $("#recto3").html(data.recto3);
+               $("#recto4").html(data.recto4);
+               $("#recto5").html(data.recto5);
+               $("#photo").prop("src","/manager/photo/" + data.id);
+               $("#searchEppnForm p").remove();
+           },
+          error: function (request, error) {
+        	 $("#searchEppnForm p").remove();
+        	 $(".awesomplete").after("<p class='help-block'>Aucun résultat trouvé</p>")
+          }
+	});	
+}
+
+//Preview image d'un file input
+function previewFileInput(idInputFile, targetImg, preview) {
+	$("#" + idInputFile).on('change', function () {
+        if (typeof (FileReader) != "undefined") {
+            var image_holder = $("#" + targetImg);
+            image_holder.empty();
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $("<img />", {
+                    "src": e.target.result,
+                    "class": "thumb-image"
+                }).appendTo(image_holder);
+                //Live preview
+                if(preview == "masque"){
+                	$("#specimenCarte").css('background-image', 'url(' + e.target.result + ')');
+                }else{
+                    $("#" + preview).prop("src", e.target.result);
+                }
+            }
+            image_holder.show();
+            reader.readAsDataURL($(this)[0].files[0]);
+        } else {
+            alert("This browser does not support FileReader.");
+        }
+    });
+}
+
 function multiUpdateForm(idArray) {
 	if(typeof multiUpdateFormUrl != "undefined"){	
 		 $.ajax({
@@ -709,7 +790,7 @@ $(document).ready(function() {
     	 imageCropper.cropit('exportZoom', 2);
     	 var image = imageCropper.cropit('export', { type: 'image/jpeg', originalSize: false,  quality: .9 });
     	
-    	 $('#specimenleocarte img#photo').attr("src", image);
+    	 $('#specimenCarte img#photo').attr("src", image);
     	 imageData.val(image);
     	 //hack iphone,iPad
     	 if(isISmartPhone == "true" && orientation == "6"){
@@ -879,38 +960,24 @@ $(document).ready(function() {
  									}, html:true});
  	
  	//autocomplete eppn
- 	var searchBox = document.querySelector('#searchEppn');
- 	if(searchBox != null){
-	 	var searchEppn = $("#searchEppn");
-	 	var awesomplete = new Awesomplete(searchBox, {
-	 		  minChars: 3,
-	 		  maxItems: 10
-	 		});
-		searchEppn.on("keyup", function(){
-			if(this.value.length>2) {
-	 		  $.ajax({
-	 		    url: searchEppnUrl,
-	 		    data : {searchString: this.value},
-	 		    type: 'GET',
-	 		    dataType: 'json'
-	 		  })
-	 		  .success(function(data) {
-	 		    var list = [];
-	 		    $.each(data, function(key, value) {
-	 		      var labelValue =value.eppn;
-		 		  if($.inArray(labelValue, this._list)<0){
-		 			list.push(labelValue);
-		 		  }
-	 		    });
-	 		    awesomplete.list = list;
-	 		  });
-			}
-		});
-		searchEppn.on('awesomplete-selectcomplete',function(){
-	 		$("#searchEppnForm").submit();
-	 	});
-	}
-	// impression des cartes - popup
+    
+ 	 searchEppnAtuocomplete("searchEppn");
+ 	 $("#searchEppn").on('awesomplete-selectcomplete',function(){
+		$("#searchEppnForm").submit();
+	 });
+ 	 searchEppnAtuocomplete("searchEppnTemp");
+ 	 
+ 	 $("#searchEppnTemp").on('awesomplete-selectcomplete',function(){
+ 		searchEppnAction("searchEppnTemp");
+	 });
+ 	 $("#searchEppnTemp").on('keydown', function(event) {
+ 	        if (event.keyCode == 13) {
+ 	        	searchEppnAction("searchEppnTemp");
+ 	            return false;
+ 	         }
+ 	    });
+
+ 	 // impression des cartes - popup
     $('#IN_PRINTForm').submit(function() {
     	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
    	    this.target = 'formprint';
@@ -1208,5 +1275,31 @@ $(document).ready(function() {
 	$("#retCodeLogs").on('change', function () {
 		$("#formRetCodeLogs").submit();
 	});
+	
+	//preview template
+	previewFileInput("templateMasque", "image-holder-masque", "masque");
+	previewFileInput("templateLogo", "image-holder-logo","logo-ur");
+	previewFileInput("templateQrCode", "image-holder-qrCode", "qrcode");
+	
+    $('#templateCardsList .photo img').popover({ trigger: 'hover', placement : 'auto', content: function () {
+		return '<img class="popTemplate" src="'+ $(this)[0].src + '"/>';
+		}, html:true});
+    
+    $('#_cssStyle_id').keyup(function () {
+    	$("#mainStyle").remove();
+    	$('#specimenCarte').before('<style id="mainStyle">'+ $(this).val() + '</style>');
+    });
+    $('#_cssMobileStyle_id').keyup(function () {
+    	$("#mobileStyle").remove();
+    	$('#specimenCarte').before('<style id="mobileStyle">@media screen and (max-width: 450px) {'+ $(this).val() + '}</style>');
+    });
+
+    $("#updateTemplateCard").on("click", "#proceed", function() {
+        if (confirm('Enregistrer les modifications?')) {
+           return true;
+        }else{
+        	return false
+        }
+    });
 });
 	

@@ -14,7 +14,7 @@ privileged aspect User_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager User.entityManager;
     
-    public static final List<String> User.fieldNames4OrderClauseFilter = java.util.Arrays.asList("eppn", "cards", "crous", "europeanStudentCard", "difPhoto", "name", "firstname", "birthday", "institute", "eduPersonPrimaryAffiliation", "email", "rneEtablissement", "cnousReferenceStatut", "indice", "dueDate", "idCompagnyRate", "idRate", "supannEmpId", "supannEtuId", "supannEntiteAffectationPrincipale", "supannCodeINE", "secondaryId", "recto1", "recto2", "recto3", "recto4", "recto5", "verso1", "verso2", "verso3", "verso4", "verso5", "editable", "requestFree", "address", "nbCards", "userType", "roles", "externalCard");
+    public static final List<String> User.fieldNames4OrderClauseFilter = java.util.Arrays.asList("log", "eppn", "cards", "crous", "europeanStudentCard", "difPhoto", "name", "firstname", "birthday", "institute", "eduPersonPrimaryAffiliation", "email", "rneEtablissement", "cnousReferenceStatut", "indice", "dueDate", "idCompagnyRate", "idRate", "supannEmpId", "supannEtuId", "supannEntiteAffectationPrincipale", "supannCodeINE", "secondaryId", "recto1", "recto2", "recto3", "recto4", "recto5", "verso1", "verso2", "verso3", "verso4", "verso5", "editable", "requestFree", "address", "nbCards", "userType", "templateKey", "roles", "externalCard");
     
     public static final EntityManager User.entityManager() {
         EntityManager em = new User().entityManager;

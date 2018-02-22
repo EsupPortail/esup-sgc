@@ -1,12 +1,6 @@
 package org.esupportail.sgc.web.manager;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -16,12 +10,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.crous.CrousService;
@@ -39,8 +31,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -168,6 +158,30 @@ public class ManagerCardControllerNoHtml {
 		RightHolder rightHolder = crousService.getRightHolder(eppn);
 		uiModel.addAttribute("rightHolder", rightHolder);
 		return "manager/rightHolder";
+	}
+	
+	
+	@RequestMapping(value="/templatePhoto/{type}/{templateId}")
+	@Transactional
+	public void getPhoto(@PathVariable String type, @PathVariable Long templateId, HttpServletResponse response) throws IOException, SQLException {
+		
+		TemplateCard templateCard = TemplateCard.findTemplateCard(templateId);
+		PhotoFile photoFile = null;
+		if(templateCard != null) {
+			if("logo".equals(type)){
+				photoFile = templateCard.getPhotoFileLogo();
+			}else if("masque".equals(type)){
+				photoFile = templateCard.getPhotoFileMasque();
+			}else if("qrCode".equals(type)){
+				photoFile = templateCard.getPhotoFileQrCode();
+			}
+			
+			Long size = photoFile.getFileSize();
+			String contentType = photoFile.getContentType();
+			response.setContentType(contentType);
+			response.setContentLength(size.intValue());
+			IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
+		}
 	}
 }
 

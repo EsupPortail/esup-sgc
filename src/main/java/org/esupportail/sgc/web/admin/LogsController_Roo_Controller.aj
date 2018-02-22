@@ -3,18 +3,11 @@
 
 package org.esupportail.sgc.web.admin;
 
-import java.io.UnsupportedEncodingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.web.admin.LogsController;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.util.UriUtils;
-import org.springframework.web.util.WebUtils;
 
 privileged aspect LogsController_Roo_Controller {
     
@@ -26,41 +19,8 @@ privileged aspect LogsController_Roo_Controller {
         return "admin/logs/show";
     }
     
-    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
-    public String LogsController.update(@Valid Log log, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        if (bindingResult.hasErrors()) {
-            populateEditForm(uiModel, log);
-            return "admin/logs/update";
-        }
-        uiModel.asMap().clear();
-        log.merge();
-        return "redirect:/admin/logs/" + encodeUrlPathSegment(log.getId().toString(), httpServletRequest);
-    }
-    
-    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
-    public String LogsController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, Log.findLog(id));
-        return "admin/logs/update";
-    }
-    
     void LogsController.addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("log_logdate_date_format", "dd/MM/yyyy - HH:mm");
-    }
-    
-    void LogsController.populateEditForm(Model uiModel, Log log) {
-        uiModel.addAttribute("log", log);
-        addDateTimeFormatPatterns(uiModel);
-    }
-    
-    String LogsController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-        String enc = httpServletRequest.getCharacterEncoding();
-        if (enc == null) {
-            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-        }
-        try {
-            pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {}
-        return pathSegment;
     }
     
 }

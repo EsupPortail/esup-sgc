@@ -39,8 +39,8 @@
 	<bean id="esistCrousService" class="org.esupportail.sgc.services.crous.EsistCrousService">
 		<property name="esistFiles">
 			<list>
-				<!-- value>ESIST-cnrs.xml</value-->
-				<value>ESIST1eravril.xml</value>
+				<!-- value>esist/ESIST-cnrs.xml</value-->
+				<value>esist/ESIST1eravril.xml</value>
 			</list>
 		</property>
 	</bean>
@@ -60,7 +60,7 @@
 		3 - Smartcard with European common data zone
 		4 - Smartcard on which application may be installed by service providers
 		 -->
- 		<property name="cardType" value="3"/>
+ 		<property name="cardType" value="2"/>
 	</bean>
 
 

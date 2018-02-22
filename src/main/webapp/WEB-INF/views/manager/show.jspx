@@ -5,23 +5,10 @@
     <spring:url value="/manager?index=first" var="listeUrl"/>
     <spring:url value="/manager/photo/" var="photoRootUrl"/>
     <spring:url value="/manager/getCrousRightHolderHtmlPart?eppn=${user.eppn}" var="getCrousRightHolderUrl"/>
-    <spring:url value="/resources/images/${cardMask}" var="leocarteMasqueUrl"/>
     <script type="text/javascript">
 		var photorUrl = '${photoRootUrl}';
 		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
 	</script>
-    <style>
-	   /* masque leocarte pour screen uniquement */
-		@media screen {
-			#specimenleocarte {
-				background: url(${leocarteMasqueUrl});
-				background-size: cover;
-			}
-		}
-		#specimenleocarte #qrcode {
-			width: ${qrcodeWidth};
-		}
-	</style>
     <h2>Utilisateur
 		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
             <span class="glyphicon glyphicon-home">
@@ -123,6 +110,8 @@
                                 <dd>${user.supannEntiteAffectationPrincipale}</dd>
                                 <dt>secondaryId</dt>
                                 <dd>${user.secondaryId}</dd>
+                                <dt>template</dt>
+                                <dd>${user.templateKey}</dd>
                                 <dt>recto1</dt>
                                 <dd>${user.recto1}</dd>
                                 <dt>recto2</dt>
@@ -254,7 +243,34 @@
                                                                     <h3 class="modal-title">Prévisualisation de la carte</h3>
                                                                 </div>
                                                                 <div class="modal-body">
-                                                                    <div id="specimenleocarte">
+                                                                    <c:set value="${empty card.templateCard ? user.templateCard : card.templateCard}" var="currentTemplate"/>
+                                                                    <c:set var="cssId" value="specimenCarte${i.index}" />
+															   		<c:set var="css" value = "${fn:replace(currentTemplate.cssStyle, 'specimenCarte', cssId)}" />
+															   		<c:set var="cssMobileStyle" value = "${fn:replace(currentTemplate.cssMobileStyle, 'specimenCarte', cssId)}" />
+                                                                    <spring:url value="/manager/templatePhoto/" var="photoLocalPrefix"/>
+                                                                    <spring:url value="${photoLocalPrefix}masque/${currentTemplate.id}" var="masqueUrl"/>
+                                                                    <style>
+																		@media screen {
+																			#${cssId} {
+																				background: url(${masqueUrl});
+																				line-height : 1;
+																			}
+																		}
+																		#${cssId} * {
+																			  -webkit-box-sizing: content-box;
+																			     -moz-box-sizing: content-box;
+																			          box-sizing: content-box;
+																			}
+															   		</style>
+                                                                    <style id="mainStyle">
+												                        @media screen and (min-width: 451px) {
+																	    	${css}
+																	     }
+																	     @media screen and (max-width: 450px) {
+																    		${cssMobileStyle}
+																    	 }			                        
+																    </style>
+                                                                    <div id="${cssId}">
                                                                         <div id="left">
                                                                             <p id="recto1">${card.user.recto1}</p>
                                                                             <p id="recto2">${card.user.recto2}</p>
@@ -266,7 +282,7 @@
                                                                         </div>
                                                                         <div id="right">
                                                                             <spring:url value="/manager/photo/${card.id}" var="photoUrl"/>
-                                                                            <spring:url value="/resources/images/${cardLogo}" var="logoUrl"/>
+                                                                            <spring:url value="${photoLocalPrefix}logo/${currentTemplate.id}" var="logoUrl"/>
                                                                             <img id="photo" src="${photoUrl}"/>
                                                                             <img id="logo-ur" src="${logoUrl}"/>
                                                                         </div>
@@ -390,6 +406,17 @@
                                                     <dd>
                                                         <pre>${card.versoTextPrinted}</pre>
                                                     </dd>
+                                                    <dt>Thème : </dt>
+                                                    <dd>
+                                                        <c:choose>
+                                                            <c:when test="${empty card.templateCard}">
+                                                                <i>Aucun thème défini</i>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                    			${card.templateCard.name} / V${card.templateCard.numVersion}
+                                                    		</c:otherwise>
+                                                        </c:choose>
+                                                    </dd>
                                                     <h4>Dates</h4>
                                                     <dt>Date de demande : </dt>
                                                     <dd>
@@ -428,9 +455,9 @@
                                                     <dd>${card.reverseCsn}</dd>
                                                     <dt>Desfire Ids (générés): </dt>
                                                     <dd>
-                                                    	<c:forEach var="desfireId" items="${card.desfireIds}">
-                                                    		<b>${desfireId.key} :</b> ${desfireId.value}<br />
-                                                    	</c:forEach>
+                                                        <c:forEach items="${card.desfireIds}" var="desfireId">
+                                                            <b>${desfireId.key} :</b> ${desfireId.value}<br/>
+                                                        </c:forEach>
                                                     </dd>
                                                     <dt>Paybox : </dt>
                                                     <dd>${card.payCmdNum}</dd>
@@ -547,5 +574,6 @@
         <field:display field="external" id="s_org_esupportail_sgc_domain_Card_external" object="${card}" z="rSAb/C1rClUGonk4xzczQNb79Zg="/>
         <field:display field="europeanTransient" id="s_org_esupportail_sgc_domain_Card_europeanTransient" object="${card}" z="d426Wc391tiqC857dVhSh5SGrJU="/>
         <field:display field="desfireIds" id="s_org_esupportail_sgc_domain_Card_desfireIds" object="${card}" z="mCW/Db/z0fE30nvCsLwF/19K74Y="/>
+        <field:display field="templateCard" id="s_org_esupportail_sgc_domain_Card_templateCard" object="${card}" z="x6QYNZR4lHXpv9/jpM8fllW4/ws="/>
     </page:show>
 </div>

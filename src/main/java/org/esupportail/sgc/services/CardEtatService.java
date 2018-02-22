@@ -16,6 +16,7 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CardActionMessage;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
@@ -122,8 +123,6 @@ public class CardEtatService {
 				}
 			}
 		}
-		
-		
 		if(Etat.IN_PRINT.equals(card.getEtat()) && (Etat.PRINTED.equals(etat) || Etat.ENCODED.equals(etat))) {
 			User user = card.getUser();
 			card.setRecto1Printed(user.getRecto1());
@@ -131,6 +130,8 @@ public class CardEtatService {
 			card.setRecto3Printed(user.getRecto3());
 			card.setRecto4Printed(user.getRecto4());
 			card.setRecto5Printed(user.getRecto5());
+			
+			card.setTemplateCard(user.getTemplateCard());			
 		}		
 			
 		logService.log(card.getId(), ACTION.ETAT, RETCODE.SUCCESS, card.getEtat() + " -> " + etat, card.getEppn(), null);

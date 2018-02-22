@@ -2,7 +2,7 @@
 <div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
-    <page:show create="false" delete="false" id="ps_org_esupportail_sgc_domain_PayboxTransactionLog" object="${payboxtransactionlog}" path="/admin/payboxtransactions" z="kqnxWdhQINqXa77D0Ueh6/tGlKY=">
+    <page:show create="false" delete="false" id="ps_org_esupportail_sgc_domain_PayboxTransactionLog" object="${payboxtransactionlog}" path="/admin/payboxtransactions" update="false" z="zx839/bUeSbA+Qc1YT9tMJOks0s=">
         <field:display date="true" dateTimePattern="${payboxTransactionLog_transactiondate_date_format}" field="transactionDate" id="s_org_esupportail_sgc_domain_PayboxTransactionLog_transactionDate" object="${payboxtransactionlog}" z="YwqqW5iy1mgGfw3XaTekkT5eCj0="/>
         <field:display field="eppn" id="s_org_esupportail_sgc_domain_PayboxTransactionLog_eppn" object="${payboxtransactionlog}" z="O0XXk4f+gtyuf0Z9qV604oaGiNQ="/>
         <field:display field="reference" id="s_org_esupportail_sgc_domain_PayboxTransactionLog_reference" object="${payboxtransactionlog}" z="swhsWqvVc4xAvfQ+n1QI5O7e07k="/>
