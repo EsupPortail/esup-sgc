@@ -140,6 +140,7 @@
 	<!-- 
 	On calcule l'insitute en fonction de l'eppn
 	On calcule le userType en fonction de eduPersonPrimaryAffiliation
+        On calcule le template de la carte en fonction de l'eppn
 	-->
 	<bean id="spelUserInfoService" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="5">
 		<property name="sgcParam2spelExp">
@@ -149,6 +150,7 @@
 					#userInfosInComputing['eduPersonPrimaryAffiliation'] == 'student' ? 'E' : 
 					#userInfosInComputing['eduPersonPrimaryAffiliation'] == 'staff' or #userInfosInComputing['eduPersonPrimaryAffiliation'] == 'teacher' or #userInfosInComputing['eduPersonPrimaryAffiliation'] == 'employee' ? 'P' : 
 					'I'"/>
+				<entry key="template" value="#user.eppn matches '.*@univ-ville.fr' ? 'univ-ville' : 'default'"/>                                
 			</map>
 		</property>	
 	</bean>
