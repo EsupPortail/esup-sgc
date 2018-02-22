@@ -1050,6 +1050,7 @@ $(document).ready(function() {
     	getStats("cardsByMonth", "chartBar", selectedType, 22, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
     	getStats("nbRejetsByMonth", "chartBar", selectedType, 23);
     	getStats("requestFree", "multiBar", selectedType, 24);
+    	getStats("templateCards", "doughnut", selectedType, 25);
     }
 
 	$("select#etat").change(function(){

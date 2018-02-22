@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.springframework.stereotype.Service;
 
@@ -142,6 +143,8 @@ public class StatsService {
 	        		put("nbRejetsByMonth",mapField(Card.countNbRejetsByMonth(typeInd), 2));
 	        	}else if("requestFree".equals(typeStats)){
 	        		put("requestFree",mapField(User.countNbRequestFree(),3));
+	        	}else if("templateCards".equals(typeStats)){
+	        		put("templateCards",mapField(TemplateCard.countTemplateCardByNameVersion(),2));
 	        	}
 	        }
 	    };
