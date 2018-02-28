@@ -405,7 +405,6 @@ public class UserCardController {
 		displayFormParts.put("displayForm",  userService.displayForm(eppn));
 		displayFormParts.put("displayRenewalForm",  userService.displayRenewalForm(eppn));
 		displayFormParts.put("isFreeRenewal",  userService.isFreeRenewal(eppn));
-		displayFormParts.put("isNotFreeRenewal",  userService.isNotFreeRenewal(eppn));
 		displayFormParts.put("isPaidRenewal",  userService.isPaidRenewal(eppn));
 		displayFormParts.put("canPaidRenewal",  userService.canPaidRenewal(eppn));
 		displayFormParts.put("hasDeliveredCard",  userService.hasDeliveredCard(eppn));

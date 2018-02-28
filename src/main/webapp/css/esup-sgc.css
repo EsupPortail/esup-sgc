@@ -354,6 +354,12 @@ h2 .btn{
 .label-enabled{
 	 background-color: #5cb85c;
 }
+.label-destroyed{
+	 background-color: #660033;
+}
+.label-canceled{
+	 background-color: #999966;
+}
 #requestDiv .thumbnail{
 	width: 150px;
 	padding: 0;

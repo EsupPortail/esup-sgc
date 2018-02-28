@@ -192,8 +192,8 @@
 					<p>Vous ne pouvez faire aucune action par lot :</p>
 					<ul>
 						<li>Soit vous avez des demandes avec des états différents</li>
-						<li>Aucune action pour les états <em>CADUC</em> ou <em>REJETE</em></li>
-						<li>Soit vous avez des demandes en état <em>IN_PRINT</em> ou <em>IN_ENCODE</em>
+						<li>Aucune action pour les états <em>DÉTRUIT</em> ou <em>REJETÉ</em> ou <em>ANNULÉ	</em></li>
+						<li>Soit vous avez des demandes en état <em>EN_IMPRESSION</em> ou <em>EN_ENCODAGE</em>
 							dont vous n'avez pas les droits de modification
 						</li>
 					</ul>

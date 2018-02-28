@@ -51,7 +51,7 @@ public class Card {
     };
 
     public static enum Etat {
-        NEW, REQUEST_CHECKED, IN_PRINT, PRINTED, IN_ENCODE, ENCODED, ENABLED, REJECTED, DISABLED, CADUC
+        NEW, REQUEST_CHECKED, CANCELED, IN_PRINT, PRINTED, IN_ENCODE, ENCODED, ENABLED, REJECTED, DISABLED, CADUC, DESTROYED
     };
 
     public static enum MotifDisable {
@@ -275,7 +275,7 @@ public class Card {
         q.setParameter("etats", etats);
         return q;
     }
-
+    
     public static TypedQuery<Card> findCardsByEppnInAndEtatIn(List<String> eppns, List<Etat> etats) {
         EntityManager em = Card.entityManager();
         TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.eppn IN (:eppns) AND o.etat IN (:etats) order by date_etat desc", Card.class);
@@ -292,6 +292,13 @@ public class Card {
         return ((Long) q.getSingleResult());
     }
     
+    public static Long countfindCardsByEppnEqualsAndEtatNotIn(String eppn, List<Etat> etats) {
+        EntityManager em = Card.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.eppn = :eppn AND o.etat NOT IN (:etats)", Long.class);
+        q.setParameter("eppn", eppn);
+        q.setParameter("etats", etats);
+        return ((Long) q.getSingleResult());
+    }
 
     public static TypedQuery<Card> findCardsByQrcodeAndEtatIn(String qrcode, List<Etat> etats) {
         EntityManager em = Card.entityManager();

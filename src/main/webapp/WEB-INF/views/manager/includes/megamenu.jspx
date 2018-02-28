@@ -10,8 +10,8 @@
 	  	<div class="alert alert-info" id="searchBar">
 			<form action="${searchUrl}" class="navbar-form navbar-left" role="search" id="searchEppnForm" >
 				<div class="form-group">
-					<spring-form:select path="searchBean.address" cssClass="form-control">
-						<spring-form:option value="">-- Affectation --</spring-form:option>
+					<spring-form:select path="searchBean.address" cssClass="selectpicker show-tick" data-width="fit"  data-dropup-auto="false" data-live-search="true" >
+						<spring-form:option value="">-- Adresse --</spring-form:option>
 						<c:forEach items="${addresses}" var="address">
 							<spring-form:option value="${address}">
 								${address}
@@ -20,7 +20,7 @@
 					</spring-form:select>
 				</div>
 				<div class="form-group" style="display:none">
-					<spring-form:select path="searchBean.type" cssClass="form-control">
+					<spring-form:select path="searchBean.type" cssClass="selectpicker show-tick" data-width="fit">
 		 				<spring-form:option value="">-- Population --</spring-form:option>
 						<c:forEach items="${types}" var="type">
 							<spring-form:option value="${type}">
@@ -30,7 +30,7 @@
 		 			</spring-form:select>
 		 		</div>
 				<div class="form-group">
-				  	<spring-form:select path="searchBean.etat" cssClass="form-control">
+				  	<spring-form:select path="searchBean.etat" cssClass="selectpicker show-tick" data-width="fit">
 				  		<spring-form:option value="">-- Etat --</spring-form:option>
 					 	<c:forEach items="${etats}" var="etat">
 					  		<spring-form:option value="${etat}"><spring:message code="card.step.${etat}"/></spring-form:option>
@@ -38,20 +38,20 @@
 				    </spring-form:select>
 			    </div>
 			  	<div class="form-group">
-			  		<spring-form:select path="searchBean.editable" cssClass="form-control">
+			  		<spring-form:select path="searchBean.editable" cssClass="selectpicker show-tick" data-width="fit">
 			  				<spring-form:option value="all">-- Statut --</spring-form:option>
 					  		<spring-form:option value="true">Editable</spring-form:option>
 					  		<spring-form:option value="false">Non editable</spring-form:option>
 				    </spring-form:select>
 			  	</div>	    
 			    <div class="form-group">
-			  		<spring-form:select path="searchBean.ownOrFreeCard" cssClass="form-control">
+			  		<spring-form:select path="searchBean.ownOrFreeCard" cssClass="selectpicker show-tick" data-width="fit">
 					  		<spring-form:option value="false">-- Gestion --</spring-form:option>
 					  		<spring-form:option value="true">Libres ou gérées par moi</spring-form:option>
 				    </spring-form:select>
 			  	</div>
 			  	 <div class="form-group">
-			  		<spring-form:select path="searchBean.nbCards" cssClass="form-control">
+			  		<spring-form:select path="searchBean.nbCards" cssClass="selectpicker show-tick" data-width="fit">
 					  		<spring-form:option value="">-- Nb Cartes --</spring-form:option>
 					  		<c:forEach items="${nbCards}" var="nbCard">
 					  			<spring-form:option value="${nbCard}">${nbCard} carte(s)</spring-form:option>
@@ -59,7 +59,7 @@
 				    </spring-form:select>
 			  	</div>
 			  	 <div class="form-group">
-			  		<spring-form:select path="searchBean.nbRejets" cssClass="form-control">
+			  		<spring-form:select path="searchBean.nbRejets" cssClass="selectpicker show-tick" data-width="fit">
 					  		<spring-form:option value="">-- Nb Rejets --</spring-form:option>
 					  		<c:forEach items="${nbRejets}" var="nbRejet">
 					  			<spring-form:option value="${nbRejet}">${nbRejet} rejet(s)</spring-form:option>
@@ -67,7 +67,7 @@
 				    </spring-form:select>
 			  	</div>
 			  	<div class="form-group">
-			  		<spring-form:select path="searchBean.flagAdresse" cssClass="form-control">
+			  		<spring-form:select path="searchBean.flagAdresse" cssClass="selectpicker show-tick" data-width="fit">
 		  				<spring-form:option value="">-- Type adresse --</spring-form:option>
 				  		<spring-form:option value="INT">Adresse interne</spring-form:option>
 				  		<spring-form:option value="EXT">Adresse externe</spring-form:option>

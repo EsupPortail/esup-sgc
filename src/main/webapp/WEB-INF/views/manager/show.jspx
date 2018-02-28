@@ -377,6 +377,11 @@
                                                                                 </div>
                                                                             </div>
                                                                         </c:when>
+                                                                        <c:when test="${etatAvailable eq 'DESTROYED'}">
+                                                                        	<button class="btn btn-danger btn-block" type="submit" onclick="return confirm('Confirmez la destruction de la carte');">
+                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+                                                                            </button>
+                                                                        </c:when>
                                                                         <c:otherwise>
                                                                             <button class="btn btn-success btn-block" type="submit">
                                                                                 <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>

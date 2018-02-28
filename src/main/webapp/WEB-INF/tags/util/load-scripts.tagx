@@ -13,6 +13,7 @@
 	<spring:url value="/resources/css/trumbowyg.min.css" var="trumbowyg_css_url" />
 	<spring:url value="/resources/css/trumbowyg.colors.min.css" var="trumbowygColor_css_url" />
 	<spring:url value="/resources/css/dragula.min.css" var="dragula_css_url" />
+	<spring:url value="/resources/css/bootstrap-select.min.css" var="select_css_url" />
 	<spring:url value="/resources/css/esup-sgc.css" var="esupSgc_css_url" />
 
 	<spring:url value="/resources/js/jquery.min.js" var="jquery_url" />
@@ -27,6 +28,7 @@
 	<spring:url value="/resources/js/trumbowyg.colors.min.js" var="trumbowygColor_js_url" />
 	<spring:url value="/resources/js/exif.js" var="exif_js_url" />
 	<spring:url value="/resources/js/dragula.min.js" var="dragula_js_url" />
+	<spring:url value="/resources/js/bootstrap-select.min.js" var="select_url" />
 	<spring:url value="/resources/js/esup-sgc.js" var="esupSgc_js_url" />
 	<spring:url value="/resources/images/favicon.png" var="favicon" />
 	
@@ -46,6 +48,7 @@
 	<link rel="stylesheet" type="text/css" href="${trumbowygColor_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${progress_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${dragula_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${select_css_url}" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   
 	<link rel="SHORTCUT ICON" href="${favicon}" />
@@ -62,6 +65,7 @@
 	<script src="${esup_sgc_msg_fr_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${dragula_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${exif_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${select_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esupSgc_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	
 	

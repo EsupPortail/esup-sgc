@@ -49,16 +49,23 @@
 									était invalide pour une raison précise. Elle peut être réactivée 
 									par l'utilisateur lui-même.</dd>
 								<dt><spring:message code="card.step.CADUC"/></dt>
-								<dd>La date de fin de droits"" de l'individu a été dépassée, cette carte
+								<dd>La date de fin de droits de l'individu a été dépassée, cette carte
 								est donc désactivée et ne peut pas être réactivée directement par l'utilisateur.
 								Si la date de fin de droits change pour une date future, 
 								elle changera d'état pour être dans l'état <spring:message code="card.step.DISABLED"/> 
 								et elle pourra alors être réactivée à la demande de l'utilisateur.</dd>
+								<dt><spring:message code="card.step.DESTROYED"/></dt>
+								<dd>La carte désactivée ou caduque a été déclarée comme détruite.
+								Elle ne peut plus changer d'état.</dd>
+								<dt><spring:message code="card.step.CANCELED"/></dt>
+								<dd>La date de fin de droits de l'individu a été dépassée, alors que la demande de carte
+								n'avait pas été traitée (elle était dans l'état <spring:message code="card.step.NEW"/>), la demande a donc été annulée automatiquement.
+								L'utilisateur pourra refaire une nouvelle demande si sa date de fin de droits redevient postérieure à la date du jour.</dd>
 							</dl>
 						</div>
 						<div class="col-lg-6">
 							<h4 class="bg-info">Workflow</h4>
-							<img src="${schemaUrl}/sgc-workflow.png" class="img-responsive"/>
+							<img src="${schemaUrl}/sgc-workflow.svg" class="img-responsive"/>
 						</div>
 					</div>
 				</div>

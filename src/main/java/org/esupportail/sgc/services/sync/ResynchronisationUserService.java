@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services.sync;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -14,6 +15,7 @@ import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.AuthApiCrousService;
 import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.tools.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -157,6 +159,12 @@ public class ResynchronisationUserService {
 			if((Etat.ENABLED.equals(card.getEtat()) || Etat.DISABLED.equals(card.getEtat()) || Etat.ENCODED.equals(card.getEtat())) && user.getDueDateIncluded().before(new Date())) {
 				cardEtatService.setCardEtat(card, Etat.CADUC, null, null, false, true);
 			}
+			// if card is a new request and is already out_of_date we canceled the request
+			if(Etat.NEW.equals(card.getEtat()) && user.getDueDateIncluded().before(new Date())) {
+				SimpleDateFormat dateFormatterFr = new SimpleDateFormat("dd/MM/yyyy");
+				cardEtatService.setCardEtat(card, Etat.CANCELED, "La date limite / de fin (" + dateFormatterFr.format(user.getDueDateIncluded()) + ") est dépassée, la demande de carte est annulée.", null, false, true);
+			}
+			
 			
 		}
 		if(accessControlMustUpdate) {

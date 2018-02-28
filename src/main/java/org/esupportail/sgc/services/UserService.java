@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -23,25 +24,12 @@ public class UserService {
 	ExtUserRuleService extUserRuleService;
 	
 	public boolean isFirstRequest(String eppn){
-		return Card.countFindCardsByEppnEquals(eppn) == 0;
+		return Card.countfindCardsByEppnEqualsAndEtatNotIn(eppn, Arrays.asList(new Etat[] {Etat.CANCELED})) == 0;
 	}
 
     public boolean isFreeRenewal(String eppn){
-    	boolean isFreeRenewal = false;
-
-		User user = User.findUsersByEppnEquals(eppn).getSingleResult();
-		if (!user.getCards().isEmpty()){
-			for(Card card : user.getCards()){
-				if(Etat.DISABLED.equals(card.getEtat()) || Etat.ENABLED.equals(card.getEtat())){
-					if(user.isRequestFree()) {
-						isFreeRenewal = true; 
-						break;
-					}
-				}
-			}
-		}
-		
-		return !isOutOfDueDate(eppn) && isFreeRenewal && !hasRequestCard(eppn) && !user.hasExternalCard();
+		User user = User.findUsersByEppnEquals(eppn).getSingleResult();	
+		return user.isRequestFree() && !isFirstRequest(eppn) && !isOutOfDueDate(eppn) && !hasRequestCard(eppn) && !user.hasExternalCard();
     }
 
 	public boolean isPaidRenewal(String eppn){
@@ -51,23 +39,6 @@ public class UserService {
 			isPaidRenewal = true;
 		}
 		return isPaidRenewal;
-	}
-	
-	public boolean isNotFreeRenewal(String eppn){
-		boolean isNotFreeRenewal = false;
-		
-		User user = User.findUsersByEppnEquals(eppn).getSingleResult();
-		boolean etatOk = true;
-		for(Card card : user.getCards()){
-			if(!Etat.DISABLED.equals(card.getEtat()) && !Etat.ENABLED.equals(card.getEtat())){
-				etatOk = false; break;
-			}
-		}
-		if(!isFreeRenewal(eppn) && !isFreeRenewal(eppn) && etatOk){
-			isNotFreeRenewal = true;
-		}
-		
-		return isNotFreeRenewal;
 	}
 	
 	public boolean displayRenewalForm(String eppn){
@@ -89,7 +60,7 @@ public class UserService {
 	public boolean displayForm(String eppn){
 		boolean displayForm = displayRenewalForm(eppn);
 		if(isFirstRequest(eppn)){
-			displayForm = isEsupSgcUser(eppn);
+			displayForm = isEsupSgcUser(eppn) && !isOutOfDueDate(eppn);
 		} 
 		return displayForm;
 	}
@@ -109,7 +80,7 @@ public class UserService {
 		if(user != null && user.hasExternalCard()) {
 			return false;
 		}
-		return !isOutOfDueDate(eppn) && isNotFreeRenewal(eppn) && !isPaidRenewal(eppn);
+		return !isOutOfDueDate(eppn) && !isFreeRenewal(eppn) && !isPaidRenewal(eppn);
 	}
 	
 	private boolean isOutOfDueDate(String eppn) {
@@ -122,7 +93,7 @@ public class UserService {
 		User user = User.findUsersByEppnEquals(eppn).getSingleResult();
 		if (!user.getCards().isEmpty()){
 			for(Card card : user.getCards()){
-				if(card.getDeliveredDate() == null){
+				if(!Etat.CANCELED.equals(card.getEtat()) && card.getDeliveredDate() == null){
 					hasDeliveredCard = false; 
 					break;
 				}

@@ -73,7 +73,8 @@ public class WsRestEsupSgcApiController {
 	
 	/**
 	 * Example to use it :
-	 *  curl   -F "eppn=toto@univ-ville.fr"   -F "difPhotoTransient=true" -F "crousTransient=true"   -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
+	 *  curl   -F "eppn=toto@univ-ville.fr"   -F "difPhotoTransient=true" -F "crousTransient=true" -F "templateCard=248" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
+	 *  248 is the id of a TEMPLATE_CARD here
 	 *  
 	 */
 	@RequestMapping(method = RequestMethod.POST)

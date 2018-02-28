@@ -47,7 +47,7 @@ public class CardEtatService {
 	
 	private final static Map<Etat, List<Etat>> workflow = new HashMap<Etat, List<Etat>>();
 	static {
-		workflow.put(Etat.NEW, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED}));
+		workflow.put(Etat.NEW, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED})); // NEW -> CANCELED is not an action made via the gui
 		workflow.put(Etat.REQUEST_CHECKED, Arrays.asList(new Etat[]{Etat.IN_PRINT}));
 		workflow.put(Etat.IN_PRINT, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED, Etat.IN_PRINT, Etat.PRINTED}));
 		// workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{Etat.IN_ENCODE}));
@@ -55,9 +55,11 @@ public class CardEtatService {
 		workflow.put(Etat.IN_ENCODE, Arrays.asList(new Etat[]{Etat.PRINTED})); // IN_ENCODE -> ENCODED is not an action made via the gui
 		workflow.put(Etat.ENCODED, Arrays.asList(new Etat[]{Etat.ENABLED}));
 		workflow.put(Etat.ENABLED, Arrays.asList(new Etat[]{Etat.DISABLED}));
-		workflow.put(Etat.DISABLED, Arrays.asList(new Etat[]{Etat.ENABLED}));
-		workflow.put(Etat.CADUC, Arrays.asList(new Etat[]{})); // CADUC -> DISABLED is not an action made via the gui
+		workflow.put(Etat.DISABLED, Arrays.asList(new Etat[]{Etat.ENABLED, Etat.DESTROYED}));
+		workflow.put(Etat.CADUC, Arrays.asList(new Etat[]{Etat.DESTROYED})); // CADUC -> DISABLED is not an action made via the gui
 		workflow.put(Etat.REJECTED, Arrays.asList(new Etat[]{})); 
+		workflow.put(Etat.DESTROYED, Arrays.asList(new Etat[]{}));
+		workflow.put(Etat.CANCELED, Arrays.asList(new Etat[]{}));
 	}
 
 	@Resource
@@ -168,6 +170,10 @@ public class CardEtatService {
 		
 		if(Etat.REJECTED.equals(etat)){
 			this.updateNbRejets(card);
+		}
+		
+		if(Etat.CANCELED.equals(etat)){
+			card.setPayCmdNum(null);
 		}
 		
 		this.sendMailInfo(etatInitial, card.getEtat(), card.getUser(), mailMessage, actionFromAnAdmin);
