@@ -59,7 +59,7 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	public List<String> getManagerGroups() {
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
-			if("ROLE_MANAGER".equals(mappingGroupesRoles.get(group))) {
+			if("ROLE_SUPER_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_MANAGER".equals(mappingGroupesRoles.get(group))) {
 				groups.add(group);
 			}
 		}		
