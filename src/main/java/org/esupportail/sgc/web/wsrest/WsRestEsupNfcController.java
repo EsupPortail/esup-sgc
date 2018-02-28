@@ -143,10 +143,10 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public List<String> getLocationsUpdater(@RequestParam String eppn) {
 		List<String> locations = new ArrayList<String>();
-		List<String> livreurGroups = shibAuthenticatedUserDetailsService.getUpdaterGroups();
+		List<String> managerGroups = shibAuthenticatedUserDetailsService.getUpdaterGroups();
 		List<String> userGroups = groupService.getGroupsForEppn(eppn);
-		for(String livreurGroup : livreurGroups) {
-			if(userGroups.contains(livreurGroup)) {
+		for(String managerGroup : managerGroups) {
+			if(userGroups.contains(managerGroup)) {
 				locations.add(EsupNfcTagLog.SALLE_UPDATE);
 				break;
 			}
@@ -159,10 +159,10 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public List<String> getLocationsVerso(@RequestParam String eppn) {
 		List<String> locations = new ArrayList<String>();
-		List<String> livreurGroups = shibAuthenticatedUserDetailsService.getUpdaterGroups();
+		List<String> managerGroups = shibAuthenticatedUserDetailsService.getConsultManagerGroups();
 		List<String> userGroups = groupService.getGroupsForEppn(eppn);
-		for(String livreurGroup : livreurGroups) {
-			if(userGroups.contains(livreurGroup)) {
+		for(String managerGroup : managerGroups) {
+			if(userGroups.contains(managerGroup)) {
 				locations.add(EsupNfcTagLog.VERSO_CARTE);
 				break;
 			}
