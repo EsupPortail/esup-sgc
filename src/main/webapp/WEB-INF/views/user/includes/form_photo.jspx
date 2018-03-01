@@ -3,7 +3,6 @@
 <spring:url value="/user/photo/${id}" var="rejectedPhotoUrl" />
 <fieldset class="scheduler-border">
 	<legend class="scheduler-border">Photo</legend>
-	
 	<div id="image-cropper">
 	    <div class="col-lg-6">
 	  		<div class="col-lg-5">
@@ -18,28 +17,29 @@
 				<div class="cropit-preview"
 					id="cropit-preview">&amp;nbsp</div>
 				<hr />
-			<div id="webCam">
-				<input type="button" class="btn btn-primary" value="Capturer" id="snapShot" />&amp;nbsp
-				<button  type="button" class="btn btn-default" id="retryWebcam">Effacer</button>
-				<div id="my_camera">&amp;nbsp</div>
-			</div>
-			</div>
-			<div class="cropit-info well alert alert-info col-lg-7">
-				<input type="file" class="cropit-image-input" />
-				<span class="bg-warning">Vous pouvez également glisser-déposer l'image</span>
-				<p class="msgPhoto">Pour enregistrer votre demande de Léocarte, vous devez choisir une photo.</p>
-				
 				<p class="text-muted">Zoom :</p>
 					<input type="range" class="cropit-image-zoom-input" />
 				<br />
 				<p class="text-muted">Rotation :
 					<button class="rotate-ccw" type="button"><span class="glyphicon glyphicon-repeat icon-flipped" aria-hidden="true"></span></button>
                     <button class="rotate-cw"  type="button"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></button>		
-				</p>
+				</p>	
+			</div>
+			<div class="cropit-info well alert alert-info col-lg-7">
+				<c:if test="${deviceType eq 'COMPUTER'}">
+					<div id="webCam">
+						<div id="my_camera">&amp;nbsp</div>
+						<input type="button" class="btn btn-primary" value="Capturer" id="snapShot" />&amp;nbsp
+						<button  type="button" class="btn btn-default" id="retryWebcam">Effacer</button>
+					</div>
+				</c:if>
+				<input type="file" class="cropit-image-input" />
+				<span class="bg-warning">Vous pouvez également glisser-déposer l'image</span>
+				<p class="msgPhoto">Pour enregistrer votre demande de Léocarte, vous devez choisir une photo.</p>
 			</div>
 			<div class="form-group">
-				<button type="button" class="preview btn btn-warning" data-toggle="modal" data-target="#previewCarte">
-					Prévisualiser
+				<button type="button" class="preview btn btn-danger" data-toggle="modal" data-target="#previewCarte">
+					<strong>Prévisualiser</strong>
 				</button>
 			</div>
 			<div class="col-lg-12 alert alert-danger" id="alertPreview">

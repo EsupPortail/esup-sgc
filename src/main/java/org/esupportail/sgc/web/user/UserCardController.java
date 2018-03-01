@@ -181,6 +181,9 @@ public class UserCardController {
 		if(!user.getCards().isEmpty()){
 			id = user.getCards().get(0).getId();
 		}
+		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
+		
+		uiModel.addAttribute("deviceType", userAgentUtils.getOperatingSystem().getDeviceType());
 		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user.getEppn()));
 		uiModel.addAttribute("configUserMsgs", getConfigMsgsUser());
 		uiModel.addAttribute("lastId", id);
