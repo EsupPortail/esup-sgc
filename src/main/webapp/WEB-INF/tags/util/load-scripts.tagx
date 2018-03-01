@@ -29,6 +29,7 @@
 	<spring:url value="/resources/js/exif.js" var="exif_js_url" />
 	<spring:url value="/resources/js/dragula.min.js" var="dragula_js_url" />
 	<spring:url value="/resources/js/bootstrap-select.min.js" var="select_url" />
+	<spring:url value="/resources/js/webcam.min.js" var="webcam_url" />
 	<spring:url value="/resources/js/esup-sgc.js" var="esupSgc_js_url" />
 	<spring:url value="/resources/images/favicon.png" var="favicon" />
 	
@@ -66,6 +67,7 @@
 	<script src="${dragula_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${exif_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${select_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${webcam_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esupSgc_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	
 	

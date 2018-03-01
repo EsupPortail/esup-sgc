@@ -442,4 +442,13 @@ span.icon-flipped{
 }
 #templateCardsList .popTemplate{
 	max-width: 400px;
-}​
+}
+#my_camera{
+ width: 320px;
+ height: 240px;
+ border: 1px solid black;
+ margin: 10px 0;
+}
+#webCam{
+	display: none;
+}

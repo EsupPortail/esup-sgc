@@ -18,6 +18,17 @@ window.alert = function(message, title) {
     $("#bootstrap-alert-box-modal").modal('show');
 };
 
+//Webcam
+function set_webcam() {
+	    Webcam.set({
+	  	  width: 320,
+	  	  height: 240,
+	  	  image_format: 'jpeg',
+	  	  jpeg_quality: 90
+	  	 });
+	  	 Webcam.attach( 'my_camera' );
+}
+	
 //autocomplete eppn
 
 function searchEppnAtuocomplete(id) {
@@ -1302,5 +1313,30 @@ $(document).ready(function() {
         	return false
         }
     });
+    
+    //Si webcam détectée, la partie webcam est affichée
+	Webcam.on( 'error', function(err) {
+		$("#webCam").remove();
+	} );
+    var camera = $("#my_camera").val();
+    if(typeof camera != "undefined"){
+		Webcam.on( 'live', function() {
+			// camera is live, showing preview image
+			// (and user has allowed access)
+			$("#webCam").show();
+		} );
+	    set_webcam();
+	    $("#retryWebcam").on("click", function() {
+	    	set_webcam();
+	    	$(".cropit-preview-image").removeAttr('src');
+	    	imageCropper.cropit('imageSrc', null);
+	    });
+	    
+	    $("#snapShot").on("click", function() {
+	   	 Webcam.snap( function(data_uri) {
+	   		imageCropper.cropit('imageSrc', data_uri);
+	   		imageCropper.cropit('minZoom', 'fill');
+	   	 } );
+	    })
+    }
 });
-	

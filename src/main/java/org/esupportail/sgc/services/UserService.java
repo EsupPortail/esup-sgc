@@ -83,7 +83,7 @@ public class UserService {
 		if(user != null && user.hasExternalCard()) {
 			return false;
 		}
-		return !isOutOfDueDate(eppn) && !isFreeRenewal(eppn) && !isPaidRenewal(eppn);
+		return !isOutOfDueDate(eppn) && !user.isRequestFree() && !isPaidRenewal(eppn) && !hasRequestCard(eppn);
 	}
 	
 	private boolean isOutOfDueDate(String eppn) {

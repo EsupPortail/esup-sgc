@@ -3,6 +3,7 @@
 <spring:url value="/user/photo/${id}" var="rejectedPhotoUrl" />
 <fieldset class="scheduler-border">
 	<legend class="scheduler-border">Photo</legend>
+	
 	<div id="image-cropper">
 	    <div class="col-lg-6">
 	  		<div class="col-lg-5">
@@ -17,6 +18,11 @@
 				<div class="cropit-preview"
 					id="cropit-preview">&amp;nbsp</div>
 				<hr />
+			<div id="webCam">
+				<input type="button" class="btn btn-primary" value="Capturer" id="snapShot" />&amp;nbsp
+				<button  type="button" class="btn btn-default" id="retryWebcam">Effacer</button>
+				<div id="my_camera">&amp;nbsp</div>
+			</div>
 			</div>
 			<div class="cropit-info well alert alert-info col-lg-7">
 				<input type="file" class="cropit-image-input" />
@@ -66,5 +72,6 @@
 			</div>
 		</div>
 	</div>
+	
 </fieldset>
 </div>
