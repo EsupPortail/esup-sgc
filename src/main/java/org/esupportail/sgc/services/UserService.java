@@ -23,6 +23,9 @@ public class UserService {
 	@Resource
 	ExtUserRuleService extUserRuleService;
 	
+	@Resource
+	AppliConfigService appliConfigService;	
+	
 	public boolean isFirstRequest(String eppn){
 		return Card.countfindCardsByEppnEqualsAndEtatNotIn(eppn, Arrays.asList(new Etat[] {Etat.CANCELED})) == 0;
 	}
@@ -89,6 +92,12 @@ public class UserService {
 	}
 	
 	public boolean hasDeliveredCard(String eppn){
+		
+		// si mode livraison non activée, on considère la carte comme livrée
+		if(!"TRUE".equalsIgnoreCase(appliConfigService.getModeLivraison())) {
+			return true;
+		}
+		
 		boolean hasDeliveredCard = true;
 		User user = User.findUsersByEppnEquals(eppn).getSingleResult();
 		if (!user.getCards().isEmpty()){
