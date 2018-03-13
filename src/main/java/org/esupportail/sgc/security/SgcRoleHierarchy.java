@@ -2,7 +2,8 @@ package org.esupportail.sgc.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,12 @@ public class SgcRoleHierarchy implements RoleHierarchy {
             return AuthorityUtils.NO_AUTHORITIES;
         }
 
-		List<GrantedAuthority> reachableRoles = new ArrayList<GrantedAuthority>();
+		Set<GrantedAuthority> reachableRoles = new HashSet<GrantedAuthority>();
 
-		 if (authorities.contains(new SimpleGrantedAuthority("ROLE_SUPER_MANAGER"))) {
+		 if (authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+			 reachableRoles.add(new SimpleGrantedAuthority("ROLE_SUPER_MANAGER"));
+			 reachableRoles.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
+		 } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_SUPER_MANAGER"))) {
 			 reachableRoles.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
 		 } else {
 	        for (GrantedAuthority authority : authorities) {
@@ -47,7 +51,7 @@ public class SgcRoleHierarchy implements RoleHierarchy {
                     + " one can reach " + reachableRoles);
         }
 
-        return reachableRoles;
+        return new ArrayList<GrantedAuthority>(reachableRoles);
 	}
 
 }

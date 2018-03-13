@@ -2,23 +2,31 @@ package org.esupportail.sgc.services;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.svggen.SVGGraphics2DIOException;
+import org.apache.commons.codec.binary.Base64;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
-import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.services.LogService.ACTION;
+import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.Params;
 import org.slf4j.Logger;
@@ -33,6 +41,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
+import eu.bitwalker.useragentutils.UserAgent;
 
 
 @Service
@@ -53,7 +63,13 @@ public class CardService {
 	protected AppliConfigService appliConfigService;	
 	
 	@Resource
+	CardIdsService cardIdsService;
+	
+	@Resource
 	LogService logService;
+	
+	@Resource
+	CardService cardService;
 	
 	public Card findLastCardByEppnEquals(String eppn) {
 		Card lastCard = null;
@@ -224,5 +240,74 @@ public class CardService {
 		return svgWriter.toString();
 	}
 	
+	public boolean registerCard(Card card, String userAgent, String eppn, HttpServletRequest request){
+		
+		boolean emptyPhoto = false;
+		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
+		String navigateur = userAgentUtils.getBrowser().getName();
+		String systeme = userAgentUtils.getOperatingSystem().getName();
 
+		// TODO : use cardEtatService.setCardEtat !
+		card.setEppn(eppn);
+		card.setRequestDate(new Date());
+		card.setRequestBrowser(navigateur);
+		card.setRequestOs(systeme);
+		cardIdsService.generateQrcode4Card(card);
+
+		if (card.getPhotoFile().getImageData().isEmpty()) {
+			emptyPhoto = true;
+			log.info("Aucun fichier sélectionné");
+		} else {
+			String encoding = cardService.getPhotoParams().get("encoding");
+			int contentStartIndex = card.getPhotoFile().getImageData().indexOf(encoding) + encoding.length();
+			byte[] bytes = Base64.decodeBase64(card.getPhotoFile().getImageData().substring(contentStartIndex));  
+			String filename = eppn.concat(cardService.getPhotoParams().get("extension"));
+			Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
+			String contentType = cardService.getPhotoParams().get("contentType");
+			log.info("Try to upload file '" + filename + "' with size=" + fileSize + " and contentType=" + contentType);
+			card.getPhotoFile().setFilename(filename);
+			card.getPhotoFile().setContentType(contentType);
+			card.getPhotoFile().setFileSize(fileSize);
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+			log.info("Upload and set file in DB with filesize = " + fileSize);
+			card.getPhotoFile().getBigFile().setBinaryFileStream(inputStream, fileSize);
+			Calendar cal = Calendar.getInstance();
+			Date currentTime = cal.getTime();
+			card.getPhotoFile().setSendTime(currentTime);
+			if(card.getId() !=null){
+				card.setNbRejets(card.findCard(card.getId()).getNbRejets());
+				card.merge();
+			} else {
+				card.setNbRejets(Long.valueOf(0));
+				card.persist();
+			}
+			
+			User user = User.findUser(eppn);
+			card.setUserAccount(user);
+			card.setDueDate(user.getDueDate());
+			if(card.getCrousTransient()!=null && card.getCrousTransient()) {
+				user.setCrous(true);
+				userInfoService.setAdditionalsInfo(user, request);
+			}
+			if(card.getEuropeanTransient()!=null && card.getEuropeanTransient()) {
+				user.setEuropeanStudentCard(true);
+				userInfoService.setAdditionalsInfo(user, request);
+			}
+			if(card.getDifPhotoTransient() != null) {
+				user.setDifPhoto(card.getDifPhotoTransient());
+			}
+			String reference = cardService.getPaymentWithoutCard(eppn);
+			if(!reference.isEmpty()){
+				card.setPayCmdNum(reference);
+			}
+			user.merge();
+			card.merge();
+			logService.log(card.getId(), ACTION.DEMANDE, RETCODE.SUCCESS, "", eppn, null);
+			log.info("Succès de la demande de carte pour l'utilisateur " +  eppn);
+			
+			// TODO : use cardEtatService.setCardEtat !
+			cardEtatService.sendMailInfo(null, Etat.NEW, user, null, false);
+		}
+		return emptyPhoto;
+	}
 }

@@ -1,11 +1,9 @@
 package org.esupportail.sgc.web.user;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
@@ -321,71 +318,12 @@ public class UserCardController {
 			if(userService.isFirstRequest(eppn) || userService.isFreeRenewal(eppn) ||  userService.isPaidRenewal(eppn) || cardEtatService.hasRejectedCard(eppn)) {
 			
 				if(!cardEtatService.hasNewCard(eppn)){
-					UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
-					String navigateur = userAgentUtils.getBrowser().getName();
-					String systeme = userAgentUtils.getOperatingSystem().getName();
-			
-					// TODO : use cardEtatService.setCardEtat !
-					card.setEppn(eppn);
-					card.setRequestDate(new Date());
-					card.setRequestBrowser(navigateur);
-					card.setRequestOs(systeme);
-					cardIdsService.generateQrcode4Card(card);
-			
-					if (card.getPhotoFile().getImageData().isEmpty()) {
-						log.info("Aucun fichier sélectionné");
+					
+					boolean emptyPhoto = cardService.registerCard(card, userAgent, eppn, request);
+					
+					if(emptyPhoto){
 						redirectAttributes.addFlashAttribute("messageInfo", WARNING_MSG + "leocarte_emptyfile");
-					} else {
-						String encoding = cardService.getPhotoParams().get("encoding");
-						int contentStartIndex = card.getPhotoFile().getImageData().indexOf(encoding) + encoding.length();
-						byte[] bytes = Base64.decodeBase64(card.getPhotoFile().getImageData().substring(contentStartIndex));  
-						String filename = eppn.concat(cardService.getPhotoParams().get("extension"));
-						Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
-						String contentType = cardService.getPhotoParams().get("contentType");
-						log.info("Try to upload file '" + filename + "' with size=" + fileSize + " and contentType=" + contentType);
-						card.getPhotoFile().setFilename(filename);
-						card.getPhotoFile().setContentType(contentType);
-						card.getPhotoFile().setFileSize(fileSize);
-						ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-						log.info("Upload and set file in DB with filesize = " + fileSize);
-						card.getPhotoFile().getBigFile().setBinaryFileStream(inputStream, fileSize);
-						Calendar cal = Calendar.getInstance();
-						Date currentTime = cal.getTime();
-						card.getPhotoFile().setSendTime(currentTime);
-						if(card.getId() !=null){
-							card.setNbRejets(card.findCard(card.getId()).getNbRejets());
-							card.merge();
-						} else {
-							card.setNbRejets(Long.valueOf(0));
-							card.persist();
-						}
-						
-						User user = User.findUser(eppn);
-						card.setUserAccount(user);
-						card.setDueDate(user.getDueDate());
-						if(card.getCrousTransient()!=null && card.getCrousTransient()) {
-							user.setCrous(true);
-							userInfoService.setAdditionalsInfo(user, request);
-						}
-						if(card.getEuropeanTransient()!=null && card.getEuropeanTransient()) {
-							user.setEuropeanStudentCard(true);
-							userInfoService.setAdditionalsInfo(user, request);
-						}
-						if(card.getDifPhotoTransient() != null) {
-							user.setDifPhoto(card.getDifPhotoTransient());
-						}
-						String reference = cardService.getPaymentWithoutCard(eppn);
-						if(!reference.isEmpty()){
-							card.setPayCmdNum(reference);
-						}
-						user.merge();
-						card.merge();
-						logService.log(card.getId(), ACTION.DEMANDE, RETCODE.SUCCESS, "", eppn, null);
-						log.info("Succès de la demande de carte pour l'utilisateur " +  eppn);
-						
-						// TODO : use cardEtatService.setCardEtat !
-						cardEtatService.sendMailInfo(null, Etat.NEW, user, null, false);
-						
+					}else{
 						redirectAttributes.addFlashAttribute("messageSuccess", "success_leocarte_upload");
 					}
 				}
