@@ -61,6 +61,8 @@
 								<dd>La date de fin de droits de l'individu a été dépassée, alors que la demande de carte
 								n'avait pas été traitée (elle était dans l'état <spring:message code="card.step.NEW"/>), la demande a donc été annulée automatiquement.
 								L'utilisateur pourra refaire une nouvelle demande si sa date de fin de droits redevient postérieure à la date du jour.</dd>
+								<dt><spring:message code="card.step.RENEWED"/></dt>
+								<dd>Correspond à une demande de carte renouvelée à partir d'une carte activée. Elle correspond à l'état 'Demande effectuée' dans le workflow mais on précise que c'est un renouvellement.</dd>
 							</dl>
 						</div>
 						<div class="col-lg-6">

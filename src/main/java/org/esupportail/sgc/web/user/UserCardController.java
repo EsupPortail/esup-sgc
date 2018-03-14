@@ -319,7 +319,7 @@ public class UserCardController {
 			
 				if(!cardEtatService.hasNewCard(eppn)){
 					
-					boolean emptyPhoto = cardService.registerCard(card, userAgent, eppn, request);
+					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request);
 					
 					if(emptyPhoto){
 						redirectAttributes.addFlashAttribute("messageInfo", WARNING_MSG + "leocarte_emptyfile");

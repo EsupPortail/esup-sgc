@@ -160,6 +160,9 @@
                                                     <span class="etat">
                                                         <spring:message code="card.step.${card.etat}"/> - <fmt:formatDate pattern="dd/MM/yyyy" value="${card.dateEtat}"/>
                                                     </span>
+                                                    <c:if test="${card.external}">
+                                                    	- Carte extérieure ! 
+                                                    </c:if>
                                                 </a>
                                             </h5>
                                         </div>

@@ -16,7 +16,6 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CardActionMessage;
-import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
@@ -35,26 +34,23 @@ public class CardEtatService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private final static List<Etat> etatsEncoded = Arrays.asList(new Etat[] {Etat.ENCODED, Etat.ENABLED, Etat.DISABLED, Etat.CADUC}); 
+	public final static List<Etat> etatsEncoded = Arrays.asList(new Etat[] {Etat.ENCODED, Etat.ENABLED, Etat.DISABLED, Etat.CADUC}); 
 	
-	private final static List<Etat> etatsWithMessages = Arrays.asList(new Etat[] {Etat.NEW, Etat.ENABLED, Etat.REJECTED, Etat.DISABLED, Etat.CADUC}); 
-
-	private final static List<Etat> etatsActifs = Arrays.asList(new Etat[] {Etat.NEW, Etat.REQUEST_CHECKED, Etat.PRINTED, Etat.IN_ENCODE, Etat.ENCODED, Etat.ENABLED});
+	private final static List<Etat> etatsRequest = Arrays.asList(new Etat[] {Etat.NEW, Etat.RENEWED, Etat.REQUEST_CHECKED, Etat.REJECTED, Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.ENCODED});
 	
-	private final static List<Etat> etatsRequest = Arrays.asList(new Etat[] {Etat.NEW, Etat.REQUEST_CHECKED, Etat.REJECTED, Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.ENCODED});
-	
-	private final static List<Etat> etatsPhotoEditable = Arrays.asList(new Etat[] {Etat.NEW, Etat.REQUEST_CHECKED, Etat.IN_PRINT}); 
+	private final static List<Etat> etatsPhotoEditable = Arrays.asList(new Etat[] {Etat.NEW, Etat.RENEWED, Etat.REQUEST_CHECKED, Etat.IN_PRINT}); 
 	
 	private final static Map<Etat, List<Etat>> workflow = new HashMap<Etat, List<Etat>>();
 	static {
 		workflow.put(Etat.NEW, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED})); // NEW -> CANCELED is not an action made via the gui
+		workflow.put(Etat.RENEWED, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED}));
 		workflow.put(Etat.REQUEST_CHECKED, Arrays.asList(new Etat[]{Etat.IN_PRINT}));
 		workflow.put(Etat.IN_PRINT, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED, Etat.IN_PRINT, Etat.PRINTED}));
 		// workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{Etat.IN_ENCODE}));
 		workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{}));
 		workflow.put(Etat.IN_ENCODE, Arrays.asList(new Etat[]{Etat.PRINTED})); // IN_ENCODE -> ENCODED is not an action made via the gui
 		workflow.put(Etat.ENCODED, Arrays.asList(new Etat[]{Etat.ENABLED}));
-		workflow.put(Etat.ENABLED, Arrays.asList(new Etat[]{Etat.DISABLED}));
+		workflow.put(Etat.ENABLED, Arrays.asList(new Etat[]{Etat.DISABLED, Etat.RENEWED}));
 		workflow.put(Etat.DISABLED, Arrays.asList(new Etat[]{Etat.ENABLED, Etat.DESTROYED}));
 		workflow.put(Etat.CADUC, Arrays.asList(new Etat[]{Etat.DESTROYED})); // CADUC -> DISABLED is not an action made via the gui
 		workflow.put(Etat.REJECTED, Arrays.asList(new Etat[]{})); 
@@ -112,7 +108,7 @@ public class CardEtatService {
 		}
 		
 		updateEtatsAvailable4Card(card);
-		if(!card.getEtatsAvailable().contains(etat) && !force) {
+		if(!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat)) {
 			return false;
 		}
 		
@@ -193,7 +189,7 @@ public class CardEtatService {
 				card.setEtatsAvailable(new ArrayList<Etat>());
 			}
 		}
-		if(Etat.NEW.equals(card.getEtat()) && card.getUser()!=null && !card.getUser().isEditable()) {
+		if((Etat.NEW.equals(card.getEtat()) || Etat.RENEWED.equals(card.getEtat())) && card.getUser()!=null && !card.getUser().isEditable()) {
 			List<Etat> etatsAvailable = new ArrayList<Etat>(card.getEtatsAvailable());
 			etatsAvailable.remove(Etat.REQUEST_CHECKED);
 			card.setEtatsAvailable(etatsAvailable);
@@ -209,10 +205,6 @@ public class CardEtatService {
 			etatsAvailable.retainAll(new HashSet<Etat>(card.getEtatsAvailable()));
 		}
 		return new ArrayList<Etat>(etatsAvailable);
-	}
-
-	public boolean hasActiveCard(String eppn) {
-		return Card.countfindCardsByEppnEqualsAndEtatIn(eppn, etatsActifs)>0;
 	}
 
 	public boolean hasRequestCard(String eppn) {
@@ -367,31 +359,12 @@ public class CardEtatService {
 		return validateServicesNames;
 	}
 	
-	public boolean areCardsReadyToBeDelivered(List<Long> cardIds){
-		boolean areOk = true;
-	
-		if(Card.selectIdforDelivery().size()>0){
-			List<BigInteger> idListNotDelivered=Card.selectIdforDelivery();
-			for(Long id : cardIds){
-				if(!idListNotDelivered.contains(new BigInteger(String.valueOf(id)))){
-					areOk = false;break;
-				}
-			}
-		}
-		return areOk;
+	public Boolean areCardsReadyToBeDelivered(List<Long> cardIds){
+		return Card.areCardsReadyToBeDelivered(cardIds);
 	}
 	
-	public boolean areCardsReadyToBeValidated(List<Long> cardIds){
-		boolean areOk = true;
-		if(Card.selectIdforValidation().size()>0){
-			List<BigInteger> idListForValidation=Card.selectIdforValidation();
-			for(Long id : cardIds){
-				if(!idListForValidation.contains(new BigInteger(String.valueOf(id)))){
-					areOk = false;break;
-				}
-			}
-		}
-		return areOk;
+	public Boolean areCardsReadyToBeValidated(List<Long> cardIds){
+		return Card.areCardsReadyToBeValidated(cardIds);
 	}
 }
 

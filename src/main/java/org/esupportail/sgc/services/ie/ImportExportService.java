@@ -18,8 +18,8 @@ import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.supercsv.cellprocessor.ConvertNullTo;
 import org.supercsv.cellprocessor.FmtDate;
@@ -35,6 +35,8 @@ public class ImportExportService {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public final static String processorsDateType[] = new String[]{"requestDate", "dateEtat", "deliveredDate"};
+	
+	private Boolean inWorking = false; 
 
 	@Resource
 	ImportExportCardService importExportCardService;
@@ -42,7 +44,14 @@ public class ImportExportService {
 	@Resource
 	MessageSource messageSource;
 
-	public void consumeCsv(InputStream stream, Boolean inverseCsn) {
+	public Boolean isInWorking() {
+		return inWorking;
+	}
+
+
+	@Async
+	public synchronized void consumeCsv(InputStream stream, Boolean inverseCsn) {
+		inWorking = true;
 		try {
 			List<String> csvList = IOUtils.readLines(stream);
 
@@ -64,6 +73,8 @@ public class ImportExportService {
 
 		} catch (IOException e) {
 			throw new SgcRuntimeException("Error during parsing csv", e);
+		} finally {
+			inWorking = false;
 		}
 	}
 

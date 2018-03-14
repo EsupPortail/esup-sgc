@@ -339,8 +339,11 @@ h2 .btn{
 .label-encoded, .label-out_of_order{
 	 background-color: #777;
 }
-.label-new{
+.label-new, .label-renewed{
 	 background-color: #f0ad4e;
+}
+.label-renewed{
+	border : 1px dashed black;
 }
 .label-in_print{
 	 background-color: #becc00;
@@ -452,4 +455,8 @@ span.icon-flipped{
 #webCam{
 	display: none;
 	margin-bottom: 10px;
+}
+#RENEWEDForm .btn-success{
+	background-color: #31b0d5;
+	border-color: #269abc;
 }

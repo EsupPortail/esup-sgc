@@ -21,9 +21,10 @@ import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.apache.commons.codec.binary.Base64;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.PayboxTransactionLog;
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.PayboxTransactionLog;
+import org.esupportail.sgc.domain.PhotoFile;
+import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.cardid.CardIdsService;
@@ -32,6 +33,7 @@ import org.esupportail.sgc.tools.Params;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
@@ -240,14 +242,14 @@ public class CardService {
 		return svgWriter.toString();
 	}
 	
-	public boolean registerCard(Card card, String userAgent, String eppn, HttpServletRequest request){
-		
+	@Transactional
+	public boolean requestNewCard(Card card, String userAgent, String eppn, HttpServletRequest request){
+
 		boolean emptyPhoto = false;
 		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
 		String navigateur = userAgentUtils.getBrowser().getName();
 		String systeme = userAgentUtils.getOperatingSystem().getName();
 
-		// TODO : use cardEtatService.setCardEtat !
 		card.setEppn(eppn);
 		card.setRequestDate(new Date());
 		card.setRequestBrowser(navigateur);
@@ -276,12 +278,10 @@ public class CardService {
 			card.getPhotoFile().setSendTime(currentTime);
 			if(card.getId() !=null){
 				card.setNbRejets(card.findCard(card.getId()).getNbRejets());
-				card.merge();
 			} else {
 				card.setNbRejets(Long.valueOf(0));
-				card.persist();
 			}
-			
+
 			User user = User.findUser(eppn);
 			card.setUserAccount(user);
 			card.setDueDate(user.getDueDate());
@@ -300,14 +300,49 @@ public class CardService {
 			if(!reference.isEmpty()){
 				card.setPayCmdNum(reference);
 			}
+			if(card.getId() ==null) {
+				card.persist();
+			}
 			user.merge();
-			card.merge();
-			logService.log(card.getId(), ACTION.DEMANDE, RETCODE.SUCCESS, "", eppn, null);
-			log.info("Succès de la demande de carte pour l'utilisateur " +  eppn);
-			
-			// TODO : use cardEtatService.setCardEtat !
-			cardEtatService.sendMailInfo(null, Etat.NEW, user, null, false);
+			String messageLog = "Succès de la demande de carte pour l'utilisateur " +  eppn;
+			log.info(messageLog);
+
+			cardEtatService.setCardEtat(card, Etat.NEW, messageLog, null, false, false);
 		}
+
 		return emptyPhoto;
+	}
+
+	@Transactional
+	public Card requestRenewalCard(Card card){
+
+		Calendar cal = Calendar.getInstance();
+		Date currentTime = cal.getTime();
+		Card copyCard = new Card();
+		copyCard.setEppn(card.getEppn());
+		copyCard.setRequestDate(new Date());
+		copyCard.setRequestBrowser(card.getRequestBrowser());
+		copyCard.setRequestOs(card.getRequestOs());
+		cardIdsService.generateQrcode4Card(copyCard);
+		PhotoFile photoFile = new PhotoFile();
+		photoFile.setFilename(card.getPhotoFile().getFilename());
+		photoFile.setContentType(card.getPhotoFile().getContentType());
+		photoFile.setFileSize(card.getPhotoFile().getFileSize());
+		photoFile.setBigFile(card.getPhotoFile().getBigFile());
+		photoFile.getBigFile().setBinaryFile(card.getPhotoFile().getBigFile().getBinaryFile());
+		photoFile.setSendTime(currentTime);
+		copyCard.setPhotoFile(photoFile);
+		copyCard.setNbRejets(card.getNbRejets());
+		User user = User.findUser(card.getEppn());
+		copyCard.setUserAccount(user);
+		copyCard.setDueDate(user.getDueDate());
+		String messageLog = "Demande de renouvellement de carte pour :  " + card.getEppn() + " effectuée.";
+		cardEtatService.setCardEtat(copyCard, Etat.RENEWED, messageLog, null, false, false);
+		copyCard.persist();
+		user.merge(); // utile notamment car on modifie le nb de cartes via @PostConstruct de Card
+		log.info(messageLog);
+		
+
+		return copyCard;
 	}
 }

@@ -26,21 +26,26 @@ public class CrousSmartCardController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	@Resource
+	AppliConfigService appliConfigService;
+	
+	@Resource
+	CrousSmartCardService crousSmartCardService;
+	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "crous";
 	}   
-	
-	@Resource
-	AppliConfigService appliConfigService;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
 		return appliConfigService.getHelpAdmin();
 	}
 	
-	@Resource
-	CrousSmartCardService crousSmartCardService;
+	@ModelAttribute("isInWorking")
+	public Boolean isInWorking() {
+		return crousSmartCardService.isInWorking();
+	}
 	
 	@RequestMapping(value = "/addCrousCsvFile", method = RequestMethod.POST, produces = "text/html")
 	public String addCrousCsvFile(MultipartFile file, @RequestParam(defaultValue="False") Boolean inverseCsn) throws IOException, ParseException {

@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +20,7 @@ import org.esupportail.sgc.services.ie.ImportExportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,22 +57,21 @@ public class ImportExportController {
 	ImportExportService importExportService;
 	
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
-	public String index() {
+	public String index(Model uiModel) {
+		uiModel.addAttribute("isInWorking", importExportService.isInWorking());
 		return "admin/import";
 	}
 	
 	
 	@RequestMapping(value = "/importCsvFile", method = RequestMethod.POST, produces = "text/html")
 	public String importCsvFile(MultipartFile file, @RequestParam(defaultValue="False") Boolean inverseCsn) throws IOException, ParseException {
-		
 		if(file != null) {
 			String filename = file.getOriginalFilename();
 			log.info("CrousSmartCardController retrieving file " + filename);
 			InputStream stream = new  ByteArrayInputStream(file.getBytes());
 			importExportService.consumeCsv(stream, inverseCsn);
 		}
-
-		return "redirect:/manager";
+		return "redirect:/admin/import";
 	}
 
 	@RequestMapping(value = "/exportCsvFile/{stats}", method = RequestMethod.GET)

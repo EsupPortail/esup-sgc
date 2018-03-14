@@ -27,6 +27,15 @@
 			return confirm("Confirmer cette action de changement d'état");
 		}
 	});
+	
+    //Confirmation lors du renouvellement de carte
+    $("#RENEWEDForm").on("submit",function() {
+        if (confirm("Confirmer l'action de renouvellement")) {
+           return true;
+        }else{
+        	return false
+        }
+    });
 	</script>
 	<spring:url value="/manager/multiUpdate" var="etatActionUrl" />
 	<c:if test="${not empty cardIds}">

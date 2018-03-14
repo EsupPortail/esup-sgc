@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,10 +20,17 @@ public class CrousSmartCardService {
 	
 	SimpleDateFormat csvDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	
+	private Boolean inWorking = false; 
+	
 	@Resource
 	CrousSmartCardEntryService crousSmartCardEntryService;
 	
 
+	public Boolean isInWorking() {
+		return inWorking;
+	}
+
+	
 	/*
 	 * 
 	PIX.SS;
@@ -38,7 +46,9 @@ public class CrousSmartCardService {
 	NUM_CARTE;
 	DATE_CREATION
 	 */
-	public void consumeCsv(InputStream stream, Boolean inverseCsn) throws IOException {
+	@Async
+	public synchronized void consumeCsv(InputStream stream, Boolean inverseCsn) throws IOException {
+		inWorking = true;
 		BufferedReader in = new BufferedReader(new InputStreamReader(stream));
 		String line;
 		int i = 0;
@@ -52,6 +62,7 @@ public class CrousSmartCardService {
 			}
 		}
 		log.info(i + " crous smartcards imported" );
+		inWorking = false;
 	}
 
 }

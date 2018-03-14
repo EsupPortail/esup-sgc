@@ -32,58 +32,55 @@ import org.springframework.transaction.annotation.Transactional;
 public class ImportExportCardService {
 
 	private final static Logger log = LoggerFactory.getLogger(ImportExportCardService.class);
-	
+
 	static DateFormat importDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-	
+
 	static final String DEFAULT_PHOTO = "media/nophoto.png";
-	
-	static final public String DEFAULT_PHOTO_MIME_TYPE = "image/png";
-	
+
+	static final public String DEFAULT_PHOTO_MIME_TYPE = "image/jpg";
+
+	static final public String PHOTO_DIRECTORY_IMPORT = "/opt/photos-import/";
+
 	@Resource
 	CardEtatService cardEtatService;
-	
+
 	@Resource
 	UserInfoService userInfoService;
-	
+
 	private static byte[] noImgPhoto = null;
 
-	
+
 	public boolean importCsvLine(String csv, Boolean inverseCsn) throws IOException {
 
 		String[] fields = csv.split(";");
-		
-		Boolean valid = "Valide".equals(fields[0]);
-		if(!valid) {
-			return false;
-		}
-		
+
 		String eppn = null;
-		
-		if(fields.length>19) {
-			eppn = fields[19];
+
+		if(fields.length>5) {
+			eppn = fields[5];
 		}
 		if(eppn != null && User.findUser(eppn) != null) {
 			log.info(eppn + " exists already ?");
 			//return false;
 		}
-		
+
 		Date printedDate = null;
 		Date lastModificationDate = null;
 
-		if(!fields[2].isEmpty()) {
-			printedDate = parseDate(fields[2]);
+		if(!fields[0].isEmpty()) {
+			printedDate = parseDate(fields[0]);
 		}
-		if(!fields[3].isEmpty()) {
-			lastModificationDate = parseDate(fields[3]);
+		if(!fields[1].isEmpty()) {
+			lastModificationDate = parseDate(fields[1]);
 		}
-		
-		String csn = fields[14].toUpperCase();
+
+		String csn = fields[2].toUpperCase();
 		if(inverseCsn) {
 			csn = HexStringUtils.swapPairs(csn); 
 		}
-		
-		Boolean crous = "Autorisée".equals(fields[16]);
-		String desfireId = fields[18];
+
+		Boolean crous = "Autorisée".equals(fields[3]);
+		String desfireId = fields[4];
 
 		if(eppn != null) {
 			User user = User.findUser(eppn);
@@ -108,66 +105,24 @@ public class ImportExportCardService {
 			card.setDateEtat(lastModificationDate);
 			userInfoService.setAdditionalsInfo(user, null);
 			// TODO : name  == null === non connu dans le ldap
-			if(valid && user.getName() != null) {
+			String photoFileNameFound = "";
+			if(user.getName() != null) {
 				byte[] bytes = loadNoImgPhoto();
-				String photoFileName = DEFAULT_PHOTO;
-				try{
-					if(CnousReferenceStatut.prs.equals(user.getCnousReferenceStatut())) {
-						photoFileName = user.getSupannEmpId();
-						photoFileName = StringUtils.leftPad(photoFileName, 8, "0");
-						bytes = loadPhoto("file:///opt/easy-id-import/UR/Personnel/" + photoFileName + ".jpg");
-					} else if(CnousReferenceStatut.etd.equals(user.getCnousReferenceStatut()) || 
-							CnousReferenceStatut.fpa.equals(user.getCnousReferenceStatut()) || 
-							CnousReferenceStatut.fct.equals(user.getCnousReferenceStatut())) {
-						photoFileName = user.getSupannEtuId();
-						photoFileName = StringUtils.leftPad(photoFileName, 8, "0");
-						bytes = loadPhoto("file:///opt/easy-id-import/UR/Etudiant/" + photoFileName + ".jpg");
-					} else if(CnousReferenceStatut.hbg.equals(user.getCnousReferenceStatut())) {
-						photoFileName = user.getSupannEmpId();
-						photoFileName = StringUtils.leftPad(photoFileName, 8, "0");
-						bytes = loadPhoto("file:///opt/easy-id-import/UR/Heberge/" + photoFileName + ".jpg");
-					} else {
-						photoFileName = user.getEppn().replaceAll("@.*", "");
-						photoFileName = StringUtils.leftPad(photoFileName, 8, "0");
-						bytes = loadPhoto("file:///opt/easy-id-import/UR/Invite/" + photoFileName + ".jpg");
-					}
-				}  catch (IOException e) {
-					try{ 
-						photoFileName = user.getSupannEtuId();
-						if(photoFileName==null) {
-							photoFileName = user.getSupannEmpId();
-						}
-						if(photoFileName==null) {
-							photoFileName = user.getEppn().replaceAll("@.*", "");
-						}
-						String photoFileNameBase = photoFileName;
-						photoFileName = StringUtils.leftPad(photoFileName, 8, "0");
-						File photoFile = new File("/opt/easy-id-import/UR/Etudiant/" + photoFileName + ".jpg");
-						for(String photoFileNameTest : Arrays.asList(new String[] {photoFileName, photoFileNameBase})) {
-							if(!photoFile.exists()) {
-								 photoFile = new File("/opt/easy-id-import/UR/Etudiant/" + photoFileNameTest + ".jpg");
-							}
-					        if(!photoFile.exists()) {
-					        	photoFile = new File("/opt/easy-id-import/UR/Personnel/" + photoFileNameTest + ".jpg");
-					        }
-					        if(!photoFile.exists()) {
-					        	photoFile = new File("/opt/easy-id-import/UR/Heberge/" + photoFileNameTest + ".jpg");
-					        }
-					        if(!photoFile.exists()) {
-					        	photoFile = new File("/opt/easy-id-import/UR/Invite/" + photoFileNameTest + ".jpg");
-					        }
-						}
-				        if(!photoFile.exists()) {
-				        	log.warn("Error retrieving photo for " + user.getEppn() +  " - " + photoFileName);
-				        }
-				        bytes = loadPhoto("file://" + photoFile.getAbsolutePath());					
-					} catch (IOException ee) {
-						log.warn("Error retrieving photo for " + user.getEppn(), ee);
+				for(String photoFileName : new String[] {StringUtils.leftPad(user.getSecondaryId(), 8, "0"), user.getSecondaryId(), 
+						StringUtils.leftPad(user.getSupannEtuId(), 8, "0"), user.getSupannEtuId(),
+						StringUtils.leftPad(user.getSupannEmpId(), 8, "0"), user.getSupannEmpId(),
+						user.getEppn().replaceAll("@.*", ""), StringUtils.leftPad(user.getEppn(), 8, "0"), user.getEppn()}) {
+					try{
+						bytes = loadPhoto("file://" + PHOTO_DIRECTORY_IMPORT + photoFileName + ".jpg");
+						photoFileNameFound = "photoFileName";
+						break;
+					}  catch (IOException e) {
+						//
 					}
 				}
 				Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
 				card.getPhotoFile().getBigFile().setBinaryFile(bytes);
-				card.getPhotoFile().setFilename(photoFileName);
+				card.getPhotoFile().setFilename(photoFileNameFound);
 				card.getPhotoFile().setContentType(DEFAULT_PHOTO_MIME_TYPE);
 				card.getPhotoFile().setFileSize(fileSize);
 				card.setUserAccount(user);
@@ -208,7 +163,7 @@ public class ImportExportCardService {
 		}
 		return noImgPhoto;
 	}
-	
+
 	private byte[] loadPhoto(String filePath) throws IOException {
 		byte[] bytes = loadNoImgPhoto();
 		UrlResource photoResource = new UrlResource(filePath);
@@ -216,5 +171,5 @@ public class ImportExportCardService {
 		return bytes;
 	}
 
-	
+
 }

@@ -30,6 +30,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.dbre.RooDbManaged;
@@ -51,7 +52,7 @@ public class Card {
     };
 
     public static enum Etat {
-        NEW, REQUEST_CHECKED, CANCELED, IN_PRINT, PRINTED, IN_ENCODE, ENCODED, ENABLED, REJECTED, DISABLED, CADUC, DESTROYED
+        NEW, REQUEST_CHECKED, CANCELED, IN_PRINT, PRINTED, IN_ENCODE, ENCODED, ENABLED, REJECTED, DISABLED, CADUC, DESTROYED, RENEWED
     };
 
     public static enum MotifDisable {
@@ -177,7 +178,7 @@ public class Card {
 
     @PostPersist
     public void updateNbCards() {
-        int nbCards = 1 + this.getUser().getCards().size();
+        int nbCards = this.getUser().getCards().size();
         this.getUser().setNbCards((long) nbCards);
     }
 
@@ -773,18 +774,20 @@ public class Card {
         return q;
     }
 
-    public static List<BigInteger> selectIdforDelivery() {
+    public static Boolean areCardsReadyToBeDelivered(List<Long> cardIds) {
         EntityManager em = Card.entityManager();
-        String sql = "SELECT id FROM card WHERE etat='ENABLED' AND delivered_date IS NULL";
-        Query q = em.createNativeQuery(sql);
-        return q.getResultList();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.id in (:cardIds) and o.etat in (:etatsEncoded) AND o.deliveredDate IS NULL", Long.class);
+        q.setParameter("cardIds", cardIds);
+        q.setParameter("etatsEncoded", CardEtatService.etatsEncoded);
+        return !Long.valueOf(0).equals(((Long) q.getSingleResult()));
     }
     
-    public static List<BigInteger> selectIdforValidation() {
-        EntityManager em = Card.entityManager();
-        String sql = "SELECT id FROM card WHERE etat='ENABLED' OR etat='CADUC' OR etat='DISABLED'";
-        Query q = em.createNativeQuery(sql);
-        return q.getResultList();
+    public static Boolean areCardsReadyToBeValidated(List<Long> cardIds) {
+    	EntityManager em = Card.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.id in (:cardIds) and o.etat in (:etatsValidateDisabled)", Long.class);
+        q.setParameter("cardIds", cardIds);
+        q.setParameter("etatsValidateDisabled", Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}));
+        return !Long.valueOf(0).equals(((Long) q.getSingleResult()));
     }
 
 	public static List<BigInteger> findAllCardIds() {

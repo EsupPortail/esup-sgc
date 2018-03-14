@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -211,10 +212,12 @@ public class ManagerCardController {
 		for(Long id : listeIds){
 			try {
 				Card card = Card.findCard(id);
-				card.setDeliveredDate(new Date());
-				card.merge();
+				if(card.getDeliveredDate() == null) {
+					card.setDeliveredDate(new Date());
+					card.merge();
+				}
 			} catch (Exception e) {
-				log.info("La carte avec l'id suivant n'a pas été marquée comme livrée : " + id, e);
+				log.info("La carte avec l'id suivant n'a pas pu être marquée comme livrée : " + id, e);
 			}
 		}
 		uiModel.asMap().clear();
@@ -267,8 +270,13 @@ public class ManagerCardController {
 			return "manager/print-card";
 		} else {
 			uiModel.asMap().clear();
-			cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false);			
-			return "redirect:/manager/" + card.getId();
+			if(Etat.RENEWED.equals(etatFinal)) {
+				Card newCard = cardService.requestRenewalCard(card);
+				return "redirect:/manager/" + newCard.getId();
+			} else {
+				cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false);
+				return "redirect:/manager/" + card.getId();
+			}		
 		}
 	}
 	
@@ -342,7 +350,7 @@ public class ManagerCardController {
     // No @Transactional here so that exception catching on ManagerController.multiUpdate works well
     public String multiUpdate(@RequestParam(value="comment", defaultValue= "") String comment, 
     		@RequestParam List<Long> listeIds, @RequestParam Etat etatFinal, @RequestParam(value="forcedEtatFinal", required=false) Etat forcedEtatFinal, 
-    		@RequestParam(value="updateEtatAdmin", required=false) String updateEtatAdmin,
+    		@RequestParam(value="updateEtatAdmin", required=false) String updateEtatAdmin, @RequestHeader("User-Agent") String userAgent, 
     		final RedirectAttributes redirectAttributes, Model uiModel, HttpServletRequest request) {
 
     	List<Long> listeIdsErrors = new ArrayList<Long>();
@@ -356,6 +364,7 @@ public class ManagerCardController {
     				//if(i==2) throw new RuntimeException("yop");
     				Card card = Card.findCard(id);
     				card.setCommentaire(comment);
+    				
     				if(updateEtatAdmin != null && forcedEtatFinal!=null) {
     					Etat firstEtat = card.getEtat();
     					card.setEtat(forcedEtatFinal);
@@ -363,10 +372,14 @@ public class ManagerCardController {
     					log.info("Changement d'etat manuel à " + forcedEtatFinal + " pour la carte de " + card.getEppn());
     					logService.log(card.getId(), ACTION.FORCEDUPDATE, RETCODE.SUCCESS, firstEtat.name() + " -> " + forcedEtatFinal, card.getEppn(), null);
     				} else {
-    					if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
-    						log.info("Changement d'etat à " + etatFinal + " pour la carte de " + card.getEppn());
-    						cards.add(card);
-    					}	
+    					if(Etat.RENEWED.equals(etatFinal)) {
+    						cardService.requestRenewalCard(card);
+    					} else {
+	    					if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
+	    						log.info("Changement d'etat à " + etatFinal + " pour la carte de " + card.getEppn());
+	    						cards.add(card);
+	    					}
+    					}
     				}
     				listeIdsOk.add(id);
     			} catch (Exception e) {
