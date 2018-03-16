@@ -24,5 +24,9 @@ public class CardSearchBean {
 	private Long nbCards;
 	
 	private Long nbRejets;
+	
+	String freeField;
+	
+	String freeFieldValue;
 
 }

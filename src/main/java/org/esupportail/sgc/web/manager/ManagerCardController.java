@@ -25,6 +25,7 @@ import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.CardService;
+import org.esupportail.sgc.services.FormService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
@@ -98,6 +99,9 @@ public class ManagerCardController {
 	
 	@Resource
 	TemplateCardService templateCardService;
+	
+	@Resource
+	FormService formService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -334,6 +338,8 @@ public class ManagerCardController {
     	uiModel.addAttribute("cards", cards);
     	uiModel.addAttribute("countCards",  countCards);
     	uiModel.addAttribute("selectedType",  searchBean.getType());
+    	uiModel.addAttribute("freeFields",  formService.getFieldList());
+    	
     	uiModel.addAttribute("size",  size);
     	if(searchBean.getEtat()!=null){
     		uiModel.addAttribute("addresses", getFilteredAdresses(searchBean.getType(),searchBean.getEtat().name()));

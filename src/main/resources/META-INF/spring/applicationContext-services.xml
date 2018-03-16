@@ -282,5 +282,15 @@
 		<property name="isEnabled" value="false"/>
 	</bean>
 	
+	<bean id="formService" class="org.esupportail.sgc.services.FormService">
+		<property name="fieldsList">
+             <list>
+                 <value>verso1</value>
+                 <value>verso2</value>
+                 <value>supann_entite_affectation_principale</value>
+                 <value>last_card_template</value>
+              </list>
+         </property>
+	</bean>
 	
 </beans>

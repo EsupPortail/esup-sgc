@@ -3,6 +3,7 @@ package org.esupportail.sgc.web.manager;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,13 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardService;
+import org.esupportail.sgc.services.FormService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -24,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -59,6 +64,9 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	AppliConfigService appliConfigService;
+	
+	@Resource
+	FormService formService;
 	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
@@ -182,6 +190,22 @@ public class ManagerCardControllerNoHtml {
 			response.setContentLength(size.intValue());
 			IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
 		}
+	}
+	
+	@RequestMapping(value="/freeFieldResults", headers = "Accept=application/json; charset=utf-8")
+	@ResponseBody
+	public String getResultsFreefield(@RequestParam(value="field") String field) {
+		
+		String flexJsonString = "Aucune donnée récupérable";
+		try {
+			List<String> results = formService.getField1List(field);
+			JSONSerializer serializer = new JSONSerializer();
+			flexJsonString = serializer.serialize(results);
+		} catch (Exception e) {
+			log.warn("Impossible de récupérer les données", e);
+		}
+		
+    	return flexJsonString;
 	}
 }
 

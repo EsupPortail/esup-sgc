@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:spring-form="http://www.springframework.org/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <c:choose>
+        <c:when test="${isInWorking}">
+    		En cours ...
+    	</c:when>
+        <c:otherwise>
+            <c:if test="${havePatchIdentifiersToProceed}">
+                <div>
+                    <spring:url value="/admin/crouspatchids/patchIdentifiers" var="patchIdentifiers_url"/>
+                    <spring-form:form action="${patchIdentifiers_url}" method="POST">
+                        <button class="btn btn-danger" onclick="return confirm('Lancer le patch crous des identifiants');" title="patch identifiants crous" type="submit">
+		                  	patch identifiants crous
+		                  </button>
+                    </spring-form:form>
+                </div>
+            </c:if>
+            <div>
+	    		Le CSV attendu doit avoir une entête (la première ligne est en fait ici simplement ignorée) et les lignes suivantes doivent être de cette forme : 
+			    <pre>123456456;testju@univ-rouen.fr;justin.test@univ-rouen.fr</pre>
+			    qui correspond à : 
+			    <pre>old id;eppn (new id);mail</pre>
+                <form:create id="crouspatchids_out_file_form" label="CSV Patch Identifier" modelAttribute="file" multipart="true" path="/admin/crouspatchids/addCsvFile" save_button="Valider">
+                    <fieldset>
+                        <legend>Ajout d'un CSV Patch Identifier</legend>
+                        <input id="crouspatchids_out_file" name="file" required="required" type="file"/>
+                    </fieldset>
+                </form:create>
+                <ul>
+                    <li>Une fois le fichier CSV envoyé, les éléments sont copiés en base de données.</li>
+                    <li>On peut alors demander à procéder au patch des identifiants côté CROUS.</li>
+                    <li>Pour chaque entrée, on garde en mémoire le fait de savoir si le patch de l'identifiant crous a réussi ou non.</li>
+                    <li>Il est possible de retenter l'opération de patch tant que la procédure n'a pas réussi.</li>
+                </ul>
+            </div>
+        </c:otherwise>
+    </c:choose>
+    <page:list id="pl_org_esupportail_sgc_domain_CrousPatchIdentifier" items="${crouspatchidentifiers}" z="602pqwQogg32eyc38njw5euEdZU=">
+        <table:table data="${crouspatchidentifiers}" id="l_org_esupportail_sgc_domain_CrousPatchIdentifier" path="/admin/crouspatchids" z="pCzgJxhoqVqEt0/GVOhkyy6X6Q4=">
+            <table:column id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_oldId" property="oldId" z="joSl07XH8mxyQa+HW9w6MyWCqKI="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_eppnNewId" property="eppnNewId" z="HlKoSdgblqvcJab82FB112sxCew="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_mail" property="mail" z="Xdn4/FdWCSpPVMsNxWuuC6XeXpc="/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_patchSuccess" property="patchSuccess" sort="true" z="user-managed"/>
+        </table:table>
+    </page:list>
+</div>

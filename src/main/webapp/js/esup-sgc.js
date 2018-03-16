@@ -17,6 +17,28 @@ window.alert = function(message, title) {
     $("#bootstrap-alert-box-modal .modal-body strong").html(message || "");
     $("#bootstrap-alert-box-modal").modal('show');
 };
+//Freefield select
+function displayResultFreefield(selectedField, fieldValue) {
+	$.ajax({
+        url: freeUrl,
+        type: 'GET',
+        data: {field: selectedField},
+        success : function(data) {
+			$("#freeFieldValue").empty();
+			if(data.length>1){
+				$("#freeFieldValue").prepend("<option value=''>-- Champ libre : résultats -</option>");
+			}
+        	$.each(data, function(index, value) {
+        		var selected = "";
+        		if(value == fieldValue){
+        			selected ="selected='selected'";
+        		}
+        		$("#freeFieldValue").append("<option value='"+ value + "' " + selected +  ">" + value + "</option>");
+        	});
+        	$('.selectpicker').selectpicker('refresh');
+        }
+	});
+}
 
 //Webcam
 function set_webcam() {
@@ -1339,5 +1361,15 @@ $(document).ready(function() {
 	   		imageCropper.cropit('minZoom', 'fill');
 	   	 } );
 	    })
+    }
+    
+    //Récupération des résultats du select champ libre
+    if(typeof freeUrl != "undefined"){
+    	var selectedField = $("#freeField").val();
+    	displayResultFreefield(selectedField, fieldValue);
+    	$("select#freeField").change(function(){
+    		selectedField = $("#freeField").val();
+    		displayResultFreefield(selectedField, fieldValue);
+		});
     }
 });

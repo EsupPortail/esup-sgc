@@ -6,6 +6,7 @@ package org.esupportail.sgc.web;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CardActionMessage;
+import org.esupportail.sgc.domain.CrousPatchIdentifier;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.EsupNfcSgcJwsDevice;
 import org.esupportail.sgc.domain.Log;
@@ -90,6 +91,30 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.domain.CardActionMessage>() {
             public org.esupportail.sgc.domain.CardActionMessage convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), CardActionMessage.class);
+            }
+        };
+    }
+    
+    public Converter<CrousPatchIdentifier, String> ApplicationConversionServiceFactoryBean.getCrousPatchIdentifierToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.CrousPatchIdentifier, java.lang.String>() {
+            public String convert(CrousPatchIdentifier crousPatchIdentifier) {
+                return new StringBuilder().append(crousPatchIdentifier.getOldId()).append(' ').append(crousPatchIdentifier.getEppnNewId()).append(' ').append(crousPatchIdentifier.getMail()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, CrousPatchIdentifier> ApplicationConversionServiceFactoryBean.getIdToCrousPatchIdentifierConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.esupportail.sgc.domain.CrousPatchIdentifier>() {
+            public org.esupportail.sgc.domain.CrousPatchIdentifier convert(java.lang.Long id) {
+                return CrousPatchIdentifier.findCrousPatchIdentifier(id);
+            }
+        };
+    }
+    
+    public Converter<String, CrousPatchIdentifier> ApplicationConversionServiceFactoryBean.getStringToCrousPatchIdentifierConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.domain.CrousPatchIdentifier>() {
+            public org.esupportail.sgc.domain.CrousPatchIdentifier convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), CrousPatchIdentifier.class);
             }
         };
     }
@@ -272,6 +297,9 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getCardActionMessageToStringConverter());
         registry.addConverter(getIdToCardActionMessageConverter());
         registry.addConverter(getStringToCardActionMessageConverter());
+        registry.addConverter(getCrousPatchIdentifierToStringConverter());
+        registry.addConverter(getIdToCrousPatchIdentifierConverter());
+        registry.addConverter(getStringToCrousPatchIdentifierConverter());
         registry.addConverter(getCrousSmartCardToStringConverter());
         registry.addConverter(getIdToCrousSmartCardConverter());
         registry.addConverter(getStringToCrousSmartCardConverter());

@@ -315,6 +315,14 @@ privileged aspect User_Roo_JavaBean {
         this.templateKey = templateKey;
     }
     
+    public String User.getLastCardTemplate() {
+        return this.lastCardTemplate;
+    }
+    
+    public void User.setLastCardTemplate(String lastCardTemplate) {
+        this.lastCardTemplate = lastCardTemplate;
+    }
+    
     public Set<String> User.getRoles() {
         return this.roles;
     }

@@ -1,6 +1,5 @@
 package org.esupportail.sgc.services;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -129,7 +128,8 @@ public class CardEtatService {
 			card.setRecto4Printed(user.getRecto4());
 			card.setRecto5Printed(user.getRecto5());
 			
-			card.setTemplateCard(user.getTemplateCard());			
+			card.setTemplateCard(user.getTemplateCard());
+			card.getUser().setLastCardTemplate(user.getTemplateCard().getName().concat(" / V").concat(String.valueOf(user.getTemplateCard().getNumVersion())));
 		}		
 			
 		logService.log(card.getId(), ACTION.ETAT, RETCODE.SUCCESS, card.getEtat() + " -> " + etat, card.getEppn(), null);
@@ -192,6 +192,11 @@ public class CardEtatService {
 		if((Etat.NEW.equals(card.getEtat()) || Etat.RENEWED.equals(card.getEtat())) && card.getUser()!=null && !card.getUser().isEditable()) {
 			List<Etat> etatsAvailable = new ArrayList<Etat>(card.getEtatsAvailable());
 			etatsAvailable.remove(Etat.REQUEST_CHECKED);
+			card.setEtatsAvailable(etatsAvailable);
+		}
+		if(Etat.ENABLED.equals(card.getEtat()) && (card.getExternal() || !card.getUser().isEditable())){
+			List<Etat> etatsAvailable = new ArrayList<Etat>(card.getEtatsAvailable());
+			etatsAvailable.remove(Etat.RENEWED);
 			card.setEtatsAvailable(etatsAvailable);
 		}
 	}

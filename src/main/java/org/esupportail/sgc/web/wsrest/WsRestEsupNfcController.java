@@ -181,6 +181,18 @@ public class WsRestEsupNfcController {
 		uiModel.addAttribute("card", card);
 		return "verso";
 	}
+
+	@RequestMapping(value="/secondaryId",  method=RequestMethod.POST)
+	@ResponseBody
+	public String secondaryId(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
+		String secondaryId = null;
+		Card card = Card.findCard(taglog.csn);
+		if(card!=null && card.isEnabled()) {
+			User user = User.findUser(card.getEppn());
+			secondaryId = user.getSecondaryId();
+		}
+		return secondaryId;
+	}
 	
 	/**
 	 * Example :

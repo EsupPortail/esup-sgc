@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_org_esupportail_sgc_domain_CrousPatchIdentifier" modelAttribute="crousPatchIdentifier" path="/admin/crouspatchids" versionField="Version" z="o4hDkgsJbGfvletVAfKfa6mA2Yc=">
+        <field:input field="oldId" id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_oldId" z="h+aoki8/43PCAhnxKSu3oPdrWHk="/>
+        <field:input field="eppnNewId" id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_eppnNewId" z="XkHjsAvwegJ3RO5yOLm3ZN9WzVc="/>
+        <field:input field="mail" id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_mail" z="wqbkE4FOqaobupVTENNv0Q+Tyzc="/>
+        <field:checkbox field="patchSuccess" id="c_org_esupportail_sgc_domain_CrousPatchIdentifier_patchSuccess" z="v7kMw5K9dSPF0b+EJ1BQsdOmPPY="/>
+    </form:update>
+</div>

@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -13,10 +14,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 
@@ -28,6 +33,9 @@ public class StatsService {
 	
 	@Resource
 	IpService ipService;
+	
+	@Autowired
+    MessageSource messageSource;
 	
 	public LinkedHashMap<String, String> getPopulationCrous(){
 		
@@ -93,7 +101,7 @@ public class StatsService {
 			
 	        {
 	        	if("cardsByYearEtat".equals(typeStats)){
-	        		put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd), 3));
+	        		put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), 3));
 	        	}else if("crous".equals(typeStats)){
 	        		put("crous",mapField(User.countNbCrous(typeInd), 2));
 	        	}else if("difPhoto".equals(typeStats)){
@@ -103,7 +111,7 @@ public class StatsService {
 	        	}else if("paybox".equals(typeStats)){
 	        		put("paybox",mapField(PayboxTransactionLog.countNbPayboxByYearEtat(), 3));
 	        	}else if("motifs".equals(typeStats)){
-	        		put("motifs",mapField(Card.countNbCardsByMotifsDisable(typeInd), 2));
+	        		put("motifs",mapField(Card.countNbCardsByMotifsDisable(typeInd, mapToCase("motif_disable", mapsFromI18n("motifs", Locale.FRENCH, "card.label"), "motif_disable")), 2));
 	        	}else if("dates".equals(typeStats)){
 	        		put("dates",mapField(Card.countNbCardsByMonthYear(typeInd), 3));
 	        	}else if("deliveredCardsByDay".equals(typeStats)){
@@ -277,5 +285,38 @@ public class StatsService {
         
         return date;
 	}
+	
+	public HashMap<String,String> mapsFromI18n(String type, Locale locale, String msg){
+		
+		HashMap<String,String> map = new HashMap<>();
+		if("etats".equals(type)){
+			 for (Etat e : Etat.values()) {
+				 map.put(e.name(), messageSource.getMessage(msg.concat(".").concat(e.name()), null, locale));
+			 }
+		}else if("motifs".equals(type)){
+			 for (MotifDisable m : MotifDisable.values()) {
+				 map.put(m.name(), messageSource.getMessage(msg.concat(".").concat(m.name()), null, locale));
+			 }	
+		}
+		
+		 return map;
+	}
+	
+	public String mapToCase(String field, HashMap<String,String> map, String alias){
+		
+		String req = "CASE ";
+		
+		for(Map.Entry<String, String> entry : map.entrySet()){
+			
+			req += " WHEN " + field + " LIKE '" + entry.getKey() + "' THEN '" + entry.getValue() + "' ";
+			
+		}
+		
+		req += " ELSE " + field + " END AS " + alias;
+				
+		return req;
+		
+	}
+			
     
 }

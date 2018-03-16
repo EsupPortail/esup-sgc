@@ -203,7 +203,10 @@ public class UserInfoService {
 				user.getExternalCard().getPhotoFile().getBigFile().setBinaryFile(bytes);
 				user.getExternalCard().getPhotoFile().setFileSize((long)bytes.length);
 				user.getExternalCard().getPhotoFile().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
-			} 
+			} else if("editable".equalsIgnoreCase(key)) {
+				Boolean editable = "true".equalsIgnoreCase(userInfos.get(key));
+				user.setEditable(editable);
+			}  
 		}
 		setDefaultValues4NullAttributes(userInfos, user);
 		if(user.getCrous()!=null && user.getCrous()) {

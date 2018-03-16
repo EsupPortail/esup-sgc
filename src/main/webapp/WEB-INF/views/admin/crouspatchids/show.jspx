@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_org_esupportail_sgc_domain_CrousPatchIdentifier" object="${crouspatchidentifier}" path="/admin/crouspatchids" z="SPJ9mRbpOUEFIhoazvlr4mQU0ts=">
+        <field:display field="oldId" id="s_org_esupportail_sgc_domain_CrousPatchIdentifier_oldId" object="${crouspatchidentifier}" z="qTdufPD/EIaaTGqvT93TYJ69Kh0="/>
+        <field:display field="eppnNewId" id="s_org_esupportail_sgc_domain_CrousPatchIdentifier_eppnNewId" object="${crouspatchidentifier}" z="yTATEEpvl6SKVIY778SSbTKkn9k="/>
+        <field:display field="mail" id="s_org_esupportail_sgc_domain_CrousPatchIdentifier_mail" object="${crouspatchidentifier}" z="yTNpPCLDstY4+zwoXcpmbOClRWI="/>
+        <field:display field="patchSuccess" id="s_org_esupportail_sgc_domain_CrousPatchIdentifier_patchSuccess" object="${crouspatchidentifier}" z="4Gfg84E3HGGUGGTQjit15dBY2Ic="/>
+    </page:show>
+</div>

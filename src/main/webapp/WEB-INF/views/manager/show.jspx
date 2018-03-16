@@ -112,6 +112,8 @@
                                 <dd>${user.secondaryId}</dd>
                                 <dt>template</dt>
                                 <dd>${user.templateKey}</dd>
+                                <dt>template de la dernière carte</dt>
+                                <dd>${user.lastCardTemplate}</dd>                                
                                 <dt>recto1</dt>
                                 <dd>${user.recto1}</dd>
                                 <dt>recto2</dt>

@@ -185,7 +185,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 													</c:otherwise>
 												</c:choose>
 											</div>
-											<c:if test="${livraison}">
+											<c:if test="${livraison and !card.external}">
 												<div class="alert alert-info">
 													<p>
 														Si votre carte vous a bien été remise, veuillez le
@@ -200,17 +200,23 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 												</div>
 											</c:if>
 										</c:if>
-										<c:if test="${card.etat ne 'DISABLED' and card.etat ne 'REJECTED' and card.etat ne 'ENABLED' and card.etat ne 'CADUC'}">
+										<c:set var="etat" value="${card.etat}" />
+										<c:if test="${etat eq 'RENEWED'}">
+											<c:set var="etat" value="NEW" />
+										</c:if>
+										<c:if test="${etat ne 'DISABLED' and etat ne 'REJECTED' and etat ne 'ENABLED' 
+														and etat ne 'CADUC' and etat  ne 'CANCELED' and etat  ne 'DESTROYED'}">
 											<div class="well">
 												<ul class="progress-indicator">
 													<c:set var="testEtat" value="0" />
+													
 													<c:forEach items="${steps}" var="step" varStatus="i">
-													<c:set var="stepMsg"> <spring:message code="card.step.${step}" htmlEscape="false"/></c:set>
+														<c:set var="stepMsg"> <spring:message code="card.step.${step}" htmlEscape="false"/></c:set>
 														<c:choose>
-															<c:when test="${testEtat eq '0' and step ne card.etat}">
+															<c:when test="${testEtat eq '0' and step ne etat}">
 																<li class="completed"> <span class="bubble" title="${stepMsg}"></span> <span class="textBubble hidden-xs">${stepMsg}</span></li>
 															</c:when>
-															<c:when test="${testEtat eq '0' and step eq card.etat}">
+															<c:when test="${testEtat eq '0' and step eq etat}">
 																<li class="active"> <span class="bubble"  title="${stepMsg}"></span> <span class="textBubble ">${stepMsg}</span></li>
 																<c:set var="testEtat" value="1" />
 															</c:when>

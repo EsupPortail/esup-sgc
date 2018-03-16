@@ -22,7 +22,6 @@ import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.dbre.RooDbManaged;
@@ -126,6 +125,8 @@ public class User {
 	private String userType;
 	
 	private String templateKey;
+	
+	private String lastCardTemplate;
 
 	@ElementCollection
     @CollectionTable(name="roles", joinColumns=@JoinColumn(name="user_account"))
@@ -588,6 +589,13 @@ public class User {
 		}
 	}
     
+	public static List<String> getDistinctFreeField(String field) {
+		EntityManager em = Card.entityManager();
+		String req = "SELECT DISTINCT " + field + " FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
+		Query q = em.createNativeQuery(req);
+		List<String> distinctResults = q.getResultList();
+		return distinctResults;
+	}
     
 }
 

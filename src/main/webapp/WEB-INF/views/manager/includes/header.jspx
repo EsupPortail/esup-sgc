@@ -4,12 +4,15 @@
     <spring:url value="/manager/getMultiUpdateForm" var="multiUpdateFormUrl" />
     <spring:url value="/manager/searchEppn" var="searchEppnUrl" />
     <spring:url value="/manager/filterAdress" var="filterAdressUrl" />
+    <spring:url value="/manager/freeFieldResults" var="freeUrl" />
     <spring:url value="/manager" var="rootManagerUrl"/>
     <script type="text/javascript">
 		var multiUpdateFormUrl = '${multiUpdateFormUrl}';
 		var searchEppnUrl = '${searchEppnUrl}';
 		var rootManagerUrl = '${rootManagerUrl}';
 		var filterAdressUrl = '${filterAdressUrl}';
+		var freeUrl = '${freeUrl}';
+		var fieldValue = '${searchBean.freeFieldValue}';
 	</script>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 	<p class="text-info"><strong>Nb de résultats : ${countCards}</strong><button type="button" title="Export CSV" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button></p>

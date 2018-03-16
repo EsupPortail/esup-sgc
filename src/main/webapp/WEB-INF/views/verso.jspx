@@ -2,7 +2,8 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
     <div class="item" style="width: 100%; background-color: #ede6b4; padding:20px; font-size: 15px; text-align: left;">
-		<b>      
+    	<H1>${card.displayName}</H1>
+     	<b>
 		${card.userAccount.verso1}<br/>
 		${card.userAccount.verso2}<br/>
 		${card.userAccount.verso3}<br/>

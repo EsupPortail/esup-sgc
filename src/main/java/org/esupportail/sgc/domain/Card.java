@@ -29,8 +29,10 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.dbre.RooDbManaged;
@@ -410,6 +412,17 @@ public class Card {
             em.remove(attached);
         }
     }
+    
+	public static String snakeToCamel(String snake){
+		
+		String CamelString = "";
+		CamelString = WordUtils.capitalize(snake, "_".toCharArray()).replace("_", "");
+        char ch[] = CamelString.toCharArray();
+        ch[0] = Character.toLowerCase(ch[0]);
+        CamelString = new String(ch);
+       
+        return CamelString;
+	}
 
     public static TypedQuery<Card> findCards(CardSearchBean searchBean, String eppn, String sortFieldName, String sortOrder) {
         EntityManager em = Card.entityManager();
@@ -449,6 +462,13 @@ public class Card {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("userType").in(searchBean.getType()));
         }
+        if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
+        	if(!searchBean.getFreeFieldValue().isEmpty()){
+	            Join<Card, User> u = c.join("userAccount");
+	            String camelString = snakeToCamel(searchBean.getFreeField());
+	            predicates.add(criteriaBuilder.equal(u.get(camelString), searchBean.getFreeFieldValue()));
+        	}
+        }        
         if (!searchBean.getAddress().isEmpty()) {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("address").in(searchBean.getAddress()));
@@ -506,6 +526,13 @@ public class Card {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("userType").in(searchBean.getType()));
         }
+        if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
+        	if(!searchBean.getFreeFieldValue().isEmpty()){
+	            Join<Card, User> u = c.join("userAccount");
+	            String camelString = snakeToCamel(searchBean.getFreeField());
+	            predicates.add(criteriaBuilder.equal(u.get(camelString), searchBean.getFreeFieldValue()));
+        	}
+        }           
         if (!searchBean.getAddress().isEmpty()) {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("address").in(searchBean.getAddress()));
@@ -561,11 +588,11 @@ public class Card {
     }
 
     /***Stats****/
-    public static List<Object> countNbCardsByYearEtat(String userType) {
+    public static List<Object> countNbCardsByYearEtat(String userType, String etatCase) {
         EntityManager em = Card.entityManager();
-        String sql = "SELECT CAST(date_part('year',request_date) AS INTEGER) AS year, etat, count(*) as count FROM card GROUP BY year, etat ORDER BY year ASC";
+        String sql = "SELECT CAST(date_part('year',request_date) AS INTEGER) AS year, " + etatCase + ", count(*) as count FROM card GROUP BY year, etat ORDER BY year ASC";
         if (!userType.isEmpty()) {
-            sql = "SELECT CAST(date_part('year',request_date) AS INTEGER) AS year, etat, count(*) as count FROM card, user_account WHERE card.user_account= user_account.id " + "AND user_type =:userType GROUP BY year, etat ORDER BY year ASC";
+            sql = "SELECT CAST(date_part('year',request_date) AS INTEGER) AS year, " + etatCase + ", count(*) as count FROM card, user_account WHERE card.user_account= user_account.id " + "AND user_type =:userType GROUP BY year, etat ORDER BY year ASC";
         }
         Query q = em.createNativeQuery(sql);
         if (!userType.isEmpty()) {
@@ -595,11 +622,11 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbCardsByMotifsDisable(String userType) {
+    public static List<Object> countNbCardsByMotifsDisable(String userType, String motifCase) {
         EntityManager em = Card.entityManager();
-        String sql = "SELECT motif_disable, COUNT(*) FROM card WHERE motif_disable IS NOT NULL GROUP BY motif_disable ORDER BY motif_disable";
+        String sql = "SELECT " + motifCase + ", COUNT(*) FROM card WHERE motif_disable IS NOT NULL GROUP BY motif_disable ORDER BY motif_disable";
         if (!userType.isEmpty()) {
-            sql = "SELECT motif_disable, COUNT(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND motif_disable IS NOT NULL AND user_type =:userType GROUP BY motif_disable";
+            sql = "SELECT " + motifCase + ", COUNT(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND motif_disable IS NOT NULL AND user_type =:userType GROUP BY motif_disable";
         }
         Query q = em.createNativeQuery(sql);
         if (!userType.isEmpty()) {
@@ -776,7 +803,7 @@ public class Card {
 
     public static Boolean areCardsReadyToBeDelivered(List<Long> cardIds) {
         EntityManager em = Card.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.id in (:cardIds) and o.etat in (:etatsEncoded) AND o.deliveredDate IS NULL", Long.class);
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.id in (:cardIds) and o.etat in (:etatsEncoded) AND o.deliveredDate IS NULL AND o.external='f'", Long.class);
         q.setParameter("cardIds", cardIds);
         q.setParameter("etatsEncoded", CardEtatService.etatsEncoded);
         return !Long.valueOf(0).equals(((Long) q.getSingleResult()));

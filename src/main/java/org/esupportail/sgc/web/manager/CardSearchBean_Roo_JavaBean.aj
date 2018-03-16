@@ -81,4 +81,20 @@ privileged aspect CardSearchBean_Roo_JavaBean {
         this.nbRejets = nbRejets;
     }
     
+    public String CardSearchBean.getFreeField() {
+        return this.freeField;
+    }
+    
+    public void CardSearchBean.setFreeField(String freeField) {
+        this.freeField = freeField;
+    }
+    
+    public String CardSearchBean.getFreeFieldValue() {
+        return this.freeFieldValue;
+    }
+    
+    public void CardSearchBean.setFreeFieldValue(String freeFieldValue) {
+        this.freeFieldValue = freeFieldValue;
+    }
+    
 }
