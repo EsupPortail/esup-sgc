@@ -18,22 +18,23 @@ window.alert = function(message, title) {
     $("#bootstrap-alert-box-modal").modal('show');
 };
 //Freefield select
-function displayResultFreefield(selectedField, fieldValue) {
+function displayResultFreefield(selectedField, fieldsValue, indice) {
 	$.ajax({
         url: freeUrl,
         type: 'GET',
         data: {field: selectedField},
         success : function(data) {
-			$("#freeFieldValue").empty();
+        	var splitFields = fieldsValue.split(',');
+			$("#freeFieldValue" + indice).empty();
 			if(data.length>1){
-				$("#freeFieldValue").prepend("<option value=''>-- Champ libre : résultats -</option>");
+				$("#freeFieldValue" + indice).prepend("<option value=''>-- Champ libre : résultats -</option>");
 			}
         	$.each(data, function(index, value) {
         		var selected = "";
-        		if(value == fieldValue){
+        		if(value == splitFields[indice]){
         			selected ="selected='selected'";
         		}
-        		$("#freeFieldValue").append("<option value='"+ value + "' " + selected +  ">" + value + "</option>");
+        		$("#freeFieldValue" + indice).append("<option value='"+ value + "' " + selected +  ">" + value + "</option>");
         	});
         	$('.selectpicker').selectpicker('refresh');
         }
@@ -1118,6 +1119,7 @@ $(document).ready(function() {
 		$("#nbCards").val("");
 		$("#nbRejets").val("");
 		$("#flagAdresse").val("");
+		$('.selectpicker').selectpicker('val', '');
 		$("#searchEppnForm").submit();
 	});
 
@@ -1365,11 +1367,16 @@ $(document).ready(function() {
     
     //Récupération des résultats du select champ libre
     if(typeof freeUrl != "undefined"){
-    	var selectedField = $("#freeField").val();
-    	displayResultFreefield(selectedField, fieldValue);
-    	$("select#freeField").change(function(){
-    		selectedField = $("#freeField").val();
-    		displayResultFreefield(selectedField, fieldValue);
+    	var selectedField = $(".freeSelect");
+    	 $.each(selectedField, function(index, value) {
+    		 var indice = $(this)[0].id.replace("fields","");
+    		 displayResultFreefield($(this).val(), fieldsValue, indice);
+    	 });
+    	
+    	$(".freeSelect").change(function(){
+    		var indice = $(this)[0].id.replace("fields","");
+    		selectedField = $(this).val();
+    		displayResultFreefield(selectedField, fieldsValue, indice);
 		});
     }
 });

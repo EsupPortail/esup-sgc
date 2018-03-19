@@ -134,7 +134,7 @@ public class ResynchronisationUserService {
 					externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
 					externalCard.getPhotoFile().setFileSize(photo.getFileSize());
 					externalCard.getPhotoFile().setContentType(photo.getContentType());
-					userInfoService.setPrintedInfo(externalCard, null);
+					userInfoService.setPrintedInfo(externalCard);
 				}
 			}
 		}

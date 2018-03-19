@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.esupportail.sgc.domain.User;
-import org.springframework.stereotype.Service;
 
-@Service
 public class FormService {
 	
-	private List<String> fieldsList;
+	private List<String> fieldsList = new ArrayList<>();
 	
 	public List<String> getFieldsList() {
 		return fieldsList;
@@ -18,7 +16,7 @@ public class FormService {
 		this.fieldsList = fieldsList;
 	}
 	
-	public ArrayList<String> getFieldList(){
+	public ArrayList<String> getFieldList() {
 		
 		ArrayList<String> fields = new ArrayList<>();
 		fields = (ArrayList<String>) fieldsList;
@@ -26,11 +24,12 @@ public class FormService {
 		return fields;
 	}
 	
-	public List<String> getField1List(String field){
-		
+	public List<String> getField1List(String field) {
 		List<String> fields = new ArrayList<>();
-		fields = User.getDistinctFreeField(field);
-		
+		// prevent sql injection here
+		if(fieldsList.contains(field)) {
+			fields = User.getDistinctFreeField(field);
+		}
 		return fields;
 	}
 }

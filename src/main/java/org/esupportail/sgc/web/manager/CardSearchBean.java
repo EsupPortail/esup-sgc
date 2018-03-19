@@ -1,5 +1,7 @@
 package org.esupportail.sgc.web.manager;
 
+import java.util.HashMap;
+
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.FlagAdresse;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -25,8 +27,7 @@ public class CardSearchBean {
 	
 	private Long nbRejets;
 	
-	String freeField;
+	HashMap<String, String> freeField;
 	
-	String freeFieldValue;
-
+	HashMap<String, String> freeFieldValue;
 }

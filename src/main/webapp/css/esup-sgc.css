@@ -460,3 +460,9 @@ span.icon-flipped{
 	background-color: #31b0d5;
 	border-color: #269abc;
 }
+#advancedSearch{
+	margin-top: 10px;
+}
+#advancedSearch .well{
+	margin-bottom: 0;
+}

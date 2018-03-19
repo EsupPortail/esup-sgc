@@ -219,13 +219,19 @@ public class UserInfoService {
 	}
 	
 	
-	public void setPrintedInfo(Card card, HttpServletRequest request) {
+	public void setPrintedInfo(Card card) {
 		User user = card.getUser();
 		card.setRecto1Printed(user.getRecto1());
 		card.setRecto2Printed(user.getRecto2());
 		card.setRecto3Printed(user.getRecto3());
 		card.setRecto4Printed(user.getRecto4());
 		card.setRecto5Printed(user.getRecto5());
+		card.setTemplateCard(user.getTemplateCard());
+		if(user.getTemplateCard() != null) {
+			String templateName = user.getTemplateCard().getName() != null ? user.getTemplateCard().getName() : "";
+			String templateVersion = String.valueOf(user.getTemplateCard().getNumVersion());
+			card.getUser().setLastCardTemplate(templateName.concat(" / V").concat(templateVersion));
+		}
 	}
 
 	public void setDefaultValues4NullAttributes(Map<String, String> userInfos, User user) {

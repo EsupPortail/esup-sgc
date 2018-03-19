@@ -6,7 +6,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +19,7 @@ import javax.validation.Valid;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CardActionMessage;
@@ -340,6 +343,14 @@ public class ManagerCardController {
     	uiModel.addAttribute("selectedType",  searchBean.getType());
     	uiModel.addAttribute("freeFields",  formService.getFieldList());
     	
+    	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
+    		HashMap<String, String> test = searchBean.getFreeFieldValue();
+    		test.values().removeAll(Collections.singleton(""));
+    		uiModel.addAttribute("collapse", test.size() > 0 ? "in" : "");
+    		uiModel.addAttribute("fieldsValue",  StringUtils.join(searchBean.getFreeFieldValue().values().toArray(new String[searchBean.getFreeFieldValue().size()]),","));
+    	}else{
+    		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
+    	}
     	uiModel.addAttribute("size",  size);
     	if(searchBean.getEtat()!=null){
     		uiModel.addAttribute("addresses", getFilteredAdresses(searchBean.getType(),searchBean.getEtat().name()));

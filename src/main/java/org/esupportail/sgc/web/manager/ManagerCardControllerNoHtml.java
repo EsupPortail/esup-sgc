@@ -198,9 +198,11 @@ public class ManagerCardControllerNoHtml {
 		
 		String flexJsonString = "Aucune donnée récupérable";
 		try {
-			List<String> results = formService.getField1List(field);
-			JSONSerializer serializer = new JSONSerializer();
-			flexJsonString = serializer.serialize(results);
+			if(!field.isEmpty()){
+				List<String> results = formService.getField1List(field);
+				JSONSerializer serializer = new JSONSerializer();
+				flexJsonString = serializer.serialize(results);
+			}
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les données", e);
 		}

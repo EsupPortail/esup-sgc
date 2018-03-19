@@ -12,7 +12,7 @@
 		var rootManagerUrl = '${rootManagerUrl}';
 		var filterAdressUrl = '${filterAdressUrl}';
 		var freeUrl = '${freeUrl}';
-		var fieldValue = '${searchBean.freeFieldValue}';
+		var fieldsValue = '${fieldsValue}';
 	</script>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 	<p class="text-info"><strong>Nb de résultats : ${countCards}</strong><button type="button" title="Export CSV" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button></p>

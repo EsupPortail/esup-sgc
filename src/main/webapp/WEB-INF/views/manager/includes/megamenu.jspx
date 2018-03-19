@@ -10,21 +10,6 @@
 	  	<div class="alert alert-info" id="searchBar">
 			<form action="${searchUrl}" class="navbar-form navbar-left" role="search" id="searchEppnForm" >
 				<div class="form-group">
-					<spring-form:select path="searchBean.freeField" cssClass="selectpicker show-tick" data-width="fit"  data-dropup-auto="false" data-live-search="true" >
-						<spring-form:option value="">-- Champ libre --</spring-form:option>
-						<c:forEach items="${freeFields}" var="field">
-							<spring-form:option value="${field}">
-								${field}
-							</spring-form:option>
-						</c:forEach>
-					</spring-form:select>
-				</div>
-				<div class="form-group">
-					<select class="selectpicker show-tick" data-dropup-auto="false" data-live-search="true" name="freeFieldValue"  id="freeFieldValue" data-size="15" >
-						<option value="">-- Champ libre : résultats -</option>
-					</select>
-				</div>				
-				<div class="form-group">
 					<spring-form:select path="searchBean.address" cssClass="selectpicker show-tick" data-width="fit"  data-dropup-auto="false" data-live-search="true" data-size="15" >
 						<spring-form:option value="">-- Adresse --</spring-form:option>
 						<c:forEach items="${addresses}" var="address">
@@ -93,6 +78,28 @@
 		  		</div>	
 				<button type="submit" class="btn btn-success">OK</button>
 				<button type="button" class="btn btn-danger" id="nofilter" title="Enlever tous les filtres"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+				<buttton type="button" class="btn btn-primary" data-toggle="collapse" data-target="#advancedSearch">+ de filtres</buttton>
+				<div class="col-lg-12 collapse ${collapse}" id="advancedSearch">
+					<div class="well">
+						<c:forEach items="${freeFields}" var="item" varStatus="status">
+							<div class="form-group">
+								<spring-form:select path="searchBean.freeField['${status.index}']" cssClass="selectpicker show-tick freeSelect" data-width="fit"  data-dropup-auto="false" data-live-search="true"  id="fields${status.index}">
+									<spring-form:option value="">-- Champ libre --</spring-form:option>
+									<c:forEach items="${freeFields}" var="field">
+										<spring-form:option value="${field}">
+											${field}
+										</spring-form:option>
+									</c:forEach>
+								</spring-form:select>
+							</div>
+							<div class="form-group">
+								<select class="selectpicker show-tick" data-dropup-auto="false" data-live-search="true" name="freeFieldValue['${status.index}']"  id="freeFieldValue${status.index}" data-size="15" >
+									<option value="">-- Champ libre : résultats -</option>
+								</select>
+							</div>
+						</c:forEach>
+					</div>
+				</div>	
 			</form>
 			
 			<div class="modal fade" tabindex="-1" role="dialog" id="modalFields">

@@ -19,6 +19,7 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,9 @@ public class CardEtatService {
 	@Resource
 	ResynchronisationUserService resynchronisationUserService;
 	
+	@Resource
+	UserInfoService userInfoService;
+	
 	@Transactional
 	public void disableCardWithMotif(Card card, MotifDisable motifDisable, boolean actionFromAnAdmin) {
 		card.setMotifDisable(motifDisable);
@@ -121,15 +125,7 @@ public class CardEtatService {
 			}
 		}
 		if(Etat.IN_PRINT.equals(card.getEtat()) && (Etat.PRINTED.equals(etat) || Etat.ENCODED.equals(etat))) {
-			User user = card.getUser();
-			card.setRecto1Printed(user.getRecto1());
-			card.setRecto2Printed(user.getRecto2());
-			card.setRecto3Printed(user.getRecto3());
-			card.setRecto4Printed(user.getRecto4());
-			card.setRecto5Printed(user.getRecto5());
-			
-			card.setTemplateCard(user.getTemplateCard());
-			card.getUser().setLastCardTemplate(user.getTemplateCard().getName().concat(" / V").concat(String.valueOf(user.getTemplateCard().getNumVersion())));
+			userInfoService.setPrintedInfo(card);
 		}		
 			
 		logService.log(card.getId(), ACTION.ETAT, RETCODE.SUCCESS, card.getEtat() + " -> " + etat, card.getEppn(), null);

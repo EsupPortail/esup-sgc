@@ -45,6 +45,7 @@ public class TemplateCardService {
 	            		log.info("No templates found, we create a default one");
 				    	TemplateCard templateCard = getDefaultTemplateCard();
 				    	templateCard.setKey("default");
+				    	templateCard.setName("default");
 				    	templateCard.persist();		    	
 	            	} catch(Exception e) {
 	            		log.error("No templates found, exception during creation of a default one", e);

@@ -1,11 +1,9 @@
 package org.esupportail.sgc.services.ie;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -15,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.domain.User.CnousReferenceStatut;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -104,38 +101,34 @@ public class ImportExportCardService {
 			card.setLastEncodedDate(printedDate);
 			card.setDateEtat(lastModificationDate);
 			userInfoService.setAdditionalsInfo(user, null);
-			// TODO : name  == null === non connu dans le ldap
 			String photoFileNameFound = "";
-			if(user.getName() != null) {
-				byte[] bytes = loadNoImgPhoto();
-				for(String photoFileName : new String[] {StringUtils.leftPad(user.getSecondaryId(), 8, "0"), user.getSecondaryId(), 
-						StringUtils.leftPad(user.getSupannEtuId(), 8, "0"), user.getSupannEtuId(),
-						StringUtils.leftPad(user.getSupannEmpId(), 8, "0"), user.getSupannEmpId(),
-						user.getEppn().replaceAll("@.*", ""), StringUtils.leftPad(user.getEppn(), 8, "0"), user.getEppn()}) {
-					try{
-						bytes = loadPhoto("file://" + PHOTO_DIRECTORY_IMPORT + photoFileName + ".jpg");
-						photoFileNameFound = "photoFileName";
-						break;
-					}  catch (IOException e) {
-						//
-					}
+			byte[] bytes = loadNoImgPhoto();
+			// on tente de récupérer la photo depuis différents noms de fichiers (eppn, supannEtuId, etc.) -> à garder ?
+			for(String photoFileName : new String[] {StringUtils.leftPad(user.getSecondaryId(), 8, "0"), user.getSecondaryId(), 
+					StringUtils.leftPad(user.getSupannEtuId(), 8, "0"), user.getSupannEtuId(),
+					StringUtils.leftPad(user.getSupannEmpId(), 8, "0"), user.getSupannEmpId(),
+					user.getEppn().replaceAll("@.*", ""), StringUtils.leftPad(user.getEppn(), 8, "0"), user.getEppn()}) {
+				try{
+					bytes = loadPhoto("file://" + PHOTO_DIRECTORY_IMPORT + photoFileName + ".jpg");
+					photoFileNameFound = "photoFileName";
+					break;
+				}  catch (IOException e) {
+					//
 				}
-				Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
-				card.getPhotoFile().getBigFile().setBinaryFile(bytes);
-				card.getPhotoFile().setFilename(photoFileNameFound);
-				card.getPhotoFile().setContentType(DEFAULT_PHOTO_MIME_TYPE);
-				card.getPhotoFile().setFileSize(fileSize);
-				card.setUserAccount(user);
-				user.persist();
-				userInfoService.setPrintedInfo(card, null);
-				card.setEtat(Etat.ENABLED);
-				card.setDateEtat(new Date());
-				card.persist();
-				log.info("Card added for: " + eppn);
-				return true;
-			} else {
-				//cardEtatService.setCardEtat(card, Etat.DISABLED);
 			}
+			Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
+			card.getPhotoFile().getBigFile().setBinaryFile(bytes);
+			card.getPhotoFile().setFilename(photoFileNameFound);
+			card.getPhotoFile().setContentType(DEFAULT_PHOTO_MIME_TYPE);
+			card.getPhotoFile().setFileSize(fileSize);
+			card.setUserAccount(user);
+			user.persist();
+			userInfoService.setPrintedInfo(card);
+			card.setEtat(Etat.ENABLED);
+			card.setDateEtat(new Date());
+			card.persist();
+			log.info("Card added for: " + eppn);
+			return true;
 		}
 		return false;
 	}

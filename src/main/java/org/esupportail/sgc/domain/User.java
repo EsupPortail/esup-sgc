@@ -591,6 +591,7 @@ public class User {
     
 	public static List<String> getDistinctFreeField(String field) {
 		EntityManager em = Card.entityManager();
+		// FormService.getField1List uses its preventing sql injection
 		String req = "SELECT DISTINCT " + field + " FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
 		Query q = em.createNativeQuery(req);
 		List<String> distinctResults = q.getResultList();

@@ -29,7 +29,7 @@ public class ExternalCardService {
 		if(externalCard.getCsn() == null || externalCard.getCsn().isEmpty()) {
 			return null;
 		} else {
-			userInfoService.setPrintedInfo(externalCard, null);
+			userInfoService.setPrintedInfo(externalCard);
 			return externalCard;
 		}
 	}
@@ -52,7 +52,7 @@ public class ExternalCardService {
             externalCard.setDateEtat(new Date());
             externalCard.setDeliveredDate(new Date());
             externalCard.setExternal(true);
-            userInfoService.setPrintedInfo(externalCard, null);
+            userInfoService.setPrintedInfo(externalCard);
             user.setCrous(false);
             user.setDifPhoto(false);
             externalCard.persist();

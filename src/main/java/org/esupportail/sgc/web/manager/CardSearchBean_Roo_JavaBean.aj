@@ -3,6 +3,7 @@
 
 package org.esupportail.sgc.web.manager;
 
+import java.util.HashMap;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.FlagAdresse;
 import org.esupportail.sgc.web.manager.CardSearchBean;
@@ -81,19 +82,19 @@ privileged aspect CardSearchBean_Roo_JavaBean {
         this.nbRejets = nbRejets;
     }
     
-    public String CardSearchBean.getFreeField() {
+    public HashMap<String, String> CardSearchBean.getFreeField() {
         return this.freeField;
     }
     
-    public void CardSearchBean.setFreeField(String freeField) {
+    public void CardSearchBean.setFreeField(HashMap<String, String> freeField) {
         this.freeField = freeField;
     }
     
-    public String CardSearchBean.getFreeFieldValue() {
+    public HashMap<String, String> CardSearchBean.getFreeFieldValue() {
         return this.freeFieldValue;
     }
     
-    public void CardSearchBean.setFreeFieldValue(String freeFieldValue) {
+    public void CardSearchBean.setFreeFieldValue(HashMap<String, String> freeFieldValue) {
         this.freeFieldValue = freeFieldValue;
     }
     

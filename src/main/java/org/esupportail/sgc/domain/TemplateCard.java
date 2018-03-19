@@ -29,7 +29,7 @@ public class TemplateCard {
     private String key;
 
     @Column
-    private String name;
+    private String name = "";
     
     @Column
     private int numVersion = 0;

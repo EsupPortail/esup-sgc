@@ -61,8 +61,10 @@ public class GenericCardIdService implements CardIdService {
 			}
 			SQLQuery nextValQuery = session.createSQLQuery("SELECT nextval('" + postgresqlSequence + "')");
 			BigInteger nextVal = (BigInteger)nextValQuery.list().get(0);
-			card.getDesfireIds().put(appName, Long.toString(nextVal.longValue() + getIdCounterBegin(card)));
+			String desfireId = Long.toString(nextVal.longValue() + getIdCounterBegin(card));
+			card.getDesfireIds().put(appName, desfireId);
 			card.merge();
+			log.info("generate card Id for " + card.getEppn() + " : " + appName + " -> "  + desfireId);
 		}
 		return card.getDesfireIds().get(appName);
 	}
