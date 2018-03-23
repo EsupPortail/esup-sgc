@@ -218,6 +218,8 @@ public class TemplateCardController {
 		mapCarte.put("recto3", card.getUserAccount().getRecto3());
 		mapCarte.put("recto4", card.getUserAccount().getRecto4());
 		mapCarte.put("recto5", card.getUserAccount().getRecto5());
+		mapCarte.put("recto6", card.getUserAccount().getRecto6());
+		mapCarte.put("recto7", card.getUserAccount().getRecto7());
 		mapCarte.put("id", card.getId().toString());
 		
 		try {

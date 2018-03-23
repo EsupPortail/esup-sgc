@@ -80,6 +80,10 @@ public class Card {
 
     private String recto5Printed = "";
 
+    private String recto6Printed = "";
+
+    private String recto7Printed = "";
+    
     private String versoTextPrinted;
 
     @ManyToOne
@@ -464,16 +468,20 @@ public class Card {
         if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
         	if(!searchBean.getFreeField().values().isEmpty() && !searchBean.getFreeFieldValue().isEmpty()){
 	            Join<Card, User> u = c.join("userAccount");
-	            for(Map.Entry<String, String> entry : searchBean.getFreeFieldValue().entrySet()){
-	            	if(!entry.getValue().isEmpty()){
-	            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty()){
-		      	            String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
-		      	            predicates.add(criteriaBuilder.equal(u.get(camelString), entry.getValue()));
+	            for(Map.Entry<String, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
+	            	List<Predicate> orPredicates = new ArrayList<Predicate>();
+	            	if(entry.getValue().length>0){
+	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
+	            		for(int i=0; i < entry.getValue().length; i++){
+		            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty()){
+		            			orPredicates.add(criteriaBuilder.equal(u.get(camelString), entry.getValue()[i]));
+		            		}
 	            		}
 	            	}
+	            	predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
 	    		}
         	}
-        }     
+        }
         if (!searchBean.getAddress().isEmpty()) {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("address").in(searchBean.getAddress()));
@@ -534,13 +542,17 @@ public class Card {
         if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
         	if(!searchBean.getFreeField().values().isEmpty() && !searchBean.getFreeFieldValue().isEmpty()){
 	            Join<Card, User> u = c.join("userAccount");
-	            for(Map.Entry<String, String> entry : searchBean.getFreeFieldValue().entrySet()){
-	            	if(!entry.getValue().isEmpty()){
-	            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty()){
-		      	            String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
-		      	            predicates.add(criteriaBuilder.equal(u.get(camelString), entry.getValue()));
+	            for(Map.Entry<String, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
+	            	List<Predicate> orPredicates = new ArrayList<Predicate>();
+	            	if(entry.getValue().length>0){
+	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
+	            		for(int i=0; i < entry.getValue().length; i++){
+		            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty()){
+		            			orPredicates.add(criteriaBuilder.equal(u.get(camelString), entry.getValue()[i]));
+		            		}
 	            		}
 	            	}
+	            	 predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
 	    		}
         	}
         }

@@ -24,16 +24,22 @@ function displayResultFreefield(selectedField, fieldsValue, indice) {
         type: 'GET',
         data: {field: selectedField},
         success : function(data) {
-        	var splitFields = fieldsValue.split(',');
 			$("#freeFieldValue" + indice).empty();
 			if(data.length>1){
 				$("#freeFieldValue" + indice).prepend("<option value=''>-- Champ libre : résultats -</option>");
 			}
         	$.each(data, function(index, value) {
         		var selected = "";
-        		if(value == splitFields[indice]){
-        			selected ="selected='selected'";
-        		}
+        		var splitFieldsFirstLevel = fieldsValue.split('@@');
+        		
+        		if(typeof splitFieldsFirstLevel[indice] != 'undefined'){
+	            	if(fieldsValue.length>0 ){
+	            		var splitFields2ndLevel = splitFieldsFirstLevel[indice].split(",");
+		        		if(splitFields2ndLevel.indexOf(value)!=-1){
+		        			selected ="selected='selected'";
+		        		}
+	            	}
+            	}
         		$("#freeFieldValue" + indice).append("<option value='"+ value + "' " + selected +  ">" + value + "</option>");
         	});
         	$('.selectpicker').selectpicker('refresh');
@@ -97,6 +103,8 @@ function searchEppnAction(idInputFile) {
                $("#recto3").html(data.recto3);
                $("#recto4").html(data.recto4);
                $("#recto5").html(data.recto5);
+               $("#recto6").html(data.recto6);
+               $("#recto7").html(data.recto7);
                $("#photo").prop("src","/manager/photo/" + data.id);
                $("#searchEppnForm p").remove();
            },
@@ -1111,16 +1119,7 @@ $(document).ready(function() {
 		}
 	});
 	$("#nofilter").on('click', function () {
-		$("#address").val("");
-		$("#etat").val("");
-		$("#editable").val("all");
-		$("#ownOrFreeCard").val("false");
-		$("#searchEppn").val("");
-		$("#nbCards").val("");
-		$("#nbRejets").val("");
-		$("#flagAdresse").val("");
-		$('.selectpicker').selectpicker('val', '');
-		$("#searchEppnForm").submit();
+		window.location = rootManagerUrl + "?index=first";
 	});
 
 	

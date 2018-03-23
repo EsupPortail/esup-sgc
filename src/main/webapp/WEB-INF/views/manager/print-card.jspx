@@ -51,6 +51,8 @@
 				<p id="recto3">${card.user.recto3}</p>
 				<p id="recto4">${card.user.recto4}</p>
 				<p id="recto5">${card.user.recto5}</p>
+				<p id="recto6">${card.user.recto6}</p>
+				<p id="recto7">${card.user.recto7}</p>
                 <img alt="qrcode" src="${QRCodeUrl}" id="qrcode" /> 
 			</div>
 			<div id="right">

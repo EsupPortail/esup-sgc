@@ -41,6 +41,8 @@
         <field:checkbox field="europeanTransient" id="c_org_esupportail_sgc_domain_Card_europeanTransient" z="KV32jxslvlfPkKEyAP8wHhH37ZQ="/>
         <field:input field="desfireIds" id="c_org_esupportail_sgc_domain_Card_desfireIds" z="Oro3KpysyaTQNQgc4/rz9t81x08="/>
         <field:select field="templateCard" id="c_org_esupportail_sgc_domain_Card_templateCard" itemValue="id" items="${templatecards}" path="/admin/templatecards" z="Eb8Pefsu9Mt9jMPVyQmatMoaCb0="/>
+        <field:input field="recto6Printed" id="c_org_esupportail_sgc_domain_Card_recto6Printed" z="/JUw1XR2Kc0REInDY4x7BgSBjXw="/>
+        <field:input field="recto7Printed" id="c_org_esupportail_sgc_domain_Card_recto7Printed" z="sWpUF0EHTvEsDWBYBqYd/XnRSek="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_esupportail_sgc_domain_Card" render="${not empty dependencies}" z="VaQZ+z/eumj8mQOHZMndu5OLDYg="/>
 </div>

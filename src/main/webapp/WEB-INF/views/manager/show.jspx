@@ -10,7 +10,7 @@
 		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
 	</script>
     <h2>Utilisateur
-		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
+		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">r
             <span class="glyphicon glyphicon-home">
                 <!--  -->
             </span>
@@ -113,7 +113,7 @@
                                 <dt>template</dt>
                                 <dd>${user.templateKey}</dd>
                                 <dt>template de la dernière carte</dt>
-                                <dd>${user.lastCardTemplate}</dd>                                
+                                <dd>${user.lastCardTemplate}</dd>
                                 <dt>recto1</dt>
                                 <dd>${user.recto1}</dd>
                                 <dt>recto2</dt>
@@ -124,6 +124,10 @@
                                 <dd>${user.recto4}</dd>
                                 <dt>recto5</dt>
                                 <dd>${user.recto5}</dd>
+                                <dt>recto6</dt>
+                                <dd>${user.recto6}</dd>
+                                <dt>recto7</dt>
+                                <dd>${user.recto7}</dd>
                                 <dt>verso1</dt>
                                 <dd>${user.verso1}</dd>
                                 <dt>verso2</dt>
@@ -134,6 +138,10 @@
                                 <dd>${user.verso4}</dd>
                                 <dt>verso5</dt>
                                 <dd>${user.verso5}</dd>
+                                <dt>verso6</dt>
+                                <dd>${user.verso6}</dd>
+                                <dt>verso7</dt>
+                                <dd>${user.verso7}</dd>
                             </dl>
                             <sec:authorize access="hasRole('ROLE_MANAGER')">
                                 <spring:url value="/manager/${currentCard.id}/resync-user/${user.eppn}" var="resynchUrl"/>
@@ -249,9 +257,9 @@
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <c:set value="${empty card.templateCard ? user.templateCard : card.templateCard}" var="currentTemplate"/>
-                                                                    <c:set var="cssId" value="specimenCarte${i.index}" />
-															   		<c:set var="css" value = "${fn:replace(currentTemplate.cssStyle, 'specimenCarte', cssId)}" />
-															   		<c:set var="cssMobileStyle" value = "${fn:replace(currentTemplate.cssMobileStyle, 'specimenCarte', cssId)}" />
+                                                                    <c:set value="specimenCarte${i.index}" var="cssId"/>
+                                                                    <c:set value="${fn:replace(currentTemplate.cssStyle, 'specimenCarte', cssId)}" var="css"/>
+                                                                    <c:set value="${fn:replace(currentTemplate.cssMobileStyle, 'specimenCarte', cssId)}" var="cssMobileStyle"/>
                                                                     <spring:url value="/manager/templatePhoto/" var="photoLocalPrefix"/>
                                                                     <spring:url value="${photoLocalPrefix}masque/${currentTemplate.id}" var="masqueUrl"/>
                                                                     <style>
@@ -282,6 +290,8 @@
                                                                             <p id="recto3">${card.user.recto3}</p>
                                                                             <p id="recto4">${card.user.recto4}</p>
                                                                             <p id="recto5">${card.user.recto5}</p>
+                                                                            <p id="recto6">${card.user.recto6}</p>
+                                                                            <p id="recto7">${card.user.recto7}</p>
                                                                             <spring:url value="/manager/QRCode?cardId=${card.id}" var="QRCodeUrl"/>
                                                                             <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
                                                                         </div>
@@ -383,7 +393,7 @@
                                                                             </div>
                                                                         </c:when>
                                                                         <c:when test="${etatAvailable eq 'DESTROYED'}">
-                                                                        	<button class="btn btn-danger btn-block" type="submit" onclick="return confirm('Confirmez la destruction de la carte');">
+                                                                            <button class="btn btn-danger btn-block" onclick="return confirm('Confirmez la destruction de la carte');" type="submit">
                                                                                 <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
                                                                             </button>
                                                                         </c:when>
@@ -410,6 +420,10 @@
                                                     <dd>${card.recto4Printed}</dd>
                                                     <dt>recto5</dt>
                                                     <dd>${card.recto5Printed}</dd>
+                                                    <dt>recto6</dt>
+                                                    <dd>${card.recto6Printed}</dd>
+                                                    <dt>recto7</dt>
+                                                    <dd>${card.recto7Printed}</dd>
                                                     <dt>QRCode : </dt>
                                                     <dd>${card.qrcode}</dd>
                                                     <dt>Verso Texte : </dt>
@@ -585,5 +599,7 @@
         <field:display field="europeanTransient" id="s_org_esupportail_sgc_domain_Card_europeanTransient" object="${card}" z="d426Wc391tiqC857dVhSh5SGrJU="/>
         <field:display field="desfireIds" id="s_org_esupportail_sgc_domain_Card_desfireIds" object="${card}" z="mCW/Db/z0fE30nvCsLwF/19K74Y="/>
         <field:display field="templateCard" id="s_org_esupportail_sgc_domain_Card_templateCard" object="${card}" z="x6QYNZR4lHXpv9/jpM8fllW4/ws="/>
+        <field:display field="recto6Printed" id="s_org_esupportail_sgc_domain_Card_recto6Printed" object="${card}" z="J51COVal13NCQaOBYmF34Qow0lc="/>
+        <field:display field="recto7Printed" id="s_org_esupportail_sgc_domain_Card_recto7Printed" object="${card}" z="M+1zERjxfeXcA95eLDDE0DTNnhA="/>
     </page:show>
 </div>

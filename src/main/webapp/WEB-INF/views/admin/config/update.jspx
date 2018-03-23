@@ -13,14 +13,6 @@
 	        	<p class="form-control-static">${appliConfig.key}</p>
 	        </div>
         </div>
-        <div class="form-group">
-	        <label class="col-md-3 control-label">
-	         <strong>Type</strong>
-	        </label>
-	        <div class="col-md-3">
-	        	<p class="form-control-static">${appliConfig.type}</p>
-	        </div>
-        </div>
 		<div class="form-group">
 			 <label class="col-md-3 control-label">
 				<strong>Type</strong>

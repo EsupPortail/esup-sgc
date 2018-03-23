@@ -20,6 +20,8 @@
 						<p id="recto3">${externalCard.recto3Printed}</p>
 						<p id="recto4">${externalCard.recto4Printed}</p>
 						<p id="recto5">${externalCard.recto5Printed}</p>
+						<p id="recto6">${externalCard.recto6Printed}</p>
+						<p id="recto7">${externalCard.recto7Printed}</p>
 					</div>
 					<div id="right">
 						<img id="photo" src="data:image/jpeg;base64,${externalCardPhoto}" />

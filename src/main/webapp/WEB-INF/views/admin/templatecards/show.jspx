@@ -86,6 +86,8 @@
                                 <p id="recto3">recto3</p>
                                 <p id="recto4">recto4</p>
                                 <p id="recto5">recto5</p>
+                                <p id="recto6">recto6</p>
+                                <p id="recto7">recto7</p>
                                 <spring:url value="${photoLocalPrefix}qrCode/${templatecard.id}" var="QRCodeUrl"/>
                                 <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
                             </div>

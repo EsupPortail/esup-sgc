@@ -29,5 +29,5 @@ public class CardSearchBean {
 	
 	HashMap<String, String> freeField;
 	
-	HashMap<String, String> freeFieldValue;
+	HashMap<String, String[]> freeFieldValue;
 }

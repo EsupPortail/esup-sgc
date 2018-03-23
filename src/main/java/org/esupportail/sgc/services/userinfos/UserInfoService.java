@@ -156,6 +156,12 @@ public class UserInfoService {
 			} else if("recto5".equalsIgnoreCase(key)) {
 				String recto5  = userInfos.get(key);
 				user.setRecto5(recto5);
+			} else if("recto6".equalsIgnoreCase(key)) {
+				String recto6  = userInfos.get(key);
+				user.setRecto6(recto6);
+			} else if("recto7".equalsIgnoreCase(key)) {
+				String recto7  = userInfos.get(key);
+				user.setRecto7(recto7);
 			}  else if("verso1".equalsIgnoreCase(key)) {
 				String verso1  = userInfos.get(key);
 				user.setVerso1(verso1);
@@ -171,6 +177,12 @@ public class UserInfoService {
 			} else if("verso5".equalsIgnoreCase(key)) {
 				String verso5  = userInfos.get(key);
 				user.setVerso5(verso5);
+			} else if("verso6".equalsIgnoreCase(key)) {
+				String verso6  = userInfos.get(key);
+				user.setVerso6(verso6);
+			} else if("verso7".equalsIgnoreCase(key)) {
+				String verso7  = userInfos.get(key);
+				user.setVerso7(verso7);
 			} else if("userType".equalsIgnoreCase(key)) {
 				String userType  = userInfos.get(key);
 				user.setUserType(userType);
@@ -226,6 +238,8 @@ public class UserInfoService {
 		card.setRecto3Printed(user.getRecto3());
 		card.setRecto4Printed(user.getRecto4());
 		card.setRecto5Printed(user.getRecto5());
+		card.setRecto6Printed(user.getRecto6());
+		card.setRecto7Printed(user.getRecto7());
 		card.setTemplateCard(user.getTemplateCard());
 		if(user.getTemplateCard() != null) {
 			String templateName = user.getTemplateCard().getName() != null ? user.getTemplateCard().getName() : "";

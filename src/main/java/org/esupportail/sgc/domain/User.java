@@ -104,6 +104,10 @@ public class User {
 	
 	private String recto5 = "";
 	
+	private String recto6 = "";
+	
+	private String recto7 = "";
+	
 	private String verso1 = "";
 	
 	private String verso2 = "";
@@ -113,6 +117,10 @@ public class User {
 	private String verso4 = "";
 	
 	private String verso5 = "";
+	
+	private String verso6 = "";
+	
+	private String verso7 = "";
 	
 	private boolean editable = true;
 	
@@ -150,7 +158,7 @@ public class User {
 	}
 
 	public List<String> getVersoText() {
-		String[] versoText = new String[] {verso1, verso2, verso3, verso4, verso5};
+		String[] versoText = new String[] {verso1, verso2, verso3, verso4, verso5, verso6, verso7};
 		return Arrays.asList(versoText);
 	}
 	
@@ -323,6 +331,16 @@ public class User {
 				{log.trace("recto5 <>"); return false;}
 		} else if (!recto5.equals(other.recto5))
 			{log.trace("recto5 <>"); return false;}
+		if (recto6 == null) {
+			if (other.recto6 != null)
+				{log.trace("recto6 <>"); return false;}
+		} else if (!recto6.equals(other.recto6))
+			{log.trace("recto6 <>"); return false;}
+		if (recto7 == null) {
+			if (other.recto7 != null)
+				{log.trace("recto7 <>"); return false;}
+		} else if (!recto7.equals(other.recto7))
+			{log.trace("recto7 <>"); return false;}
 		if (requestFree != other.requestFree)
 			{log.trace("requestFree <>"); return false;}
 		if (rneEtablissement == null) {
@@ -385,6 +403,16 @@ public class User {
 				{log.trace("verso5 <>"); return false;}
 		} else if (!verso5.equals(other.verso5))
 			{log.trace("verso5 <>"); return false;}
+		if (verso6 == null) {
+			if (other.verso6 != null)
+				{log.trace("verso6 <>"); return false;}
+		} else if (!verso6.equals(other.verso6))
+			{log.trace("verso6 <>"); return false;}
+		if (verso7 == null) {
+			if (other.verso7 != null)
+				{log.trace("verso7 <>"); return false;}
+		} else if (!verso7.equals(other.verso7))
+			{log.trace("verso7 <>"); return false;}
 		if (templateKey == null) {
 			if (other.templateKey != null)
 				{log.trace("templateKey <>"); return false;}
@@ -592,7 +620,7 @@ public class User {
 	public static List<String> getDistinctFreeField(String field) {
 		EntityManager em = Card.entityManager();
 		// FormService.getField1List uses its preventing sql injection
-		String req = "SELECT DISTINCT " + field + " FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
+		String req = "SELECT DISTINCT " + field + " FROM user_account WHERE " + field  + " IS NOT NULL AND " + field + " <> '' ORDER BY " + field;
 		Query q = em.createNativeQuery(req);
 		List<String> distinctResults = q.getResultList();
 		return distinctResults;

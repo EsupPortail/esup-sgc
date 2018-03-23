@@ -83,7 +83,7 @@
 					<div class="well">
 						<c:forEach items="${freeFields}" var="item" varStatus="status">
 							<div class="form-group">
-								<spring-form:select path="searchBean.freeField['${status.index}']" cssClass="selectpicker show-tick freeSelect" data-width="fit"  data-dropup-auto="false" data-live-search="true"  id="fields${status.index}">
+								<spring-form:select path="searchBean.freeField['${status.index}']" cssClass="selectpicker show-tick freeSelect"  data-width="fit"  data-dropup-auto="false" data-live-search="true"  id="fields${status.index}">
 									<spring-form:option value="">-- Champ libre --</spring-form:option>
 									<c:forEach items="${freeFields}" var="field">
 										<spring-form:option value="${field}">
@@ -93,7 +93,7 @@
 								</spring-form:select>
 							</div>
 							<div class="form-group">
-								<select class="selectpicker show-tick" data-dropup-auto="false" data-live-search="true" name="freeFieldValue['${status.index}']"  id="freeFieldValue${status.index}" data-size="15" >
+								<select class="selectpicker show-tick" multiple="multiple" data-dropup-auto="false" data-live-search="true" name="freeFieldValue['${status.index}']"  id="freeFieldValue${status.index}" data-size="15" >
 									<option value="">-- Champ libre : résultats -</option>
 								</select>
 							</div>

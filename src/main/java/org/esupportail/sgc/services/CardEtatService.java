@@ -250,10 +250,6 @@ public class CardEtatService {
 		}
 		return new ArrayList<Card>(cards4eppn.values());
 	}
-
-	public void deliverCard(Card card) {
-		card.setDeliveredDate(new Date());
-	}
 	
 	public boolean isPhotoEditable(Card card) {
 		boolean photoEditable = false;

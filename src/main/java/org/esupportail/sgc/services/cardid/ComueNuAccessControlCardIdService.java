@@ -31,12 +31,14 @@ public class ComueNuAccessControlCardIdService extends GenericCardIdService {
 	@Override
 	public String encodeCardId(String desfireId) {
 
-		/*  on formatte l'ID façon COMUE Normandie Université
+		/*  on formatte l'ID façon COMUE Normandie Université 
 		 * cf http://wiki.univ-rouen.fr/dsi/systeme/services/controle_acces?s[]=leocarte
-		 * commence par un octet représentant la version du mapping du fichier (valeur '30', correspondant au code ASCII de '0' pour commencer)
+		 * commence par un octet représentant la version du mapping du fichier (valeur '30', correspondant au code ASCII de '0' pour commencer) => 1 octet
 		 * 15 car encodés en ASCII ⇒ 15 octets
-		 * 15 car encodés en Hexa ⇒ 7 octets
-		 * 15 car encodés en BCD ⇒ 8 octets
+		 * 7 car encodés en Hexa ⇒ 7 octets
+		 * 8 car encodés en BCD ⇒ 8 octets
+		 * -> 1+15+7+8 = 31 
+		 * -> 31 * 2 = 62
 		 */
 
 		String cardNfcIdFormatted = "30";
@@ -54,6 +56,12 @@ public class ComueNuAccessControlCardIdService extends GenericCardIdService {
 		}
 		cardNfcIdFormatted = cardNfcIdFormatted + desfireId;
 
+		// ici cardNfcIdFormatted.length() doit être égal à 62
+		log.info("comue nu access-control id : " + cardNfcIdFormatted + " -> size : " + cardNfcIdFormatted.length());
+		if(cardNfcIdFormatted.length() != 62) {
+			log.error("Error : comue nu access-control id size != 62 (31 bytes) !!??");
+		}
+		
 		return cardNfcIdFormatted;
 	}
 

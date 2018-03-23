@@ -108,6 +108,7 @@
 			lignePrenom as recto3,
 			ligneDateNaissance as recto4,
 			ligneIdentifiant as recto5,
+                        ligneAnneeUniv as recto7,
 			divers1 as verso1,
 			divers2 as verso2,
 			divers3 as verso3,
@@ -157,6 +158,7 @@
 
         <!--
             Si recto1 et recot4 non trouvé/configuré encore on les calcule en fonction du userType et de schacDateOfBirth
+            on reformatte recto7 : 2017/2018 -> 2017<br/>2018 - cf propriété recto7Replace donnée dans sgc.properties
         -->
         <bean id="spelUserInfoServiceRecto1Recto4" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="6">
             <property name="sgcParam2spelExp">
@@ -168,6 +170,7 @@
                         'extérieur'"/>
                     <entry key="recto4" value="#userInfosInComputing['recto4'] != Null ? #userInfosInComputing['recto4'] :
                                                #userInfosInComputing['schacDateOfBirth']  != Null ? 'Né le : ' + #dateUtils.schadDateOfBirthDay2FrenchDate(#userInfosInComputing['schacDateOfBirth']) : ''"/>
+                    <entry key="recto7" value="${recto7Replace}"/>
                 </map>
             </property>
         </bean>

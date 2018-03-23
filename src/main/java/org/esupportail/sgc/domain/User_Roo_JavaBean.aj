@@ -227,6 +227,22 @@ privileged aspect User_Roo_JavaBean {
         this.recto5 = recto5;
     }
     
+    public String User.getRecto6() {
+        return this.recto6;
+    }
+    
+    public void User.setRecto6(String recto6) {
+        this.recto6 = recto6;
+    }
+    
+    public String User.getRecto7() {
+        return this.recto7;
+    }
+    
+    public void User.setRecto7(String recto7) {
+        this.recto7 = recto7;
+    }
+    
     public String User.getVerso1() {
         return this.verso1;
     }
@@ -265,6 +281,22 @@ privileged aspect User_Roo_JavaBean {
     
     public void User.setVerso5(String verso5) {
         this.verso5 = verso5;
+    }
+    
+    public String User.getVerso6() {
+        return this.verso6;
+    }
+    
+    public void User.setVerso6(String verso6) {
+        this.verso6 = verso6;
+    }
+    
+    public String User.getVerso7() {
+        return this.verso7;
+    }
+    
+    public void User.setVerso7(String verso7) {
+        this.verso7 = verso7;
     }
     
     public boolean User.isEditable() {

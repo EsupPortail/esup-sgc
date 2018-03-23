@@ -76,6 +76,7 @@ public class GenericCardIdService implements CardIdService {
 	@Override
 	public String encodeCardId(String desfireId) {
 		String desfireIdWithPad = StringUtils.leftPad(desfireId, desfireFileLength, "0");
+		log.info("desfireIdWithPad : " + desfireIdWithPad + " -> size : " + desfireIdWithPad.length());
 		return desfireIdWithPad;
 	}
 

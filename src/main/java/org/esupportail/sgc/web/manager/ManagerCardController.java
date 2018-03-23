@@ -207,6 +207,7 @@ public class ManagerCardController {
 		Card card = Card.findCard(cardId);
 		card.setDeliveredDate(new Date());
 		card.merge();
+		logService.log(card.getId(), ACTION.MANAGER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
 		uiModel.asMap().clear();
 		return "redirect:/manager/" + card.getId();
 	}
@@ -222,6 +223,7 @@ public class ManagerCardController {
 				if(card.getDeliveredDate() == null) {
 					card.setDeliveredDate(new Date());
 					card.merge();
+					logService.log(card.getId(), ACTION.MANAGER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
 				}
 			} catch (Exception e) {
 				log.info("La carte avec l'id suivant n'a pas pu être marquée comme livrée : " + id, e);
@@ -344,10 +346,16 @@ public class ManagerCardController {
     	uiModel.addAttribute("freeFields",  formService.getFieldList());
     	
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
-    		HashMap<String, String> test = searchBean.getFreeFieldValue();
+    		HashMap<String, String[]> test = searchBean.getFreeFieldValue();
     		test.values().removeAll(Collections.singleton(""));
     		uiModel.addAttribute("collapse", test.size() > 0 ? "in" : "");
-    		uiModel.addAttribute("fieldsValue",  StringUtils.join(searchBean.getFreeFieldValue().values().toArray(new String[searchBean.getFreeFieldValue().size()]),","));
+    		List<String> values = new ArrayList<String>(); 
+    		for(String value[] : searchBean.getFreeFieldValue().values()){
+    			String joinString = StringUtils.join(value, ",");
+    			values.add(joinString);
+    		}
+    		String finalJoin = StringUtils.join(values, "@@");
+    		uiModel.addAttribute("fieldsValue", finalJoin);
     	}else{
     		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
     	}

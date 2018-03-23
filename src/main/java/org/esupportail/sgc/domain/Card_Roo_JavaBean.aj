@@ -77,6 +77,22 @@ privileged aspect Card_Roo_JavaBean {
         this.recto5Printed = recto5Printed;
     }
     
+    public String Card.getRecto6Printed() {
+        return this.recto6Printed;
+    }
+    
+    public void Card.setRecto6Printed(String recto6Printed) {
+        this.recto6Printed = recto6Printed;
+    }
+    
+    public String Card.getRecto7Printed() {
+        return this.recto7Printed;
+    }
+    
+    public void Card.setRecto7Printed(String recto7Printed) {
+        this.recto7Printed = recto7Printed;
+    }
+    
     public String Card.getVersoTextPrinted() {
         return this.versoTextPrinted;
     }

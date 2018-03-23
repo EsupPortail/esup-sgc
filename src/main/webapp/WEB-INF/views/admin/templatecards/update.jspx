@@ -101,6 +101,8 @@
                                 <p id="recto3">Prénom</p>
                                 <p id="recto4">Né le : 01/01/1970</p>
                                 <p id="recto5">N° Etudiant : 00000000000</p>
+                                <p id="recto6">xxxxxxxxxx</p>
+                                <p id="recto7">yyyyyyyyyy</p>
                                 <spring:url value="${photoLocalPrefix}qrCode/${templateCard.id}" var="QRCodeUrl"/>
                                 <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
                             </div>

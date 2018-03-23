@@ -90,11 +90,11 @@ privileged aspect CardSearchBean_Roo_JavaBean {
         this.freeField = freeField;
     }
     
-    public HashMap<String, String> CardSearchBean.getFreeFieldValue() {
+    public HashMap<String, String[]> CardSearchBean.getFreeFieldValue() {
         return this.freeFieldValue;
     }
     
-    public void CardSearchBean.setFreeFieldValue(HashMap<String, String> freeFieldValue) {
+    public void CardSearchBean.setFreeFieldValue(HashMap<String, String[]> freeFieldValue) {
         this.freeFieldValue = freeFieldValue;
     }
     
