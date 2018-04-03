@@ -21,9 +21,7 @@ import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-@Service
 public class CsvExportSynchronicService implements Export2AccessControlService {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());

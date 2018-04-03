@@ -73,9 +73,7 @@ public class WsRestEsupSgcApiController {
 	
 	/**
 	 * Example to use it :
-	 *  curl   -F "eppn=toto@univ-ville.fr"   -F "difPhotoTransient=true" -F "crousTransient=true" -F "templateCard=248" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
-	 *  248 is the id of a TEMPLATE_CARD here
-	 *  
+	 * curl   -F "eppn=toto@univ-ville.fr" -F "difPhotoTransient=true" -F "crousTransient=true" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<String> cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, @RequestHeader("User-Agent") String userAgent, HttpServletRequest request) throws IOException {	
@@ -102,7 +100,7 @@ public class WsRestEsupSgcApiController {
 			ldapGroup2UserRoleService.syncUser(eppn);
 			
 			// check rights 
-			if(userService.isFirstRequest(eppn) || userService.isFreeRenewal(eppn) ||  userService.isPaidRenewal(eppn) || cardEtatService.hasRejectedCard(eppn)) {
+			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn)) {
 			
 				if(!cardEtatService.hasNewCard(eppn)){
 					UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);

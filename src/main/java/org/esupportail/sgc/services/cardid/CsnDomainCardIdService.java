@@ -21,7 +21,7 @@ public class CsnDomainCardIdService implements CardIdService {
 	
 	private String appName;
 	
-	private int desfireFileLength = 128;
+	private int desfireFileLength = 0;
 	
 	private String identifierFormat = "{0}@{1}";
 	

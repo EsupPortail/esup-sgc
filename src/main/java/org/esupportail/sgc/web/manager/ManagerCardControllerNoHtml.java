@@ -3,7 +3,6 @@ package org.esupportail.sgc.web.manager;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -12,23 +11,22 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
+import org.esupportail.sgc.domain.ldap.PersonLdap;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.FormService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
+import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -67,6 +65,9 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	FormService formService;
+	
+	@Resource
+	LdapPersonService ldapPersonService;
 	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
@@ -209,5 +210,27 @@ public class ManagerCardControllerNoHtml {
 		
     	return flexJsonString;
 	}
+	
+	@RequestMapping(value="/searchLdap")
+	@ResponseBody
+	public  String searchLdap(@RequestParam(value="searchString") String searchString) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		List<PersonLdap> ldapList = new ArrayList<PersonLdap>();
+		if(!searchString.trim().isEmpty()) {
+			ldapList = ldapPersonService.searchByFirstName(searchString);
+		}
+		
+		String flexJsonString = "Aucune info à récupérer";
+		try {
+			JSONSerializer serializer = new JSONSerializer();
+			flexJsonString = serializer.deepSerialize(ldapList);
+			
+		} catch (Exception e) {
+			log.warn("Impossible de récupérer les infos ldap" );
+		}
+		
+		return flexJsonString;
+   }
 }
 

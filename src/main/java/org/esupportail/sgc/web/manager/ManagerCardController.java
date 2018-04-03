@@ -35,6 +35,7 @@ import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.PreferencesService;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.ie.ImportExportService;
+import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -67,10 +68,13 @@ public class ManagerCardController {
 	public final static String ERROR_MSG ="manager.msg.error.";
 	public final static String WARNING_MSG ="manager.msg.warning.";
 	public final static String IMG_INTERDIT = "media/photo_interdite.png";
-	public final static String header[] = new String[]{"eppn", "etat", "displayName", "supannEtuId", "supannEmpId", "userType", "crous", "difPhoto", "userEditable", "deliveredDate", "nbCards", "nbRejets", "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dateEtat"};
+	public final static String[] header = new String[]{"eppn", "etat", "displayName", "supannEtuId", "supannEmpId", "userType", "crous", "difPhoto", "userEditable", "deliveredDate", "nbCards", "nbRejets", "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dateEtat"};
 
 	@Resource 
 	UserInfoService userInfoService;
+	
+	@Resource
+	LdapPersonService ldapPersonService;
 
 	@Resource
 	CardService cardService;
@@ -87,7 +91,6 @@ public class ManagerCardController {
 	@Resource
 	ResynchronisationUserService resynchronisationUserService;
 
-	
 	@Resource
 	ImportExportService importExportService;
 	
@@ -350,7 +353,7 @@ public class ManagerCardController {
     		test.values().removeAll(Collections.singleton(""));
     		uiModel.addAttribute("collapse", test.size() > 0 ? "in" : "");
     		List<String> values = new ArrayList<String>(); 
-    		for(String value[] : searchBean.getFreeFieldValue().values()){
+    		for(String[] value : searchBean.getFreeFieldValue().values()){
     			String joinString = StringUtils.join(value, ",");
     			values.add(joinString);
     		}
@@ -520,7 +523,7 @@ public class ManagerCardController {
 		
 		editable = (editable!= null)? "true" : "all";
 		ownOrFreeCard = (ownOrFreeCard!= null)? "true" : "false";
-		uiModel.asMap().clear();
+		
 		try {
 			preferencesService.setPrefs(eppn, "EDITABLE", editable);
 			preferencesService.setPrefs(eppn, "OWNORFREECARD", ownOrFreeCard);

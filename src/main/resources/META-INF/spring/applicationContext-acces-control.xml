@@ -8,12 +8,13 @@
 	<bean id="accessControlService" class="org.esupportail.sgc.services.ac.AccessControlService">
 		<property name="use4ExternalCard" value="true"/>
 	</bean>
-
-	<!-- majP2S  tous les jours à 8H30
-	<task:scheduled-tasks>
-    	<task:scheduled ref="csvExportP2sService" method="export2P2S" cron="0 30 08 * * *"/>
-	</task:scheduled-tasks>
-  	--> 
+  	
+  	<bean class="org.esupportail.sgc.services.ac.CsvExportP2sService"/>
+  	
+  	<bean class="org.esupportail.sgc.services.ac.CsvExportSynchronicService"/>
+  	
+  	<bean class="org.esupportail.sgc.services.ac.CsvExportTilService"/>
+  		
   	<bean id="p2sVfsAccessService" class="org.esupportail.sgc.services.fs.VfsAccessService">
       <property name="uri" value="file://tmp/" />
     </bean>

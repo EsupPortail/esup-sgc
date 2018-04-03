@@ -25,6 +25,11 @@
 			padding: 0cm;
 			margin: 0cm;
 		}
+		
+		#pagebreak {
+			page-break-after: always;
+		}
+		
 	</style>
 
 	<c:forEach items="${cards}" var="card" varStatus="loop">

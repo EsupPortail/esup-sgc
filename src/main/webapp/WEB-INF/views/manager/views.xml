@@ -24,6 +24,12 @@
 	</definition>
 	<definition extends="manager" name="manager/stats/table">
 		<put-attribute name="body" value="/WEB-INF/views/manager/tableStats.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/ldapSearch">
+		<put-attribute name="body" value="/WEB-INF/views/manager/ldapSearch.jspx" />
+	</definition>
+	<definition extends="manager" name="manager/ldapUserForm">
+		<put-attribute name="body" value="/WEB-INF/views/manager/ldapUserForm.jspx" />
 	</definition>	
 	<definition extends="print-card" name="manager/print-card">
 		<put-attribute name="body"

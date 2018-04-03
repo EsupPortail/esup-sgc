@@ -24,10 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class CsvExportP2sService implements Export2AccessControlService, SmartLifecycle {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());

@@ -120,14 +120,12 @@ public class CardService {
 		return displayCnil;
 	}
 	
-	public boolean displayFormCrous (String eppn, String type){
+	public boolean displayFormCrous (User user){
 		
 		boolean displayCrous = false;
 		
-		User user = User.findUser(eppn);
-		
 		// When crous is accepted ones, we can't unaccept it
-		if((user==null || !user.getCrous()) && appliConfigService.displayFormCrous().contains(type)){
+		if((user==null || !user.getCrous()) && appliConfigService.displayFormCrous().contains(user.getUserType())){
 			displayCrous = true;
 		}
 		
@@ -243,7 +241,7 @@ public class CardService {
 	}
 	
 	@Transactional
-	public boolean requestNewCard(Card card, String userAgent, String eppn, HttpServletRequest request){
+	public boolean requestNewCard(Card card, String userAgent, String eppn, HttpServletRequest request, boolean fromLdap){
 
 		boolean emptyPhoto = false;
 		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
@@ -283,6 +281,10 @@ public class CardService {
 			}
 
 			User user = User.findUser(eppn);
+			if(user == null){
+				user = new User();
+				user.setEppn(card.getEppn());
+			}
 			card.setUserAccount(user);
 			card.setDueDate(user.getDueDate());
 			if(card.getCrousTransient()!=null && card.getCrousTransient()) {
@@ -301,13 +303,23 @@ public class CardService {
 				card.setPayCmdNum(reference);
 			}
 			if(card.getId() ==null) {
+				user.setNbCards(Long.valueOf("1"));
 				card.persist();
+			}else{
+				card.merge();
 			}
-			user.merge();
+			if(user.getId() ==null) {
+				user.persist();
+			}else{
+				user.merge();
+			}
 			String messageLog = "Succès de la demande de carte pour l'utilisateur " +  eppn;
 			log.info(messageLog);
 
 			cardEtatService.setCardEtat(card, Etat.NEW, messageLog, null, false, false);
+			if(fromLdap){
+				logService.log(card.getId(), ACTION.REQUEST_FROM_LDAP, RETCODE.SUCCESS, "", user.getEppn(), null);
+			}
 		}
 
 		return emptyPhoto;
@@ -339,6 +351,7 @@ public class CardService {
 		String messageLog = "Demande de renouvellement de carte pour :  " + card.getEppn() + " effectuée.";
 		cardEtatService.setCardEtat(copyCard, Etat.RENEWED, messageLog, null, false, false);
 		copyCard.persist();
+		user.setNbCards(user.getNbCards() +1);
 		user.merge(); // utile notamment car on modifie le nb de cartes via @PostConstruct de Card
 		log.info(messageLog);
 		

@@ -144,6 +144,17 @@ public class User {
 	@Transient
 	private Card externalCard = new Card();
 	
+	@Transient
+	private boolean inSgc;
+
+	public boolean isInSgc() {
+		return inSgc;
+	}
+
+	public void setInSgc(boolean isInSgc) {
+		this.inSgc = isInSgc;
+	}
+
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();
 	}
@@ -601,7 +612,7 @@ public class User {
     
     public static List<Object> countNbRequestFree() {
         EntityManager em = User.entityManager();
-        String sql = "SELECT CASE WHEN request_free THEN 'GRATUIT' ELSE 'PAYANT' END AS request_free, user_type, count(*) FROM user_account GROUP BY request_free, user_type ORDER BY request_free";
+        String sql = "SELECT CASE WHEN request_free THEN 'GRATUIT' ELSE 'PAYANT' END AS request_free, user_type, count(*) FROM user_account WHERE user_type IS NOT NULL GROUP BY request_free, user_type ORDER BY request_free";
 
         Query q = em.createNativeQuery(sql);
 

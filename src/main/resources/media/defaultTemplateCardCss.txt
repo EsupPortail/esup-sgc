@@ -7,10 +7,6 @@
 	display: inline-block;
 }
 
-#specimenCarte #pagebreak {
-	page-break-after: always;
-}
-
 @media screen {
 	#specimenCarte {
 		background-size: 8.56cm 5.398cm;

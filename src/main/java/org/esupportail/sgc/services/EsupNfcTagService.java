@@ -4,10 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.esupportail.sgc.domain.EsupNfcSgcJwsDevice;
+import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
@@ -75,8 +78,12 @@ public class EsupNfcTagService {
 		params.put("location", location);	
 		params.put("validateAuthWoConfirmation", "True");
 		HttpEntity entity = new HttpEntity(params, headers);
-		HttpEntity<String> response = restTemplate.exchange(registerUrl, HttpMethod.POST, entity, String.class);
-		return response.getBody();
+		ResponseEntity<String> response = restTemplate.exchange(registerUrl, HttpMethod.POST, entity, String.class);
+		if(response.getStatusCode().equals(HttpStatus.OK)){
+			return response.getBody();
+		}else{
+			throw new SgcRuntimeException("Erreur HTTP " + response.getStatusCode() + " lors de la création du device dans esup-nfc-tag", null);
+		}
 	}
 
 	public String controlDevice(String deviceId) {

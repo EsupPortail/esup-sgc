@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -317,6 +316,17 @@ public class UserInfoService {
 		
 		List<String> adresses = User.findDistinctAddresses(userType, etat);
 		return adresses;
+	}
+	
+	public boolean isUserInSgc(String eppn){
+		
+		boolean isUserInSgc = false;
+		
+		if(User.findUser(eppn)!= null){
+			isUserInSgc = true;
+		};
+		
+		return isUserInSgc;
 	}
 	
 }

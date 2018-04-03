@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Licensed to ESUP-Portail under one or more contributor license
+    agreements. See the NOTICE file distributed with this work for
+    additional information regarding copyright ownership.
+
+    ESUP-Portail licenses this file to you under the Apache License,
+    Version 2.0 (the "License"); you may not use this file except in
+    compliance with the License. You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:sec="http://www.springframework.org/security/tags" xmlns:c="http://java.sun.com/jsp/jstl/core"  xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form"
+    xmlns:spring="http://www.springframework.org/tags"
+	>
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+	<jsp:output omit-xml-declaration="yes" />
+	<h2>Recherche utilisateur Ldap</h2>
+    <div class="well">
+        <p>Cette page vous permet de rechercher une personne dans l'annuaire LDAP afin de faire une demande de carte, notamment lorsque cette personne n'est pas encore connue du SGC (n'a pas encore de carte).</p>
+        <p>La recherche s'effectue sur le nom / prénom (attribut ldap cn : common name).</p>
+        <p>Les résultats retournés proviennent du ldap, ainsi que du SGC si l'utilisateur à déjà une carte enregistrée.</p>
+        <p>Si l'utilisateur n'a pas de carte enregistrée, on vous propose d'accéder au formulaire de demande, sinon on vous propose d'accéder à la fiche uitilsateur du SGC (qui vous permet de demander un renouvellement par exemple).</p>
+        <p>La demande de carte effectuée via le formulaire est journalisée dans la base en votre nom.</p>
+    </div>
+    
+    <spring:url value="/manager/searchLdap" var="searchLdapUrl" />
+    <spring:url value="/manager/isUserInSgc" var="searchUserUrl" />
+    <spring:url value="/manager/ldapUserForm" var="ldapUserFormUrl" />
+    <spring:url value="/manager/" var="rootManagerUrl" />
+    <script type="text/javascript">
+		var searchLdapUrl = '${searchLdapUrl}';
+		var searchUserUrl = '${searchUserUrl}';
+	</script>
+ 
+    <spring:url value="/manager/ldapSearch" var="ldapldapSearchUrl"/>
+    <form class="form-horizontal" action="${ldapldapSearchUrl}" method="GET" id="searchLdapForm">
+     <div class="jumbotron">
+     <div class="from-group">
+	      <label for="j_username" class="control-label col-lg-3 col-md-3 col-xs-6">Recherche sur nom / prénom : </label>
+	      	<input type="text" class="form-control"  id="searchLdap"  name="searchString" maxlength="100" minlength="3"  required="required" value="${searchItem}" />&amp;nbsp
+	      	<button type="submit" class="btn btn-success">Valider</button>
+	      </div>
+      </div>
+    </form>
+    
+    <c:if test="${not empty ldapList}">
+    <table class="table table-bordered">
+    	<thead><th>Eppn</th><th>Prénom</th><th>Nom</th><th>Date de naissance</th><th>Mail</th><th>Nb de cartes</th><th>Type</th><th>Affectation</th><th>ACTION</th></thead>
+    	<tbody>
+		    <c:forEach items="${ldapList}" var="item">
+		    	<tr>
+			    	<td>${item.eppn}</td><td>${item.firstname}</td><td>${item.name}</td><td><fmt:formatDate pattern="dd/MM/yyyy" value="${item.birthday}"/></td><td>${item.email}</td>
+			    	<td>${item.nbCards}</td><td>${item.userType}</td><td>${item.supannEntiteAffectationPrincipale}</td>
+			    	<td>
+						<c:choose>
+							<c:when test="${item.inSgc}">
+								<a href="${rootManagerUrl}${item.cards[0].id}" class="btn btn-warning">Voir la fiche</a>
+							</c:when>
+							<c:otherwise>
+								<form class="form-horizontal" action="${ldapUserFormUrl}" method="POST" id="ldapUserFormUrl">
+									<input type="hidden" value="${item.eppn}" name="eppn" />
+									<button type="submit" class="btn btn-primary">Faire une demande</button>
+								</form>
+							</c:otherwise>
+						</c:choose>	    	
+			    	</td>
+		    	</tr>
+		    </c:forEach>    	
+    	</tbody>
+    </table>
+    </c:if>
+
+</div>

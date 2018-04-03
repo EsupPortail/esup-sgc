@@ -11,6 +11,7 @@
 			var lastId = '${lastId}';
 			var lastPhotoUrl = '${lastPhotoUrl}';
 			var isISmartPhone = '${isISmartPhone}';
+			var fromLdap ='${fromLdap}';
 		</script>
 		<h2>Demande de carte</h2>
 		<c:choose>
@@ -56,9 +57,13 @@
 				<c:if test="${isRejected}">
 					<input type ="hidden" value="${id}" name="id" />
 				</c:if>
+				
+				<c:if test="${fromLdap}">
+					<input type ="hidden" value="${eppn}" name="eppn" />
+				</c:if>
 		
 				<jsp:include page="includes/form_submit.jspx"/>
-					
+				<input type="hidden" name="fromLdap" value="${fromLdap}" />	
 			</form>
 		  </c:when>
 		  <c:otherwise>

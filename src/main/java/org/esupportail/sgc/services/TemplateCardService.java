@@ -125,8 +125,7 @@ public class TemplateCardService {
 		return result.toString();
 	}
 	
-	public TemplateCard getTemplateCard(String eppn){
-		User user = User.findUser(eppn);
+	public TemplateCard getTemplateCard(User user){
 		String templateKey = user.getTemplateKey();
 		if(templateKey!=null && TemplateCard.countFindTemplateCardsByKeyEquals(templateKey) > 0){
 			return TemplateCard.findTemplateCardsByKeyEquals(templateKey, "numVersion", "DESC").getResultList().get(0);

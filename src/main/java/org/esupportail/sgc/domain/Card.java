@@ -181,12 +181,6 @@ public class Card {
     @ManyToOne(fetch = FetchType.LAZY)
     private TemplateCard templateCard;
 
-    @PostPersist
-    public void updateNbCards() {
-        int nbCards = this.getUser().getCards().size();
-        this.getUser().setNbCards((long) nbCards);
-    }
-
     public Long getNbRejets() {
         return nbRejets;
     }

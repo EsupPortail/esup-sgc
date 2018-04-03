@@ -4,6 +4,7 @@
     <jsp:output omit-xml-declaration="yes"/>
     <spring:url value="/manager/photo/" var="photoLocalPrefix"/>
     <spring:url value="/manager/stats" var="statsPage"/>
+    <spring:url value="/manager/ldapSearch" var="ldapUrl"/>
     <h2>Gestion des cartes 
 	    <a class="btn btn-warning navbar-btn navbar-right" href="${statsPage}" id="btnStats" title="Statistiques">
             <span class="glyphicon glyphicon-stats"/>
@@ -17,6 +18,9 @@
         <button class="btn btn-info navbar-btn navbar-right hidden-lg hidden-md" data-target="#searchCollapse" data-toggle="collapse" type="button">
             <span class="glyphicon glyphicon-search"/>
         </button>
+	    <a class="btn btn-info navbar-btn navbar-right" href="${ldapUrl}" id="btnLdap" title="Recherche Ldap">
+            <span class="glyphicon glyphicon-search"/>
+        </a>        
     </h2>
     <jsp:include page="includes/megamenu.jspx"/>
     <jsp:include page="includes/header.jspx"/>

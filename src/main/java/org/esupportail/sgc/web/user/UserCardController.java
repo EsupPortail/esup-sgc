@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -128,8 +127,10 @@ public class UserCardController {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		uiModel.addAttribute("configUserMsgs", getConfigMsgsUser());
-		if(userService.isFirstRequest(eppn)) {
+		User user = new User ();
+		user.setEppn(eppn);
+		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
+		if(userService.isFirstRequest(user)) {
 			Card externalCard = externalCardService.getExternalCard(eppn, request);
 			if(externalCard != null) {
 				return viewExternalCardRequestForm(uiModel, request, externalCard);
@@ -141,7 +142,7 @@ public class UserCardController {
 		}
 	}
 	
-	private String viewExternalCardRequestForm(Model uiModel, HttpServletRequest request, Card externalCard) {
+	public String viewExternalCardRequestForm(Model uiModel, HttpServletRequest request, Card externalCard) {
 		uiModel.addAttribute("externalCard", externalCard);
 		try {
 			byte[] externalCardPhoto = IOUtils.toByteArray(externalCard.getPhotoFile().getBigFile().getBinaryFile().getBinaryStream());
@@ -181,14 +182,15 @@ public class UserCardController {
 		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
 		
 		uiModel.addAttribute("deviceType", userAgentUtils.getOperatingSystem().getDeviceType());
-		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user.getEppn()));
-		uiModel.addAttribute("configUserMsgs", getConfigMsgsUser());
+		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user));
+		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
 		uiModel.addAttribute("lastId", id);
-		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(eppn));
+		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(user));
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
-		Map<String, Boolean> displayFormParts = displayFormParts(eppn, user.getUserType());
+		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, false);
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
+		uiModel.addAttribute("fromLdap", false);
 		return "user/card-request";
 	}
 	
@@ -197,9 +199,9 @@ public class UserCardController {
 	public String viewPaymentCardRequestForm(Locale locale, Model uiModel, HttpServletRequest request, final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		if(! userService.isFreeRenewal(eppn)){
-			uiModel.addAttribute("isFreeRenewal",  userService.isFreeRenewal(eppn));
-			User user = User.findUser(eppn);
+		User user = User.findUser(eppn);
+		if(! userService.isFreeRenewal(user)){
+			uiModel.addAttribute("isFreeRenewal",  userService.isFreeRenewal(user));
 			PayBoxForm payBoxForm = payBoxService.getPayBoxForm(eppn, user.getEmail(), appliConfigService.getMontantRenouvellement());
 			uiModel.addAttribute("payBoxForm", payBoxForm);
 			uiModel.addAttribute("displayPayboxForm", true);
@@ -211,7 +213,7 @@ public class UserCardController {
 	
 	@RequestMapping(value="/rejectedCase")
 	public String rejectedCardForm(@RequestParam("id") Long id, Model uiModel, HttpServletRequest request, @RequestHeader("User-Agent") String userAgent) {
-		uiModel.addAttribute("configUserMsgs", getConfigMsgsUser());
+		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
 		uiModel.addAttribute("id", id);
 		uiModel.addAttribute("isRejected", true);
 		return viewCardRequestForm(uiModel, request, userAgent);
@@ -294,32 +296,50 @@ public class UserCardController {
 		uiModel.addAttribute("user", user);
 		uiModel.addAttribute("payboxList", PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
 		uiModel.addAttribute("montant", appliConfigService.getMontantRenouvellement());
-		uiModel.addAttribute("displayFormParts", displayFormParts(eppn, user.getUserType()));
+		uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
 		return "user/card-info";
 	}
 
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, 
+	public String cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, @RequestParam(value="fromLdap") boolean fromLdap,
 			@RequestHeader("User-Agent") String userAgent, HttpServletRequest request, final RedirectAttributes redirectAttributes) throws IOException {	
 		if (bindingResult.hasErrors()) {
 				log.warn(bindingResult.getAllErrors().toString());
 			return "redirect:/";
 		}	
-
+		boolean hasRights = false;
 		Authentication auth = SecurityContextHolder.getContext()
 				.getAuthentication();
 		String eppn = auth.getName();
+		String redirect = "redirect:/user";
+		
+		User user = User.findUser(eppn);
+		
+		if(fromLdap && userService.isEsupManager(user) || !fromLdap){
+			hasRights = true;
+		}
+		
+		if(card.getEppn() != null){
+			eppn = card.getEppn();
+			redirect = "redirect:/manager?index=first";
+		}
+
+		
+		if(user == null ){
+			user = new User();
+			user.setEppn(eppn);
+		}
 		
 		// TODO synchronized
 		synchronized (eppn.intern()) {
 			
 			// check rights  sur Sring est global - à éviter
-			if(userService.isFirstRequest(eppn) || userService.isFreeRenewal(eppn) ||  userService.isPaidRenewal(eppn) || cardEtatService.hasRejectedCard(eppn)) {
+			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn) || hasRights) {
 			
 				if(!cardEtatService.hasNewCard(eppn)){
 					
-					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request);
+					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, fromLdap);
 					
 					if(emptyPhoto){
 						redirectAttributes.addFlashAttribute("messageInfo", WARNING_MSG + "leocarte_emptyfile");
@@ -331,27 +351,7 @@ public class UserCardController {
 				log.warn(eppn + " tried to request card but he has no rights to do it." );
 			}
 		}
-		return "redirect:/user";
-	}
-	
-	public Map<String,Boolean> displayFormParts(String eppn, String type){
-		
-		Map<String,Boolean> displayFormParts = new HashMap<String, Boolean>();
-		
-		displayFormParts.put("displayCnil", cardService.displayFormCnil(type));
-		displayFormParts.put("displayCrous", cardService.displayFormCrous(eppn, type));
-		displayFormParts.put("displayRules", cardService.displayFormRules(type));
-		displayFormParts.put("displayAdresse", cardService.displayFormAdresse(type));		
-		displayFormParts.put("isFirstRequest", userService.isFirstRequest(eppn));
-		displayFormParts.put("displayForm",  userService.displayForm(eppn));
-		displayFormParts.put("displayRenewalForm",  userService.displayRenewalForm(eppn));
-		displayFormParts.put("isFreeRenewal",  userService.isFreeRenewal(eppn));
-		displayFormParts.put("isPaidRenewal",  userService.isPaidRenewal(eppn));
-		displayFormParts.put("canPaidRenewal",  userService.canPaidRenewal(eppn));
-		displayFormParts.put("hasDeliveredCard",  userService.hasDeliveredCard(eppn));
-		displayFormParts.put("displayEuropeanCard", cardService.displayFormEuropeanCard(type));
-		return displayFormParts;
-		
+		return redirect;
 	}
 	
 	public List<String> getMotifsList(){
@@ -425,28 +425,6 @@ public class UserCardController {
 		user.merge();
 		logService.log(user.getCards().get(0).getId(), ACTION.DIFPHOTO, RETCODE.SUCCESS, oldDifPhoto == null ? "null" : oldDifPhoto + " --> " + diffusionphoto, user.getEppn(), null);
 		return "redirect:/user";
-	}
-	
-	public HashMap<String,String> getConfigMsgsUser(){
-		
-		HashMap<String,String> getConfigMsgsUser = new HashMap<String, String>();
-		
-		getConfigMsgsUser.put("helpMsg", appliConfigService.getUserHelpMsg());
-		getConfigMsgsUser.put("freeRenewalMsg", appliConfigService.getUseFreeRenewalMsg());
-		getConfigMsgsUser.put("paidRenewalMsg", appliConfigService.getUserPaidRenewalMsg());
-		getConfigMsgsUser.put("canPaidRenewalMsg", appliConfigService.getUserCanPaidRenewalMsg());
-		getConfigMsgsUser.put("newCardMsg", appliConfigService.getNewCardlMsg());
-		getConfigMsgsUser.put("checkedOrEncodedCardMsg", appliConfigService.getCheckedOrEncodedCardMsg());
-		getConfigMsgsUser.put("rejectedCardMsg", appliConfigService.getRejectedCardMsg());
-		getConfigMsgsUser.put("enabledCardMsg", appliConfigService.getEnabledCardMsg());
-		getConfigMsgsUser.put("enabledCardPersMsg", appliConfigService.getEnabledCardPersMsg());
-		getConfigMsgsUser.put("userFormRejectedMsg", appliConfigService.getUserFormRejectedMsg());
-		getConfigMsgsUser.put("userFormRules", appliConfigService.getUserFormRules());
-		getConfigMsgsUser.put("userFreeForcedRenewal", appliConfigService.getUserFreeForcedRenewal());
-		getConfigMsgsUser.put("userTipMsg", appliConfigService.getUserTipMsg());
-		
-		return getConfigMsgsUser;
-		
 	}
 	
 	@RequestMapping(value="/forcedFreeRenewal", method = RequestMethod.POST)
