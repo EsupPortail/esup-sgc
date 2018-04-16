@@ -13,6 +13,7 @@ public class EsupNfcTagLog {
 	public static String SALLE_SEARCH = "Recherche ESUP SGC";
 	public static String SALLE_UPDATE = "Mise à jour ESUP SGC";
 	public static String VERSO_CARTE = "Verso carte";
+	public static String SECONDARY_ID = "Identifiant secondaire";
 	
 	String csn;
 	

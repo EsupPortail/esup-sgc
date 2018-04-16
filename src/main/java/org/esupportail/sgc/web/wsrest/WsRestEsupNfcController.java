@@ -170,6 +170,22 @@ public class WsRestEsupNfcController {
 		log.info("locations for " + eppn + " -> locations");
 		return locations;
 	}
+
+	@RequestMapping(value="/locationsSecondaryId",  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public List<String> getLocationsSecondaryId(@RequestParam String eppn) {
+		List<String> locations = new ArrayList<String>();
+		List<String> managerGroups = shibAuthenticatedUserDetailsService.getConsultManagerGroups();
+		List<String> userGroups = groupService.getGroupsForEppn(eppn);
+		for(String managerGroup : managerGroups) {
+			if(userGroups.contains(managerGroup)) {
+				locations.add(EsupNfcTagLog.SECONDARY_ID);
+				break;
+			}
+		}
+		log.info("locations for " + eppn + " -> locations");
+		return locations;
+	}
 	
 	/**
 	 * Example :
@@ -184,12 +200,21 @@ public class WsRestEsupNfcController {
 
 	@RequestMapping(value="/secondaryId",  method=RequestMethod.POST)
 	@ResponseBody
-	public String secondaryId(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
+	public String secondaryId(@RequestBody EsupNfcTagLog taglog, @RequestParam String idName, Model uiModel) {
 		String secondaryId = null;
 		Card card = Card.findCard(taglog.csn);
 		if(card!=null && card.isEnabled()) {
 			User user = User.findUser(card.getEppn());
-			secondaryId = user.getSecondaryId();
+			
+			switch (idName) {
+			case "eppn":
+				secondaryId = user.getEppn();
+				break;
+
+			default:
+				secondaryId = user.getSecondaryId();
+				break;
+			}
 		}
 		return secondaryId;
 	}
@@ -232,6 +257,15 @@ public class WsRestEsupNfcController {
 			log.info("isTagable for verso " + eppn + ", " + csn);
 			if(card.isEnabled()){
 				log.info("card "+ csn + " verso OK");
+				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+			}else{
+				log.warn(eppn + ", " + csn + " carte non active");
+				return new ResponseEntity<String>("Carte non active", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}else if(EsupNfcTagLog.SECONDARY_ID.equals(esupNfcTagLog.getLocation())){
+			log.info("isTagable for secondary Id " + eppn + ", " + csn);
+			if(card.isEnabled()){
+				log.info("card "+ csn + " secondary Id OK");
 				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 			}else{
 				log.warn(eppn + ", " + csn + " carte non active");
@@ -297,6 +331,8 @@ public class WsRestEsupNfcController {
 			card.merge();
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.VERSO_CARTE.equals(esupNfcTagLog.getLocation())) {
+			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+		}else if(EsupNfcTagLog.SECONDARY_ID.equals(esupNfcTagLog.getLocation())) {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else {
 			log.error("Salle " + esupNfcTagLog.getLocation() + " inconnue !");
