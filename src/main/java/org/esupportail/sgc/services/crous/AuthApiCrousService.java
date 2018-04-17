@@ -3,7 +3,7 @@ package org.esupportail.sgc.services.crous;
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.exceptions.SgcRuntimeException;
+import org.esupportail.sgc.domain.CrousSmartCard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -41,6 +41,30 @@ public class AuthApiCrousService {
 				// no crouslogError in db for a getRightHolder
 				// crousLogService.logErrorCrous(eppnOrEmail, null, clientEx.getResponseBodyAsString());
 				log.warn("Exception calling api crous - apiCrousService.getRightHolder " + eppnOrEmail + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
+				throw clientEx;
+			}
+		}
+	}
+	
+	public CrousSmartCard getCrousSmartCard(String csn) {		
+		try {
+			return apiCrousService.getCrousSmartCard(csn);
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
+				log.info("Auth Token of Crous API should be renew, we call an authentication");
+				apiCrousService.authenticate();
+				try {
+					return apiCrousService.getCrousSmartCard(csn);
+				} catch(HttpClientErrorException clientEx2) {
+					// no crouslogError in db for a getRightHolder
+					// crousLogService.logErrorCrous(eppnOrEmail, null, clientEx2.getResponseBodyAsString());
+					log.warn("Exception calling api crous after reauthentication - apiCrousService.getCrousSmartCard " + csn + " : \n" + clientEx2.getResponseBodyAsString(), clientEx2);
+					throw clientEx2;
+				}
+			} else {
+				// no crouslogError in db for a getRightHolder
+				// crousLogService.logErrorCrous(eppnOrEmail, null, clientEx.getResponseBodyAsString());
+				log.warn("Exception calling api crous - apiCrousService.getCrousSmartCard " + csn + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
 				throw clientEx;
 			}
 		}

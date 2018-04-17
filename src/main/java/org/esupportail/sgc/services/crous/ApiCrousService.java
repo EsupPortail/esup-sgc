@@ -129,6 +129,21 @@ public class ApiCrousService {
 		return null;
 	}
 	
+	public CrousSmartCard getCrousSmartCard(String csn) {
+		Card card = Card.findCard(csn);
+		CrousSmartCard crousSmartCard = null;
+		if(enable && card!=null) {
+			if(enable) {
+				String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+				HttpHeaders headers = this.getAuthHeaders();	
+				HttpEntity entity = new HttpEntity(headers);		
+				ResponseEntity<CrousSmartCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, CrousSmartCard.class);
+				crousSmartCard = response.getBody();
+				log.info("GET on " + url + " is OK : " + crousSmartCard);
+			}	
+		} 
+		return crousSmartCard;
+	}
 	
 	public void postOrUpdateRightHolder(String eppn) {	
 		if(enable) {
@@ -140,6 +155,7 @@ public class ApiCrousService {
 				log.info("Getting RightHolder for " + eppn +" : " + response.toString());
 				RightHolder oldRightHolder = response.getBody();
 				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn);
+				// hack dueDate can't be past in IZLY 
 				if(!newRightHolder.fieldWoDueDateEquals(oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
 					updateRightHolder(eppn);
 				} 

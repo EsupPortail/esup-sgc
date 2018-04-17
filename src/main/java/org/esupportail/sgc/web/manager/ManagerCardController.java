@@ -68,7 +68,8 @@ public class ManagerCardController {
 	public final static String ERROR_MSG ="manager.msg.error.";
 	public final static String WARNING_MSG ="manager.msg.warning.";
 	public final static String IMG_INTERDIT = "media/photo_interdite.png";
-	public final static String[] header = new String[]{"eppn", "etat", "displayName", "supannEtuId", "supannEmpId", "userType", "crous", "difPhoto", "userEditable", "deliveredDate", "nbCards", "nbRejets", "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dateEtat"};
+	public final static String[] header = new String[]{"eppn", "email", "etat", "displayName", "supannEtuId", "supannEmpId", "userType", "crous", "difPhoto", "userEditable", "deliveredDate", "nbCards", "nbRejets", "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dateEtat"};
+
 
 	@Resource 
 	UserInfoService userInfoService;
@@ -505,7 +506,7 @@ public class ManagerCardController {
 
 	@PreAuthorize("hasRole('ROLE_MANAGER')")
 	@RequestMapping(value="/csvSearch", method = RequestMethod.GET)
-	public void getCsvFromSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, @RequestParam("fields") List<String> fields, HttpServletResponse response) throws IOException {
+	public void getCsvFromSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, @RequestParam(value="fields",required=false) List<String> fields, HttpServletResponse response) throws IOException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();	
 		response.setContentType("text/csv");

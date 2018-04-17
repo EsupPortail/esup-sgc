@@ -29,6 +29,7 @@ public class FormService {
 		// prevent sql injection here
 		if(fieldsList.contains(field)) {
 			fields = User.getDistinctFreeField(field);
+			fields.remove("");
 		}
 		return fields;
 	}

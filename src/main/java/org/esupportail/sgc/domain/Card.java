@@ -244,6 +244,10 @@ public class Card {
     public String getAddress() {
         return getUserAccount().getAddress();
     }
+    
+    public String getEmail() {
+    	return getUserAccount().getEmail();
+    }
 
     public static Card findCard(String csn) {
         List<Card> cards = Card.findCardsByCsn(csn).getResultList();

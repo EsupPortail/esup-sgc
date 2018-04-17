@@ -220,6 +220,8 @@
                                                                                         <div class="well" id="filterSliders">
                                                                                             <label for="brighten">Luminosité</label>
                                                                                             <input id="brighten" max="1" min="-1" step="0.05" type="range" value="0"/>
+                                                                                            <label for="contrast">Contraste</label>
+                                                                                            <input id="contrast" max="100" min="-100" step="1" type="range" value="0"/>
                                                                                             <label for="enhance">Amélioration</label>
                                                                                             <input id="enhance" max="1" min="-1" step="0.05" type="range" value="0"/>
                                                                                             <label for="rotate">Rotation libre</label>
@@ -505,7 +507,9 @@
                                                     <dd>${card.requestBrowser}</dd>
                                                     <dt>OS: </dt>
                                                     <dd>${card.requestOs}</dd>
-                                                    <c:if test="${not empty card.crousSmartCard}">
+                                                </dl>
+                                                <c:if test="${not empty card.crousSmartCard}">
+                                                	<dl class="dl-horizontal col-lg-5">
                                                         <h4>Restauration CROUS</h4>
                                                         <dt>Numéro Crous : </dt>
                                                         <dd>${card.crousSmartCard.idZdc}</dd>
@@ -514,8 +518,17 @@
                                                             <fmt:formatDate pattern="dd/MM/yyyy" value="${card.crousSmartCard.zdcCreationDate}"/>
                                                         </dd>
                                                         <dt>Emetteur : </dt>
-                                                        <dd>${card.crousSmartCard.idTransmitter}</dd>
-                                                    </c:if>
+                                                        <dd>${card.crousSmartCard.idTransmitter}</dd> 
+                                                	</dl>
+                                                	<h5>
+						                                <spring:url value="/manager/getCrousSmartCardUrlHtmlPart?csn=${card.csn}" var="getCrousSmartCardUrl"/>
+						                                <a href="${getCrousSmartCardUrl}" class="getCrousSmartCard">Cliquer pour visualiser les données côté CROUS :</a>
+						                            </h5>
+						                            <div class="getCrousSmartCardDiv">
+						                             	<!--  -->
+						                            </div>
+                                                </c:if>
+                                                <dl class="dl-horizontal col-lg-5">
                                                     <h4>Carte d'étudiant européenne</h4>
                                                     <dt>Numéro de carte d'étudiant européenne : </dt>
                                                     <dd>${card.escnUid}</dd>

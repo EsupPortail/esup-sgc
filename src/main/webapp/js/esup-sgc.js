@@ -59,140 +59,6 @@ function set_webcam() {
 	  	 Webcam.attach( 'my_camera' );
 }
 
-//Preview image d'un file input
-function previewFileInput(idInputFile, targetImg, preview) {
-	$("#" + idInputFile).on('change', function () {
-        if (typeof (FileReader) != "undefined") {
-            var image_holder = $("#" + targetImg);
-            image_holder.empty();
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $("<img />", {
-                    "src": e.target.result,
-                    "class": "thumb-image"
-                }).appendTo(image_holder);
-                //Live preview
-                if(preview == "masque"){
-                	$("#specimenCarte").css('background-image', 'url(' + e.target.result + ')');
-                }else{
-                    $("#" + preview).prop("src", e.target.result);
-                }
-            }
-            image_holder.show();
-            reader.readAsDataURL($(this)[0].files[0]);
-        } else {
-            alert("This browser does not support FileReader.");
-        }
-    });
-}
-
-function multiUpdateForm(idArray) {
-	if(typeof multiUpdateFormUrl != "undefined"){	
-		 $.ajax({
-		        url: multiUpdateFormUrl,
-		        type: 'POST',
-		        data: {cardIds:idArray.toString()},
-		        success : function(traitementLotHtml, statut) {
-		        	$("#traitementLot").html(traitementLotHtml);
-		        }
-		 });
-	}
-};
-//Retouche image , filtres --> Konva
-function loadImages(sources, callback) {
-    var images = {};
-    var loadedImages = 0;
-    var numImages = 0;
-    for(var src in sources) {
-      numImages++;
-    }
-    for(var src in sources) {
-      images[src] = new Image();
-      images[src].onload = function() {
-        if(++loadedImages >= numImages) {
-          callback(images);
-        }
-      };
-      images[src].src = sources[src];
-
-    }
-  }
-  function buildStage(images) {
-    var stage = new Konva.Stage({
-      container: 'container',
-      width: 300,
-      height: 376
-    });
-    var layer = new Konva.Layer();
-    var lion = new Konva.Image({
-      image: images.lion,
-      x: 150,
-      y: 188,
-      width: 300,
-      height: 376,
-      draggable: true,
-      offset: {
-          x: 150,
-          y: 188
-      }
-    });
-    lion.cache();
-    lion.filters([Konva.Filters.Brighten, Konva.Filters.Enhance]);
-    layer.add(lion);
-    stage.add(layer);
-    //Brighten
-    var slider = document.getElementById('brighten');
-    function sliderChange() {
-    	lion.brightness(slider.value);
-    	layer.batchDraw();   
-    }
-    slider.addEventListener('input', sliderChange);
-    //Enhance 
-    var slider1 = document.getElementById('enhance');
-    function sliderChange1() {
-        lion.enhance(slider1.value);
-        layer.batchDraw(); 
-    }
-    slider1.addEventListener('input', sliderChange1);
-    //Rotation
-    var slider2 = document.getElementById('rotate'); 
-    function sliderChange2() {
-    	degrees = this.value;
-    	lion.setRotation(degrees);
-    	lion.rotate(degrees*Math.PI/180);
-      	layer.draw();
-    }
-    slider2.addEventListener('input', sliderChange2);
-
-  }
-  
-//dates array
-  function getDatesInrange(d1, d2, interval){
-  var dates = [];
-  while(+d1 < +d2){
-    dates.push(formateDate(d1));
-    d1.setDate(d1.getDate() + interval)
-  }
-  return dates.slice(0)
-}
-
-function formateDate(date){
-  return  [date.getFullYear(),
-          getDoubleDigits(date.getMonth() +1),getDoubleDigits(date.getDate())
-          ].join('-')
-}
-
-var startDate = new Date();
-var endDate = new Date()
-//1mois avant
-startDate.setMonth(endDate.getMonth() -1);
-var oneMonthBefore =getDatesInrange(startDate, endDate, 1)
-endDate.setDate(endDate.getDate());
-function getDoubleDigits(str) {
-  return ("00" + str).slice(-2);
-}
-var monthsArray = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
-
 function displayFormconfig(val,col,valeur){
 	var checkTrue = "";
 	var checkFalse = "";
@@ -459,43 +325,6 @@ $(document).ready(function() {
    		$('#previewCarte').modal('hide');
    	});
    	
-   	//Traitemnt par lot  cartes
-   	var idArray = [];
-   	var currentEtat = "";
-	$("#selectall").click(function () {
-		idArray = [];
-		$('.case').prop('checked', this.checked);
-		$.each($("input[name='case']:checked"), function(index, value){            
-			idArray.push($(this).val());
-	    });
-		multiUpdateForm(idArray);
-		$("#listeIds").val(idArray);
-	});
-	 
-	$(".case").click(function(){
-		if($.inArray( $(this).val(), idArray )< 0){
-			idArray.push($(this).val());
-		}else{
-			idArray.splice(idArray.indexOf($(this).val()), 1 );
-		}
-
-		if($(".case").length == $(".case:checked").length) {
-			$("#selectall").attr("checked", "checked");
-		} else {
-			$("#selectall").removeAttr("checked");
-		}
-		multiUpdateForm(idArray);
-		$("#listeIds").val(idArray);
-		if(idArray.length == 0){
-			$("#etatsChoice").empty();
-		}
-	});
-	
-	$(window).on('load', function(){ 
-		$("#selectall").removeAttr("checked");
-		$(".case").removeAttr("checked");
-	});
-
     //Cartes : edition des messages
 
 	$(document).on("click","#msgChoice button[id^='msg']", function() {
@@ -515,45 +344,6 @@ $(document).ready(function() {
     	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
    	    this.target = 'formprint';
   	});  
-
-    //Formulaire paybox
-    if(typeof displayPayboxForm != "undefined"){
-	    if(displayPayboxForm){
-	    	$("#payboxForm").submit();
-	    }
-    }
-    
-    //Onglets Cartes
-    $("#cardList .nav-tabs li a").on('click', function () {
-    	var type = $(this.attributes.href)[0].value;
-    	type = type.substr(1,3);
-    	$("#searchEppnForm #type").val(type);
-		$("#address").val("");
-		$("#etat").val("");
-		$("#editable").val("all");
-		$("#ownOrFreeCard").val("false");
-		$("#searchEppn").val("");
-		$("#nbCards").val("");
-		$("#nbRejets").val("");
-		$("#flagAdresse").val("");
-    	$("#searchEppnForm").submit();
-    }); 
-    
-    //Tabs Stats Leo
-    
-    $("#statsManager .nav-tabs li a").on('click', function () {
-    	var type = $(this.attributes.href)[0].value;
-    	type = type.substr(1,3);
-    	if(type == 0){
-        	if(typeof statsRootUrl != "undefined"){
-        		window.location.href = 	statsRootUrl;
-        	};	
-    	}else{
-	    	if(typeof tabsUrl != "undefined"){
-	    		window.location.href = 	tabsUrl + type;
-	    	};
-    	}
-    });  
 
 	$("select#etat").change(function(){
 		if(typeof filterAdressUrl != "undefined"){	
@@ -577,28 +367,10 @@ $(document).ready(function() {
 			 });
 		}
 	});
-	$("#nofilter").on('click', function () {
-		window.location = rootManagerUrl + "?index=first";
-	});
-
-	
-	$("#sessionsdiv").insertBefore("#sessionsUsers");
 	
 	$("#downloadOk").on('click', function (e) {
 		$('#modalFields').modal('hide')
 		$("#searchCsvForm").submit();
-	});
-	
-	$("#selectAllFields").click(function () {
-		$('.caseField').prop('checked', this.checked);
-	});
-	 
-	$(".caseField").click(function(){
-		if($(".caseField").length == $(".caseField:checked").length) {
-			$("#selectAllFields").attr("checked", "checked");
-		} else {
-			$("#selectAllFields").removeAttr("checked");
-		}
 	});
 	
 	//Configs
@@ -630,58 +402,6 @@ $(document).ready(function() {
     		window.location.href = 	configUrl;
     	}
     }); 
-    
-    //Mise en page libre stats
-    if (typeof statsRootUrl != "undefined") {
-	    dragula([document.getElementById('statsPanels')]).on('dragend', dragend);
-	    
-	    function dragend (el) {
-	    	var statsArray =[];
-	    	$('.statsDrag').each(function() {
-	    			statsArray.push(this.id);
-	    	});
-	    	setPrefStats(statsArray, "STATS");
-	   	}
-	
-	    function setPrefStats(statsArray, key) {
-			$.ajax({
-				url : statsRootUrl +"/prefs",
-			    data : {values: statsArray.toString(), key: key}
-			})
-	    }
-	    if(prefsStats!=null && prefsStats !=""){
-	    	$.each(prefsStatsRm, function(index, value){
-	    		$("#statsPanels #" + value).remove();
-	    	});
-	    	$.each(prefsStats, function(index, value){
-		    		var panel = $("#statsPanels #" + value).detach();
-				    panel.appendTo("#statsPanels");	    			
-	        });
-	    }
-	    
-	    function removeFromArray(value, arr) {
-	        return $.grep(arr, function(elem, index) {
-	            return elem !== value;
-	        });
-	    };
-	    
-	    //Remove stats
-	    $(".remove").on('click', function (e) {
-	    	prefsStatsRm.push(this.closest(".statsDrag").id);
-	    	if(prefsStats==""){
-		    	var statsArray =[];
-		    	$('.statsDrag').each(function() {
-		    		statsArray.push(this.id);
-		    	});
-		    	setPrefStats(statsArray, "STATS");
-	    	}
-	    	setPrefStats(prefsStatsRm, "STATSRM");
-	    	this.closest(".statsDrag").remove();
-	    	//refresh modal
-	    	$("#mainModal").load(location.href+" #mainModal>*","");
-		});
-    }
-    
     
     /* SEARCH LONG POLL */	
 	var searchLongPoll = {
@@ -761,20 +481,22 @@ $(document).ready(function() {
 		}
 	});
 	
-	$("#typeLogs").on('change', function () {
-		$("#formTypeLogs").submit();
-	 });
-	$("#actionLogs").on('change', function () {
-		$("#formActionLogs").submit();
+	/* CROUS SmartCard API View*/
+	$( ".getCrousSmartCard" ).click(function(e) {
+		e.preventDefault(); 
+		$.ajax({
+			url : this.href,
+			context: this,
+			success : function(message) {
+				if (message && message.length) {
+					$(this).parent().next(".getCrousSmartCardDiv").replaceWith(message);
+					$(this).parent().remove();
+				}
+			},
+			cache : true
+		})
 	});
-	$("#retCodeLogs").on('change', function () {
-		$("#formRetCodeLogs").submit();
-	});
-	
-	//preview template
-	previewFileInput("templateMasque", "image-holder-masque", "masque");
-	previewFileInput("templateLogo", "image-holder-logo","logo-ur");
-	previewFileInput("templateQrCode", "image-holder-qrCode", "qrcode");
+
 	
     $('#templateCardsList .photo img').popover({ trigger: 'hover', placement : 'auto', content: function () {
 		return '<img class="popTemplate" src="'+ $(this)[0].src + '"/>';

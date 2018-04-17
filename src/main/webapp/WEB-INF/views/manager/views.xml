@@ -43,5 +43,7 @@
 	
 	<definition name="manager/rightHolder" template="/WEB-INF/views/manager/rightHolder.jspx"/>
 	
+	<definition name="manager/crousSmartCard" template="/WEB-INF/views/manager/crousSmartCard.jspx"/>
+	
 	
 </tiles-definitions>

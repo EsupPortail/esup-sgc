@@ -1,3 +1,4 @@
+
 //==jQuery after()
 function insertAfter(el, referenceNode) {
 	referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
@@ -8,6 +9,161 @@ function remove(id) {
     if(elem != null){
     	return elem.parentNode.removeChild(elem);
     }
+}
+//==jQuery empty()
+function empty(id) {
+	var wrap = document.getElementById(id);
+	while (wrap.firstChild) wrap.removeChild(wrap.firstChild);
+}
+//insert before
+function insertBefore(el, referenceNode) {
+    referenceNode.parentNode.insertBefore(el, referenceNode);
+}
+//dates array
+function getDatesInrange(d1, d2, interval){
+var dates = [];
+while(+d1 < +d2){
+  dates.push(formateDate(d1));
+  d1.setDate(d1.getDate() + interval)
+}
+return dates.slice(0)
+}
+
+function formateDate(date){
+return  [date.getFullYear(),
+        getDoubleDigits(date.getMonth() +1),getDoubleDigits(date.getDate())
+        ].join('-')
+}
+
+var startDate = new Date();
+var endDate = new Date()
+//1mois avant
+startDate.setMonth(endDate.getMonth() -1);
+var oneMonthBefore =getDatesInrange(startDate, endDate, 1)
+endDate.setDate(endDate.getDate());
+function getDoubleDigits(str) {
+return ("00" + str).slice(-2);
+}
+var monthsArray = ["Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
+
+//Retouche image , filtres --> Konva
+function loadImages(sources, callback) {
+    var images = {};
+    var loadedImages = 0;
+    var numImages = 0;
+    for(var src in sources) {
+      numImages++;
+    }
+    for(var src in sources) {
+      images[src] = new Image();
+      images[src].onload = function() {
+        if(++loadedImages >= numImages) {
+          callback(images);
+        }
+      };
+      images[src].src = sources[src];
+    }
+  }
+  function buildStage(images) {
+    var stage = new Konva.Stage({
+      container: 'container',
+      width: 300,
+      height: 376
+    });
+    var layer = new Konva.Layer();
+    var lion = new Konva.Image({
+      image: images.lion,
+      x: 150,
+      y: 188,
+      width: 300,
+      height: 376,
+      draggable: true,
+      offset: {
+          x: 150,
+          y: 188
+      }
+    });
+    lion.cache();
+    lion.filters([Konva.Filters.Brighten, Konva.Filters.Enhance, Konva.Filters.Contrast]);
+    layer.add(lion);
+    stage.add(layer);
+    //Brighten
+    var slider = document.getElementById('brighten');
+    function sliderChange() {
+    	lion.brightness(slider.value);
+    	layer.batchDraw();   
+    }
+    slider.addEventListener('input', sliderChange);
+    //Enhance 
+    var slider1 = document.getElementById('enhance');
+    function sliderChange1() {
+        lion.enhance(slider1.value);
+        layer.batchDraw(); 
+    }
+    slider1.addEventListener('input', sliderChange1);
+    //Rotation
+    var slider2 = document.getElementById('rotate'); 
+    function sliderChange2() {
+    	degrees = this.value;
+    	lion.setRotation(degrees);
+    	lion.rotate(degrees*Math.PI/180);
+      	layer.draw();
+    }
+    slider2.addEventListener('input', sliderChange2);
+    //Contraste
+    var slider3 = document.getElementById('contrast');
+    function sliderChange3() {
+          lion['contrast'](parseFloat(slider3.value));
+          layer.batchDraw();
+    }
+    slider3.addEventListener('input', sliderChange3);
+  }
+  
+//Traitement par lot des cartes
+function multiUpdateForm(idArray) {
+	if(typeof multiUpdateFormUrl != "undefined"){
+		var request = new XMLHttpRequest();
+		request.open('POST', multiUpdateFormUrl + "?cardIds=" + idArray.toString(), true);
+		request.onload = function() {
+		  if (request.status >= 200 && request.status < 400) {
+			  //document.getElementById("traitementLot").innerHTML = this.response;
+			  // A enlever --> conflit winow.open
+			  $("#traitementLot").html(this.response);
+		  }
+		};
+		request.send();
+	}
+};
+//Preview image d'un file input
+function previewFileInput(idInputFile, targetImg, preview) {
+	if(document.getElementById(idInputFile)!=null){
+		document.getElementById(idInputFile).addEventListener("change", function () {
+	        if (typeof (FileReader) != "undefined") {
+	            var image_holder = document.getElementById(targetImg);
+	            empty(targetImg);
+	            var reader = new FileReader();
+	            reader.onload = function (e) {
+	                image_holder.insertAdjacentHTML('beforeend',"<img src='" + e.target.result + "' class = 'thumb-image'/>");  
+	                //Live preview
+	                if(preview == "masque"){
+	                	var mask = document.getElementById("specimenCarte");
+	                	if(mask != null){
+	                		mask.style.backgroundImage = 'url(' + e.target.result + ')'; 
+	                	}
+	                }else{
+	                	var notMask = document.getElementById(preview);
+	                	if(notMask != null){
+	                		notMask.getElementById(preview).setAttribute("src", e.target.result);
+	                	}
+	                }
+	            }
+	            image_holder.style.display = '';
+	            reader.readAsDataURL(this.files[0]);
+	        } else {
+	            alert("This browser does not support FileReader.");
+	        }
+	    });
+	}
 }
 
 //Couleurs pour graphiques stats
@@ -65,7 +221,6 @@ function searchEppnAutocomplete(id, url, field) {
 			 		  list.push(labelValue);
 		 		    });
 		 		    awesomplete.list = list;		    
-				    
 				  } else {
 				    // We reached our target server, but it returned an error
 					  console.log("erreur du serveur!");
@@ -168,7 +323,7 @@ function getStats(id, chartType, selectedType, spinner, option, transTooltip, fo
 
 //Stats bar chart
 function multiChartStackBar(allData, id, start, transTooltip,formatDate){
-	if(typeof document.getElementById(id) != "undefined"){
+	if(document.getElementById(id) != null){
     	var barLabels = [];
     	var length = Object.keys(allData).length;
     	var dataSets = [];
@@ -254,7 +409,7 @@ function multiChartStackBar(allData, id, start, transTooltip,formatDate){
 }
 
 function chartPieorDoughnut(data, id, type, option){
-    if(typeof document.getElementById(id) != "undefined"){
+    if(document.getElementById(id) != null){
     	var legend = true;
 		if(option=="legend"){
 		 legend = false;
@@ -361,7 +516,7 @@ function chartPieorDoughnut(data, id, type, option){
  	} 	
 }
 function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
-	if(typeof document.getElementById(id) != "undefined"){
+	if(document.getElementById(id) != null){
     	var listLabels = [];
     	var listValeurs = [];
     	var listTooltipLabels = [];
@@ -439,7 +594,7 @@ function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
 	}	
 }
 function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
- 	if(typeof document.getElementById(id) != "undefined"){
+ 	if(document.getElementById(id) != null){
     	var inlineValeurs = [];
     	var inlineDatasets = [];
     	var a=0;
@@ -585,4 +740,209 @@ document.addEventListener('DOMContentLoaded', function() {
     	getStats("requestFree", "multiBar", selectedType, 24);
     	getStats("templateCards", "doughnut", selectedType, 25);
     }
+    
+	//preview template
+	previewFileInput("templateMasque", "image-holder-masque", "masque");
+	previewFileInput("templateLogo", "image-holder-logo","logo-ur");
+	previewFileInput("templateQrCode", "image-holder-qrCode", "qrcode");
+	
+   	//Traitement par lot  cartes
+  	var idArray = [];
+   	var currentEtat = "";
+   	var checkboxes = document.querySelectorAll('.case');
+   	var selectAll = document.getElementById("selectall");
+   	var listeIds = document.getElementById("listeIds");
+   	if(selectAll != null){
+	   	selectAll.addEventListener("click", function(){
+			idArray = [];
+			for(var i=0, n=checkboxes.length;i<n;i++){
+				checkboxes[i].checked = this.checked;
+			}
+	
+			const values = Array.from(document.querySelectorAll('input[type="checkbox"]'))
+			  .filter((checkbox) => checkbox.checked)
+			  .map((checkbox) => checkbox.value);
+	
+			for(var i=0, n=checkboxes.length;i<n;i++){
+				checkboxes[i].checked = this.checked;
+			}
+	
+			idArray = Array.from(document.querySelectorAll("input[name='case']"))
+			  .filter((checkbox) => checkbox.checked)
+			  .map((checkbox) => checkbox.value);
+			multiUpdateForm(idArray);
+			if(listeIds != null){
+				listeIds.innerHTML = idArray;
+			}
+		});
+	
+	   	Array.from(checkboxes).forEach(link => {
+	   	    link.addEventListener('click', function(event) {
+	   			if(idArray.indexOf(this.value)< 0){
+	   				idArray.push(this.value);
+	   			}else{
+	   				idArray.splice(idArray.indexOf(this.value), 1 );
+	   			}
+	   	    	if(!this.checked){
+	   	    		selectAll.checked = false;
+	   	    	}		
+	   			multiUpdateForm(idArray);
+				if(listeIds != null){
+					listeIds.innerHTML = idArray;
+				}
+	   	    });
+	   	});
+	
+	   	window.onload = function(e){ 
+			selectAll.checked = false;
+			for(var i=0, n=checkboxes.length;i<n;i++){
+				checkboxes[i].checked = false;
+			}
+		};
+   	}
+	//Reset filtres
+	var nofilter = document.getElementById("nofilter");
+		if(nofilter != null){
+		nofilter.addEventListener("click", function(){
+			window.location = rootManagerUrl + "?index=first";
+		});
+	}
+	//admin sessions
+	if(document.getElementById("sessionsUsers")!=null){
+		insertBefore(document.getElementById("sessionsdiv"), document.getElementById("sessionsUsers"))
+	}
+	
+	//choix champs import csv recherche
+	var selectAllFields = document.getElementById("selectAllFields");
+	if(selectAllFields!=null){
+		var caseFields = document.querySelectorAll('.caseField');
+		selectAllFields.addEventListener("click", function () {
+			for(var i=0, n=caseFields.length;i<n;i++){
+				caseFields[i].checked = this.checked;
+			}			
+		});
+		
+	   	Array.from(caseFields).forEach(link => {
+	   	    link.addEventListener('click', function(event) {
+	   	    	if(!this.checked){
+	   	    		selectAllFields.checked = false;
+	   	    	}		
+	   	    });
+	   	});
+	}
+	
+    //Onglets Cartes
+	var tabsCard = document.querySelectorAll('#cardList .nav-tabs li a');
+	if(tabsCard != null){
+		var searchEppnForm =  document.getElementById("searchEppnForm");
+		for (var i = 0; i < tabsCard.length; i++) {
+		    result = tabsCard[i];
+		    result.addEventListener('click', function() {
+		    	var type = this.hash
+		    	type = type.substr(1,3);
+		    	document.getElementById("type").value = type;
+		    	document.getElementById("address").value ="";
+		    	document.getElementById("etat").value = "all";
+		    	document.getElementById("editable").value = "";
+		    	document.getElementById("ownOrFreeCard").value = "false";
+		    	document.getElementById("searchEppn").value = "";
+		    	document.getElementById("nbCards").value = "";
+		    	document.getElementById("nbRejets").value = "";
+		    	document.getElementById("flagAdresse").value = "";
+		    	searchEppnForm.submit();
+		    });
+		}
+	}
+    //Tabs Stats Leo
+	var tabsStats = document.querySelectorAll('#statsManager .nav-tabs li a');
+	if(tabsStats != null){
+		for (var i = 0; i < tabsStats.length; i++) {
+		    result = tabsStats[i];
+		    result.addEventListener('click', function() {
+		    	var type = this.hash
+		    	type = type.substr(1,3);
+		    	if(type == 0){
+		        	if(typeof statsRootUrl != "undefined"){
+		        		window.location.href = 	statsRootUrl;
+		        	};	
+		    	}else{
+			    	if(typeof tabsUrl != "undefined"){
+			    		window.location.href = 	tabsUrl + type;
+			    	};
+		    	}
+		    });
+		}
+	}
+	
+    //Formulaire paybox
+    if(typeof displayPayboxForm != "undefined"){
+	    if(displayPayboxForm){
+	    	document.getElementById("payboxForm").submit();
+	    }
+    }
+    //Logs submit
+    var logsList = document.querySelectorAll('#logsList select');
+    if(logsList != null){
+		for (var i = 0; i < logsList.length; i++) {
+		    result = logsList[i];
+		    result.addEventListener('change', function() {
+		    	this.form.submit();
+		    });
+		}
+	}
+    
+    //Mise en page libre stats
+    if (typeof statsRootUrl != "undefined") {
+	    dragula([document.getElementById('statsPanels')]).on('dragend', dragend);
+	    
+	    function dragend (el) {
+	    	var statsArray =[];
+	    	var statsDrag = document.querySelectorAll('.statsDrag');
+	    	if(statsDrag != null){
+	    		for(var src in statsDrag) {
+	    			statsArray.push(statsDrag[src].id);
+	    		}
+	    	}
+	    	setPrefStats(statsArray, "STATS");
+	   	}
+	
+	    function setPrefStats(statsArray, key) {
+			var request = new XMLHttpRequest();
+			request.open('POST', statsRootUrl + "/prefs?values=" + statsArray.toString() + "&key=" + key, true);
+			request.send();
+	    }
+	    
+	    if(prefsStats!=null && prefsStats !=""){
+	    	for(var idx in prefsStatsRm) {
+    			remove(prefsStatsRm[idx]);
+    		}
+	    	$.each(prefsStats, function(index, value){
+	    		var panel = document.getElementById(value);
+	    		if(panel !=null){
+	    			document.getElementById("statsPanels").append(panel);
+	    		}
+	        });
+	    }
+	    
+	    //Remove stats
+		var removeClass = document.querySelectorAll('.remove');
+		for (var i = 0; i < removeClass.length; i++) {
+		    result = removeClass[i];
+		    result.addEventListener('click', function() {
+			    prefsStatsRm.push(this.closest(".statsDrag").id);
+		    	if(prefsStats==""){
+			    	var statsArray =[];
+			    	document.querySelectorAll('.statsDrag').forEach(function (element, index) {
+			    		statsArray.push(element.id);
+			    	});
+			    	setPrefStats(statsArray, "STATS");
+		    	}
+		    	setPrefStats(prefsStatsRm, "STATSRM");
+		    	this.closest(".statsDrag").remove();
+		    	//refresh modal
+		    	$("#mainModal").load(location.href+" #mainModal>*","");
+		    });
+		};
+    }
+    
 })

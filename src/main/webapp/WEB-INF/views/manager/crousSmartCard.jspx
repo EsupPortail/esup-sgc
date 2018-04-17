@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<dl xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields"
+	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:page="urn:jsptagdir:/WEB-INF/tags/form"
+	xmlns:sec="http://www.springframework.org/security/tags"
+	xmlns:spring="http://www.springframework.org/tags" class="dl-horizontal col-lg-5">
+	<jsp:directive.page contentType="text/html;charset=UTF-8" />
+	<jsp:output omit-xml-declaration="yes" />
+		<h4>Données côté CROUS</h4>
+		<dt>idTransmitter</dt>
+		<dd>${crousSmartCard.idTransmitter}</dd>	
+		<dt>idMapping</dt>
+		<dd>${crousSmartCard.idMapping}</dd>	
+		<dt>idZdc</dt>
+		<dd>${crousSmartCard.idZdc}</dd>	
+		<dt>zdcCreationDate</dt>
+		<dd>${crousSmartCard.zdcCreationDate}</dd>	
+		<dt>pixSs</dt>
+		<dd>${crousSmartCard.pixSs}</dd>	
+		<dt>pixNn</dt>
+		<dd>${crousSmartCard.pixNn}</dd>	
+		<dt>appl</dt>
+		<dd>${crousSmartCard.appl}</dd>
+		<dt>uid</dt>
+		<dd>${crousSmartCard.uid}</dd>	
+		<dt>rid</dt>
+		<dd>${crousSmartCard.rid}</dd>	
+		
+</dl>
+	
+

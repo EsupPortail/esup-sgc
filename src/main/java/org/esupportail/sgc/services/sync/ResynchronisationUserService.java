@@ -7,15 +7,14 @@ import java.util.Date;
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.AuthApiCrousService;
 import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
-import org.esupportail.sgc.tools.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -68,6 +67,7 @@ public class ResynchronisationUserService {
 		if(log.isTraceEnabled()) {
 			log.trace("'user' computed from userInfoServices : " + dummyUser);
 		}
+
 		boolean accessControlMustUpdate = false;
 		if(!dummyUser.fieldsEquals(user) && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
 			if(dummyUser.getDueDate() == null && user.getDueDate().after(new Date())) {

@@ -75,9 +75,22 @@ public class CrousService extends ValidateService {
 			throw clientEx;
 		}
 	}
-
+		
+	public CrousSmartCard getCrousSmartCard(String csn) {
+		try {
+			return authApiCrousService.getCrousSmartCard(csn);
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+				return null;
+			}
+			throw clientEx;
+		}
+	}
+	
 	public void patchIdentifier(PatchIdentifier patchIdentifier) {
 		authApiCrousService.patchIdentifier(patchIdentifier);
 	}
 	
 }
+
+

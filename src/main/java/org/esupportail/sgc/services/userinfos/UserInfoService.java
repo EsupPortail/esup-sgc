@@ -19,7 +19,9 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.User.CnousReferenceStatut;
 import org.esupportail.sgc.services.ac.AccessControlService;
+import org.esupportail.sgc.services.crous.AuthApiCrousService;
 import org.esupportail.sgc.services.crous.EsistCrousService;
+import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.tools.DateUtils;
 import org.joda.time.DateTime;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Transactional
 @Service
@@ -45,6 +48,9 @@ public class UserInfoService {
 	
 	@Autowired
 	EsistCrousService esistCrousService;
+	
+	@Resource
+	AuthApiCrousService authApiCrousService;
 
 	@Resource
 	DateUtils dateUtils;
@@ -226,6 +232,17 @@ public class UserInfoService {
 			Long idRate = idCompagnyRateAndIdRate.get(1);
 			user.setIdCompagnyRate(idCompagnyRate);
 			user.setIdRate(idRate);
+			
+			// hack crous ~cnrs : idCompanyRate en 7999 -> idRate final/vrai vient en fait du crous 
+			if(Long.valueOf(7999).equals(user.getIdCompagnyRate())) {
+				try {
+					RightHolder rightHolder = authApiCrousService.getRightHolder(user.getEppn());
+					user.setIdRate(rightHolder.getIdRate());
+				} catch(HttpClientErrorException ex) {
+					log.debug("Exception getting crous rightHolder for " + user.getEppn(), ex);
+				}
+			}
+			
 		}	
 	}
 	

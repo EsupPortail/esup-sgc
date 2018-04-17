@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
@@ -167,6 +168,15 @@ public class ManagerCardControllerNoHtml {
 		RightHolder rightHolder = crousService.getRightHolder(eppn);
 		uiModel.addAttribute("rightHolder", rightHolder);
 		return "manager/rightHolder";
+	}
+	
+	
+	@RequestMapping(value="/getCrousSmartCardUrlHtmlPart")
+	@Transactional
+    public String getCrousSmartCardUrlHtmlPart(@RequestParam String csn, Model uiModel) {
+		CrousSmartCard crousSmartCard = crousService.getCrousSmartCard(csn);
+		uiModel.addAttribute("crousSmartCard", crousSmartCard);
+		return "manager/crousSmartCard";
 	}
 	
 	
