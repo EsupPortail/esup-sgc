@@ -16,6 +16,7 @@ import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
+import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.FormService;
@@ -165,9 +166,14 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/getCrousRightHolderHtmlPart")
 	@Transactional
     public String getCrousRightHolderHtmlPart(@RequestParam String eppn, Model uiModel) {
-		RightHolder rightHolder = crousService.getRightHolder(eppn);
-		uiModel.addAttribute("rightHolder", rightHolder);
-		return "manager/rightHolder";
+		try {
+			RightHolder rightHolder = crousService.getRightHolder(eppn);
+			uiModel.addAttribute("rightHolder", rightHolder);
+			return "manager/rightHolder";
+		} catch(CrousAccountForbiddenException ex) {
+			uiModel.addAttribute("message", ex.getMessage());
+			return "manager/simple-message";
+		}
 	}
 	
 	

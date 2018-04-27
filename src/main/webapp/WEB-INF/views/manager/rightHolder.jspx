@@ -24,7 +24,9 @@
 		<dt>idCompanyRate</dt>
 		<dd>${rightHolder.idCompanyRate}</dd>	
 		<dt>idRate</dt>
-		<dd>${rightHolder.idRate}</dd>	
+		<dd>${rightHolder.idRate}</dd>
+		<dt>ine</dt>
+		<dd>${rightHolder.ine}</dd>		
 	</dl>
 	
 </div>

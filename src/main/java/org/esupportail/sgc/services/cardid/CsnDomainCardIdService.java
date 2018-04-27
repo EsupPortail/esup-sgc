@@ -21,7 +21,7 @@ public class CsnDomainCardIdService implements CardIdService {
 	
 	private String appName;
 	
-	private int desfireFileLength = 0;
+	private int desfireFileLength = -1;
 	
 	private String identifierFormat = "{0}@{1}";
 	
@@ -63,19 +63,23 @@ public class CsnDomainCardIdService implements CardIdService {
 
 	@Override
 	public String encodeCardId(String desfireId) {
-		String desfireIdWithPad = StringUtils.leftPad(desfireId, desfireFileLength/2, padChar);
-		log.info("desfireIdWithPad : " + desfireIdWithPad + " -> size : " + desfireIdWithPad.length());
+		String desfireIdWithPad = "";
+		if(desfireFileLength > -1){
+			desfireIdWithPad = StringUtils.leftPad(desfireId, desfireFileLength/2, padChar);
+			log.info("desfireIdWithPad : " + desfireIdWithPad + " -> size : " + desfireIdWithPad.length());
+		} else {
+			desfireIdWithPad = desfireId;
+		}
 		String desfireIdWithPadFormatted = "";
 		for (char ch : desfireIdWithPad.toCharArray()) {
 			desfireIdWithPadFormatted = desfireIdWithPadFormatted + Integer.toHexString(ch);
 		}
 		log.info("desfireIdWithPadFormatted : " + desfireIdWithPadFormatted);
-		if(desfireIdWithPadFormatted.length() > desfireFileLength) {
+		if(desfireIdWithPadFormatted.length() > desfireFileLength && desfireFileLength > -1) {
 			log.error(desfireIdWithPadFormatted + " is too long : " + desfireIdWithPadFormatted.length() + " > " +  desfireFileLength);
 		}
 		return desfireIdWithPadFormatted;
 	}
-
 
 	@Override
 	public String decodeCardId(String desfireIdWithPad) {

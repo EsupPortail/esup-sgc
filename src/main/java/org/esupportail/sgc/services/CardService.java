@@ -289,11 +289,9 @@ public class CardService {
 			card.setDueDate(user.getDueDate());
 			if(card.getCrousTransient()!=null && card.getCrousTransient()) {
 				user.setCrous(true);
-				userInfoService.setAdditionalsInfo(user, request);
 			}
 			if(card.getEuropeanTransient()!=null && card.getEuropeanTransient()) {
 				user.setEuropeanStudentCard(true);
-				userInfoService.setAdditionalsInfo(user, request);
 			}
 			if(card.getDifPhotoTransient() != null) {
 				user.setDifPhoto(card.getDifPhotoTransient());
@@ -302,6 +300,7 @@ public class CardService {
 			if(!reference.isEmpty()){
 				card.setPayCmdNum(reference);
 			}
+			userInfoService.setAdditionalsInfo(user, null);
 			if(card.getId() ==null) {
 				user.setNbCards(Long.valueOf("1"));
 				card.persist();

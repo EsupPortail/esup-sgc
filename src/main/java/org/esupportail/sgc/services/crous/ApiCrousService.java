@@ -251,6 +251,7 @@ public class ApiCrousService {
 			rightHolder.setIdCompanyRate(user.getIdCompagnyRate());
 			rightHolder.setIdRate(user.getIdRate());
 			rightHolder.setBirthDate(user.getBirthday());
+			rightHolder.setIne(user.getSupannCodeINE());
 		}
 		return rightHolder;
 	}

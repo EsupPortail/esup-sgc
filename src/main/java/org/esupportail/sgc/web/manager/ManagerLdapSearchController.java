@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
@@ -19,7 +18,6 @@ import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -32,7 +30,6 @@ import eu.bitwalker.useragentutils.UserAgent;
 
 @RequestMapping("/manager")
 @Controller	
-@RooWebScaffold(path = "manager", formBackingObject = Card.class)
 public class ManagerLdapSearchController {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());

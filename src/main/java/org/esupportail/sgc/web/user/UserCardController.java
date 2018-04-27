@@ -308,7 +308,6 @@ public class UserCardController {
 				log.warn(bindingResult.getAllErrors().toString());
 			return "redirect:/";
 		}	
-		boolean hasRights = false;
 		Authentication auth = SecurityContextHolder.getContext()
 				.getAuthentication();
 		String eppn = auth.getName();
@@ -316,26 +315,20 @@ public class UserCardController {
 		
 		User user = User.findUser(eppn);
 		
-		if(fromLdap && userService.isEsupManager(user) || !fromLdap){
-			hasRights = true;
-		}
-		
-		if(card.getEppn() != null){
+		if(card.getEppn() != null && userService.isEsupManager(user)){
 			eppn = card.getEppn();
 			redirect = "redirect:/manager?index=first";
 		}
 
-		
 		if(user == null ){
 			user = new User();
 			user.setEppn(eppn);
 		}
 		
-		// TODO synchronized
 		synchronized (eppn.intern()) {
 			
-			// check rights  sur Sring est global - à éviter
-			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn) || hasRights) {
+			// check rights  sur Sring est global - à éviter - TODO ?
+			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn) || userService.isEsupManager(user)) {
 			
 				if(!cardEtatService.hasNewCard(eppn)){
 					

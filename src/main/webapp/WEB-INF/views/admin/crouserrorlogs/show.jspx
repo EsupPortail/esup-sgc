@@ -51,6 +51,9 @@
 					<dd>${esupSgcRightHolder.idRate}</dd>
 				  </dl>
 				</c:when>
+				<c:when test="${not empty esupSgcRightHolderException}">
+					<span class="warning">${esupSgcRightHolderException}</span>
+				</c:when>
 				<c:otherwise>
 					<span class="warning">Not Found</span>
 				</c:otherwise>
@@ -88,6 +91,9 @@
 					<dd>${crousEppnRightHolder.idRate}</dd>
 				  </dl>
 				</c:when>
+				<c:when test="${not empty crousEppnRightHolderException}">
+					<span class="warning">${crousEppnRightHolderException}</span>
+				</c:when>
 				<c:otherwise>
 					<span class="warning">Not Found</span>
 				</c:otherwise>
@@ -124,6 +130,9 @@
 					<dt>idRate</dt>
 					<dd>${crousEmailRightHolder.idRate}</dd>
 				  </dl>
+				</c:when>
+				<c:when test="${not empty crousEmailRightHolderException}">
+					<span class="warning">${crousEmailRightHolderException}</span>
 				</c:when>
 				<c:otherwise>
 					<span class="warning">Not Found</span>

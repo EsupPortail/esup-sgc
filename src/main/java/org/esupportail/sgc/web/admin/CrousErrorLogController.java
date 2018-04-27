@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
@@ -81,13 +82,21 @@ public class CrousErrorLogController {
     	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
         uiModel.addAttribute("crouserrorlog", CrousErrorLog.findCrousErrorLog(id));
         uiModel.addAttribute("itemId", id);
-        RightHolder crousEppnRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEppn());
-        RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail());
+        try {
+        	RightHolder crousEppnRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEppn());
+            uiModel.addAttribute("crousEppnRightHolder", crousEppnRightHolder);
+        } catch(CrousAccountForbiddenException ex) {
+			uiModel.addAttribute("crousEppnRightHolderException", ex.getMessage());
+        }
         RightHolder esupSgcRightHolder =  apiCrousService.computeEsupSgcRightHolder(crousErrorLog.getUserEppn());
-        uiModel.addAttribute("crousEppnRightHolder", crousEppnRightHolder);
-        uiModel.addAttribute("crousEmailRightHolder", crousEmailRightHolder);
         uiModel.addAttribute("esupSgcRightHolder", esupSgcRightHolder);
-        
+        try {
+        	RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail());
+        	uiModel.addAttribute("crousEmailRightHolder", crousEmailRightHolder);
+        } catch(CrousAccountForbiddenException ex) {
+			uiModel.addAttribute("crousEmailRightHolderException", ex.getMessage());
+        }	
+
         return "admin/crouserrorlogs/show";
     }
 

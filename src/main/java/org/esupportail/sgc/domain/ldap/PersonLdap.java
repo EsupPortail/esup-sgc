@@ -6,7 +6,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 @RooJavaBean
 @RooToString
-@RooJson
 public class PersonLdap {
 	private String uid;
 	private String cn ;

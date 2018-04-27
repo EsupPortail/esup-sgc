@@ -64,4 +64,12 @@ privileged aspect RightHolder_Roo_JavaBean {
         this.birthDate = birthDate;
     }
     
+    public String RightHolder.getIne() {
+        return this.ine;
+    }
+    
+    public void RightHolder.setIne(String ine) {
+        this.ine = ine;
+    }
+    
 }

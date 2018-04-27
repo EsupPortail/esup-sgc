@@ -28,15 +28,15 @@ public class RightHolder {
 	Long idCompanyRate;
 	
 	Long idRate;
+	
+	Date birthDate;
+	
+	String ine;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
 	public Date getDueDate() {
 		return dueDate;
 	}
-
-	/**** optional part ****/
-	
-	Date birthDate;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
 	public Date getBirthDate() {
@@ -86,8 +86,17 @@ public class RightHolder {
 				return false;
 		} else if (!lastName.equals(other.lastName))
 			return false;
+		if (ine == null) {
+			if (other.ine != null)
+				return false;
+		} else if (!ine.equals(other.ine))
+			return false;
 		return true;
 	}
+	
+
+	/**** optional part ****/
+	
 	
 	/*
 	String rneOrgCode;
@@ -95,9 +104,7 @@ public class RightHolder {
 	String rneDepCode;
 	
 	String internalId;
-	
-	String ine;
-	
+
 	String secondaryEmail;
 	
 	String cellNumber;

@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.exceptions.CrousAccountLockException;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
@@ -71,6 +72,8 @@ public class CrousService extends ValidateService {
 		} catch(HttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				return null;
+			} else if(HttpStatus.FORBIDDEN.equals(clientEx.getStatusCode())) { 
+				throw new CrousAccountForbiddenException("Forbidden - crous righolder hold by another institute ?", clientEx);
 			}
 			throw clientEx;
 		}

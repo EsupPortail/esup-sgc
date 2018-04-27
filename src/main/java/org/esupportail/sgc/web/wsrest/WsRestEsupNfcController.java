@@ -308,9 +308,13 @@ public class WsRestEsupNfcController {
 		} else if(EsupNfcTagLog.SALLE_LIVRAISON.equals(esupNfcTagLog.getLocation())) {
 			Card card = null;
 			card = Card.findCardsByCsn(csn).getSingleResult();
-			log.info("validateTag on "+ EsupNfcTagLog.SALLE_LIVRAISON +" with " + esupNfcTagLog + " CSN");
+			log.info("validateTag on "+ EsupNfcTagLog.SALLE_LIVRAISON +" with " + esupNfcTagLog + " CSN for 'Livraison'");
 			card.setDeliveredDate(new Date());
 			card.merge();
+			if(!Etat.ENABLED.equals(card.getEtat())) {
+				log.info("livraison of " + card.getCsn() + " -> activation");
+				cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, null, null, false, false);
+			}
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.SALLE_SEARCH.equals(esupNfcTagLog.getLocation())) {
 			Card card = null;
