@@ -330,13 +330,13 @@ public class UserCardController {
 			// check rights  sur Sring est global - à éviter - TODO ?
 			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn) || userService.isEsupManager(user)) {
 			
-				if(!cardEtatService.hasNewCard(eppn)){
+				if(!cardEtatService.hasNewCard(eppn)) {
 					
 					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, fromLdap);
 					
-					if(emptyPhoto){
+					if(emptyPhoto) {
 						redirectAttributes.addFlashAttribute("messageInfo", WARNING_MSG + "leocarte_emptyfile");
-					}else{
+					} else {
 						redirectAttributes.addFlashAttribute("messageSuccess", "success_leocarte_upload");
 					}
 				}

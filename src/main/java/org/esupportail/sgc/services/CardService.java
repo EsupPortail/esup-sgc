@@ -302,7 +302,7 @@ public class CardService {
 			}
 			userInfoService.setAdditionalsInfo(user, null);
 			if(card.getId() ==null) {
-				user.setNbCards(Long.valueOf("1"));
+				user.setNbCards(user.getNbCards()+1);
 				card.persist();
 			}else{
 				card.merge();

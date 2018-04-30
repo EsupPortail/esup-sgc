@@ -1,10 +1,7 @@
 package org.esupportail.sgc.services;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -182,7 +179,7 @@ public class UserService {
 		
 		ArrayList<User> users = new ArrayList<User>();
 		
-		List<PersonLdap> ldapResults =   ldapPersonService.searchByFirstName(cn);
+		List<PersonLdap> ldapResults =   ldapPersonService.searchByCommonName(cn);
 		
 		for(PersonLdap item: ldapResults){
 			if(item.getEduPersonPrincipalName() !=null && !item.getEduPersonPrincipalName().isEmpty()) {

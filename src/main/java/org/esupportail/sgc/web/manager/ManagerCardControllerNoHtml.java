@@ -234,7 +234,7 @@ public class ManagerCardControllerNoHtml {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<PersonLdap> ldapList = new ArrayList<PersonLdap>();
 		if(!searchString.trim().isEmpty()) {
-			ldapList = ldapPersonService.searchByFirstName(searchString);
+			ldapList = ldapPersonService.searchByCommonName(searchString);
 		}
 		
 		String flexJsonString = "Aucune info à récupérer";
