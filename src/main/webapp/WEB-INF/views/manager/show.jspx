@@ -520,13 +520,15 @@
                                                         <dt>Emetteur : </dt>
                                                         <dd>${card.crousSmartCard.idTransmitter}</dd> 
                                                 	</dl>
-                                                	<h5>
-						                                <spring:url value="/manager/getCrousSmartCardUrlHtmlPart?csn=${card.csn}" var="getCrousSmartCardUrl"/>
-						                                <a href="${getCrousSmartCardUrl}" class="getCrousSmartCard">Cliquer pour visualiser les données côté CROUS :</a>
-						                            </h5>
-						                            <div class="getCrousSmartCardDiv">
-						                             	<!--  -->
-						                            </div>
+                                                	<c:if test="${not empty card.csn}">
+	                                                	<h5>
+							                                <spring:url value="/manager/getCrousSmartCardUrlHtmlPart?csn=${card.csn}" var="getCrousSmartCardUrl"/>
+							                                <a href="${getCrousSmartCardUrl}" class="getCrousSmartCard">Cliquer pour visualiser les données côté CROUS :</a>
+							                            </h5>
+							                            <div class="getCrousSmartCardDiv">
+							                             	<!--  -->
+							                            </div>
+						                            </c:if>
                                                 </c:if>
                                                 <dl class="dl-horizontal col-lg-5">
                                                     <h4>Carte d'étudiant européenne</h4>
