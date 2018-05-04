@@ -9,6 +9,14 @@ public class FormService {
 	
 	private List<String> fieldsList = new ArrayList<>();
 	
+	private int nbFields = 3;
+	
+	public int getNbFields() {
+		return nbFields;
+	}
+	public void setNbFields(int nbFields) {
+		this.nbFields = nbFields;
+	}
 	public List<String> getFieldsList() {
 		return fieldsList;
 	}

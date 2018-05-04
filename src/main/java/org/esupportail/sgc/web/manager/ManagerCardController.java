@@ -348,6 +348,7 @@ public class ManagerCardController {
     	uiModel.addAttribute("countCards",  countCards);
     	uiModel.addAttribute("selectedType",  searchBean.getType());
     	uiModel.addAttribute("freeFields",  formService.getFieldList());
+    	uiModel.addAttribute("nbFields", new String[formService.getNbFields()]);
     	
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
     		HashMap<String, String[]> test = searchBean.getFreeFieldValue();

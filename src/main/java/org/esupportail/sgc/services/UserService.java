@@ -192,7 +192,6 @@ public class UserService {
 					user.setEmail(item.getMail());
 					user.setSupannEntiteAffectationPrincipale(item.getSupannEntiteAffectationPrincipale());
 					user.setUserType(item.getEduPersonPrimaryAffiliation());
-					user.setNbCards(Long.valueOf("0"));
 				    user.setBirthday(dateUtils.parseSchacDateOfBirth(item.getSchacDateOfBirth()));
 					user.setInSgc(false);
 				} else {

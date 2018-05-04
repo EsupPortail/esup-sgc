@@ -17,7 +17,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.PostPersist;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
@@ -248,7 +247,14 @@ public class Card {
     public String getEmail() {
     	return getUserAccount().getEmail();
     }
-
+    
+    @Transactional
+    public void persist() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.persist(this);
+        this.userAccount.setNbCards(this.getUserAccount().getNbCards()+1);
+    }
+    
     public static Card findCard(String csn) {
         List<Card> cards = Card.findCardsByCsn(csn).getResultList();
         if (cards.isEmpty()) {

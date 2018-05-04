@@ -60,12 +60,6 @@ privileged aspect Card_Roo_Jpa_ActiveRecord {
     }
     
     @Transactional
-    public void Card.persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.persist(this);
-    }
-    
-    @Transactional
     public void Card.flush() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.flush();

@@ -33,6 +33,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -165,6 +166,27 @@ public class WsRestEsupSgcApiController {
 		}
 		return new ResponseEntity<String>(eppn + " LOCKED.", responseHeaders, HttpStatus.LOCKED);
 	}
+	
+	/**
+	 * Example to use it :
+	 * curl https://esup-sgc.univ-ville.fr/wsrest/api/sync?eppn=toto@univ-ville.fr
+	 */
+	@RequestMapping(value="/sync", method = RequestMethod.GET)
+	public ResponseEntity<String> sync(@RequestParam String eppn) {	
+		
+		User user = User.findUser(eppn);
+		if(user == null) {
+			user = new User();
+			user.setEppn(eppn);
+			user.persist();
+		}
+		
+		resynchronisationUserService.synchronizeUserInfo(eppn);
+		ldapGroup2UserRoleService.syncUser(eppn);
+		
+		return new ResponseEntity<String>(eppn + " has been synchronized.", HttpStatus.OK);
+	}
+	
 	
 }
 

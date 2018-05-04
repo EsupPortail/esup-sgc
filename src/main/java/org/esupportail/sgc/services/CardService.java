@@ -302,7 +302,6 @@ public class CardService {
 			}
 			userInfoService.setAdditionalsInfo(user, null);
 			if(card.getId() ==null) {
-				user.setNbCards(user.getNbCards()+1);
 				card.persist();
 			}else{
 				card.merge();
@@ -350,8 +349,6 @@ public class CardService {
 		String messageLog = "Demande de renouvellement de carte pour :  " + card.getEppn() + " effectuée.";
 		cardEtatService.setCardEtat(copyCard, Etat.RENEWED, messageLog, null, false, false);
 		copyCard.persist();
-		user.setNbCards(user.getNbCards() +1);
-		user.merge(); // utile notamment car on modifie le nb de cartes via @PostConstruct de Card
 		log.info(messageLog);
 		
 
