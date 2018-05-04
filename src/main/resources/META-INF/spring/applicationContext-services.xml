@@ -286,6 +286,7 @@
 	</bean>
 	
 	<bean id="formService" class="org.esupportail.sgc.services.FormService">
+            <property name="nbFields" value="3"/>
 		<property name="fieldsList">
              <list>
                  <value>verso1</value>
