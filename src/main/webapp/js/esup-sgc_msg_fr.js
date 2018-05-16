@@ -1,5 +1,5 @@
 var messages = {
-		photoTooSmall: "La photo est trop petite, veuillez essayer avec des dimensions supérieures ou égales à 150px X 188px",
+		photoTooSmall: "La photo est trop petite, veuillez essayer avec des dimensions supérieures ou égales à 300px X 376px",
 		fileRequired: "Vous devez sélectionner un fichier",
 		validImage: "Image validée",
 		alertValid: "Valider votre choix!",

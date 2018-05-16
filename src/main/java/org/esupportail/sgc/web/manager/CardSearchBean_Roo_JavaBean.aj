@@ -82,19 +82,19 @@ privileged aspect CardSearchBean_Roo_JavaBean {
         this.nbRejets = nbRejets;
     }
     
-    public HashMap<String, String> CardSearchBean.getFreeField() {
+    public HashMap<Integer, String> CardSearchBean.getFreeField() {
         return this.freeField;
     }
     
-    public void CardSearchBean.setFreeField(HashMap<String, String> freeField) {
+    public void CardSearchBean.setFreeField(HashMap<Integer, String> freeField) {
         this.freeField = freeField;
     }
     
-    public HashMap<String, String[]> CardSearchBean.getFreeFieldValue() {
+    public HashMap<Integer, String[]> CardSearchBean.getFreeFieldValue() {
         return this.freeFieldValue;
     }
     
-    public void CardSearchBean.setFreeFieldValue(HashMap<String, String[]> freeFieldValue) {
+    public void CardSearchBean.setFreeFieldValue(HashMap<Integer, String[]> freeFieldValue) {
         this.freeFieldValue = freeFieldValue;
     }
     

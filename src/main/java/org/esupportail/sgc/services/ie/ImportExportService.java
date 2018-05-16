@@ -25,8 +25,7 @@ import org.supercsv.cellprocessor.ConvertNullTo;
 import org.supercsv.cellprocessor.FmtDate;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.io.dozer.CsvDozerBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 @Service
@@ -99,9 +98,15 @@ public class ImportExportService {
 	public List<String> getHeadersFromProperties(List<String> fields){
 
 		List<String> fieldsProperties = new ArrayList<String>();
+		
+		String message = "";
 
 		for(String field : fields){
-			fieldsProperties.add(messageSource.getMessage("card.csv.".concat(field), null, Locale.ROOT));
+			message = messageSource.getMessage("card.csv.".concat(field), null, Locale.ROOT);
+			if("card.csv.".concat(field).equals(message)){
+				message = field.replace("userAccount.", "");
+			}
+			fieldsProperties.add(message);
 		}
 
 		return fieldsProperties;
@@ -110,28 +115,29 @@ public class ImportExportService {
 
 	public void exportCsv2OutputStream(CardSearchBean searchBean, String eppn, List<String> fields, OutputStream outputStream) {
 
-		ICsvBeanWriter beanWriter = null;
+		CsvDozerBeanWriter beanWriter = null;
 		
 		Writer writer = null;
+		final String[] FIELD_MAPPING =(String[]) fields.toArray(new String[0]);
 		
 		try{
-			String header[] = (String[]) fields.toArray(new String[0]);
-
 			writer = new OutputStreamWriter(outputStream, "UTF8");
 
-			beanWriter =  new CsvBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+			beanWriter =  new CsvDozerBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 
 			List<String> fieldsProperties = getHeadersFromProperties(fields);
 
-			String headerFr[] = (String[]) fieldsProperties.toArray(new String[0]);		 
+			String headerFr[] = (String[]) fieldsProperties.toArray(new String[0]);
 
 			beanWriter.writeHeader(headerFr);
-
+			
 			final CellProcessor[] processors = this.getProcessors(fieldsProperties);
+
+            beanWriter.configureBeanMapping(Card.class, FIELD_MAPPING);
 
 			List<Card> cards = Card.findCards(searchBean, eppn, null, null).getResultList();
 			for(Card card : cards) {
-				beanWriter.write(card, header,processors);
+				beanWriter.write(card,processors);
 			}		
 		} catch(Exception e){
 			log.warn("Interruption de l'export", e);

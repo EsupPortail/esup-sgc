@@ -3,6 +3,7 @@ package org.esupportail.sgc.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 
 public class FormService {
@@ -32,6 +33,16 @@ public class FormService {
 		return fields;
 	}
 	
+	public ArrayList<String> getFieldList2() {
+		ArrayList<String> fields = new ArrayList<>();
+		ArrayList<String> camelFields = new ArrayList<>();
+		fields = (ArrayList<String>) fieldsList;
+		for(String item : fields){
+			camelFields.add(Card.snakeToCamel(item));
+		}
+		return camelFields;
+	}
+
 	public List<String> getField1List(String field) {
 		List<String> fields = new ArrayList<>();
 		// prevent sql injection here

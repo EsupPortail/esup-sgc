@@ -205,15 +205,25 @@ public class WsRestEsupNfcController {
 		Card card = Card.findCard(taglog.csn);
 		if(card!=null && card.isEnabled()) {
 			User user = User.findUser(card.getEppn());
-			
 			switch (idName) {
-			case "eppn":
-				secondaryId = user.getEppn();
-				break;
-
-			default:
-				secondaryId = user.getSecondaryId();
-				break;
+				case "csn":
+					secondaryId = taglog.csn;
+					break;
+				case "cardUID":
+					secondaryId = taglog.csn;
+					break;
+				case "secondaryId":
+					secondaryId = user.getSecondaryId();
+					break;
+				case "sgcCardId":
+					secondaryId = card.getId().toString();
+					break;
+				case "eppn":
+					secondaryId = user.getEppn();
+					break;
+				default:
+					secondaryId = user.getEppn();
+					break;
 			}
 		}
 		return secondaryId;

@@ -447,8 +447,8 @@ span.icon-flipped{
 	max-width: 400px;
 }
 #my_camera{
- width: 320px;
- height: 240px;
+ width: 320px !important;
+ height: 240px !important;
  border: 1px solid black;
  margin: 10px 0;
 }
@@ -465,4 +465,8 @@ span.icon-flipped{
 }
 #advancedSearch .well{
 	margin-bottom: 0;
+}
+#modalFields hr{
+	visibility: visible;
+	color: #CCC;
 }

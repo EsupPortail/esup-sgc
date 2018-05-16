@@ -27,7 +27,7 @@ public class CardSearchBean {
 	
 	private Long nbRejets;
 	
-	HashMap<String, String> freeField;
+	HashMap<Integer, String> freeField;
 	
-	HashMap<String, String[]> freeFieldValue;
+	HashMap<Integer, String[]> freeFieldValue;
 }

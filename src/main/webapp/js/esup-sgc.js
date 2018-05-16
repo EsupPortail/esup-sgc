@@ -17,6 +17,9 @@ window.alert = function(message, title) {
     $("#bootstrap-alert-box-modal .modal-body strong").html(message || "");
     $("#bootstrap-alert-box-modal").modal('show');
 };
+
+var photoExportZoom = 4;
+
 //Freefield select
 function displayResultFreefield(selectedField, fieldsValue, indice) {
 	$.ajax({
@@ -31,10 +34,12 @@ function displayResultFreefield(selectedField, fieldsValue, indice) {
         	$.each(data, function(index, value) {
         		var selected = "";
         		var splitFieldsFirstLevel = fieldsValue.split('@@');
-        		
         		if(typeof splitFieldsFirstLevel[indice] != 'undefined'){
 	            	if(fieldsValue.length>0 ){
-	            		var splitFields2ndLevel = splitFieldsFirstLevel[indice].split(",");
+	            		var splitFields2ndLevel = splitFieldsFirstLevel[indice];
+	            		if(splitFieldsFirstLevel[indice].indexOf(",")!=-1){
+	            			splitFields2ndLevel = splitFieldsFirstLevel[indice].split(",");
+	            		}
 		        		if(splitFields2ndLevel.indexOf(value)!=-1){
 		        			selected ="selected='selected'";
 		        		}
@@ -52,6 +57,9 @@ function set_webcam() {
 	    Webcam.set({
 	  	  width: 320,
 	  	  height: 240,
+	  	  dest_width: 640,
+	  	  dest_height: 480,
+
 	  	  image_format: 'jpeg',
 	  	  jpeg_quality: 90,
 	  	  upload_name: "webcam"
@@ -165,28 +173,28 @@ $(document).ready(function() {
 	
     $(".rotate-ccw").on("click",function() {
     	imageCropper.cropit('rotateCCW');
-    	imageCropper.cropit('exportZoom', 1);
+    	imageCropper.cropit('exportZoom', 2);
     	confirmPreview.val("false");
     	alertPreview.removeClass("alert-success" ).addClass( "alert-danger" );
     	alertPreview.html(" <span class='glyphicon glyphicon-warning-sign'><!----></span> " + messages['alertPreview']);	
     });
     $(".rotate-cw").on("click",function() {
     	imageCropper.cropit('rotateCW');
-    	imageCropper.cropit('exportZoom', 1);
+    	imageCropper.cropit('exportZoom', 2);
     	confirmPreview.val("false");
     	alertPreview.removeClass("alert-success" ).addClass( "alert-danger" );
     	alertPreview.html(" <span class='glyphicon glyphicon-warning-sign'><!----></span> " + messages['alertPreview']);
     });
     
     imageInput.change(function(e){
-    	imageCropper.cropit('exportZoom', 1);
+    	imageCropper.cropit('exportZoom', 2);
     	confirmPreview.val("false");
     	alertPreview.removeClass("alert-success" ).addClass( "alert-danger" );
     	alertPreview.html(" <span class='glyphicon glyphicon-warning-sign'><!----></span> " + messages['alertPreview']);
 	});
     
 	$("#cardRequest [type=range]").change(function(){
-    	imageCropper.cropit('exportZoom', 1);
+    	imageCropper.cropit('exportZoom', 2);
     	confirmPreview.val("false");
     	alertPreview.removeClass("alert-success" ).addClass( "alert-danger" );
     	alertPreview.html(" <span class='glyphicon glyphicon-warning-sign'><!----></span> " + messages['alertPreview']);
@@ -204,7 +212,7 @@ $(document).ready(function() {
     	 if(isISmartPhone == "true" && orientation == "6"){
     		 imageCropper.cropit('rotateCW');
     	 }
-    	 imageCropper.cropit('exportZoom', 2);
+    	 imageCropper.cropit('exportZoom', photoExportZoom);
     	 var image = imageCropper.cropit('export', { type: 'image/jpeg', originalSize: false,  quality: .9 });
     	
     	 $('#specimenCarte img#photo').attr("src", image);
@@ -222,7 +230,7 @@ $(document).ready(function() {
 	          	 alert(messages['fileRequired']);      	 
 	          	 return false;
 	           }
-	    	imageCropper.cropit('exportZoom', 2);
+	    	imageCropper.cropit('exportZoom', photoExportZoom);
 	       	var image = imageCropper.cropit('export', { type: 'image/jpeg', originalSize: false,  quality: .9 });  
 	       	imageData.val(image);
     	}
@@ -246,7 +254,7 @@ $(document).ready(function() {
           	 alert(messages['fileRequired']);      	 
           	 return false;
            }
-    	imageCropper.cropit('exportZoom', 2);
+    	imageCropper.cropit('exportZoom', photoExportZoom);
        	var image = imageCropper.cropit('export', { type: 'image/jpeg', originalSize: false,  quality: .9 });  
         var sources = {
       	      lion: image
@@ -256,7 +264,7 @@ $(document).ready(function() {
     });
     
     $("#resetBtn").on('click', function(e) {
-    	imageCropper.cropit('exportZoom', 2);
+    	imageCropper.cropit('exportZoom', photoExportZoom);
     	imageCropper.cropit('imageSrc', photorUrl + $("#retouche #cardId").val());
        	filterSliders.hide();
        	cropitInfo.show();
@@ -538,13 +546,12 @@ $(document).ready(function() {
 	    });
 	    
 	    $("#snapShot").on("click", function() {
-	   	 Webcam.snap( function(data_uri) {
+	   	 Webcam.snap( function(data_uri) {		   	
 	   		imageCropper.cropit('imageSrc', data_uri);
 	   		imageCropper.cropit('minZoom', 'fill');
 	   	 } );
 	    })
     }
-    
     //Récupération des résultats du select champ libre
     if(typeof freeUrl != "undefined"){
     	var selectedField = $(".freeSelect");
@@ -559,4 +566,10 @@ $(document).ready(function() {
     		displayResultFreefield(selectedField, fieldsValue, indice);
 		});
     }
+    
+ 	//Bouton imprimer bordereau
+	 $('.printPage').click(function() {
+	  window.print();
+	  return false;
+	 });
 });

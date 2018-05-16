@@ -32,7 +32,7 @@
 		</c:otherwise>
 	</c:choose>
 		
-	<div class="container-fluid">
+	<div class="container-fluid hidden-print">
 	
 		<menu:menu appName="${app_name}" id="_navbar">
 
@@ -58,7 +58,7 @@
 			    		 <li class="menuTools">
 			    		 	<spring:url value="/resources/images/esup-sgc-client-icon.svg" var="clientJwsUrlIcon"/>
 			    		 	<a href="${clientJwsUrl}/r2d2">
-			    		 	<span style="background-size:15px;background-image: url('resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>Encodeur - robot ZXP3</a>
+			    		 	<span style="background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>Encodeur - robot ZXP3</a>
 			    		 </li>
 					 </sec:authorize>
 					<li class="menuTools">

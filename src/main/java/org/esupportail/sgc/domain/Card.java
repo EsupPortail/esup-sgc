@@ -449,6 +449,9 @@ public class Card {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.desc(u.get("name")));
                     orders.add(criteriaBuilder.desc(u.get("firstname")));
+                }else if ("address".equals(sortFieldName)) {
+                    Join<Card, User> u = c.join("userAccount");
+                    orders.add(criteriaBuilder.desc(u.get("address")));
                 }
             }
         } else {
@@ -462,6 +465,9 @@ public class Card {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.asc(u.get("name")));
                     orders.add(criteriaBuilder.asc(u.get("firstname")));
+                }else if ("address".equals(sortFieldName)) {
+                    Join<Card, User> u = c.join("userAccount");
+                    orders.add(criteriaBuilder.asc(u.get("address")));
                 }
             }
         }
@@ -472,7 +478,7 @@ public class Card {
         if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
         	if(!searchBean.getFreeField().values().isEmpty() && !searchBean.getFreeFieldValue().isEmpty()){
 	            Join<Card, User> u = c.join("userAccount");
-	            for(Map.Entry<String, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
+	            for(Map.Entry<Integer, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
 	            	List<Predicate> orPredicates = new ArrayList<Predicate>();
 	            	if(entry.getValue().length>0){
 	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
@@ -546,7 +552,7 @@ public class Card {
         if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
         	if(!searchBean.getFreeField().values().isEmpty() && !searchBean.getFreeFieldValue().isEmpty()){
 	            Join<Card, User> u = c.join("userAccount");
-	            for(Map.Entry<String, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
+	            for(Map.Entry<Integer, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
 	            	List<Predicate> orPredicates = new ArrayList<Predicate>();
 	            	if(entry.getValue().length>0){
 	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));

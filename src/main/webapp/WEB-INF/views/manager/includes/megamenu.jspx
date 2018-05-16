@@ -4,6 +4,7 @@
 <spring:url value="/manager/edit" var="editUrl" />
  <spring:url value="/manager/multiUpdate" var="multiUpdateUrl" />
  <spring:url value="/manager/csvSearch" var="csvUrl"/>
+<spring:url value="/manager/bordereau" var="bordereauUrl"/>
 
  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 	 <div class="collapse navbar-collapse" id="searchCollapse">
@@ -140,6 +141,21 @@
 									value="${searchBean.nbRejets ne null ? searchBean.nbRejets : ''}" />
 								<input type="hidden" id="flagAdresse" name="flagAdresse"
 									value="${searchBean.flagAdresse ne null ? searchBean.flagAdresse : ''}" />
+								<hr />
+								<c:forEach items="${csvFiltres}" var="filtre" varStatus="status">
+									<div class="checkbox">
+										<label> <input type="checkbox" id="fields_${filtre}" class="caseField" 
+											name="fields" value="userAccount.${filtre}" checked="checked" /><strong>${filtre}</strong>
+										</label>
+									</div>
+									<c:set var="index" value="${status.index}" />
+									<c:if test="${not empty searchBean.freeFieldValue[index]['0']}">
+										<input type="hidden" id="freeField${status.index}" name="freeField['${status.index}']" 
+											value="${searchBean.freeField[index]}"  />
+										<input type="hidden" id="freeFieldValue${status.index}" name="freeFieldValue['${status.index}']"
+											value="${searchBean.freeFieldValue[index]['0']}"  />
+									</c:if>	
+								</c:forEach>
 							</form>
 							<hr />
 						</div>

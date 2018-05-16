@@ -1,0 +1,32 @@
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" id="tableBordereau">
+	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
+	<jsp:output omit-xml-declaration="yes" />
+	<spring:url value="/manager?index=first" var="listeUrl"/>
+    <h2>Bordereau
+		<a class="btn btn-primary pull-right hidden-print" href="${listeUrl}" type="button">
+            <span class="glyphicon glyphicon-home"></span></a>
+        <a  type="button" class=" btn btn-danger printPage  pull-right hidden-print">
+			<span class="glyphicon glyphicon-print"></span>
+		</a>            
+    </h2>
+	<table class="table table-bordered">
+	  <thead>
+	  	<tr><th>#</th><th>N° Etu/Pers</th><th>Nom</th><th>Prénom</th><th>INE / --</th></tr>
+	  </thead>
+	  <tbody>
+		  <c:set var="lastAdress" value="none" />
+		  <c:set var="lastCcount" value="0" />
+		  <c:forEach items="${cards}" var="card" varStatus="status">
+		  	<c:if test="${card.userAccount.address ne lastAdress}">
+		  		<tr class="info"><td colspan="5">${card.userAccount.address}</td></tr>
+		  		<c:set var="lastCcount" value="0" />
+		  	</c:if>
+		  	<c:set var="lastCcount" value="${lastCcount+1}" />
+		  	<c:if test="${card.userAccount.address eq lastAdress}">
+		  	</c:if>
+			<tr><td>${lastCcount}</td><td>${card.userAccount.supannEmpId}${card.userAccount.supannEtuId}</td><td>${card.userAccount.name}</td><td>${card.userAccount.firstname}</td><td><c:out value="${not empty card.userAccount.supannCodeINE ? card.userAccount.supannCodeINE: '--'}"/></td></tr>
+			<c:set var="lastAdress" value="${card.userAccount.address}" />
+		  </c:forEach>
+	  </tbody>
+	</table>
+</div>

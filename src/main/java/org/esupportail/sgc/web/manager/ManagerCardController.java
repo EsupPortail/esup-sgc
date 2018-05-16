@@ -142,6 +142,11 @@ public class ManagerCardController {
 		return Arrays.asList(header);
 	}
 	
+	@ModelAttribute("csvFiltres")
+	public List<String> getCsvFiltres() {
+		return formService.getFieldList2();
+	}
+	
 	@ModelAttribute("validateServicesNames")
 	public List<String> getValidateServicesNames() {
 		return cardEtatService.getValidateServicesNames();
@@ -351,7 +356,7 @@ public class ManagerCardController {
     	uiModel.addAttribute("nbFields", new String[formService.getNbFields()]);
     	
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
-    		HashMap<String, String[]> test = searchBean.getFreeFieldValue();
+    		HashMap<Integer, String[]> test = searchBean.getFreeFieldValue();
     		test.values().removeAll(Collections.singleton(""));
     		uiModel.addAttribute("collapse", test.size() > 0 ? "in" : "");
     		List<String> values = new ArrayList<String>(); 
@@ -372,6 +377,7 @@ public class ManagerCardController {
     	}
 		uiModel.addAttribute("eppn", eppn);
     	addDateTimeFormatPatterns(uiModel);
+    	
     	return "manager/list";
     }
 
@@ -534,6 +540,19 @@ public class ManagerCardController {
 		}
 
 		return "redirect:/manager?index=first";
+	}
+	
+	@RequestMapping(value="/bordereau", method = RequestMethod.GET)
+	public String getBordereau(@ModelAttribute("searchBean") CardSearchBean searchBean, Model uiModel){
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		
+		List<Card> cards = Card.findCards(searchBean, eppn, "address", "ASC").getResultList();
+		
+		uiModel.addAttribute("cards", cards);
+		
+		return "manager/bordereau";
 	}
 	
 }
