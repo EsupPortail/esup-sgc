@@ -494,6 +494,11 @@
 		    <version>2.4.0</version>
 		</dependency>
 		<dependency>
+		    <groupId>net.sf.supercsv</groupId>
+		    <artifactId>super-csv-dozer</artifactId>
+		    <version>2.4.0</version>
+		</dependency>
+		<dependency>
 		    <groupId>eu.europeanstudentcard</groupId>
 			<artifactId>escn-generator</artifactId>
 			<version>1.1.0</version>	
