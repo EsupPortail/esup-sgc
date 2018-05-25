@@ -170,7 +170,6 @@ public class UserService {
 		displayFormParts.put("isPaidRenewal",  this.isPaidRenewal(user));
 		displayFormParts.put("canPaidRenewal",  this.canPaidRenewal(user));
 		displayFormParts.put("hasDeliveredCard",  this.hasDeliveredCard(user));
-		displayFormParts.put("displayEuropeanCard", cardService.displayFormEuropeanCard(user.getUserType()));
 		return displayFormParts;
 		
 	}
@@ -202,5 +201,13 @@ public class UserService {
 		}
 		
 		return users;
+	}
+	
+	public boolean isEuropeanStudent(User user) {
+		boolean isEuropeanStudent = false;
+		if(!user.getSupannEtuId().isEmpty() && appliConfigService.isQrCodeEscEnabled()){
+			isEuropeanStudent = true;
+		}
+		return isEuropeanStudent;
 	}
 }

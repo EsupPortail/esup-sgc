@@ -82,27 +82,10 @@
 						data-dismiss="modal" aria-hidden="true">Fermer</button-->
 		
 				</div>
-		<div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-      </div>
+				<div class="modal-footer">
+		        	<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+		         </div>
+			</div>
 		</div>
-		</div>
-
 	</div>
-
-	<c:if
-		test="${not empty messageSuccess or not empty messageWarning or not empty messageError or not empty messageInfo}">
-		<script type="text/javascript">
-			$('#messageModal').modal({
-				 resizable: false,
-				 modal: true,
-				 buttons: {
-					 Fermer: function() {
-						$( this ).dialog( "close" );
-				 	}
-				 }
-				});
-		</script>
-	</c:if>
-
 </div>

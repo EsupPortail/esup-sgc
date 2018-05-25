@@ -9,10 +9,11 @@
  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 	 <div class="collapse navbar-collapse" id="searchCollapse">
 	  	<div class="alert alert-info" id="searchBar">
-			<form action="${searchUrl}" class="navbar-form navbar-left" role="search" id="searchEppnForm" >
+			<form action="${searchUrl}" class="navbar-form navbar-left form-inline" role="search" id="searchEppnForm" >
 				<div class="form-group">
-					<spring-form:select path="searchBean.address" cssClass="selectpicker show-tick" data-width="fit"  data-dropup-auto="false" data-live-search="true" data-size="15" >
-						<spring-form:option value="">-- Adresse --</spring-form:option>
+					<label style="display:none" >-- Adresse --</label>
+					<spring-form:select path="searchBean.address" id="searchBeanAdress">
+						<spring-form:option value="" data-placeholder="true"></spring-form:option>
 						<c:forEach items="${addresses}" var="address">
 							<spring-form:option value="${address}">
 								${address}
@@ -20,8 +21,8 @@
 						</c:forEach>
 					</spring-form:select>
 				</div>
-				<div class="form-group" style="display:none">
-					<spring-form:select path="searchBean.type" cssClass="selectpicker show-tick" data-width="fit">
+				<div class="" style="display:none">
+					<spring-form:select path="searchBean.type" id="searchBeanType">
 		 				<spring-form:option value="">-- Population --</spring-form:option>
 						<c:forEach items="${types}" var="type">
 							<spring-form:option value="${type}">
@@ -31,45 +32,51 @@
 		 			</spring-form:select>
 		 		</div>
 				<div class="form-group">
-				  	<spring-form:select path="searchBean.etat" cssClass="selectpicker show-tick" data-width="fit">
-				  		<spring-form:option value="">-- Etat --</spring-form:option>
+					<label style="display:none" >-- Etat --</label>
+				  	<spring-form:select path="searchBean.etat" id="searchBeanEtat">
+				  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					 	<c:forEach items="${etats}" var="etat">
 					  		<spring-form:option value="${etat}"><spring:message code="card.step.${etat}"/></spring-form:option>
 					  	</c:forEach>
 				    </spring-form:select>
 			    </div>
 			  	<div class="form-group">
-			  		<spring-form:select path="searchBean.editable" cssClass="selectpicker show-tick" data-width="fit">
-			  				<spring-form:option value="all">-- Statut --</spring-form:option>
+			  	 	<label style="display:none" >-- Statut --</label>
+			  		<spring-form:select path="searchBean.editable"  id="searchBeanEditable">
+			  				<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<spring-form:option value="true">Editable</spring-form:option>
 					  		<spring-form:option value="false">Non editable</spring-form:option>
 				    </spring-form:select>
 			  	</div>	    
 			    <div class="form-group">
-			  		<spring-form:select path="searchBean.ownOrFreeCard" cssClass="selectpicker show-tick" data-width="fit">
-					  		<spring-form:option value="false">-- Gestion --</spring-form:option>
+			    	<label style="display:none" >-- Gestion --</label>
+			  		<spring-form:select path="searchBean.ownOrFreeCard" id="searchBeanOwnOrFreeCard">
+					  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<spring-form:option value="true">Libres ou gérées par moi</spring-form:option>
 				    </spring-form:select>
 			  	</div>
 			  	 <div class="form-group">
-			  		<spring-form:select path="searchBean.nbCards" cssClass="selectpicker show-tick" data-width="fit">
-					  		<spring-form:option value="">-- Nb Cartes --</spring-form:option>
+			  	 	<label style="display:none" >-- Nb Cartes --</label>
+			  		<spring-form:select path="searchBean.nbCards" id="searchBeanNbCards">
+					  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<c:forEach items="${nbCards}" var="nbCard">
 					  			<spring-form:option value="${nbCard}">${nbCard} carte(s)</spring-form:option>
 					  		</c:forEach>
 				    </spring-form:select>
 			  	</div>
 			  	 <div class="form-group">
-			  		<spring-form:select path="searchBean.nbRejets" cssClass="selectpicker show-tick" data-width="fit">
-					  		<spring-form:option value="">-- Nb Rejets --</spring-form:option>
+			  	 	<label style="display:none" >-- Nb Rejets --</label>
+			  		<spring-form:select path="searchBean.nbRejets" id="searchBeanNbRejets">
+					  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<c:forEach items="${nbRejets}" var="nbRejet">
 					  			<spring-form:option value="${nbRejet}">${nbRejet} rejet(s)</spring-form:option>
 					  		</c:forEach>
 				    </spring-form:select>
 			  	</div>
 			  	<div class="form-group">
-			  		<spring-form:select path="searchBean.flagAdresse" cssClass="selectpicker show-tick" data-width="fit">
-		  				<spring-form:option value="">-- Type adresse --</spring-form:option>
+			  		<label style="display:none" >-- Type adresse --</label>
+			  		<spring-form:select path="searchBean.flagAdresse" id="searchBeanFlagAdresse">
+		  				<spring-form:option value="" data-placeholder="true"></spring-form:option>
 				  		<spring-form:option value="INT">Adresse interne</spring-form:option>
 				  		<spring-form:option value="EXT">Adresse externe</spring-form:option>
 				    </spring-form:select>
@@ -81,11 +88,12 @@
 				<button type="button" class="btn btn-danger" id="nofilter" title="Enlever tous les filtres"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
 				<buttton type="button" class="btn btn-primary" data-toggle="collapse" data-target="#advancedSearch">+ de filtres</buttton>
 				<div class="col-lg-12 collapse ${collapse}" id="advancedSearch">
-					<div class="well">
+					<div class="">
 						<c:forEach items="${nbFields}" var="item" varStatus="status">
-								<div class="form-group">
-									<spring-form:select path="searchBean.freeField['${status.index}']" cssClass="selectpicker show-tick freeSelect"  data-width="fit"  data-dropup-auto="false" data-live-search="true"  id="fields${status.index}">
-										<spring-form:option value="">-- Champ libre --</spring-form:option>
+								<div class="col-lg-2">
+									<label style="display:none" >-- Champ libre --</label>
+									<spring-form:select path="searchBean.freeField['${status.index}']" cssClass="freeSelect"  data-width="fit"  data-dropup-auto="false" data-live-search="true"  id="fields${status.index}">
+										<spring-form:option value="" data-placeholder="true"></spring-form:option>
 										<c:forEach items="${freeFields}" var="field">
 											<spring-form:option value="${field}">
 												${field}
@@ -93,9 +101,10 @@
 										</c:forEach>
 									</spring-form:select>
 								</div>
-								<div class="form-group">
-									<select class="selectpicker show-tick" multiple="multiple" data-dropup-auto="false" data-live-search="true" name="freeFieldValue['${status.index}']"  id="freeFieldValue${status.index}" data-size="15" >
-										<option value="">-- Champ libre : résultats -</option>
+								<div class="col-lg-2">
+									<label style="display:none" >-- Champ libre : résultats -</label>
+									<select  multiple="multiple" data-dropup-auto="false" data-live-search="true" name="freeFieldValue['${status.index}']"  id="freeFieldValue${status.index}" data-size="15" >
+										<option value="" data-placeholder="true"></option>
 									</select>
 								</div>
 						</c:forEach>

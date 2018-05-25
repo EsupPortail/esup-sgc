@@ -1,14 +1,14 @@
-/*! cropit - v0.5.1 <https://github.com/scottcheng/cropit> */
+/*! ezcrop - v0.0.2 <https://github.com/nterms/ezcrop> */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("jquery"));
+		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define(["jquery"], factory);
+		define(factory);
 	else if(typeof exports === 'object')
-		exports["cropit"] = factory(require("jquery"));
+		exports["ezcrop"] = factory();
 	else
-		root["cropit"] = factory(root["jQuery"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
+		root["ezcrop"] = factory();
+})(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -55,109 +55,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _slice = Array.prototype.slice;
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _jquery = __webpack_require__(1);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _cropit = __webpack_require__(2);
-
-	var _cropit2 = _interopRequireDefault(_cropit);
-
-	var _constants = __webpack_require__(4);
-
-	var _utils = __webpack_require__(6);
-
-	var applyOnEach = function applyOnEach($el, callback) {
-	  return $el.each(function () {
-	    var cropit = _jquery2['default'].data(this, _constants.PLUGIN_KEY);
-
-	    if (!cropit) {
-	      return;
-	    }
-	    callback(cropit);
-	  });
-	};
-
-	var callOnFirst = function callOnFirst($el, method, options) {
-	  var cropit = $el.first().data(_constants.PLUGIN_KEY);
-
-	  if (!cropit || !_jquery2['default'].isFunction(cropit[method])) {
-	    return null;
-	  }
-	  return cropit[method](options);
-	};
-
-	var methods = {
-	  init: function init(options) {
-	    return this.each(function () {
-	      // Only instantiate once per element
-	      if (_jquery2['default'].data(this, _constants.PLUGIN_KEY)) {
-	        return;
-	      }
-
-	      var cropit = new _cropit2['default'](_jquery2['default'], this, options);
-	      _jquery2['default'].data(this, _constants.PLUGIN_KEY, cropit);
-	    });
-	  },
-
-	  destroy: function destroy() {
-	    return this.each(function () {
-	      _jquery2['default'].removeData(this, _constants.PLUGIN_KEY);
-	    });
-	  },
-
-	  isZoomable: function isZoomable() {
-	    return callOnFirst(this, 'isZoomable');
-	  },
-
-	  'export': function _export(options) {
-	    return callOnFirst(this, 'getCroppedImageData', options);
-	  }
-	};
-
-	var delegate = function delegate($el, fnName) {
-	  return applyOnEach($el, function (cropit) {
-	    cropit[fnName]();
-	  });
-	};
-
-	var prop = function prop($el, name, value) {
-	  if ((0, _utils.exists)(value)) {
-	    return applyOnEach($el, function (cropit) {
-	      cropit[name] = value;
-	    });
-	  } else {
-	    var cropit = $el.first().data(_constants.PLUGIN_KEY);
-	    return cropit[name];
-	  }
-	};
-
-	_jquery2['default'].fn.cropit = function (method) {
-	  if (methods[method]) {
-	    return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-	  } else if (['imageState', 'imageSrc', 'offset', 'previewSize', 'imageSize', 'zoom', 'initialZoom', 'exportZoom', 'minZoom', 'maxZoom'].indexOf(method) >= 0) {
-	    return prop.apply(undefined, [this].concat(_slice.call(arguments)));
-	  } else if (['rotateCW', 'rotateCCW', 'disable', 'reenable'].indexOf(method) >= 0) {
-	    return delegate.apply(undefined, [this].concat(_slice.call(arguments)));
-	  } else {
-	    return methods.init.apply(this, arguments);
-	  }
-	};
-
-/***/ },
-/* 1 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
@@ -168,71 +65,70 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var _jquery = __webpack_require__(1);
+	var _zoomer = __webpack_require__(1);
 
-	var _jquery2 = _interopRequireDefault(_jquery);
+	var _zoomer2 = _interopRequireDefault(_zoomer);
 
-	var _Zoomer = __webpack_require__(3);
+	var _constants = __webpack_require__(2);
 
-	var _Zoomer2 = _interopRequireDefault(_Zoomer);
+	var _options = __webpack_require__(3);
 
-	var _constants = __webpack_require__(4);
+	var _utils = __webpack_require__(4);
 
-	var _options = __webpack_require__(5);
+	var Ezcrop = (function () {
+	  function Ezcrop(element, options) {
+	    _classCallCheck(this, Ezcrop);
 
-	var _utils = __webpack_require__(6);
+	    this.el = element;
 
-	var Cropit = (function () {
-	  function Cropit(jQuery, element, options) {
-	    _classCallCheck(this, Cropit);
-
-	    this.$el = (0, _jquery2['default'])(element);
-
-	    var defaults = (0, _options.loadDefaults)(this.$el);
-	    this.options = _jquery2['default'].extend({}, defaults, options);
+	    var defaults = (0, _options.loadDefaults)(this.el);
+	    this.options = extend({}, defaults, options);
 
 	    this.init();
 	  }
 
-	  _createClass(Cropit, [{
+	  _createClass(Ezcrop, [{
 	    key: 'init',
 	    value: function init() {
 	      var _this = this;
 
-	      this.image = new Image();
+	      this.img = new Image();
 	      this.preImage = new Image();
-	      this.image.onload = this.onImageLoaded.bind(this);
+	      this.img.onload = this.onImageLoaded.bind(this);
 	      this.preImage.onload = this.onPreImageLoaded.bind(this);
-	      this.image.onerror = this.preImage.onerror = function () {
+	      this.img.onerror = this.preImage.onerror = function () {
 	        _this.onImageError.call(_this, _constants.ERRORS.IMAGE_FAILED_TO_LOAD);
 	      };
 
-	      this.$preview = this.options.$preview.css('position', 'relative');
-	      this.$fileInput = this.options.$fileInput.attr({ accept: 'image/*' });
-	      this.$zoomSlider = this.options.$zoomSlider.attr({ min: 0, max: 1, step: 0.01 });
+	      this.preview = this.options.preview;
+	      this.fileInput = this.options.fileInput;
+	      this.zoomSlider = this.options.zoomSlider;
+
+	      this.preview.style.position = 'relative';
+	      this.fileInput.setAttribute('accept', 'image/*');
+	      this.zoomSlider.setAttribute('min', 0);
+	      this.zoomSlider.setAttribute('max', 1);
+	      this.zoomSlider.setAttribute('step', 0.01);
 
 	      this.previewSize = {
-	        width: this.options.width || this.$preview.width(),
-	        height: this.options.height || this.$preview.height()
+	        width: this.options.width || this.preview.clientWidth,
+	        height: this.options.height || this.preview.clientHeight
 	      };
 
-	      this.$image = (0, _jquery2['default'])('<img />').addClass(_constants.CLASS_NAMES.PREVIEW_IMAGE).attr('alt', '').css({
-	        transformOrigin: 'top left',
-	        webkitTransformOrigin: 'top left',
-	        willChange: 'transform'
-	      });
-	      this.$imageContainer = (0, _jquery2['default'])('<div />').addClass(_constants.CLASS_NAMES.PREVIEW_IMAGE_CONTAINER).css({
-	        position: 'absolute',
-	        overflow: 'hidden',
-	        left: 0,
-	        top: 0,
-	        width: '100%',
-	        height: '100%'
-	      }).append(this.$image);
-	      this.$preview.append(this.$imageContainer);
+	      this.image = document.createElement('img');
+	      addClass(this.image, _constants.CLASS_NAMES.PREVIEW_IMAGE);
+	      this.image.setAttribute('alt', '');
+	      this.image.style.transformOrigin = 'top left';
+	      this.image.style.webkitTransformOrigin = 'top left';
+
+	      this.imageContainer = document.createElement('div');
+	      addClass(this.imageContainer, _constants.CLASS_NAMES.PREVIEW_IMAGE_CONTAINER);
+	      this.imageContainer.setAttribute('style', 'position: absolute; overflow: hidden; left: 0; top: 0; width: 100%; height: 100%;');
+	      this.imageContainer.appendChild(this.image);
+	      this.preview.appendChild(this.imageContainer);
 
 	      if (this.options.imageBackground) {
-	        if (_jquery2['default'].isArray(this.options.imageBackgroundBorderWidth)) {
+	        if (Array.isArray(this.options.imageBackgroundBorderWidth)) {
 	          this.bgBorderWidthArray = this.options.imageBackgroundBorderWidth;
 	        } else {
 	          this.bgBorderWidthArray = [0, 1, 2, 3].map(function () {
@@ -240,26 +136,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	          });
 	        }
 
-	        this.$bg = (0, _jquery2['default'])('<img />').addClass(_constants.CLASS_NAMES.PREVIEW_BACKGROUND).attr('alt', '').css({
-	          position: 'relative',
-	          left: this.bgBorderWidthArray[3],
-	          top: this.bgBorderWidthArray[0],
-	          transformOrigin: 'top left',
-	          webkitTransformOrigin: 'top left',
-	          willChange: 'transform'
-	        });
-	        this.$bgContainer = (0, _jquery2['default'])('<div />').addClass(_constants.CLASS_NAMES.PREVIEW_BACKGROUND_CONTAINER).css({
-	          position: 'absolute',
-	          zIndex: 0,
-	          top: -this.bgBorderWidthArray[0],
-	          right: -this.bgBorderWidthArray[1],
-	          bottom: -this.bgBorderWidthArray[2],
-	          left: -this.bgBorderWidthArray[3]
-	        }).append(this.$bg);
+	        this.bg = document.createElement('img');
+	        addClass(this.bg, _constants.CLASS_NAMES.PREVIEW_BACKGROUND);
+	        this.bg.setAttribute('alt', '');
+	        this.bg.setAttribute('style', 'position: relative; left: ' + this.bgBorderWidthArray[3] + '; top: ' + this.bgBorderWidthArray[0] + '; transform-origin: top left; -webkit-transform-origin: top left;');
+
+	        this.bgContainer = document.createElement('div');
+	        addClass(this.bgContainer, _constants.CLASS_NAMES.PREVIEW_BACKGROUND_CONTAINER);
+	        this.bgContainer.setAttribute('style', 'position: absolute; z-index: 0; top: -' + this.bgBorderWidthArray[0] + '; right: -' + this.bgBorderWidthArray[1] + '; bottom: -' + this.bgBorderWidthArray[2] + '; left: -' + this.bgBorderWidthArray[3] + ';');
+	        this.bgContainer.appendChild(this.bg);
 	        if (this.bgBorderWidthArray[0] > 0) {
-	          this.$bgContainer.css('overflow', 'hidden');
+	          this.bgContainer.style.overflow = 'hidden';
 	        }
-	        this.$preview.prepend(this.$bgContainer);
+	        this.preview.insertBefore(this.bgContainer, this.preview.firstChild);
 	      }
 
 	      this.initialZoom = this.options.initialZoom;
@@ -268,45 +157,45 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      this.moveContinue = false;
 
-	      this.zoomer = new _Zoomer2['default']();
+	      this.zoomer = new _zoomer2['default']();
 
-	      if (this.options.allowDragNDrop) {
-	        _jquery2['default'].event.props.push('dataTransfer');
-	      }
+	      if (this.options.allowDragNDrop) {}
 
 	      this.bindListeners();
 
 	      if (this.options.imageState && this.options.imageState.src) {
 	        this.loadImage(this.options.imageState.src);
 	      }
+
+	      this.el.ezcrop = this;
 	    }
 	  }, {
 	    key: 'bindListeners',
 	    value: function bindListeners() {
-	      this.$fileInput.on('change.cropit', this.onFileChange.bind(this));
-	      this.$imageContainer.on(_constants.EVENTS.PREVIEW, this.onPreviewEvent.bind(this));
-	      this.$zoomSlider.on(_constants.EVENTS.ZOOM_INPUT, this.onZoomSliderChange.bind(this));
+	      on(this.fileInput, ['change'], this.onFileChange.bind(this));
+	      on(this.imageContainer, _constants.EVENTS.PREVIEW, this.onPreviewEvent.bind(this));
+	      on(this.zoomSlider, _constants.EVENTS.ZOOM_INPUT, this.onZoomSliderChange.bind(this));
 
 	      if (this.options.allowDragNDrop) {
-	        this.$imageContainer.on('dragover.cropit dragleave.cropit', this.onDragOver.bind(this));
-	        this.$imageContainer.on('drop.cropit', this.onDrop.bind(this));
+	        on(this.imageContainer, ['dragover', 'dragleave'], this.onDragOver.bind(this));
+	        on(this.imageContainer, ['drop'], this.onDrop.bind(this));
 	      }
 	    }
 	  }, {
 	    key: 'unbindListeners',
 	    value: function unbindListeners() {
-	      this.$fileInput.off('change.cropit');
-	      this.$imageContainer.off(_constants.EVENTS.PREVIEW);
-	      this.$imageContainer.off('dragover.cropit dragleave.cropit drop.cropit');
-	      this.$zoomSlider.off(_constants.EVENTS.ZOOM_INPUT);
+	      off(this.fileInput, ['change'], this.onFileChange);
+	      off(this.imageContainer, _constants.EVENTS.PREVIEW, this.onPreviewEvent);
+	      off(this.imageContainer, ['dragover', 'dragleave', 'drop'], this.onDragOver);
+	      off(this.zoomSlider, _constants.EVENTS.ZOOM_INPUT, this.onZoomSliderChange);
 	    }
 	  }, {
 	    key: 'onFileChange',
 	    value: function onFileChange(e) {
 	      this.options.onFileChange(e);
 
-	      if (this.$fileInput.get(0).files) {
-	        this.loadFile(this.$fileInput.get(0).files[0]);
+	      if (this.fileInput.files) {
+	        this.loadFile(this.fileInput.files[0]);
 	      }
 	    }
 	  }, {
@@ -336,7 +225,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function onDragOver(e) {
 	      e.preventDefault();
 	      e.dataTransfer.dropEffect = 'copy';
-	      this.$preview.toggleClass(_constants.CLASS_NAMES.DRAG_HOVERED, e.type === 'dragover');
+	      if (e.type === 'dragover') {
+	        addClass(this.preview, _constants.CLASS_NAMES.DRAG_HOVERED);
+	      } else {
+	        removeClass(this.preview, _constants.CLASS_NAMES.DRAG_HOVERED);
+	      }
 	    }
 	  }, {
 	    key: 'onDrop',
@@ -356,7 +249,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return true;
 	      });
 
-	      this.$preview.removeClass(_constants.CLASS_NAMES.DRAG_HOVERED);
+	      // this.preview.classList.remove(CLASS_NAMES.DRAG_HOVERED);
+	      removeClass(this.preview, _constants.CLASS_NAMES.DRAG_HOVERED);
 	    }
 	  }, {
 	    key: 'loadImage',
@@ -399,13 +293,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        smallImage: this.options.smallImage
 	      })) {
 	        this.onImageError(_constants.ERRORS.SMALL_IMAGE);
-	        if (this.image.src) {
+	        if (this.img.src) {
 	          this.setImageLoadedClass();
 	        }
 	        return;
 	      }
 
-	      this.image.src = this.preImage.src;
+	      this.img.src = this.preImage.src;
 	    }
 	  }, {
 	    key: 'onImageLoaded',
@@ -420,9 +314,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      this.options.imageState = {};
 
-	      this.$image.attr('src', this.image.src);
+	      this.image.setAttribute('src', this.img.src);
 	      if (this.options.imageBackground) {
-	        this.$bg.attr('src', this.image.src);
+	        this.bg.setAttribute('src', this.img.src);
 	      }
 
 	      this.setImageLoadedClass();
@@ -440,17 +334,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'setImageLoadingClass',
 	    value: function setImageLoadingClass() {
-	      this.$preview.removeClass(_constants.CLASS_NAMES.IMAGE_LOADED).addClass(_constants.CLASS_NAMES.IMAGE_LOADING);
+	      removeClass(this.preview, _constants.CLASS_NAMES.IMAGE_LOADED);
+	      addClass(this.preview, _constants.CLASS_NAMES.IMAGE_LOADING);
 	    }
 	  }, {
 	    key: 'setImageLoadedClass',
 	    value: function setImageLoadedClass() {
-	      this.$preview.removeClass(_constants.CLASS_NAMES.IMAGE_LOADING).addClass(_constants.CLASS_NAMES.IMAGE_LOADED);
+	      removeClass(this.preview, _constants.CLASS_NAMES.IMAGE_LOADING);
+	      addClass(this.preview, _constants.CLASS_NAMES.IMAGE_LOADED);
 	    }
 	  }, {
 	    key: 'removeImageLoadingClass',
 	    value: function removeImageLoadingClass() {
-	      this.$preview.removeClass(_constants.CLASS_NAMES.IMAGE_LOADING);
+	      removeClass(this.preview, _constants.CLASS_NAMES.IMAGE_LOADING);
 	    }
 	  }, {
 	    key: 'getEventPosition',
@@ -470,14 +366,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      this.moveContinue = false;
-	      this.$imageContainer.off(_constants.EVENTS.PREVIEW_MOVE);
+	      off(this.imageContainer, _constants.EVENTS.PREVIEW_MOVE, this.onMove);
 
 	      if (e.type === 'mousedown' || e.type === 'touchstart') {
+	        e.preventDefault();
 	        this.origin = this.getEventPosition(e);
 	        this.moveContinue = true;
-	        this.$imageContainer.on(_constants.EVENTS.PREVIEW_MOVE, this.onMove.bind(this));
+	        on(this.imageContainer, _constants.EVENTS.PREVIEW_MOVE, this.onMove.bind(this));
 	      } else {
-	        (0, _jquery2['default'])(document.body).focus();
+	        document.body.focus();
 	      }
 
 	      e.stopPropagation();
@@ -531,7 +428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'centerImage',
 	    value: function centerImage() {
-	      if (!this.image.width || !this.image.height || !this.zoom) {
+	      if (!this.img.width || !this.img.height || !this.zoom) {
 	        return;
 	      }
 
@@ -547,7 +444,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 
-	      this.zoomSliderPos = Number(this.$zoomSlider.val());
+	      this.zoomSliderPos = Number(this.zoomSlider.value);
 	      var newZoom = this.zoomer.getZoom(this.zoomSliderPos);
 	      if (newZoom === this.zoom) {
 	        return;
@@ -557,13 +454,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'enableZoomSlider',
 	    value: function enableZoomSlider() {
-	      this.$zoomSlider.removeAttr('disabled');
+	      this.zoomSlider.removeAttribute('disabled');
 	      this.options.onZoomEnabled();
 	    }
 	  }, {
 	    key: 'disableZoomSlider',
 	    value: function disableZoomSlider() {
-	      this.$zoomSlider.attr('disabled', true);
+	      this.zoomSlider.setAttribute('disabled', true);
 	      this.options.onZoomDisabled();
 	    }
 	  }, {
@@ -600,23 +497,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function renderImage() {
 	      var transformation = '\n      translate(' + this.rotatedOffset.x + 'px, ' + this.rotatedOffset.y + 'px)\n      scale(' + this.zoom + ')\n      rotate(' + this.rotation + 'deg)';
 
-	      this.$image.css({
-	        transform: transformation,
-	        webkitTransform: transformation
-	      });
+	      this.image.style.transform = transformation;
+	      this.image.style.webkitTransform = transformation;
+
 	      if (this.options.imageBackground) {
-	        this.$bg.css({
-	          transform: transformation,
-	          webkitTransform: transformation
-	        });
+	        this.bg.style.transform = transformation;
+	        this.bg.style.webkitTransform = transformation;
 	      }
 	    }
 	  }, {
 	    key: 'rotateCW',
 	    value: function rotateCW() {
 	      if (this.shouldRejectImage({
-	        imageWidth: this.image.height,
-	        imageHeight: this.image.width,
+	        imageWidth: this.img.height,
+	        imageHeight: this.img.width,
 	        previewSize: this.previewSize,
 	        maxZoom: this.options.maxZoom,
 	        exportZoom: this.options.exportZoom,
@@ -631,8 +525,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'rotateCCW',
 	    value: function rotateCCW() {
 	      if (this.shouldRejectImage({
-	        imageWidth: this.image.height,
-	        imageHeight: this.image.width,
+	        imageWidth: this.img.height,
+	        imageHeight: this.img.width,
 	        previewSize: this.previewSize,
 	        maxZoom: this.options.maxZoom,
 	        exportZoom: this.options.exportZoom,
@@ -662,7 +556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'getCroppedImageData',
 	    value: function getCroppedImageData(exportOptions) {
-	      if (!this.image.src) {
+	      if (!this.img.src) {
 	        return;
 	      }
 
@@ -672,19 +566,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        originalSize: false,
 	        fillBg: '#fff'
 	      };
-	      exportOptions = _jquery2['default'].extend({}, exportDefaults, exportOptions);
+	      exportOptions = extend({}, exportDefaults, exportOptions);
 
 	      var exportZoom = exportOptions.originalSize ? 1 / this.zoom : this.options.exportZoom;
 
 	      var zoomedSize = {
-	        width: this.zoom * exportZoom * this.image.width,
-	        height: this.zoom * exportZoom * this.image.height
+	        width: this.zoom * exportZoom * this.img.width,
+	        height: this.zoom * exportZoom * this.img.height
 	      };
 
-	      var canvas = (0, _jquery2['default'])('<canvas />').attr({
-	        width: this.previewSize.width * exportZoom,
-	        height: this.previewSize.height * exportZoom
-	      }).get(0);
+	      var canvas = document.createElement('canvas');
+	      canvas.setAttribute('width', this.previewSize.width * exportZoom);
+	      canvas.setAttribute('height', this.previewSize.height * exportZoom);
+
 	      var canvasContext = canvas.getContext('2d');
 
 	      if (exportOptions.type === 'image/jpeg') {
@@ -694,7 +588,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      canvasContext.translate(this.rotatedOffset.x * exportZoom, this.rotatedOffset.y * exportZoom);
 	      canvasContext.rotate(this.rotation * Math.PI / 180);
-	      canvasContext.drawImage(this.image, 0, 0, zoomedSize.width, zoomedSize.height);
+	      canvasContext.drawImage(this.img, 0, 0, zoomedSize.width, zoomedSize.height);
 
 	      return canvas.toDataURL(exportOptions.type, exportOptions.quality);
 	    }
@@ -703,22 +597,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function disable() {
 	      this.unbindListeners();
 	      this.disableZoomSlider();
-	      this.$el.addClass(_constants.CLASS_NAMES.DISABLED);
+	      this.el.addClass(_constants.CLASS_NAMES.DISABLED);
 	    }
 	  }, {
 	    key: 'reenable',
 	    value: function reenable() {
 	      this.bindListeners();
 	      this.enableZoomSlider();
-	      this.$el.removeClass(_constants.CLASS_NAMES.DISABLED);
+	      this.el.removeClass(_constants.CLASS_NAMES.DISABLED);
 	    }
 	  }, {
 	    key: '$',
 	    value: function $(selector) {
-	      if (!this.$el) {
+	      if (!this.el) {
 	        return null;
 	      }
-	      return this.$el.find(selector);
+	      return this.el.querySelectorAll(selector);
 	    }
 	  }, {
 	    key: 'offset',
@@ -753,7 +647,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      this.zoomSliderPos = this.zoomer.getSliderPos(this.zoom);
-	      this.$zoomSlider.val(this.zoomSliderPos);
+	      this.zoomSlider.value = this.zoomSliderPos;
 
 	      this.options.onZoomChange(newZoom);
 	    },
@@ -764,8 +658,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'rotatedOffset',
 	    get: function () {
 	      return {
-	        x: this.offset.x + (this.rotation === 90 ? this.image.height * this.zoom : 0) + (this.rotation === 180 ? this.image.width * this.zoom : 0),
-	        y: this.offset.y + (this.rotation === 180 ? this.image.height * this.zoom : 0) + (this.rotation === 270 ? this.image.width * this.zoom : 0)
+	        x: this.offset.x + (this.rotation === 90 ? this.img.height * this.zoom : 0) + (this.rotation === 180 ? this.img.width * this.zoom : 0),
+	        y: this.offset.y + (this.rotation === 180 ? this.img.height * this.zoom : 0) + (this.rotation === 270 ? this.img.width * this.zoom : 0)
 	      };
 	    }
 	  }, {
@@ -785,7 +679,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'imageState',
 	    get: function () {
 	      return {
-	        src: this.image.src,
+	        src: this.img.src,
 	        offset: this.offset,
 	        zoom: this.zoom
 	      };
@@ -793,7 +687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'imageSrc',
 	    get: function () {
-	      return this.image.src;
+	      return this.img.src;
 	    },
 	    set: function (imageSrc) {
 	      this.loadImage(imageSrc);
@@ -801,12 +695,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'imageWidth',
 	    get: function () {
-	      return this.rotation % 180 === 0 ? this.image.width : this.image.height;
+	      return this.rotation % 180 === 0 ? this.img.width : this.img.height;
 	    }
 	  }, {
 	    key: 'imageHeight',
 	    get: function () {
-	      return this.rotation % 180 === 0 ? this.image.height : this.image.width;
+	      return this.rotation % 180 === 0 ? this.img.height : this.img.width;
 	    }
 	  }, {
 	    key: 'imageSize',
@@ -872,10 +766,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        width: size.width,
 	        height: size.height
 	      };
-	      this.$preview.css({
-	        width: this.previewSize.width,
-	        height: this.previewSize.height
-	      });
+	      this.preview.style.width = this.previewSize.width + 'px';
+	      this.preview.style.height = this.previewSize.height + 'px';
 
 	      if (this.imageLoaded) {
 	        this.setupZoomer();
@@ -883,14 +775,56 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }]);
 
-	  return Cropit;
+	  return Ezcrop;
 	})();
 
-	exports['default'] = Cropit;
+	// Utilities
+	function extend() {
+	  for (var i = 1; i < arguments.length; i++) for (var key in arguments[i]) if (arguments[i].hasOwnProperty(key)) arguments[0][key] = arguments[i][key];
+
+	  return arguments[0];
+	}
+
+	function addClass(el, className) {
+	  if (el.classList) el.classList.add(className);else el.className += ' ' + className;
+	}
+
+	function removeClass(el, className) {
+	  if (el.classList) el.classList.remove(className);else el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+	}
+
+	function toggleClass(el, className) {
+	  if (el.classList) {
+	    el.classList.toggle(className);
+	  } else {
+	    var classes = el.className.split(' ');
+	    var existingIndex = classes.indexOf(className);
+
+	    if (existingIndex >= 0) classes.splice(existingIndex, 1);else classes.push(className);
+
+	    el.className = classes.join(' ');
+	  }
+	}
+
+	function on(el, events, handler) {
+	  events.forEach(function (e) {
+	    el.addEventListener(e, handler);
+	  });
+	}
+
+	function off(el, events, handler) {
+	  events.forEach(function (e) {
+	    el.removeEventListener(e, handler);
+	  });
+	}
+
+	exports['default'] = Ezcrop;
 	module.exports = exports['default'];
 
+	// $.event.props.push('dataTransfer');
+
 /***/ },
-/* 3 */
+/* 1 */
 /***/ function(module, exports) {
 
 	Object.defineProperty(exports, '__esModule', {
@@ -978,28 +912,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 4 */
+/* 2 */
 /***/ function(module, exports) {
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	var PLUGIN_KEY = 'cropit';
+	var PLUGIN_KEY = 'ezcrop';
 
 	exports.PLUGIN_KEY = PLUGIN_KEY;
 	var CLASS_NAMES = {
-	  PREVIEW: 'cropit-preview',
-	  PREVIEW_IMAGE_CONTAINER: 'cropit-preview-image-container',
-	  PREVIEW_IMAGE: 'cropit-preview-image',
-	  PREVIEW_BACKGROUND_CONTAINER: 'cropit-preview-background-container',
-	  PREVIEW_BACKGROUND: 'cropit-preview-background',
-	  FILE_INPUT: 'cropit-image-input',
-	  ZOOM_SLIDER: 'cropit-image-zoom-input',
+	  PREVIEW: 'ezcrop-preview',
+	  PREVIEW_IMAGE_CONTAINER: 'ezcrop-preview-image-container',
+	  PREVIEW_IMAGE: 'ezcrop-preview-image',
+	  PREVIEW_BACKGROUND_CONTAINER: 'ezcrop-preview-background-container',
+	  PREVIEW_BACKGROUND: 'ezcrop-preview-background',
+	  FILE_INPUT: 'ezcrop-image-input',
+	  ZOOM_SLIDER: 'ezcrop-image-zoom-input',
 
-	  DRAG_HOVERED: 'cropit-drag-hovered',
-	  IMAGE_LOADING: 'cropit-image-loading',
-	  IMAGE_LOADED: 'cropit-image-loaded',
-	  DISABLED: 'cropit-disabled'
+	  DRAG_HOVERED: 'ezcrop-drag-hovered',
+	  IMAGE_LOADING: 'ezcrop-image-loading',
+	  IMAGE_LOADED: 'ezcrop-image-loaded',
+	  DISABLED: 'ezcrop-disabled'
 	};
 
 	exports.CLASS_NAMES = CLASS_NAMES;
@@ -1009,44 +943,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.ERRORS = ERRORS;
-	var eventName = function eventName(events) {
-	  return events.map(function (e) {
-	    return '' + e + '.cropit';
-	  }).join(' ');
-	};
 	var EVENTS = {
-	  PREVIEW: eventName(['mousedown', 'mouseup', 'mouseleave', 'touchstart', 'touchend', 'touchcancel', 'touchleave']),
-	  PREVIEW_MOVE: eventName(['mousemove', 'touchmove']),
-	  ZOOM_INPUT: eventName(['mousemove', 'touchmove', 'change'])
+	  PREVIEW: ['mousedown', 'mouseup', 'mouseleave', 'touchstart', 'touchend', 'touchcancel', 'touchleave'],
+	  PREVIEW_MOVE: ['mousemove', 'touchmove'],
+	  ZOOM_INPUT: ['mousemove', 'touchmove', 'change']
 	};
 	exports.EVENTS = EVENTS;
 
 /***/ },
-/* 5 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 
-	var _constants = __webpack_require__(4);
+	var _constants = __webpack_require__(2);
 
 	var options = {
 	  elements: [{
-	    name: '$preview',
+	    name: 'preview',
 	    description: 'The HTML element that displays image preview.',
 	    defaultSelector: '.' + _constants.CLASS_NAMES.PREVIEW
 	  }, {
-	    name: '$fileInput',
+	    name: 'fileInput',
 	    description: 'File input element.',
 	    defaultSelector: 'input.' + _constants.CLASS_NAMES.FILE_INPUT
 	  }, {
-	    name: '$zoomSlider',
+	    name: 'zoomSlider',
 	    description: 'Range input element that controls image zoom.',
 	    defaultSelector: 'input.' + _constants.CLASS_NAMES.ZOOM_SLIDER
 	  }].map(function (o) {
-	    o.type = 'jQuery element';
-	    o['default'] = '$imageCropper.find(\'' + o.defaultSelector + '\')';
+	    o.type = 'element';
+	    o['default'] = 'imageCropper.querySelectorAll(\'' + o.defaultSelector + '\')[0]';
 	    return o;
 	  }),
 
@@ -1103,7 +1032,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    name: 'smallImage',
 	    type: 'string',
-	    description: 'When set to `\'reject\'`, `onImageError` would be called when cropit loads an image that is smaller than the container.\n        When set to `\'allow\'`, images smaller than the container can be zoomed down to its original size, overiding `minZoom` option.\n        When set to `\'stretch\'`, the minimum zoom of small images would follow `minZoom` option.',
+	    description: 'When set to `\'reject\'`, `onImageError` would be called when ezcrop loads an image that is smaller than the container.\n        When set to `\'allow\'`, images smaller than the container can be zoomed down to its original size, overiding `minZoom` option.\n        When set to `\'stretch\'`, the minimum zoom of small images would follow `minZoom` option.',
 	    'default': 'reject'
 	  }],
 
@@ -1167,11 +1096,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  })
 	};
 
-	var loadDefaults = function loadDefaults($el) {
+	var loadDefaults = function loadDefaults(el) {
 	  var defaults = {};
-	  if ($el) {
+	  if (el) {
 	    options.elements.forEach(function (o) {
-	      defaults[o.name] = $el.find(o.defaultSelector);
+	      defaults[o.name] = el.querySelectorAll(o.defaultSelector)[0];
 	    });
 	  }
 	  options.values.forEach(function (o) {
@@ -1188,7 +1117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports['default'] = options;
 
 /***/ },
-/* 6 */
+/* 4 */
 /***/ function(module, exports) {
 
 	Object.defineProperty(exports, '__esModule', {

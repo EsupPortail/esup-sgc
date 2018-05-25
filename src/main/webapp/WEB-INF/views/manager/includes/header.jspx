@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:sec="http://www.springframework.org/security/tags" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:spring="http://www.springframework.org/tags" 
+<div xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:sec="http://www.springframework.org/security/tags" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:spring="http://www.springframework.org/tags" 
 	 xmlns:jsp="http://java.sun.com/JSP/Page">
     <spring:url value="/manager/getMultiUpdateForm" var="multiUpdateFormUrl" />
     <spring:url value="/manager/searchEppn" var="searchEppnUrl" />
@@ -14,6 +14,7 @@
 		var filterAdressUrl = '${filterAdressUrl}';
 		var freeUrl = '${freeUrl}';
 		var fieldsValue = '${fieldsValue}';
+		var nbFields = '${fn:length(nbFields)}';
 	</script>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 		<form action="${bordereauUrl}" id="searchCsvForm" modelAttribute="searchBean">

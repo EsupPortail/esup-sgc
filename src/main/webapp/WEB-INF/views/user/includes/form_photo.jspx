@@ -14,18 +14,18 @@
 		                </div>
 	                </div>
                 </c:if>
-				<div class="cropit-preview"
-					id="cropit-preview">&amp;nbsp</div>
+				<div class="ezcrop-preview"
+					id="ezcrop-preview">&amp;nbsp</div>
 				<hr />
 				<p class="text-muted">Zoom :</p>
-					<input type="range" class="cropit-image-zoom-input" />
+					<input type="range" class="ezcrop-image-zoom-input" />
 				<br />
 				<p class="text-muted">Rotation :
-					<button class="rotate-ccw" type="button"><span class="glyphicon glyphicon-repeat icon-flipped" aria-hidden="true"></span></button>
-                    <button class="rotate-cw"  type="button"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></button>		
+					<button id="rotate-ccw" class="rotate-ccw" type="button"><span class="glyphicon glyphicon-repeat icon-flipped" aria-hidden="true"></span></button>
+                    <button id="rotate-cw"  class="rotate-cw"  type="button"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></button>		
 				</p>	
 			</div>
-			<div class="cropit-info well alert alert-info col-lg-7">
+			<div class="well alert alert-info col-lg-7" id="ezcrop-info">
 				<c:if test="${deviceType eq 'COMPUTER'}">
 					<div id="webCam">
 						<div id="my_camera">&amp;nbsp</div>
@@ -33,12 +33,12 @@
 						<button  type="button" class="btn btn-default" id="retryWebcam">Effacer</button>
 					</div>
 				</c:if>
-				<input type="file" class="cropit-image-input" />
+				<input type="file" class="ezcrop-image-input" />
 				<span class="bg-warning">Vous pouvez également glisser-déposer l'image</span>
 				<p class="msgPhoto">Pour enregistrer votre demande de Léocarte, vous devez choisir une photo.</p>
 			</div>
 			<div class="form-group">
-				<button type="button" class="preview btn btn-danger" data-toggle="modal" data-target="#previewCarte">
+				<button type="button" id="preview" class="btn btn-danger" data-toggle="modal" data-target="#previewCarte">
 					<strong>Prévisualiser</strong>
 				</button>
 			</div>
@@ -47,7 +47,7 @@
 			</div>
 			<input type="hidden" value="false" name="confirmPreview" id="confirmPreview" />
 			<input type="hidden" name="PhotoFile.imageData"
-				class="cropit-image-data" /> 
+				class="ezcrop-image-data" /> 
 		</div>
 		<div class="col-lg-6">
 			<c:if test="${isRejected}">
@@ -55,7 +55,7 @@
 					${configUserMsgs['userFormRejectedMsg']}
 				</div>
 			</c:if>	
-			<div class="cropit-manual alert alert-info">
+			<div class="alert alert-info">
 				<p><span class="glyphicon glyphicon-info-sign" aria-hidden="true">&amp;nbsp;</span>
 				<strong>La photo attendue est une photo au format
 					identité. Le fond blanc, visage de face et assez grand sur

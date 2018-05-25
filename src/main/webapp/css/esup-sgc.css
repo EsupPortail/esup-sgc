@@ -92,8 +92,8 @@ legend.scheduler-border {
     color: red;
 }
 
-/*cropit*/
-#image-cropper .cropit-preview {
+/*ezcrop*/
+#image-cropper .ezcrop-preview {
   background-color: #fff;
   background-size: auto;
   background-image: url("../images/No_image_s.jpg");
@@ -110,12 +110,12 @@ legend.scheduler-border {
   text-align: center;
 }
 
-#image-cropper .cropit-info p {
+#image-cropper #ezcrop-info p {
     font-weight: bold;
     margin-top: 10px;
 }
 
-#image-cropper .cropit-image-zoom-input {
+#image-cropper .ezcrop-image-zoom-input {
   width : 170px;
   margin-left: 10px
   }
@@ -470,3 +470,25 @@ span.icon-flipped{
 	visibility: visible;
 	color: #CCC;
 }
+.ss-disabled{
+	font-weight: bold;
+	color: #726B6B!important;
+}
+#searchBar .form-group:first-child {
+	min-width: 250px;
+}
+#searchBar .form-group:nth-of-type(3) {
+	min-width: 250px;
+	color:red;
+}
+
+::after, ::before {
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+}
+.sun-editor .sun-editor-container{
+	height: auto!important;
+  }

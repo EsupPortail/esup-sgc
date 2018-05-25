@@ -187,6 +187,7 @@ public class UserCardController {
 		uiModel.addAttribute("lastId", id);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(user));
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
+		uiModel.addAttribute("isEuropeanStudent", userService.isEuropeanStudent(user));
 		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, false);
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
@@ -297,6 +298,7 @@ public class UserCardController {
 		uiModel.addAttribute("payboxList", PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
 		uiModel.addAttribute("montant", appliConfigService.getMontantRenouvellement());
 		uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
+		uiModel.addAttribute("isEuropeanStudent", userService.isEuropeanStudent(user));
 		return "user/card-info";
 	}
 

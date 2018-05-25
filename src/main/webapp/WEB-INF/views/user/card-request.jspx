@@ -35,7 +35,7 @@
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
-					<c:when test="${displayFormParts['displayEuropeanCard']}">
+					<c:when test="${isEuropeanStudent}">
 						<jsp:include page="includes/form_europeanCard.jspx"/>
 					</c:when>
 					<c:otherwise>

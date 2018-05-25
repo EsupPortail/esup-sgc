@@ -24,5 +24,9 @@
   <definition name="verso" extends="card">
     <put-attribute name="body" value="/WEB-INF/views/verso.jspx" />
   </definition>
+
+  <definition name="updateCheck" extends="card">
+    <put-attribute name="body" value="/WEB-INF/views/updateCheck.jspx" />
+  </definition>
   
 </tiles-definitions>

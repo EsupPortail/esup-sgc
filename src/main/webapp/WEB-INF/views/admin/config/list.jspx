@@ -9,7 +9,7 @@
 		var configUrl = '${create_url}';
 	</script>
     <h2>Configurations
-	    <button class="btn btn-primary" data-target="#createConfig" data-toggle="modal">
+	    <button class="btn btn-primary" data-target="#appliConfig" data-toggle="modal">
             <span class="glyphicon glyphicon-plus"/>
         </button>
     </h2>
@@ -36,7 +36,7 @@
             <table:column id="c_org_esupportail_sgc_domain_AppliConfig_type" sort="true" property="type" z="user-managed"/>
         </table:table>
     </page:list>
-    <div class="modal fade" id="createConfig">
+    <div class="modal fade" id="appliConfig">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

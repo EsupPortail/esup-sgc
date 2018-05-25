@@ -39,7 +39,8 @@
 			value="/WEB-INF/views/manager/print-card.jspx" />
 	</definition>
 	
-	<definition name="manager/esup-sgc-jnlp" template="/WEB-INF/views/manager/esup-sgc-jnlp.jspx"/>
+	<definition name="manager/esup-sgc-jnlp" template="/WEB-INF/views/manager/esup-sgc-jnlp.jspx" />
+	
 	<definition name="manager/esup-sgc-jnlp-r2d2" template="/WEB-INF/views/manager/esup-sgc-jnlp-r2d2.jspx"/>
 	
 	<definition name="manager/multiUpdateForm" template="/WEB-INF/views/manager/multiUpdateForm.jspx"/>

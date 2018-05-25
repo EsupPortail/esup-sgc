@@ -10,7 +10,7 @@
 		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
 	</script>
     <h2>Utilisateur
-		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">r
+		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
             <span class="glyphicon glyphicon-home">
                 <!--  -->
             </span>
@@ -198,23 +198,24 @@
                                                                             <form action="${updatePhototUrl}" enctype="multipart/form-data" id="updatePhoto" method="post">
                                                                                 <div id="image-cropper">
                                                                                     <div class="col-lg-4">
-                                                                                        <div class="cropit-preview col-lg-4" id="cropit-preview">&amp;nbsp</div>
+                                                                                        <div class="ezcrop-preview col-lg-4" id="ezcrop-preview">&amp;nbsp</div>
                                                                                         <div id="container">
                                                                                             <!--  -->
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-lg-8">
-                                                                                        <div class="cropit-info well">
+                                                                                        <div class="well" id="ezcrop-info">
                                                                                             <label>Zoom</label>
-                                                                                            <input class="cropit-image-zoom-input" type="range"/>
+                                                                                            <input class="ezcrop-image-zoom-input" type="range"/>
                                                                                             <label>Rotation</label>
                                                                                             <br/>
-                                                                                            <button class="rotate-ccw" type="button">
+                                                                                            <button id="rotate-ccw" class="rotate-ccw" type="button">
                                                                                                 <span aria-hidden="true" class="glyphicon glyphicon-repeat icon-flipped"/>
                                                                                             </button>
-                                                                                            <button class="rotate-cw" type="button">
+                                                                                            <button id="rotate-cw" class="rotate-cw" type="button">
                                                                                                 <span aria-hidden="true" class="glyphicon glyphicon-repeat"/>
                                                                                             </button>
+                                                                                            <input type="file" class="ezcrop-image-input" style="display:none;"/>
                                                                                             <br/>
                                                                                         </div>
                                                                                         <div class="well" id="filterSliders">
@@ -231,10 +232,10 @@
                                                                                             <button class="btn btn-primary" id="btnColors" type="button">Filtres</button>&amp;nbsp
                                                                                     	<button class="btn btn-warning" id="scaleBtn" type="button">Echelle</button>&amp;nbsp
                                                                                     	<button class="btn btn-default" id="resetBtn" type="button">Effacer</button>&amp;nbsp
-                                                                                        <button class="exportAdmin btn btn-success" onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
+                                                                                        <button id="exportAdmin" class="btn btn-success" onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
                                                                                         </div>
                                                                                         <input id="cardId" name="cardId" type="hidden" value="${card.id}"/>
-                                                                                        <input class="cropit-image-data" name="imageData" type="hidden"/>
+                                                                                        <input class="ezcrop-image-data" name="imageData" type="hidden"/>
                                                                                     </div>
                                                                                 </div>
                                                                             </form>

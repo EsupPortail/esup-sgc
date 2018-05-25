@@ -1,4 +1,94 @@
+//Turn alert js in bootstrap style
+window.alert = function(message) {
+    if(document.getElementById("bootstrap-alert-box-modal") == null) {
+    	message = message != "undefined" ? message : "";
+    	document.getElementsByTagName("body")[0].insertAdjacentHTML('beforeend','<div id="bootstrap-alert-box-modal" class="modal fade">\
+            <div class="modal-dialog">\
+                <div class="modal-content">\
+                    <div class="modal-header" style="min-height:40px;">\
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+                        <h4 class="modal-title"></h4>\
+                    </div>\
+                    <div class="modal-body"><div class="alert alert-warning alert-dismissible" role="alert"><strong></strong></div></div>\
+                </div>\
+            </div>\
+        </div>');
+    }
+    document.querySelector('#bootstrap-alert-box-modal .modal-body strong').innerHTML = message;
+    // A enlever
+    $("#bootstrap-alert-box-modal").modal('show');
+};
 
+var photoExportZoom = 4;
+var suneditor = null;
+
+//Configs
+function createSunEditor(){
+  	SUNEDITOR.create('valeur',{
+   		 // new CSS font properties
+   	addFont: null,
+
+   	  // height/width of the editor
+   	width : '100%',
+    height : '150px',
+
+   	  // show/hide toolbar icons
+   	 buttonList : [
+         ['undo', 'redo'],
+         ['font', 'fontSize', 'formats'],
+         ['bold', 'underline', 'italic', 'strike', 'removeFormat'],
+         ['fontColor', 'hiliteColor'],
+         ['indent', 'outdent'],
+         ['align', 'line', 'list', 'table'],
+         ['link'],
+         ['fullScreen', 'codeView']
+     ]
+   	});	
+}
+
+function displayFormconfig(val,col,valeur){
+	var checkTrue = "";
+	var checkFalse = "";
+	if(valeur == "true"){
+		checkTrue = "checked='checked'";
+	}else if(valeur == "false"){
+		checkFalse = "checked='checked'";
+	}
+    if(checkTrue == "" && checkFalse == "" && val=="BOOLEAN"){
+    	checkTrue = "checked='checked'";
+    }
+	var bool = '<div id="boolGroup"><label class="radio-inline"><input type="radio" name="value" id="boolTrue" value="true"' + checkTrue +'/> True'
+				+'</label><label class="radio-inline"><input type="radio" name="value" id="boolFalse" value="false" ' + checkFalse +' /> False</label></div>';
+
+	var areaEditor = document.getElementById("areaEditor");
+	
+    switch(val) {
+	    case 'HTML':
+	   	 	remove("boolGroup");
+	   	 	remove("valeur");
+	   	 	remove("suneditor_valeur");
+	   	 	areaEditor.insertAdjacentHTML('afterend', "<div class='col-md-" + col +"'><textarea class='form-control' id='valeur' name='value'>" + valeur + "</textarea></div>");
+	   	 	suneditor = createSunEditor();
+	        break;
+	    case 'TEXT':
+	   	 	if(suneditor != null){
+	   	 		suneditor = suneditor.hide();
+	   	 	}
+	   	 	remove("suneditor_valeur");
+	   	 	remove("boolGroup");
+	   	 	remove("valeur");
+	   	 	areaEditor.insertAdjacentHTML('afterend', "<div class='col-md-" + col +"'><textarea class='form-control' id='valeur' name='value'>" + valeur + "</textarea></div>");
+	        break;
+	    case 'BOOLEAN':
+	   	 	if(suneditor != null){
+	   	 		suneditor = suneditor.hide();
+	   	 	}
+	   	 	remove("suneditor_valeur");
+	   	 	remove("valeur");
+	   	 	areaEditor.insertAdjacentHTML('afterend', bool);
+	        break;
+    }
+}
 //==jQuery after()
 function insertAfter(el, referenceNode) {
 	referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
@@ -13,12 +103,29 @@ function remove(id) {
 //==jQuery empty()
 function empty(id) {
 	var wrap = document.getElementById(id);
-	while (wrap.firstChild) wrap.removeChild(wrap.firstChild);
+	if(wrap != null){
+		while (wrap.firstChild) wrap.removeChild(wrap.firstChild);
+	}
 }
 //insert before
 function insertBefore(el, referenceNode) {
     referenceNode.parentNode.insertBefore(el, referenceNode);
 }
+//Webcam
+function set_webcam() {
+	    Webcam.set({
+	  	  width: 320,
+	  	  height: 240,
+	  	  dest_width: 640,
+	  	  dest_height: 480,
+
+	  	  image_format: 'jpeg',
+	  	  jpeg_quality: 90,
+	  	  upload_name: "webcam"
+	  	 });
+	  	 Webcam.attach( 'my_camera' );
+}
+
 //dates array
 function getDatesInrange(d1, d2, interval){
 var dates = [];
@@ -118,6 +225,45 @@ function loadImages(sources, callback) {
     }
     slider3.addEventListener('input', sliderChange3);
   }
+  
+//Freefield select
+function displayResultFreefield(selectedField, fieldsValue, indice){
+	if(typeof freeUrl != "undefined"){
+		var request = new XMLHttpRequest();
+		request.open('GET', freeUrl + "?field=" + selectedField, true);
+		request.onload = function() {
+		  if (request.status >= 200 && request.status < 400) {
+			  try {
+				  var data = JSON.parse(this.response);
+				  empty("freeFieldValue" + indice);
+				  var freeFieldValue = document.getElementById("freeFieldValue" + indice); 
+				  if(data.length>1){
+						freeFieldValue.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");  
+				   }
+				  data.forEach(function(value, index){
+					  var selected = "";
+			      	  var splitFieldsFirstLevel = fieldsValue.split('@@');
+			      	  if(typeof splitFieldsFirstLevel[indice] != 'undefined'){
+			      		  if(fieldsValue.length>0 ){
+			      			  var splitFields2ndLevel = splitFieldsFirstLevel[indice];
+			            	  if(splitFieldsFirstLevel[indice].indexOf(",")!=-1){
+			            			splitFields2ndLevel = splitFieldsFirstLevel[indice].split(",");
+			            	  }
+				        		if(splitFields2ndLevel.indexOf(value)!=-1){
+				        			selected ="selected='selected'";
+				        		}
+			            	}
+			          	}
+			      	  	freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ value + "' " + selected +  ">" + value + "</option>");  
+		          	});  
+			  }
+			  catch(e){
+			  }
+		  }
+		};
+		request.send();
+	}
+}
   
 //Traitement par lot des cartes
 function multiUpdateForm(idArray) {
@@ -840,15 +986,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		    result.addEventListener('click', function() {
 		    	var type = this.hash
 		    	type = type.substr(1,3);
-		    	document.getElementById("type").value = type;
-		    	document.getElementById("address").value ="";
-		    	document.getElementById("etat").value = "all";
-		    	document.getElementById("editable").value = "";
-		    	document.getElementById("ownOrFreeCard").value = "false";
+		    	document.getElementById("searchBeanType").value = type;
+		    	document.getElementById("searchBeanAdress").value ="";
+		    	document.getElementById("searchBeanEtat").value = "all";
+		    	document.getElementById("searchBeanEditable").value = "";
+		    	document.getElementById("searchBeanOwnOrFreeCard").value = "false";
 		    	document.getElementById("searchEppn").value = "";
-		    	document.getElementById("nbCards").value = "";
-		    	document.getElementById("nbRejets").value = "";
-		    	document.getElementById("flagAdresse").value = "";
+		    	document.getElementById("searchBeanNbCards").value = "";
+		    	document.getElementById("searchBeanNbRejets").value = "";
+		    	document.getElementById("searchBeanFlagAdresse").value = "";
 		    	searchEppnForm.submit();
 		    });
 		}
@@ -916,7 +1062,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    	for(var idx in prefsStatsRm) {
     			remove(prefsStatsRm[idx]);
     		}
-	    	$.each(prefsStats, function(index, value){
+	    	prefsStats.forEach(function (value, index) {
 	    		var panel = document.getElementById(value);
 	    		if(panel !=null){
 	    			document.getElementById("statsPanels").append(panel);
@@ -944,5 +1090,552 @@ document.addEventListener('DOMContentLoaded', function() {
 		    });
 		};
     }
+    var idSlimSelect = ['searchBeanAdress','searchBeanEtat','searchBeanEditable', 'searchBeanOwnOrFreeCard', 'searchBeanNbCards', 'searchBeanNbRejets', 'searchBeanFlagAdresse'];
+    //Recherche simple
+    idSlimSelect.forEach(function(element, i) {
+    	if(document.getElementById(element) != null ){
+    		var selectLabel = document.getElementById(element).previousSibling.innerText;
+	    	var showSearch = false;
+	    	if(element == 'searchBeanAdress'){
+	    		showSearch = true;
+	    	}
+		    new SlimSelect({
+		    	  select: '#' + element,
+		    	  showSearch: showSearch,
+		    	  placeholder: selectLabel,
+		    	  allowDeselect: true
+		    	})
+    	}
+    });
+    //+ de filtres
+    if(typeof nbFields != "undefined"){
+	    for (var i = 0; i < nbFields; i++) {
+	    	if(document.getElementById('fields' + i) != null ){
+	    		var selectLabel = document.getElementById('fields' + i).previousSibling.innerText;
+			    new SlimSelect({
+			    	  select: '#fields' + i,
+			    	  placeholder: selectLabel,
+			    	  allowDeselect: true
+			    	})
+	    	}
+		    if(document.getElementById('freeFieldValue' + i) != null ){
+		    	selectLabel = document.getElementById('freeFieldValue' + i).previousSibling.innerText;
+			    new SlimSelect({
+			    	  select: '#freeFieldValue' + i,
+			    	  placeholder: selectLabel,
+			    	  allowDeselect: true
+			    	})
+		    }
+	    }
+    }
     
+ 	//Bouton imprimer bordereau
+    var printPage = document.querySelectorAll('.printPage')
+    if(printPage != null){
+	   	Array.from(printPage).forEach(link => {
+	   	    link.addEventListener('click', function(event) {
+		   		 window.print();
+				 return false;
+	   	    });
+	   	});
+	}
+    
+    //Récupération des résultats du select champ libre
+    if(typeof freeUrl != "undefined"){
+    	var selectedField = document.querySelectorAll('.freeSelect');
+    	selectedField.forEach(function (element, index) {
+    		var indice = element.id.replace("fields","");
+    		displayResultFreefield(element.value, fieldsValue, indice);
+    	});
+    	
+        var freeSelect = document.querySelectorAll('.freeSelect')
+        if(freeSelect != null){
+    	   	Array.from(freeSelect).forEach(link => {
+    	   	    link.addEventListener('change', function(event) {
+    	    		var indice = link.id.replace("fields","");
+    	    		selectedField = link.value;
+    	    		displayResultFreefield(selectedField, fieldsValue, indice);
+    	   	    });
+    	   	});
+    	}
+    }
+    //sélection adresse en fonction de l'état
+    var searchBeanEtat = document.getElementById('searchBeanEtat');
+    if(searchBeanEtat != null){
+    	searchBeanEtat.addEventListener('change', function(event) {
+			if(typeof filterAdressUrl != "undefined"){
+				var searchBeanAdress = document.getElementById('searchBeanAdress');
+	            var selectedTab = document.querySelector('#tabTypes .active a').hash
+	            var tabActif = selectedTab.substr(1,3);
+	    		var request = new XMLHttpRequest();
+	    		request.open('GET', filterAdressUrl + "?etat=" + searchBeanEtat.value + "&tabType=" + tabActif, true);
+	    		request.onload = function() {
+	    		  if (request.status >= 200 && request.status < 400) {
+	    			  try {
+	    				  var data = JSON.parse(this.response);
+							empty("searchBeanAdress");
+							if(data.length>1){
+								searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");  
+							}
+							data.forEach(function(value, index) {
+				        		searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='"+ value + "'>" + value + "</option>");  
+				        	});
+	    			  }
+	    			  catch(e){
+	    			  }
+	    		  }
+	    		};
+	    		request.send();
+			}
+		});
+    }
+    
+	//EZCROP
+	var imageCropper = document.getElementById('image-cropper');
+	if(imageCropper!=null){
+		var ezcropPreview = document.getElementById('ezcrop-preview');
+		var confirmPreview = document.getElementById('confirmPreview');
+		var alertPreview = document.getElementById('alertPreview');
+		var filterSliders = document.getElementById('filterSliders');
+		var container = document.getElementById('container');
+		var ezcropInfo = document.getElementById('ezcrop-info');
+		var orientation = "1";
+		//surcharge les valeurs par defaut de ezcrop.js
+		exportDefaults = {
+		        type: 'image/jpeg',
+		        quality: 0.9,
+		        originalSize: false,
+		        //fillBg: '#fff'
+		      };
+		var cropper = new ezcrop(document.getElementById('image-cropper'), {
+			onImageError : function(e) {
+		    	if(e.code==1){
+		    		alert(messages['photoTooSmall']);
+		    		return false;
+		    	}
+			  },onFileChange: function(e) {
+		          var file = e.target.files[0]
+		          if (file && file.name) {
+		              EXIF.getData(file, function() {
+		                  var exifData = EXIF.pretty(this);
+		                  orientation = EXIF.getTag(file, "Orientation");
+		              });
+		          }
+		      },previewSize:{
+		    	  width: 150, height: 188},
+		    	  maxZoom:1.8,
+		    	  minZoom: 'fit'
+	        });
+		
+		function changeMsg(){
+			if(confirmPreview != null){
+			    confirmPreview.value = "false";
+			    alertPreview.classList.remove("alert-success");
+			    alertPreview.classList.add("alert-danger");
+			    alertPreview.innerHTML = "<span class='glyphicon glyphicon-warning-sign'><!----></span> " + messages['alertPreview'];
+			}
+		}
+	
+		if(typeof lastId != "undefined" && lastId != "-1" && isRejected.length ==0 && fromLdap=='false'){
+			cropper.img.src = lastPhotoUrl;
+		}
+	
+		
+		ezcropPreview.addEventListener('dragover', function() {
+			ezcropPreview.style.border = "2px dashed #ccc";
+		});
+		
+	    document.getElementById('rotate-ccw').addEventListener('click', function() {
+	        cropper.rotateCCW();
+	        cropper.options.exportZoom = 2;
+	        changeMsg();
+	      });
+	
+		  document.getElementById('rotate-cw').addEventListener('click', function() {
+		    cropper.rotateCW();
+		    cropper.options.exportZoom = 2;
+		    changeMsg();
+		  });
+		  
+		  var imageInput = document.querySelectorAll('.ezcrop-image-input')
+		  if(imageInput != null){
+			Array.from(imageInput).forEach(link => {
+			    link.addEventListener('change', function(event) {
+				  cropper.options.exportZoom = 2;
+				  changeMsg();
+			    });
+			});
+		  }
+		    
+		  document.querySelectorAll(".ezcrop-image-zoom-input")[0].addEventListener('change', function() {
+			  cropper.options.exportZoom = 2;
+			  changeMsg();
+		  });
+		  if(document.getElementById('preview') != null){
+			  document.getElementById('preview').addEventListener('click', function() {
+		    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
+		    	if(currentImg.src == ""){
+		          	 alert(messages['fileRequired']);      	 
+		          	 return false;
+		        }
+		    	currentImg.setAttribute("id","image-preview");
+		    	var imageExif = document.getElementById('image-preview');
+		    	//hack iphone,iPad
+		    	if(isISmartPhone == "true" && orientation == "6"){
+		    		cropper.rotateCW();
+		    	}
+		    	cropper.options.exportZoom = photoExportZoom;
+		
+		    	var image = cropper.getCroppedImageData();
+		    	document.querySelector('#specimenCarte img#photo').setAttribute("src", image);
+		    	document.querySelectorAll('.ezcrop-image-data')[0].value=image;
+		    	//hack iphone,iPad
+		    	if(isISmartPhone == "true" && orientation == "6"){
+		    		cropper.rotateCCW();
+		    	}
+			 });
+		 }
+		 if(document.getElementById('confirmPhoto') != null){   
+			 document.getElementById('confirmPhoto').addEventListener('click', function() {
+		    	confirmPreview.value = "true";
+			    alertPreview.classList.remove("alert-danger");
+			    alertPreview.classList.add("alert-success");
+			    alertPreview.innerHTML = "<span class='glyphicon glyphicon-ok'><!----></span> " + messages['confirmPreview'];
+			    //Enlever Jquery....
+		   		$('#previewCarte').modal('hide');
+			 });
+		 }
+		   
+		//EZCROP RETOUCHE
+			if(document.getElementById('btnRetouche') != null){
+				document.getElementById('btnRetouche').addEventListener('click', function() {
+					var sliders = document.getElementById('filterSliders');
+					sliders.style.display = "none";
+					var url = photorUrl +  document.querySelector("#retouche #cardId").value;
+					cropper.img.src = url;
+					cropper.previewSize = {width: 150, height: 188};
+				});
+			}
+			
+			if(document.getElementById('exportAdmin') != null){
+				document.getElementById('exportAdmin').addEventListener('click', function() {
+			    	if(document.querySelector("#container canvas")!=null){
+				    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
+				    	if(currentImg.src == ""){
+				          	 alert(messages['fileRequired']);      	 
+				          	 return false;
+				        }
+				    	cropper.options.exportZoom = photoExportZoom;
+				    	var image = cropper.getCroppedImageData();
+				    	document.querySelectorAll('.ezcrop-image-data')[0].value=image;
+			    	}
+			       	else{
+			       		canvas = document.getElementById("container").querySelector("canvas");
+			       		var data64 = canvas.toDataURL('image/jpeg', 0.9);
+			       		document.querySelectorAll('.ezcrop-image-data')[0].value=data64;
+			       	}
+			     });
+			}		
+			
+			//KONVA
+		    var img1 = new Image();
+		    if(document.getElementById('btnColors') != null){
+				document.getElementById('btnColors').addEventListener('click', function() {
+				ezcropPreview.style.display = "none";
+		    	filterSliders.style.display = "block";
+		    	ezcropInfo.style.display = "none";
+		    	container.style.display = "block";
+		    	ezcropPreview.style.display = "none";
+		    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
+		    	if(currentImg.src == ""){
+		          	 alert(messages['fileRequired']);      	 
+		          	 return false;
+		        }
+		    	cropper.options.exportZoom = photoExportZoom;
+		    	var image = cropper.getCroppedImageData();
+		        var sources = {
+		      	      lion: image
+		      	    };
+		      	loadImages(sources, buildStage);
+		        var sliders = document.querySelectorAll('#filterSliders input');
+		        if(sliders != null){
+		    	   	Array.from(sliders).forEach(link => {
+		    	    	link.value = 0;
+		    	   	});
+		    	}
+			    });
+			}
+		    
+		    if(document.getElementById('resetBtn') != null){
+				document.getElementById('resetBtn').addEventListener('click', function() {
+					cropper.options.exportZoom = photoExportZoom;
+					var url = photorUrl +  document.querySelector("#retouche #cardId").value;
+					cropper.img.src = url;
+			    	filterSliders.style.display = "none";
+			    	ezcropInfo.style.display = "block";
+			    	ezcropPreview.style.display = "block";
+			    	empty("container"); 
+			        var sliders = document.querySelectorAll('#filterSliders input');
+			        if(sliders != null){
+			    	   	Array.from(sliders).forEach(link => {
+			    	    	link.value = 0;
+			    	   	});
+			    	}
+			        document.querySelectorAll(".ezcrop-image-zoom-input")[0].removeAttribute("disabled");
+			    });
+			}
+		    if(document.getElementById('scaleBtn') != null){
+				document.getElementById('scaleBtn').addEventListener('click', function() {	    
+			    	canvas = document.getElementById("container").querySelector("canvas");
+			    	if(canvas !=null){
+				   		var data64 = canvas.toDataURL('image/jpeg', 0.9);
+				   		cropper.img.src = data64;
+				    	filterSliders.style.display = "none";
+				    	ezcropInfo.style.display = "block";
+				    	ezcropPreview.style.display = "block";
+				    	empty("container"); 
+			    	}
+			    	document.querySelectorAll(".ezcrop-image-zoom-input")[0].removeAttribute("disabled");
+			    });
+			} 
+	}
+	//WEBCAM formulaire de demande
+	var webcam = document.getElementById('webCam');
+    //Si webcam détectée, la partie webcam est affichée
+	 if(webcam != null){
+		Webcam.on( 'error', function(err) {
+			remove("webCam");
+		} );
+	    var camera = document.getElementById('my_camera');
+	    if(typeof camera != "undefined"){
+			Webcam.on( 'live', function() {
+				// camera is live, showing preview image
+				// (and user has allowed access)
+				webcam.style.display = "block";
+			} );
+		    set_webcam();
+		    document.getElementById('retryWebcam').addEventListener('click', function() {
+		    	set_webcam();
+		    	document.querySelectorAll('.ezcrop-preview-image')[0].removeAttribute('src');
+		    	cropper.img.src = null;
+		    });
+		    document.getElementById('snapShot').addEventListener('click', function() {
+		   	 Webcam.snap( function(data_uri) {
+		   		cropper.img.src = data_uri;
+		   		cropper.minZoom = 'fill';
+		   	 } );
+		    })
+	    }
+	 }
+	 
+	 //Template interface
+ 	//A enlever bootstrap...
+    $('#templateCardsList .photo img').popover({ trigger: 'hover', placement : 'auto', content: function () {
+		return '<img class="popTemplate" src="'+ $(this)[0].src + '"/>';
+		}, html:true});
+    
+    if(document.getElementById('_cssStyle_id') != null){
+	    document.getElementById('_cssStyle_id').addEventListener('keyup', function() {
+	    	remove("mainStyle");
+	    	document.getElementById('specimenCarte').insertAdjacentHTML('beforeend','<style id="mainStyle">'+ this.value + '</style>');  
+	    });
+    }
+    if(document.getElementById('_cssMobileStyle_id') != null){
+    	document.getElementById('_cssMobileStyle_id').addEventListener('keyup', function() {
+	    	remove("mobileStyle");
+	    	document.getElementById('specimenCarte').insertAdjacentHTML('beforeend','<style id="mobileStyle">@media screen and (max-width: 450px) {'+ this.value + '}</style>');
+	    });
+    }
+    if(document.getElementById('updateTemplateCard') != null){
+    	document.querySelector('#updateTemplateCard #proceed').addEventListener('click', function() {
+	        if (confirm('Enregistrer les modifications?')) {
+	           return true;
+	        }else{
+	        	return false
+	        }
+	    });
+    }
+    
+    //Validation formulaire demande de carte 
+	var radio1 = document.getElementById("radio1");
+	var radio2 = document.getElementById("radio2");
+	var radio3 = document.getElementById("radio3");
+	var radioCnil1= document.getElementById("radioCnil1");
+	var radioCnil2 = document.getElementById("radioCnil2");
+	var radioEurope1= document.getElementById("radioEurope1");
+	var radioEurope2 = document.getElementById("radioEurope2");
+	var reglement = document.getElementById("reglement");
+	var adresse  = document.getElementById("address");
+	if(document.getElementById('cardRequest') != null){
+		document.getElementById('cardRequest').addEventListener('submit', function(e) {
+	    	if(document.querySelectorAll('.ezcrop-image-data')[0].value == ""){
+	    		alert (messages['alertPhoto']);
+	    		e.preventDefault();
+	    	}
+	      	if(document.getElementById('confirmPreview').value == "false"){
+	    		alert (messages['alertPreview']);
+	    		e.preventDefault();
+	    	}    
+	     	if(radio1 != null && !radio1.checked && !radio2.checked){
+	    		alert (messages['alertCrous']);
+	    		e.preventDefault();
+	    	}
+	     	if(radioEurope1 != null && !radioEurope1.checked  && !radioEurope2.checked){
+	    		alert (messages['alertEurope']);
+	    		e.preventDefault();
+	    	}      	
+	     	if(radioCnil1!= null && !radioCnil1.checked && !radioCnil2.checked){
+	    		alert (messages['alertCnil']);
+	    		e.preventDefault();
+	    	}   
+	     	if(reglement!= null && !reglement.checked){
+	    		alert (messages['alertRules']);
+	    		e.preventDefault();
+	    	}
+	     	if(radio3 != null && radio3.checked && adresse != null && adresse.value.trim().length>250){
+	    		alert (messages['alertTooChar']);
+	    		return false;	
+	     	}
+	    });
+	}
+	
+	/* CROUS RightHolder API View*/
+	var crousRighHolder  = document.getElementById("getCrousRighHolder");
+	if(crousRighHolder != null){
+		crousRighHolder.addEventListener('click', function(e) {
+		 	if (typeof getCrousRightHolderUrl != "undefined") {
+				var request = new XMLHttpRequest();
+				request.open('GET', getCrousRightHolderUrl, true);
+				request.onload = function() {
+				  if (request.status >= 200 && request.status < 400) {
+					  var message = this.response;
+						if (message && message.length) {
+							document.getElementById('getCrousRighHolderDiv').insertAdjacentHTML('beforeend', message);
+							crousRighHolder.setAttribute("disabled", true);
+						}
+				  }
+				};
+				request.send();
+			}
+		});
+	}
+	/* CROUS SmartCard API View*/
+	var crousSmartCard = document.querySelectorAll('.getCrousSmartCard')[0];
+	if(crousSmartCard != null){
+		crousSmartCard.addEventListener('click', function(e) {
+			e.preventDefault();
+			var request = new XMLHttpRequest();
+			request.open('GET', this.href, true);
+			var parent = this;
+			request.onload = function() {
+			  if (request.status >= 200 && request.status < 400) {
+				  var message = this.response;
+					if (message && message.length) {
+						document.querySelectorAll('.getCrousSmartCardDiv')[0].innerHTML = message;
+					}
+			  }
+			};
+			request.send();
+		});
+	}
+	
+    //Cartes : edition des messages
+	document.addEventListener('click', function(e) {
+	  if (e.target && /^msg_/.test(e.target.id)){
+		var realid = this.activeElement.id;
+		var splitRealid = realid.split("_");
+		var realSpan = "span_" + splitRealid[1];
+		var comment = document.getElementById(realSpan).innerHTML.replace("&nbsp;","");
+		document.getElementById("comment").value = comment;
+	  }
+	})
+	
+    //Tabs Configs
+	var tabsConfig = document.querySelectorAll('#configList .nav-tabs li a');
+   	Array.from(tabsConfig).forEach(link => {
+   	    link.addEventListener('click', function(event) {
+	    	type = this.hash.substr(1,this.hash.length);
+	    	if(type != 0){
+		    	if(typeof tabsUrl != "undefined"){
+		    		document.querySelector("input[name=searchField]").value = type;
+		    		document.getElementById("tabConfigsForm").submit();
+		    	};
+	    	}else{
+	    		window.location.href = 	configUrl;
+	    	}
+	    });
+	});
+   	
+   	//configs
+   	var appliConfig = document.getElementById('appliConfig');
+   	if(appliConfig != null){
+   		appliConfig.addEventListener('submit', function(e) {
+   			document.getElementById("valeur").value = document.querySelectorAll(".input_editor")[0].contentDocument.body.innerHTML;
+   		});
+   	}
+
+   	//CSV download
+   	var downloadOk = document.getElementById('downloadOk');
+   	if(downloadOk!=null){
+	   	downloadOk.addEventListener('click', function(event) {
+			//A enlever
+			$('#modalFields').modal('hide')
+			document.getElementById("searchCsvForm").submit();
+		});
+   	}
+   	
+   	//Configs
+   	var boolGroup = document.getElementById("boolGroup");
+   	if(boolGroup != null){
+   	   	boolGroup.style.display = "none";	
+   	}
+	var valeur = document.getElementById("hiddenValeur");
+	if(valeur != null){
+		//---Create
+		var typeConfig = document.querySelector("input[type=radio][name=type]:checked");
+		if(typeConfig != null){
+			displayFormconfig(typeConfig.value,12, valeur.value);
+		}
+		
+		var radioType = document.querySelectorAll('input[type=radio][name=type]');
+	   	Array.from(radioType).forEach(link => {
+	   	    link.addEventListener('click', function(event) {
+				displayFormconfig(this.value, 12,  valeur.value);
+		    });
+		});
+		//--update
+		var typeConfigSelect = document.querySelector('select[name=type]');
+		if(typeConfigSelect != null){
+			displayFormconfig(typeConfigSelect.value ,3, valeur.value);
+			var selectType = document.querySelectorAll('select[name=type]');
+		   	Array.from(selectType).forEach(link => {
+		   	    link.addEventListener('change', function(event) {
+					displayFormconfig(this.value, 3,  valeur.value);
+			    });
+			});
+		}
+	}
+	// impression des cartes - popup
+    var inprintForm = document.getElementById("IN_PRINTForm");
+    if(inprintForm != null){
+   	 inprintForm.addEventListener('submit', function(e) {
+   	    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
+   	   	    this.target = 'formprint';
+  		}); 
+    }
+    
+    //Messages modal
+    var dialogMsg = document.querySelector('#messageModal #dialog');
+    if(dialogMsg != null){
+    	//A enlever...
+		$('#messageModal').modal({
+			 resizable: false,
+			 modal: true,
+			 buttons: {
+				 Fermer: function() {
+					$( this ).dialog( "close" );
+			 	}
+			 }
+			});
+    }
 })

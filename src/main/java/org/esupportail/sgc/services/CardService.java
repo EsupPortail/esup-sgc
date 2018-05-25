@@ -154,17 +154,6 @@ public class CardService {
 		return displayRules;
 	}
 	
-	public boolean displayFormEuropeanCard (String type){
-		
-		boolean displayFormEuropeanCard = false;
-		
-		if(appliConfigService.displayFormEuropeanCard().contains(type)){
-			displayFormEuropeanCard = true;
-		}
-		
-		return displayFormEuropeanCard;
-	}
-	
 	public String getPaymentWithoutCard(String eppn){
 		String reference = "";
 		User user = User.findUser(eppn);

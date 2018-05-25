@@ -56,12 +56,6 @@ public class AppliConfigService {
 		return appliConfig.getValue();
 	}
 	
-	public String displayFormEuropeanCard() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_EUROPEAN");
-		return appliConfig.getValue();
-	}
-
-	//
 	public Double getMontantRenouvellement() {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MONTANT_RENOUVELLEMENT");
 		return new Double(appliConfig.getValue());

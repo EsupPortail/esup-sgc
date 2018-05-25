@@ -193,11 +193,20 @@ public class WsRestEsupNfcController {
 	 */
 	@RequestMapping(value="/verso",  method=RequestMethod.POST)
 	public String verso(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
+		log.info("get verso from : " + taglog);
 		Card card = Card.findCardsByCsn(taglog.getCsn()).getSingleResult();
 		uiModel.addAttribute("card", card);
 		return "verso";
 	}
 
+	@RequestMapping(value="/updateCheck",  method=RequestMethod.POST)
+	public String updateCheck(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
+		log.info("get updateCheck from : " + taglog);
+		Card card = Card.findCardsByCsn(taglog.getCsn()).getSingleResult();
+		uiModel.addAttribute("card", card);
+		return "updateCheck";
+	}
+	
 	@RequestMapping(value="/secondaryId",  method=RequestMethod.POST)
 	@ResponseBody
 	public String secondaryId(@RequestBody EsupNfcTagLog taglog, @RequestParam String idName, Model uiModel) {
