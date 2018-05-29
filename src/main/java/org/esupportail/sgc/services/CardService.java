@@ -32,6 +32,7 @@ import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.Params;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.DOMImplementation;
@@ -64,7 +65,7 @@ public class CardService {
 	@Resource
 	protected AppliConfigService appliConfigService;	
 	
-	@Resource
+	@Autowired(required = false)
 	CardIdsService cardIdsService;
 	
 	@Resource
@@ -113,7 +114,7 @@ public class CardService {
 		
 		boolean displayCnil = false;
 		
-		if(appliConfigService.displayFormCnil().contains(type)){
+		if(type!=null && appliConfigService.displayFormCnil().contains(type)){
 			displayCnil = true;
 		}
 		
@@ -125,7 +126,7 @@ public class CardService {
 		boolean displayCrous = false;
 		
 		// When crous is accepted ones, we can't unaccept it
-		if((user==null || !user.getCrous()) && appliConfigService.displayFormCrous().contains(user.getUserType())){
+		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.displayFormCrous().contains(user.getUserType())){
 			displayCrous = true;
 		}
 		
@@ -136,7 +137,7 @@ public class CardService {
 		
 		boolean displayAdresse = false;
 		
-		if(appliConfigService.displayFormAdresse().contains(type)){
+		if(type!=null && appliConfigService.displayFormAdresse().contains(type)){
 			displayAdresse = true;
 		}
 		
@@ -147,7 +148,7 @@ public class CardService {
 		
 		boolean displayRules = false;
 		
-		if(appliConfigService.displayFormRules().contains(type)){
+		if(type!=null && appliConfigService.displayFormRules().contains(type)){
 			displayRules = true;
 		}
 		

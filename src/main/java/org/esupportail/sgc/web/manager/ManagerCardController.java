@@ -36,7 +36,6 @@ import org.esupportail.sgc.services.PreferencesService;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
-import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
@@ -82,9 +81,6 @@ public class ManagerCardController {
 
 	@Resource
 	CardEtatService cardEtatService;
-	
-	@Resource
-	PayBoxService payBoxService;
 	
 	@Resource
 	LogService logService;

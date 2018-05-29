@@ -16,7 +16,7 @@
 	<spring:url value="/resources/css/esup-sgc.css" var="esupSgc_css_url" />
 
 	<spring:url value="/resources/js/jquery.min.js" var="jquery_url" />
-	<spring:url value="/resources/js/bootstrap.min.js" var="bootstrap_js__url" />
+	<spring:url value="/resources/js/bootstrap-native-custom.min.js" var="bootstrap_js__url" />
 	<spring:url value="/resources/js/ezcrop.js" var="ezcrop_js_url" />
 	<spring:url value="/resources/js/footable.min.js" var="footable_js_url" />
 	<spring:url value="/resources/js/konva.min.js" var="konva_js_url" />
@@ -41,7 +41,7 @@
 	<meta name="theme-color" content="#ffffff" />
   
 	<link rel="stylesheet" type="text/css" href="${bootstrap_css_url}" />
-		<link rel="stylesheet" type="text/css" href="${slimselect_css_url}" />
+	<link rel="stylesheet" type="text/css" href="${slimselect_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${footable_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${esupSgc_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${awesome_css_url}" />
@@ -50,8 +50,6 @@
 	<link rel="stylesheet" type="text/css" href="${progress_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${dragula_css_url}" />
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-  
 	<link rel="SHORTCUT ICON" href="${favicon}" />
 
 	<script src="${jquery_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
@@ -65,11 +63,11 @@
 	<script src="${esup_sgc_msg_fr_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${dragula_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${exif_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
-	<script src="${select_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${webcam_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${slimselect_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esupSgc_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esupSgcVanilla_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	
 	
 	<script type="text/javascript">
 		<sec:authorize access="hasRole('ROLE_MANAGER') || hasRole('ROLE_CONSULT')">

@@ -1,22 +1,23 @@
 //Turn alert js in bootstrap style
 window.alert = function(message) {
-    if(document.getElementById("bootstrap-alert-box-modal") == null) {
+	var blankTemplate ='<div id="modalID" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
+		 + '<div class="modal-dialog"> <div class="modal-content">'
+		 + '</div></div></div>';
+
+		document.getElementsByTagName("body")[0].insertAdjacentHTML('beforeend', blankTemplate);
     	message = message != "undefined" ? message : "";
-    	document.getElementsByTagName("body")[0].insertAdjacentHTML('beforeend','<div id="bootstrap-alert-box-modal" class="modal fade">\
-            <div class="modal-dialog">\
-                <div class="modal-content">\
-                    <div class="modal-header" style="min-height:40px;">\
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
-                        <h4 class="modal-title"></h4>\
-                    </div>\
-                    <div class="modal-body"><div class="alert alert-warning alert-dismissible" role="alert"><strong></strong></div></div>\
-                </div>\
-            </div>\
-        </div>');
-    }
-    document.querySelector('#bootstrap-alert-box-modal .modal-body strong').innerHTML = message;
-    // A enlever
-    $("#bootstrap-alert-box-modal").modal('show');
+    	var myModal = document.getElementById('modalID');
+    	var myModalInstance = new Modal(myModal, 
+    	{ // options object
+    	  content: '<div class="modal-header" style="min-height:40px;">\
+    	      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+    	      <h4 class="modal-title"></h4>\
+    	  </div><div class="modal-body"><div class="alert alert-warning alert-dismissible" role="alert"><strong>' + message + '</strong></div></div>', // sets modal content
+    	  backdrop: 'static', // we don't want to dismiss Modal when Modal or backdrop is the click event target
+    	  keyboard: false // we don't want to dismiss Modal on pressing Esc key
+    	});
+
+    	myModalInstance.show();
 };
 
 var photoExportZoom = 4;
@@ -272,9 +273,14 @@ function multiUpdateForm(idArray) {
 		request.open('POST', multiUpdateFormUrl + "?cardIds=" + idArray.toString(), true);
 		request.onload = function() {
 		  if (request.status >= 200 && request.status < 400) {
-			  //document.getElementById("traitementLot").innerHTML = this.response;
-			  // A enlever --> conflit winow.open
-			  $("#traitementLot").html(this.response);
+			  document.getElementById("traitementLot").innerHTML = this.response;
+			  var inprintForm = document.getElementById("IN_PRINTForm");
+			  if(inprintForm != null){
+				  inprintForm.addEventListener('submit', function(e) {
+			   	    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
+			   	    	this.target = 'formprint';
+			  	  }); 
+			  }
 		  }
 		};
 		request.send();
@@ -1301,8 +1307,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			    alertPreview.classList.remove("alert-danger");
 			    alertPreview.classList.add("alert-success");
 			    alertPreview.innerHTML = "<span class='glyphicon glyphicon-ok'><!----></span> " + messages['confirmPreview'];
-			    //Enlever Jquery....
-		   		$('#previewCarte').modal('hide');
+			    var previewCarte = document.getElementById('previewCarte');
+			    if(previewCarte != null){
+			    	 var myModalInstance = new Modal(previewCarte, null);
+			    	 myModalInstance.hide();
+			    }
 			 });
 		 }
 		   
@@ -1428,12 +1437,18 @@ document.addEventListener('DOMContentLoaded', function() {
 	    }
 	 }
 	 
-	 //Template interface
- 	//A enlever bootstrap...
-    $('#templateCardsList .photo img').popover({ trigger: 'hover', placement : 'auto', content: function () {
-		return '<img class="popTemplate" src="'+ $(this)[0].src + '"/>';
-		}, html:true});
-    
+	//Popover image Template interface
+	var templateCardsListPopover = document.querySelectorAll('#templateCardsList .photo img');
+	if(templateCardsListPopover != null){
+		for (var i = 0; i < templateCardsListPopover.length; i++){
+			new Popover(templateCardsListPopover[i], {
+				  trigger: 'hover',
+				  placement: 'top',
+				  template: '<div class="popover" role="tooltip"><div class="popover-content"><img class="popTemplate" src="'+ templateCardsListPopover[i].src + '"/></div></div>'
+				});
+		}
+	}
+	 
     if(document.getElementById('_cssStyle_id') != null){
 	    document.getElementById('_cssStyle_id').addEventListener('keyup', function() {
 	    	remove("mainStyle");
@@ -1578,8 +1593,11 @@ document.addEventListener('DOMContentLoaded', function() {
    	var downloadOk = document.getElementById('downloadOk');
    	if(downloadOk!=null){
 	   	downloadOk.addEventListener('click', function(event) {
-			//A enlever
-			$('#modalFields').modal('hide')
+		    var modalFields = document.getElementById('modalFields');
+		    if(modalFields != null){
+		    	 var myModalInstance1 = new Modal(modalFields, null);
+		    	 myModalInstance1.hide();
+		    }
 			document.getElementById("searchCsvForm").submit();
 		});
    	}
@@ -1627,15 +1645,83 @@ document.addEventListener('DOMContentLoaded', function() {
     //Messages modal
     var dialogMsg = document.querySelector('#messageModal #dialog');
     if(dialogMsg != null){
-    	//A enlever...
-		$('#messageModal').modal({
-			 resizable: false,
-			 modal: true,
-			 buttons: {
-				 Fermer: function() {
-					$( this ).dialog( "close" );
-			 	}
-			 }
-			});
+    	var messageModal = document.getElementById('messageModal');
+    	var myModalInstance = new Modal(messageModal);
+    	myModalInstance.show();
     }
+    
+    /* SEARCH LONG POLL */	
+	var searchLongPoll = {
+			debug : false,
+			run : false,
+			timer : undefined,
+			lastAuthDate : 0,
+			list : undefined
+	};
+	searchLongPoll.start = function() {
+		if (!this.run) {
+			this.run = true;
+			this.timer = this.poll();
+		}
+	}
+	searchLongPoll.clear = function() {
+	/*var lastleoauth = document.getElementById("lastleoauth");
+	  if(lastleoauth != null){
+		lastleoauth.innerHTML = "";
+	  }*/
+	}
+	searchLongPoll.stop = function() {
+		if (this.run && this.timer != null) {
+			clearTimeout(this.timer);
+		}
+		run = false;		
+	}
+	searchLongPoll.poll = function() {
+		if (this.timer != null) {
+			clearTimeout(this.timer);
+		}
+		return $(this).delay(1000).load(); 
+		//return setTimeout(this.load, 1000);
+	}
+	searchLongPoll.load = function() {
+		if (typeof sgcRootUrl != "undefined" && this.run) {
+			var request = new XMLHttpRequest();
+			request.open('GET', sgcRootUrl + "manager/searchPoll", true);
+			request.onload = function() {
+			  if (request.status >= 200 && request.status < 400) {
+				  var message = this.response;
+					if (message && message.length) {
+						if(message != "stop") {
+							window.location.href = sgcRootUrl + message;
+						}
+					}else {
+						setTimeout(function(){
+							searchLongPoll.timer = searchLongPoll.poll();
+						}, 2000);
+					}		    
+			  }
+			};
+			request.onerror = function(){  
+				 // Plus de session (et redirection CAS) ou erreur autre ... on stoppe pour ne pas boucler
+				console.log("searchLongPoll stoppé ");
+				};
+			request.send();
+		}
+	}
+	if(typeof sgcRootUrl != "undefined") {
+		searchLongPoll.start();
+	}
+	/* SEARCH LONG POLL - END*/
+	
+	//Popover image liste carte
+	var cardListPopover = document.querySelectorAll('#cardList .photo img');
+	if(cardListPopover != null){
+		for (var i = 0; i < cardListPopover.length; i++){
+			new Popover(cardListPopover[i], {
+				  trigger: 'hover',
+				  placement: 'top',
+				  template: '<div class="popover" role="tooltip"><div class="popover-content"><img src="'+ cardListPopover[i].src + '" height="188" width="150"/></div></div>'
+				});
+		}
+	}
 })

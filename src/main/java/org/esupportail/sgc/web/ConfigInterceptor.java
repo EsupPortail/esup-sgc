@@ -17,11 +17,11 @@
  */
 package org.esupportail.sgc.web;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.esupportail.sgc.services.EsupNfcTagService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.view.RedirectView;
@@ -29,7 +29,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 public class ConfigInterceptor extends HandlerInterceptorAdapter {
 	
-	@Resource
+	@Autowired(required = false)
 	EsupNfcTagService esupNfcTagService;
 	
 	@Override
@@ -51,10 +51,12 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
 
 			if (!isRedirectView && !viewNameStartsWithRedirect) {
 				
-				String esupNfcTagDroidApkUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-apk";
-				modelAndView.addObject("esupNfcTagDroidApkUrl", esupNfcTagDroidApkUrl);
-				String esupNfcTagDesktopJarUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-jar";
-				modelAndView.addObject("esupNfcTagDesktopJarUrl", esupNfcTagDesktopJarUrl);
+				if(esupNfcTagService != null) {
+					String esupNfcTagDroidApkUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-apk";
+					modelAndView.addObject("esupNfcTagDroidApkUrl", esupNfcTagDroidApkUrl);
+					String esupNfcTagDesktopJarUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-jar";
+					modelAndView.addObject("esupNfcTagDesktopJarUrl", esupNfcTagDesktopJarUrl);
+				}
 				
 				// modelAndView.addObject("versionEsuSgc", AppliVersion.getCacheVersion());
 				

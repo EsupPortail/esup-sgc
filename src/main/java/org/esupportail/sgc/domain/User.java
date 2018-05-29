@@ -37,6 +37,9 @@ public class User {
 	
 	private final static Logger log = LoggerFactory.getLogger(User.class);
 
+	// @see getDueDateIncluded()
+	public final static int DUE_DATE_INCLUDED_DELAY = +30;
+	
 	public static enum CnousReferenceStatut {
 		psg, etd, prs, hbg, fct, fpa, stg;
 	};
@@ -595,7 +598,7 @@ public class User {
         if (dueDate != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(dueDate);
-            cal.add(Calendar.HOUR, +30);
+            cal.add(Calendar.HOUR, DUE_DATE_INCLUDED_DELAY);
             dueDateIncluded = cal.getTime();
         }
         return dueDateIncluded;
@@ -621,7 +624,7 @@ public class User {
 
 	public TemplateCard getTemplateCard() {
 		String domain =  this.getTemplateKey();
-		if(TemplateCard.findTemplateCardsByKeyEquals(domain).getResultList().size()>0){
+		if(domain!=null && TemplateCard.findTemplateCardsByKeyEquals(domain).getResultList().size()>0){
 			return TemplateCard.findTemplateCardsByKeyEquals(domain, "numVersion", "DESC").getResultList().get(0);
 		} else {
 			return TemplateCard.findTemplateCardsByKeyEquals("default").getResultList().get(0);	

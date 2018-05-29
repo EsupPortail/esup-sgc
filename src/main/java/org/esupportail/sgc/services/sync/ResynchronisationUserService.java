@@ -11,12 +11,14 @@ import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.AuthApiCrousService;
 import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +41,11 @@ public class ResynchronisationUserService {
 	@Resource
 	CardEtatService cardEtatService;
 	
-	@Resource
+	@Autowired(required = false)
 	AccessControlService accessControlService;
+	
+	@Resource
+	ExternalCardService externalCardService;
 	
 	@Async("synchroExecutor")
 	public void synchronizeUserInfoAsync(String eppn) {
@@ -69,6 +74,53 @@ public class ResynchronisationUserService {
 		}
 
 		boolean accessControlMustUpdate = false;
+
+		// si plus de csn sur une carte externe -> carte à invalider - sauf si elle va être caduque ...
+		if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
+			for (Card card : user.getCards()) {
+				if (card.getExternal() && card.isEnabled() && dummyUser.getDueDate().after(new Date())) {
+					cardEtatService.setCardEtat(card, Etat.DISABLED, null, null, false, true);
+					accessControlMustUpdate = true;
+				}
+			}
+		} else {
+			Card externalCard = null;
+			Boolean haveExternalCard = false;
+			for (Card card : user.getCards()) {
+				if (card.getExternal()) {
+					haveExternalCard = true;
+					if (card.getCsn() == null) {
+						card.setCsn(dummyUser.getExternalCard().getCsn());
+						externalCard = card;
+					} else if (card.getCsn().equals(dummyUser.getExternalCard().getCsn())) {
+						externalCard = card;
+					}
+				}
+			}
+			// externalCard has changed CSN !
+			if (haveExternalCard && externalCard == null) {
+				externalCard = externalCardService.initExternalCard(user);
+				cardEtatService.setCardEtat(externalCard, Etat.DISABLED, null, null, false, true);
+				accessControlMustUpdate = true;
+			}
+			if (externalCard != null) {
+				if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
+					cardEtatService.setCardEtat(dummyUser.getExternalCard(), Etat.CADUC, null, null, false, true);
+				} else {
+					externalCard.setCsn(dummyUser.getExternalCard().getCsn());
+					externalCard.setDesfireIds(dummyUser.getExternalCard().getDesfireIds());
+					PhotoFile photo = dummyUser.getExternalCard().getPhotoFile();
+					externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
+					externalCard.getPhotoFile().setFileSize(photo.getFileSize());
+					externalCard.getPhotoFile().setContentType(photo.getContentType());
+					userInfoService.setPrintedInfo(externalCard);
+					if (Etat.DISABLED.equals(externalCard.getEtat()) || Etat.CADUC.equals(externalCard.getEtat())) {
+						cardEtatService.setCardEtat(externalCard, Etat.ENABLED, null, null, false, true);
+					}
+				}
+			}
+		}
+		
 		if(!dummyUser.fieldsEquals(user) && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
 			if(dummyUser.getDueDate() == null && user.getDueDate().after(new Date())) {
 				// TODO : avec shib, quelle dueDate ??
@@ -113,31 +165,7 @@ public class ResynchronisationUserService {
 		} else {
 			log.debug("Synchronize of user " + eppn + " was not needed.");
 		}
-		if(dummyUser.getExternalCard().getCsn() != null && !dummyUser.getExternalCard().getCsn().isEmpty()) {
-			Card externalCard = null;
-			for(Card card : user.getCards()) {
-				if(card.getExternal()) {
-					externalCard = card;
-					break;
-				}
-			}
-			if(externalCard != null) {
-				if(dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
-					cardEtatService.setCardEtat(dummyUser.getExternalCard(), Etat.CADUC, null, null, false, true);
-				} else {
-					if(!dummyUser.getExternalCard().getCsn().equals(dummyUser.getExternalCard().getCsn())) {
-						accessControlMustUpdate = true;
-					}
-					externalCard.setCsn(dummyUser.getExternalCard().getCsn());
-					externalCard.setDesfireIds(dummyUser.getExternalCard().getDesfireIds());
-					PhotoFile photo = dummyUser.getExternalCard().getPhotoFile();
-					externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
-					externalCard.getPhotoFile().setFileSize(photo.getFileSize());
-					externalCard.getPhotoFile().setContentType(photo.getContentType());
-					userInfoService.setPrintedInfo(externalCard);
-				}
-			}
-		}
+		
 		
 		for(Card card : user.getCards()) {
 			// resync of cards : dueDate of user = max due_date
@@ -164,10 +192,8 @@ public class ResynchronisationUserService {
 				SimpleDateFormat dateFormatterFr = new SimpleDateFormat("dd/MM/yyyy");
 				cardEtatService.setCardEtat(card, Etat.CANCELED, "La date limite / de fin (" + dateFormatterFr.format(user.getDueDateIncluded()) + ") est dépassée, la demande de carte est annulée.", null, false, true);
 			}
-			
-			
 		}
-		if(accessControlMustUpdate) {
+		if(accessControlMustUpdate && accessControlService!=null) {
 			accessControlService.sync(eppn);
 		}
 		return updated;

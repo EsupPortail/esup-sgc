@@ -11,31 +11,31 @@
 	<jsp:output omit-xml-declaration="yes" />
 	
 	<script type="text/javascript">
-	// impression des cartes - popup
-    $('#IN_PRINTForm').submit(function() {
-    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
-   	    this.target = 'formprint';
-  	});  
-	$("#forcedForm").on("submit",function(event) {
-		if(!$("#checkAdmin").is(':checked')){
-			alert (messages['alertForcedEtat']);
-   		return false;
-		}else if($("#forcedEtatFinal").val()==""){
-			alert (messages['alertForcedEtat']);
-	   		return false;
-		}else{
-			return confirm("Confirmer cette action de changement d'état");
-		}
-	});
-	
-    //Confirmation lors du renouvellement de carte
-    $("#RENEWEDForm").on("submit",function() {
-        if (confirm("Confirmer l'action de renouvellement")) {
-           return true;
-        }else{
-        	return false
-        }
-    });
+    //Bouton caché!!
+    var forcedForm = document.getElementById("forcedForm");
+    if(forcedForm != null){
+    	forcedForm.addEventListener('submit', function(evt) {
+    		if(!document.getElementById("checkAdmin").checked){
+    			evt.preventDefault();
+    			alert (messages['alertForcedEtat']);
+    		}else if(document.getElementById("forcedEtatFinal").value == ""){
+    			evt.preventDefault();
+    			alert (messages['alertForcedEtat']);
+    		}else{
+    			confirm("Confirmer cette action de changement d'état");
+    		}
+     	}); 
+     }
+    //Renouvellement
+    var renewedForm = document.getElementById("RENEWEDForm");
+	if (renewedForm != null) {
+		renewedForm.addEventListener('submit', function(evt) {
+			evt.preventDefault();
+			if (confirm("Confirmer l'action de renouvellement")) {
+				renewedForm.submit();
+			}
+		});
+	}
 	</script>
 	<spring:url value="/manager/multiUpdate" var="etatActionUrl" />
 	<c:if test="${not empty cardIds}">

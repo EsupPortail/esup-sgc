@@ -244,41 +244,43 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 												<dt>Message :</dt>
 												<dd>${card.commentaire}</dd>
 											</c:if>
-											<c:if test="${card.etat eq 'ENABLED'}">
-												<dt>
-													<form action="${disableUrl}" method="post">
-														<input type="hidden" value="${card.id}" name="id" />
-														<input type="submit" class="btn btn-danger" value="Désactiver" />
-													</form>
-												</dt>
-											</c:if>
-											<c:if test="${card.etat eq 'DISABLED'}">
-												<dt>
-													<form action="${enableUrl}" method="post">
-														<input type="hidden" value="${card.id}" name="id" />
-														<input type="submit" class="btn btn-danger" value="Réactiver" onclick="return confirm('Confirmez la réactivation');"/>
-													</form>
-												</dt>
-											</c:if>
-											<c:if test="${card.etat eq 'ENCODED'}">
-												<dt>
-													<form action="${enableUrl}" method="post">
-														<input type="hidden" value="${card.id}" name="id" />
-														<input type="submit" class="btn btn-danger" value="activer" onclick="return confirm('Confirmez l\'activation');"/>
-													</form>
-												</dt>
-											</c:if>
-											<c:if test="${card.etat eq 'REJECTED'}">
-											<div class="alert alert-warning">Votre demande a été rejetée.
-												<p>Veuillez modifier votre demande.</p>
-											</div>
-												<dt>
-													<spring:url value="/user/rejectedCase" var="rejectedCaseUrl" />
-													<form action="${rejectedCaseUrl}" method="post">
-														<input type="hidden" value="${card.id}" name="id" />
-														<input type="submit" class="btn btn-danger" value="Modifier" />
-													</form>
-												</dt>											
+											<c:if test="${not card.external}">
+												<c:if test="${card.etat eq 'ENABLED'}">
+													<dt>
+														<form action="${disableUrl}" method="post">
+															<input type="hidden" value="${card.id}" name="id" />
+															<input type="submit" class="btn btn-danger" value="Désactiver" />
+														</form>
+													</dt>
+												</c:if>
+												<c:if test="${card.etat eq 'DISABLED'}">
+													<dt>
+														<form action="${enableUrl}" method="post">
+															<input type="hidden" value="${card.id}" name="id" />
+															<input type="submit" class="btn btn-danger" value="Réactiver" onclick="return confirm('Confirmez la réactivation');"/>
+														</form>
+													</dt>
+												</c:if>
+												<c:if test="${card.etat eq 'ENCODED'}">
+													<dt>
+														<form action="${enableUrl}" method="post">
+															<input type="hidden" value="${card.id}" name="id" />
+															<input type="submit" class="btn btn-danger" value="activer" onclick="return confirm('Confirmez l\'activation');"/>
+														</form>
+													</dt>
+												</c:if>
+												<c:if test="${card.etat eq 'REJECTED'}">
+												<div class="alert alert-warning">Votre demande a été rejetée.
+													<p>Veuillez modifier votre demande.</p>
+												</div>
+													<dt>
+														<spring:url value="/user/rejectedCase" var="rejectedCaseUrl" />
+														<form action="${rejectedCaseUrl}" method="post">
+															<input type="hidden" value="${card.id}" name="id" />
+															<input type="submit" class="btn btn-danger" value="Modifier" />
+														</form>
+													</dt>											
+												</c:if>
 											</c:if>
 										</dl>
 									</div>

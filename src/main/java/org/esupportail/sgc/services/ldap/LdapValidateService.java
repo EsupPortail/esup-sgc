@@ -9,19 +9,14 @@ import java.util.Map;
 
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
 
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
-import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.ldap.AttributeInUseException;
-import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapEntryIdentification;

@@ -8,11 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ExternalCardService {
 	
 	@Resource
@@ -36,6 +39,11 @@ public class ExternalCardService {
 
 	public Card importExternalCard(String eppn, HttpServletRequest request) {
 		User user = User.findUser(eppn);
+		if(user == null) {
+			user = new User();
+			user.setEppn(eppn);
+			user.persist();
+		}
 		Card externalCard = null;
 		for(Card card : user.getCards()) {
 			if(card.getExternal()) {
@@ -44,21 +52,29 @@ public class ExternalCardService {
 			}
 		}
 		if(externalCard == null) {
-			externalCard = new Card();
-			externalCard.setUserAccount(user);
-			user.getCards().add(externalCard);
-			externalCard.setEppn(user.getEppn());
-            externalCard.setEtat(Etat.DISABLED);
-            externalCard.setDateEtat(new Date());
-            externalCard.setDeliveredDate(new Date());
-            externalCard.setExternal(true);
-            userInfoService.setPrintedInfo(externalCard);
-            user.setCrous(false);
-            user.setDifPhoto(false);
-            externalCard.persist();
+			externalCard = initExternalCard(user);
 		}
 		resynchronisationUserService.synchronizeUserInfo(eppn);
+		if(externalCard.getCsn() == null || externalCard.getCsn().isEmpty()) {
+			throw new SgcRuntimeException("external card for " + eppn + " can't be imported becaus no csn found", null);
+		}
 		return externalCard;
+	}
+	
+	public Card initExternalCard(User user) {
+		Card externalCard = new Card();
+		externalCard.setUserAccount(user);
+		user.getCards().add(externalCard);
+		externalCard.setEppn(user.getEppn());
+        externalCard.setEtat(Etat.DISABLED);
+        externalCard.setDateEtat(new Date());
+        externalCard.setDeliveredDate(new Date());
+        externalCard.setExternal(true);
+        userInfoService.setPrintedInfo(externalCard);
+        user.setCrous(false);
+        user.setDifPhoto(false);
+        externalCard.persist();
+        return externalCard;
 	}
 
 }

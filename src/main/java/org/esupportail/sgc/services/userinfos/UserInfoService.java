@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 @Transactional
-@Service
 public class UserInfoService {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -43,6 +43,12 @@ public class UserInfoService {
 	private final static String DATE_FORMAT_2 = "yyyy-MM-dd";
 	
 	private final static String DATE_FORMAT_UTCSEC_LDAP = "yyyyMMddHHmmss'Z'";
+	
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+	
+	private SimpleDateFormat dateFormatter2 = new SimpleDateFormat(DATE_FORMAT_2);
+	
+	String caducIfEmpty = null;
 	
 	List<ExtUserInfoService> extUserInfoServices;
 	
@@ -61,14 +67,14 @@ public class UserInfoService {
 		Collections.sort(this.extUserInfoServices, (p1, p2) -> p1.getOrder().compareTo(p2.getOrder()));
 	}
 
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+	public void setCaducIfEmpty(String caducIfEmpty) {
+		this.caducIfEmpty = caducIfEmpty;
+	}
 
 	protected SimpleDateFormat getDateFormatter() {
 		return dateFormatter;
 	}
 	
-	private SimpleDateFormat dateFormatter2 = new SimpleDateFormat(DATE_FORMAT_2);
-
 	protected SimpleDateFormat getDateFormatter2() {
 		return dateFormatter2;
 	}
@@ -223,8 +229,9 @@ public class UserInfoService {
 			} else if("editable".equalsIgnoreCase(key)) {
 				Boolean editable = "true".equalsIgnoreCase(userInfos.get(key));
 				user.setEditable(editable);
-			}  
+			} 
 		}
+		
 		setDefaultValues4NullAttributes(userInfos, user);
 		if(user.getCrous()!=null && user.getCrous()) {
 			List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
@@ -244,6 +251,19 @@ public class UserInfoService {
 			}
 			
 		}	
+		
+		if(caducIfEmpty != null && !caducIfEmpty.isEmpty()) {
+			String caducIfEmptyValue = userInfos.get(caducIfEmpty);
+			if((caducIfEmptyValue == null || caducIfEmptyValue.isEmpty()) && user.getDueDate().after(new Date())) {
+				// si plus d'entrée ldap ou similaire -> user.getMustBeCaduc = true -> caduc -> on surcharge la date de fin
+	            Calendar cal = Calendar.getInstance();
+	            cal.setTime(new Date());
+	            cal.add(Calendar.HOUR, - User.DUE_DATE_INCLUDED_DELAY);
+	            Date dueDateIncluded = cal.getTime();
+				user.setDueDate(dueDateIncluded);
+			}
+		}
+		
 	}
 	
 	

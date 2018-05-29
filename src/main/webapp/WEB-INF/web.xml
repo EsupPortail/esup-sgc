@@ -38,11 +38,6 @@
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
         <async-supported>true</async-supported>
     </filter>
-    
-    <filter>
-	    <filter-name>getMethodConvertingFilter</filter-name>
-	    <filter-class>org.esupportail.pay.web.GetMethodConvertingFilter</filter-class>
-	</filter>
 	
     <filter>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
@@ -67,13 +62,6 @@
         <filter-name>HttpMethodFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    
-    <filter-mapping>
-	    <filter-name>getMethodConvertingFilter</filter-name>
-	    <url-pattern>/*</url-pattern>
-	    <dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
-    
     
     <filter-mapping>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>

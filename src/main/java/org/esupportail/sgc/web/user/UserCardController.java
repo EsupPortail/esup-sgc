@@ -32,7 +32,6 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.UserService;
-import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.paybox.PayBoxForm;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
@@ -65,7 +64,9 @@ public class UserCardController {
 	public final Logger log = LoggerFactory.getLogger(getClass());
 	
 	public final static String SUCCESS_MSG ="user.msg.success.";
+	
 	public final static String ERROR_MSG ="user.msg.error.";
+	
 	public final static String WARNING_MSG ="user.msg.warning.";
 	
 	@ModelAttribute("active")
@@ -92,7 +93,7 @@ public class UserCardController {
 	@Resource
 	CardEtatService cardEtatService;
 
-	@Resource
+	@Autowired(required = false)
 	PayBoxService payBoxService;
 	
 	@Resource
@@ -112,9 +113,6 @@ public class UserCardController {
 	
 	@Resource
 	ShibAuthenticatedUserDetailsService shibService;
-	
-	@Resource
-	CardIdsService cardIdsService;
 	
 	@Resource
 	ExternalCardService externalCardService;
@@ -160,10 +158,10 @@ public class UserCardController {
 		String eppn = auth.getName();
 		try {
 			Card externalCard = externalCardService.importExternalCard(eppn, request);
-			cardEtatService.setCardEtat(externalCard, Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
+			cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
 			redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "enable");
 		} catch (Exception e) {
-			log.error("problème lors de l'activation de la carte extérieure de " + eppn, e);
+			log.error("problème lors de l'importation de la carte extérieure de " + eppn, e);
 			redirectAttributes.addFlashAttribute("messageError", ERROR_MSG + "enable");
 		}
 		return "redirect:/user";

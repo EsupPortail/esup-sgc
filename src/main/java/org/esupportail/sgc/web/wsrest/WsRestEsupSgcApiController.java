@@ -12,6 +12,7 @@ import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.CardService;
+import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
@@ -23,9 +24,12 @@ import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -34,10 +38,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
-@Transactional
 @RequestMapping("/wsrest/api")
 @Controller
 public class WsRestEsupSgcApiController {
@@ -56,7 +60,7 @@ public class WsRestEsupSgcApiController {
 	@Resource
 	CardService cardService;
 	
-	@Resource
+	@Autowired(required = false)
 	CardIdsService cardIdsService;
 	
 	@Resource 
@@ -71,11 +75,15 @@ public class WsRestEsupSgcApiController {
 	@Resource
 	ResynchronisationUserService resynchronisationUserService;
 	
+	@Resource
+	ExternalCardService externalCardService;
+	
 	
 	/**
 	 * Example to use it :
 	 * curl   -F "eppn=toto@univ-ville.fr" -F "difPhotoTransient=true" -F "crousTransient=true" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
 	 */
+	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<String> cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, @RequestHeader("User-Agent") String userAgent, HttpServletRequest request) throws IOException {	
 		
@@ -171,6 +179,7 @@ public class WsRestEsupSgcApiController {
 	 * Example to use it :
 	 * curl https://esup-sgc.univ-ville.fr/wsrest/api/sync?eppn=toto@univ-ville.fr
 	 */
+	@Transactional
 	@RequestMapping(value="/sync", method = RequestMethod.GET)
 	public ResponseEntity<String> sync(@RequestParam String eppn) {	
 		
@@ -187,6 +196,25 @@ public class WsRestEsupSgcApiController {
 		return new ResponseEntity<String>(eppn + " has been synchronized.", HttpStatus.OK);
 	}
 	
+	/**
+	 * Example to use it :
+	 * curl -X POST https://esup-sgc.univ-ville.fr/wsrest/api/externalCardEnable?eppn=toto@univ-ville.fr&crous=true&difPhoto=true
+	 */
+	@RequestMapping(value="/externalCardEnable", method = RequestMethod.POST)
+	public ResponseEntity<String> enableExternalCard(@RequestParam String eppn, @RequestParam(required=false, defaultValue = "false") Boolean crous, @RequestParam(required=false, defaultValue = "false") Boolean difPhoto) {
+		try {
+			Card externalCard = externalCardService.importExternalCard(eppn, null);
+			externalCard.setCrous(crous);
+			externalCard.setDifPhoto(difPhoto);
+			externalCard.merge();
+			cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
+		} catch (Exception e) {
+			String errorMessage = "problème lors de l'importation de la carte extérieure de " + eppn + " : " + e.getMessage();
+			log.error(errorMessage, e);
+			return new ResponseEntity<String>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<String>("Importation de la carte extérieure de " + eppn + " OK", HttpStatus.OK);
+	}
 	
 }
 

@@ -32,6 +32,7 @@ import org.esupportail.sgc.web.manager.ClientJWSController;
 import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,7 @@ public class WsRestEsupNfcController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	@Resource
+	@Autowired(required = false)
 	CardIdsService cardIdsService;
 	
 	@Resource
@@ -65,7 +66,7 @@ public class WsRestEsupNfcController {
 	@Resource
 	CardEtatService cardEtatService;
 	
-	@Resource
+	@Autowired(required = false)
 	EsupNfcTagService esupNfcTagService;
 	
 	@Resource 
