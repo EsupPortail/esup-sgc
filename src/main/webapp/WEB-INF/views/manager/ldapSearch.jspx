@@ -33,12 +33,11 @@
     </div>
     
     <spring:url value="/manager/searchLdap" var="searchLdapUrl" />
-    <spring:url value="/manager/isUserInSgc" var="searchUserUrl" />
     <spring:url value="/manager/ldapUserForm" var="ldapUserFormUrl" />
+    <spring:url value="/manager/ldapUserExtForm" var="ldapUserExtFormUrl" />
     <spring:url value="/manager/" var="rootManagerUrl" />
     <script type="text/javascript">
 		var searchLdapUrl = '${searchLdapUrl}';
-		var searchUserUrl = '${searchUserUrl}';
 	</script>
  
     <spring:url value="/manager/ldapSearch" var="ldapldapSearchUrl"/>
@@ -56,20 +55,30 @@
     <table class="table table-bordered">
     	<thead><th>Eppn</th><th>Prénom</th><th>Nom</th><th>Date de naissance</th><th>Mail</th><th>Nb de cartes</th><th>Type</th><th>Affectation</th><th>ACTION</th></thead>
     	<tbody>
-		    <c:forEach items="${ldapList}" var="item">
+		    <c:forEach items="${ldapList}" var="user">
 		    	<tr>
-			    	<td>${item.eppn}</td><td>${item.firstname}</td><td>${item.name}</td><td><fmt:formatDate pattern="dd/MM/yyyy" value="${item.birthday}"/></td><td>${item.email}</td>
-			    	<td>${item.nbCards}</td><td>${item.userType}</td><td>${item.supannEntiteAffectationPrincipale}</td>
+			    	<td>${user.eppn}</td><td>${user.firstname}</td><td>${user.name}</td><td><fmt:formatDate pattern="dd/MM/yyyy" value="${user.birthday}"/></td><td>${user.email}</td>
+			    	<td>${user.nbCards}</td><td>${user.userType}</td><td>${user.supannEntiteAffectationPrincipale}</td>
 			    	<td>
 						<c:choose>
-							<c:when test="${item.inSgc}">
-								<a href="${rootManagerUrl}${item.cards[0].id}" class="btn btn-warning">Voir la fiche</a>
+							<c:when test="${not empty user.cards}">
+								<a href="${rootManagerUrl}${user.cards[0].id}" class="btn btn-warning">Voir la fiche</a>
 							</c:when>
 							<c:otherwise>
-								<form class="form-horizontal" action="${ldapUserFormUrl}" method="POST" id="ldapUserFormUrl">
-									<input type="hidden" value="${item.eppn}" name="eppn" />
-									<button type="submit" class="btn btn-primary">Faire une demande</button>
-								</form>
+								<c:choose>
+									<c:when test="${empty user.externalCard.csn}">
+										<form class="form-horizontal" action="${ldapUserFormUrl}" method="POST" id="ldapUserFormUrl">
+											<input type="hidden" value="${user.eppn}" name="eppn" />
+											<button type="submit" class="btn btn-primary">Faire une demande</button>
+										</form>
+									</c:when>
+									<c:otherwise>
+										<form class="form-horizontal" action="${ldapUserExtFormUrl}" method="POST" id="ldapUserExtFormUrl">
+											<input type="hidden" value="${user.eppn}" name="eppn" />
+											<button type="submit" class="btn btn-danger">Importer la carte extérieure</button>
+										</form>
+									</c:otherwise>
+								</c:choose>
 							</c:otherwise>
 						</c:choose>	    	
 			    	</td>

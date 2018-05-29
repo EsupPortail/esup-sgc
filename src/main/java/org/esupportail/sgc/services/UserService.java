@@ -192,10 +192,7 @@ public class UserService {
 					user.setSupannEntiteAffectationPrincipale(item.getSupannEntiteAffectationPrincipale());
 					user.setUserType(item.getEduPersonPrimaryAffiliation());
 				    user.setBirthday(dateUtils.parseSchacDateOfBirth(item.getSchacDateOfBirth()));
-					user.setInSgc(false);
-				} else {
-					user.setInSgc(true);
-				}			
+				}		
 				users.add(user);
 			}
 		}

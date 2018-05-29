@@ -354,16 +354,5 @@ public class UserInfoService {
 		List<String> adresses = User.findDistinctAddresses(userType, etat);
 		return adresses;
 	}
-	
-	public boolean isUserInSgc(String eppn){
-		
-		boolean isUserInSgc = false;
-		
-		if(User.findUser(eppn)!= null){
-			isUserInSgc = true;
-		};
-		
-		return isUserInSgc;
-	}
-	
 }
+

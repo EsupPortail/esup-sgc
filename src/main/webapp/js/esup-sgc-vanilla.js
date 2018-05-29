@@ -1328,7 +1328,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			
 			if(document.getElementById('exportAdmin') != null){
 				document.getElementById('exportAdmin').addEventListener('click', function() {
-			    	if(document.querySelector("#container canvas")!=null){
+			    	if(document.querySelector("#container canvas")==null){
 				    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
 				    	if(currentImg.src == ""){
 				          	 alert(messages['fileRequired']);      	 

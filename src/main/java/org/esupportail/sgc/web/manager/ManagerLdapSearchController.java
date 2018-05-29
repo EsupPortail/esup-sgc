@@ -9,15 +9,20 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
+import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -49,6 +54,12 @@ public class ManagerLdapSearchController {
 	@Resource
 	UserService userService;
 	
+	@Resource
+	ExternalCardService externalCardService;
+	
+	@Resource
+	CardEtatService cardEtatService;
+	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "manager";
@@ -70,8 +81,11 @@ public class ManagerLdapSearchController {
 		
 		List<User> users = new ArrayList<User>();
 		if(searchString!=null && !searchString.trim().isEmpty()) {
-			users = 	userService.getSgcLdapMix(searchString);	
+			users = userService.getSgcLdapMix(searchString);	
 			Collections.sort(users, (u1, u2) -> u1.getEppn().compareTo(u2.getEppn()));
+			for(User user : users) {
+				userInfoService.setAdditionalsInfo(user, null);
+			}
 		}
 		uiModel.addAttribute("ldapList", users);
 		uiModel.addAttribute("searchItem", searchString);
@@ -116,6 +130,18 @@ public class ManagerLdapSearchController {
 		return "user/card-request";
 
 	}
+	
+	
+	@RequestMapping(value="/ldapUserExtForm", method=RequestMethod.POST)
+	public String ldapUserExtForm(@RequestParam(value="eppn") String eppn) {
+
+		Card externalCard = externalCardService.importExternalCard(eppn, null);
+		cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
+
+		return "redirect:/manager/" + externalCard.getId();
+
+	}
+	
 	
 }
 

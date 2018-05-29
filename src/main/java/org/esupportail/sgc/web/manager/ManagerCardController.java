@@ -64,9 +64,13 @@ public class ManagerCardController {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public final static String SUCCESS_MSG ="manager.msg.success.";
+	
 	public final static String ERROR_MSG ="manager.msg.error.";
+	
 	public final static String WARNING_MSG ="manager.msg.warning.";
+	
 	public final static String IMG_INTERDIT = "media/photo_interdite.png";
+	
 	public final static String[] header = new String[]{"eppn", "email", "etat", "displayName", "supannEtuId", "supannEmpId", "userType", "crous", "difPhoto", "userEditable", "deliveredDate", "nbCards", "nbRejets", "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dateEtat"};
 
 

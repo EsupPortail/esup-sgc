@@ -146,17 +146,6 @@ public class User {
 	
 	@Transient
 	private Card externalCard = new Card();
-	
-	@Transient
-	private boolean inSgc;
-
-	public boolean isInSgc() {
-		return inSgc;
-	}
-
-	public void setInSgc(boolean isInSgc) {
-		this.inSgc = isInSgc;
-	}
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();
