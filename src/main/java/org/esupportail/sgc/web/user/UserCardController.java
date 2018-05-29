@@ -32,6 +32,7 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.UserService;
+import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.paybox.PayBoxForm;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
@@ -68,6 +69,9 @@ public class UserCardController {
 	public final static String ERROR_MSG ="user.msg.error.";
 	
 	public final static String WARNING_MSG ="user.msg.warning.";
+	
+	@Resource
+	ImportExportCardService importExportCardService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -142,12 +146,15 @@ public class UserCardController {
 	
 	public String viewExternalCardRequestForm(Model uiModel, HttpServletRequest request, Card externalCard) {
 		uiModel.addAttribute("externalCard", externalCard);
+		byte[] externalCardPhoto = null;
 		try {
-			byte[] externalCardPhoto = IOUtils.toByteArray(externalCard.getPhotoFile().getBigFile().getBinaryFile().getBinaryStream());
+			externalCardPhoto = IOUtils.toByteArray(externalCard.getPhotoFile().getBigFile().getBinaryFile().getBinaryStream());
 			uiModel.addAttribute("externalCardPhoto", java.util.Base64.getEncoder().encodeToString(externalCardPhoto));
-		} catch (IOException | SQLException e) {
+		} catch (IOException | SQLException | NullPointerException e) {
 			log.warn("Exception when retrieving photo from external card", e);
+			externalCardPhoto = importExportCardService.loadNoImgPhoto();
 		}
+		uiModel.addAttribute("externalCardPhoto", java.util.Base64.getEncoder().encodeToString(externalCardPhoto));
 		return "user/external-card-request";
 	}
 	

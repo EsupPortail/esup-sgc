@@ -15,6 +15,7 @@ import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.AuthApiCrousService;
 import org.esupportail.sgc.services.esc.ApiEscrService;
+import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,9 @@ public class ResynchronisationUserService {
 	
 	@Resource
 	ExternalCardService externalCardService;
+	
+	@Resource
+	ImportExportCardService importExportCardService;
 	
 	@Async("synchroExecutor")
 	public void synchronizeUserInfoAsync(String eppn) {
@@ -110,9 +114,15 @@ public class ResynchronisationUserService {
 					externalCard.setCsn(dummyUser.getExternalCard().getCsn());
 					externalCard.setDesfireIds(dummyUser.getExternalCard().getDesfireIds());
 					PhotoFile photo = dummyUser.getExternalCard().getPhotoFile();
-					externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
-					externalCard.getPhotoFile().setFileSize(photo.getFileSize());
-					externalCard.getPhotoFile().setContentType(photo.getContentType());
+					if(photo.getBigFile().getBinaryFile() != null) {
+						externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
+						externalCard.getPhotoFile().setFileSize(photo.getFileSize());
+						externalCard.getPhotoFile().setContentType(photo.getContentType());
+					} else {
+						externalCard.getPhotoFile().getBigFile().setBinaryFile(importExportCardService.loadNoImgPhoto());
+						externalCard.getPhotoFile().setFileSize(Long.valueOf(Integer.valueOf(importExportCardService.loadNoImgPhoto().length)));
+						externalCard.getPhotoFile().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
+					}
 					userInfoService.setPrintedInfo(externalCard);
 					if (Etat.DISABLED.equals(externalCard.getEtat()) || Etat.CADUC.equals(externalCard.getEtat())) {
 						cardEtatService.setCardEtat(externalCard, Etat.ENABLED, null, null, false, true);
