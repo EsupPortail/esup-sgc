@@ -53,6 +53,11 @@ public class ImportExportController {
 		return "import";
 	}   
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
+	
 	@Resource
 	ImportExportService importExportService;
 	

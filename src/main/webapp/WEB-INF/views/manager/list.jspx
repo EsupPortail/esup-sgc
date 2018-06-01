@@ -32,24 +32,24 @@
         <table:table checkbox="${displayCheckbox}" create="false" data="${cards}" delete="false" id="l_org_esupportail_sgc_domain_Card" path="/manager" update="false" z="user-managed">
             <table:column cssClass="hidden" id="c_org_esupportail_sgc_domain_Card_id" label="id" property="id" z="user-managed"/>
             <table:column btLabel="card.label" cssClass="etat centerCell" id="c_org_esupportail_sgc_domain_Card_etat" property="etat" sort="true" translation="true" z="user-managed"/>
-            <table:column breakpoints="xs" id="c_org_esupportail_sgc_domain_Card_eppn" property="eppn" sort="true" z="user-managed"/>
-            <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_name" label="Nom" property="displayName" sort="true"/>
-            <table:column breakpoints="xs" btLabel="card.label/badge" cssClass="type centerCell" id="c_org_esupportail_sgc_domain_Card_userType" property="userType"/>
+            <table:column breakpoints="xs" id="c_org_esupportail_sgc_domain_Card_eppn" cssClass="hidden-xs" property="eppn" sort="true" z="user-managed"/>
+            <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_name" cssClass="hidden-xs" label="Nom" property="displayName" sort="true"/>
+            <table:column breakpoints="xs" btLabel="card.label/badge" cssClass="type centerCell hidden-xs hidden-sm" id="c_org_esupportail_sgc_domain_Card_userType" property="userType"/>
             <table:column cssClass="photo centerCell" id="c_org_esupportail_sgc_domain_Card_photo" image="true" imagePrefix="${photoLocalPrefix}" label="Photo" property="id" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="crous centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_crous" property="crous" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="cnil centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_cnil" property="difPhoto" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="editable centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_userEditable" label="Editable" property="userEditable" z="user-managed"/>
-            <table:column breakpoints="sm" cssClass="livraison centerCell" date="true" dateTimePattern="dd/MM/yy HH:mm" glyphCheck="/true/ok/false/remove/pop" id="c_org_esupportail_sgc_domain_Card_deliveredDate" label="Livraison" property="deliveredDate" render="${livraison}" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="centerCell bold" id="c_org_esupportail_sgc_domain_Card_nbCards" label="Nb Cartes" property="nbCards" sort="true" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="centerCell bold" id="c_org_esupportail_sgc_domain_Card_nbRejets" property="nbRejets" sort="true" z="user-managed"/>
-            <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_etatEppn" label="Modificateur" property="etatEppn" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="adress" id="c_org_esupportail_sgc_domain_Card_address" label="Adresse" property="address" z="user-managed"/>
-            <table:column breakpoints="md" cssClass="paiement centerCell" glyphCheck="/true/ok/false/remove/@leaveempty@" id="c_org_esupportail_sgc_domain_Card_payCmdNum" label="Paiement" property="payCmdNum" z="user-managed"/>
-            <table:column breakpoints="md" btLabel="card.label" cssClass="motif centerCell" id="c_org_esupportail_sgc_domain_Card_motifDisable" label="Motif" property="motifDisable" render="true" translation="true" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="crous centerCell  hidden-xs hidden-sm hidden-md" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_crous" property="crous" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="cnil centerCell  hidden-xs hidden-sm hidden-md" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_cnil" property="difPhoto" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="editable centerCell  hidden-xs hidden-sm" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_userEditable" label="Editable" property="userEditable" z="user-managed"/>
+            <table:column breakpoints="sm" cssClass="livraison centerCell  hidden-xs hidden-sm" date="true" dateTimePattern="dd/MM/yy HH:mm" glyphCheck="/true/ok/false/remove/pop" id="c_org_esupportail_sgc_domain_Card_deliveredDate" label="Livraison" property="deliveredDate" render="${livraison}" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="centerCell bold hidden-xs hidden-sm hidden-md" id="c_org_esupportail_sgc_domain_Card_nbCards" label="Nb Cartes" property="nbCards" sort="true" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="centerCell bold hidden-xs hidden-sm hidden-md" id="c_org_esupportail_sgc_domain_Card_nbRejets" property="nbRejets" sort="true" z="user-managed"/>
+            <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_etatEppn" cssClass="hidden-xs hidden-sm hidden-md" label="Modificateur" property="etatEppn" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="adress hidden-xs hidden-sm hidden-md" id="c_org_esupportail_sgc_domain_Card_address" label="Adresse" property="address" z="user-managed"/>
+            <table:column breakpoints="md" cssClass="paiement centerCell hidden-xs hidden-sm hidden-md" glyphCheck="/true/ok/false/remove/@leaveempty@" id="c_org_esupportail_sgc_domain_Card_payCmdNum" label="Paiement" property="payCmdNum" z="user-managed"/>
+            <table:column breakpoints="md" btLabel="card.label" cssClass="motif centerCell hidden-xs hidden-sm hidden-md" id="c_org_esupportail_sgc_domain_Card_motifDisable" label="Motif" property="motifDisable" render="true" translation="true" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Card_desfireId" property="desfireId" render="false" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Card_csn" property="csn" render="false" z="user-managed"/>
-            <table:column breakpoints="xs" date="true" dateTimePattern="dd/MM/yy HH:mm" id="c_org_esupportail_sgc_domain_Card_requestDate" label="Demande" property="requestDate" sort="true" z="user-managed"/>
-            <table:column breakpoints="sm" date="true" dateTimePattern="dd/MM/yy HH:mm" id="c_org_esupportail_sgc_domain_Card_dateEtat" label="Modification" property="dateEtat" sort="true" z="user-managed"/>
+            <table:column breakpoints="xs" date="true" dateTimePattern="dd/MM/yy HH:mm" cssClass="hidden-xs" id="c_org_esupportail_sgc_domain_Card_requestDate" label="Demande" property="requestDate" sort="true" z="user-managed"/>
+            <table:column breakpoints="sm" date="true" dateTimePattern="dd/MM/yy HH:mm" cssClass="hidden-xs hidden-sm" id="c_org_esupportail_sgc_domain_Card_dateEtat" label="Modification" property="dateEtat" sort="true" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Card_commentaire" property="commentaire" render="false" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Card_namePrinted" property="namePrinted" render="false" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Card_firstnamePrinted" property="firstnamePrinted" render="false" z="user-managed"/>

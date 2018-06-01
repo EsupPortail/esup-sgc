@@ -54,6 +54,10 @@ public class CardActionMessageController {
 		return etats;
 	}
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
     
     @RequestMapping(produces = "text/html")
     public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 

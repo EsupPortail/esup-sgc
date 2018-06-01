@@ -161,6 +161,7 @@ public class UserService {
 		
 		displayFormParts.put("displayCnil", cardService.displayFormCnil(user.getUserType()));
 		displayFormParts.put("displayCrous", cardService.displayFormCrous(user));
+		displayFormParts.put("enableCrous", cardService.isCrousEnabled(user));
 		displayFormParts.put("displayRules", cardService.displayFormRules(user.getUserType()));
 		displayFormParts.put("displayAdresse", cardService.displayFormAdresse(user.getUserType()));		
 		displayFormParts.put("isFirstRequest", this.isFirstRequest(user));
@@ -170,6 +171,8 @@ public class UserService {
 		displayFormParts.put("isPaidRenewal",  this.isPaidRenewal(user));
 		displayFormParts.put("canPaidRenewal",  this.canPaidRenewal(user));
 		displayFormParts.put("hasDeliveredCard",  this.hasDeliveredCard(user));
+		displayFormParts.put("enableEuropeanCard",  cardService.isEuropeanCardEnabled(user));
+		displayFormParts.put("displayEuropeanCard",  cardService.displayFormEuropeanCardEnabled(user));
 		return displayFormParts;
 		
 	}
@@ -200,11 +203,4 @@ public class UserService {
 		return users;
 	}
 	
-	public boolean isEuropeanStudent(User user) {
-		boolean isEuropeanStudent = false;
-		if(!user.getSupannEtuId().isEmpty() && appliConfigService.isQrCodeEscEnabled()){
-			isEuropeanStudent = true;
-		}
-		return isEuropeanStudent;
-	}
 }

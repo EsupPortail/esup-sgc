@@ -52,6 +52,10 @@ public class CrousPatchIdentifierController {
 		return CrousPatchIdentifier.countFindCrousPatchIdentifiersByPatchSuccessNotEquals(true) > 0;
 	}
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
 	
 	@RequestMapping(value = "/addCsvFile", method = RequestMethod.POST, produces = "text/html")
 	public String addCrousCsvFile(MultipartFile file, Model uiModel) throws IOException, ParseException {

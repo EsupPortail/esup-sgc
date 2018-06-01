@@ -26,6 +26,6 @@
 
 	<jsp:useBean id="date" class="java.util.Date" />
 	<div class="hidden-print">
-	    <div id="footer">Université de Rouen-<fmt:formatDate value="${date}" pattern="yyyy" /></div>
+	    <div id="footer">${footer}</div>
 	</div>
 </div>

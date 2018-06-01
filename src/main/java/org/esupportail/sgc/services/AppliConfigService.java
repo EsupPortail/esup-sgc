@@ -229,6 +229,26 @@ public class AppliConfigService {
 		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MODE_BORNES");
 		return appliConfig.getValue();
 	}
+	
+	public String isCrousEnabled() {
+		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("ENABLE_CROUS");
+		return appliConfig.getValue();
+	}
+	
+	public String isEuropeanCardEnabled() {
+		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("ENABLE_EUROPEAN_CARD");
+		return appliConfig.getValue();
+	}
+	
+	public String displayFormEuropeanCard() {
+		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_EUROPEAN_CARD");
+		return appliConfig.getValue();
+	}
+	
+	public String pageFooter() {
+		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("PAGE_FOOTER");
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
 
 }
 

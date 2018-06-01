@@ -115,6 +115,11 @@ public class ManagerCardController {
 		return "manager";
 	}
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}   
+	
 	@ModelAttribute("help")
 	public String getHelp() {
 		return appliConfigService.getHelpManager();

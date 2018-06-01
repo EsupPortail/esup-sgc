@@ -274,12 +274,53 @@ function multiUpdateForm(idArray) {
 		request.onload = function() {
 		  if (request.status >= 200 && request.status < 400) {
 			  document.getElementById("traitementLot").innerHTML = this.response;
+			  //Bouton caché!!
+			  var collapseLink = document.getElementById('hiddenBtn');
+			  var myCollapseInit = new Collapse(collapseLink);
+			  var forcedForm = document.getElementById("forcedForm");
+			    if(forcedForm != null){
+			    	forcedForm.addEventListener('submit', function(evt) {
+			    		if(!document.getElementById("checkAdmin").checked){
+			    			alert (messages['alertForcedEtat']);
+			    			evt.preventDefault();
+			    		}else if(document.getElementById("forcedEtatFinal").value == ""){
+			    			alert (messages['alertForcedEtat']);
+			    			evt.preventDefault();
+			    		}else{
+			    			confirm("Confirmer cette action de changement d'état");
+			    		}
+			     	}); 
+			    }
+			    //Renouvellement
+			    var renewedForm = document.getElementById("RENEWEDForm");
+				if (renewedForm != null) {
+					renewedForm.addEventListener('submit', function(evt) {
+						evt.preventDefault();
+						if (confirm("Confirmer l'action de renouvellement")) {
+							renewedForm.submit();
+						}
+					});
+				}
+			  //Actions
 			  var inprintForm = document.getElementById("IN_PRINTForm");
 			  if(inprintForm != null){
 				  inprintForm.addEventListener('submit', function(e) {
 			   	    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
 			   	    	this.target = 'formprint';
 			  	  }); 
+			  }else if(document.getElementById("REJECTEDForm") !=null){
+					var myButton = document.getElementById('REJECTEDBtn');
+					var myModalInstance = new Modal(myButton); 
+			  }else if(document.getElementById("ENABLEDForm") !=null){
+					var myButton = document.getElementById('ENABLEDBtn');
+					var myModalInstance = new Modal(myButton); 
+			  }else if(document.getElementById("DISABLEDForm") !=null){
+					var myButton = document.getElementById('DISABLEDBtn');
+					var myModalInstance = new Modal(myButton); 
+			  }
+			  if(document.getElementById("validationBtn") !=null){
+					var myButton2 = document.getElementById('validationBtn');
+					var myModalInstance2 = new Modal(myButton2); 
 			  }
 		  }
 		};
@@ -1092,7 +1133,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	setPrefStats(prefsStatsRm, "STATSRM");
 		    	this.closest(".statsDrag").remove();
 		    	//refresh modal
-		    	$("#mainModal").load(location.href+" #mainModal>*","");
+		    	//$("#mainModal").load(location.href+" #mainModal>*","");
 		    });
 		};
     }
@@ -1676,13 +1717,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		run = false;		
 	}
-	searchLongPoll.poll = function() {
-		if (this.timer != null) {
-			clearTimeout(this.timer);
-		}
-		return $(this).delay(1000).load(); 
-		//return setTimeout(this.load, 1000);
-	}
+
 	searchLongPoll.load = function() {
 		if (typeof sgcRootUrl != "undefined" && this.run) {
 			var request = new XMLHttpRequest();
@@ -1708,6 +1743,13 @@ document.addEventListener('DOMContentLoaded', function() {
 			request.send();
 		}
 	}
+	searchLongPoll.poll = function() {
+		if (this.timer != null) {
+			clearTimeout(this.timer);
+		}
+		//return $(this).delay(1000).load(); 
+		setTimeout(searchLongPoll.load(), 1000);    
+	}
 	if(typeof sgcRootUrl != "undefined") {
 		searchLongPoll.start();
 	}
@@ -1724,4 +1766,11 @@ document.addEventListener('DOMContentLoaded', function() {
 				});
 		}
 	}
+	
+	//Footer
+	var footer =  document.querySelector('#footer span');
+	if(footer != null){
+		footer.innerHTML = " - " + (new Date()).getFullYear();
+	}
+	
 })

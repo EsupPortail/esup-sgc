@@ -25,4 +25,9 @@ public class EsupNfcSgcJwsDeviceController {
 	public String getActiveMenu() {
 		return "nfc";
 	}
+	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
 }

@@ -49,6 +49,11 @@ public class ToolsController {
 		return "tools";
 	}  
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
+	
 	
 	@ModelAttribute("validateServicesNames")
 	public List<String> getValidateServicesNames() {

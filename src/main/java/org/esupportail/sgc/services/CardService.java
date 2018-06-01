@@ -133,6 +133,39 @@ public class CardService {
 		return displayCrous;
 	}
 	
+	public boolean isCrousEnabled (User user){
+		
+		boolean enableCrous = false;
+		
+		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.isCrousEnabled().contains(user.getUserType())){
+			enableCrous = true;
+		}
+		
+		return enableCrous;
+	}
+	
+	public boolean displayFormEuropeanCardEnabled(User user){
+		
+		boolean displayEC = false;
+		
+		if((user==null || !user.getEuropeanStudentCard()) && user.getUserType()!=null && appliConfigService.displayFormEuropeanCard().contains(user.getUserType())){
+			displayEC = true;
+		}
+		
+		return displayEC;
+	}
+	
+	public boolean isEuropeanCardEnabled(User user){
+		
+		boolean enableEC = false;
+		
+		if((user==null || !user.getEuropeanStudentCard()) && user.getUserType()!=null && appliConfigService.isEuropeanCardEnabled().contains(user.getUserType())){
+			enableEC = true;
+		}
+		
+		return enableEC;
+	}
+	
 	public boolean displayFormAdresse (String type){
 		
 		boolean displayAdresse = false;

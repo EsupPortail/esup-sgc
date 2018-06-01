@@ -13,6 +13,7 @@
     <!-- The controllers are autodetected POJOs labeled with the @Controller annotation. -->
     <context:component-scan base-package="org.esupportail.sgc" use-default-filters="false">
         <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+        <context:include-filter expression="org.springframework.web.bind.annotation.ControllerAdvice" type="annotation"/>
     </context:component-scan>
     
     <!-- Turns on support for mapping requests to Spring MVC @Controller methods

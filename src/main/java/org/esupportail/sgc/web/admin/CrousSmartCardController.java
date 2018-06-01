@@ -47,6 +47,11 @@ public class CrousSmartCardController {
 		return crousSmartCardService.isInWorking();
 	}
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
+	
 	@RequestMapping(value = "/addCrousCsvFile", method = RequestMethod.POST, produces = "text/html")
 	public String addCrousCsvFile(MultipartFile file, @RequestParam(defaultValue="False") Boolean inverseCsn) throws IOException, ParseException {
 		

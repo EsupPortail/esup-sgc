@@ -49,6 +49,9 @@
 		
 					<dt>idRate</dt>
 					<dd>${esupSgcRightHolder.idRate}</dd>
+					
+					<dt>ine</dt>
+					<dd>${esupSgcRightHolder.ine}</dd>
 				  </dl>
 				</c:when>
 				<c:when test="${not empty esupSgcRightHolderException}">
@@ -89,6 +92,9 @@
 		
 					<dt>idRate</dt>
 					<dd>${crousEppnRightHolder.idRate}</dd>
+					
+					<dt>ine</dt>
+					<dd>${crousEppnRightHolder.ine}</dd>
 				  </dl>
 				</c:when>
 				<c:when test="${not empty crousEppnRightHolderException}">
@@ -129,6 +135,9 @@
 		
 					<dt>idRate</dt>
 					<dd>${crousEmailRightHolder.idRate}</dd>
+					
+					<dt>ine</dt>
+					<dd>${crousEmailRightHolder.ine}</dd>
 				  </dl>
 				</c:when>
 				<c:when test="${not empty crousEmailRightHolderException}">

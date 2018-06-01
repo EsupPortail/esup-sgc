@@ -74,6 +74,11 @@ public class StatsController {
 		return appliConfigService.getModeBornes();
 	}
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
+	
 	@RequestMapping
 	public String index(HttpServletRequest httpServletRequest, Model uiModel, @RequestParam(value = "type", required = false) String type) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();

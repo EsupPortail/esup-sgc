@@ -138,6 +138,7 @@ public class WsRestEsupSgcApiController {
 						Calendar cal = Calendar.getInstance();
 						Date currentTime = cal.getTime();
 						card.getPhotoFile().setSendTime(currentTime);
+						card.setUserAccount(user);
 						if(card.getId() !=null){
 							card.setNbRejets(Card.findCard(card.getId()).getNbRejets());
 							card.merge();
@@ -146,7 +147,6 @@ public class WsRestEsupSgcApiController {
 							card.persist();
 						}
 						
-						card.setUserAccount(user);
 						card.setDueDate(user.getDueDate());
 						if(card.getCrousTransient()!=null && card.getCrousTransient()) {
 							user.setCrous(true);

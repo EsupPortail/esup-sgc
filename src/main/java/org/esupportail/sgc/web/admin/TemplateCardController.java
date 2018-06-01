@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
+import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +45,18 @@ public class TemplateCardController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	@Resource
+	AppliConfigService appliConfigService;	
+	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "template";
 	}
+	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
 	
 	@Resource	
 	TemplateCardService templateCardService;

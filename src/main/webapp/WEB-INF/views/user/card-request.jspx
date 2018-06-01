@@ -31,15 +31,15 @@
 						<jsp:include page="includes/form_crous.jspx"/>
 					</c:when>
 					<c:otherwise>
-						<input type="hidden" name="crousTransient" value="true" />
+						<input type="hidden" name="crousTransient" value="${displayFormParts['enableCrous']}" />
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
-					<c:when test="${isEuropeanStudent}">
+					<c:when test="${displayFormParts['displayEuropeanCard']}">
 						<jsp:include page="includes/form_europeanCard.jspx"/>
 					</c:when>
 					<c:otherwise>
-						<input type="hidden" name="europeanTransient" value="false" />
+						<input type="hidden" name="europeanTransient" value="${displayFormParts['enableEuropeanCard']}" />
 					</c:otherwise>
 				</c:choose>
 				<c:if test="${displayFormParts['displayAdresse']}">

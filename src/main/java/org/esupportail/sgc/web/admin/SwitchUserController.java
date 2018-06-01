@@ -25,6 +25,11 @@ public class SwitchUserController {
 		return "su";
 	}
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
+	
 	@RequestMapping
 	public String index(Model uiModel) {		
 		return "admin/su";

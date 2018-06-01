@@ -44,6 +44,8 @@
 			type="regex" />
 		<context:exclude-filter expression="org.springframework.stereotype.Controller"
 			type="annotation" />
+		<context:exclude-filter expression="org.springframework.web.bind.annotation.ControllerAdvice"
+			type="annotation" />
 	</context:component-scan>
 	<bean class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close" id="dataSource">

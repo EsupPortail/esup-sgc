@@ -41,6 +41,11 @@ public class AppliConfigController {
 		return  appliConfigService.getTypes();
 	}
 	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}   
+	
     @RequestMapping(value="/tabs", method=RequestMethod.GET)
     public String filterTabs(@RequestParam("searchField") String searchField, @RequestParam(value = "page", required = true) Long page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {

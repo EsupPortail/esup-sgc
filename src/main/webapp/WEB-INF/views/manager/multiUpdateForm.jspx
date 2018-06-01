@@ -9,34 +9,6 @@
 	xmlns:spring="http://www.springframework.org/tags" id="cardShow">
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
-	
-	<script type="text/javascript">
-    //Bouton caché!!
-    var forcedForm = document.getElementById("forcedForm");
-    if(forcedForm != null){
-    	forcedForm.addEventListener('submit', function(evt) {
-    		if(!document.getElementById("checkAdmin").checked){
-    			evt.preventDefault();
-    			alert (messages['alertForcedEtat']);
-    		}else if(document.getElementById("forcedEtatFinal").value == ""){
-    			evt.preventDefault();
-    			alert (messages['alertForcedEtat']);
-    		}else{
-    			confirm("Confirmer cette action de changement d'état");
-    		}
-     	}); 
-     }
-    //Renouvellement
-    var renewedForm = document.getElementById("RENEWEDForm");
-	if (renewedForm != null) {
-		renewedForm.addEventListener('submit', function(evt) {
-			evt.preventDefault();
-			if (confirm("Confirmer l'action de renouvellement")) {
-				renewedForm.submit();
-			}
-		});
-	}
-	</script>
 	<spring:url value="/manager/multiUpdate" var="etatActionUrl" />
 	<c:if test="${not empty cardIds}">
 		<c:choose>
@@ -57,7 +29,7 @@
 									<c:choose>
 										<c:when test="${not empty actionMessages[etatAvailable]}">
 											<button class="btn btn-success btn-block"
-												data-target="#commentEtat" data-toggle="modal" type="button">
+												data-target="#commentEtat" data-toggle="modal" type="button" id="${etatAvailable}Btn">
 												<spring:message
 													code="manager.action.${etatInit}-${etatAvailable}" />
 											</button>
@@ -154,7 +126,7 @@
                             </sec:authorize>
 								<c:if test="${validatedFlag}">
 									&amp;nbsp
-									<button class="btn btn-danger" data-toggle="modal" data-target="#modalValidation">Rejouer la procédure de validation / invalidation</button>
+									<button id="validationBtn" class="btn btn-danger" data-toggle="modal" data-target="#modalValidation">Rejouer la procédure de validation / invalidation</button>
 									<spring:url
 										value="/manager/multiReplayValidationOrInvalidation"
 										var="replayValidationOrInvalidationUrl" />

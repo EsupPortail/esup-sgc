@@ -35,6 +35,11 @@ public class CurrentSessionsController {
 	public String getHelp() {
 		return appliConfigService.getHelpAdmin();
 	}
+	
+	@ModelAttribute("footer")
+	public String getFooter() {
+		return appliConfigService.pageFooter();
+	}  
 
 	@Autowired
 	@Qualifier("sessionRegistry")
