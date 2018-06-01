@@ -11,23 +11,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-/**
- * REST exception handlers defined at a global level for the application
- * @See https://gist.github.com/jeffsheets/8b73620e0912afd95aa0
- */
-@ControllerAdvice
-public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
-
-    /**
+public class AbstractRestController {
+	
+	public final Logger log = LoggerFactory.getLogger(getClass());
+	
+	  /**
      * Catch all for any other exceptions...
      */
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler()
     @ResponseBody
     public ResponseEntity<?> handleAnyException(Exception e) {
         return errorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,6 +56,5 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             return new ResponseEntity<String>("Erreur interne", new HttpHeaders(), status);
         }
     }
-
+    
 }
-

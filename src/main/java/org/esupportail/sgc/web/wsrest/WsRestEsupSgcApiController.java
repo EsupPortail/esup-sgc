@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -38,13 +36,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
 @RequestMapping("/wsrest/api")
 @Controller
-public class WsRestEsupSgcApiController {
+public class WsRestEsupSgcApiController extends AbstractRestController {
 	
 	public final Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -138,7 +135,7 @@ public class WsRestEsupSgcApiController {
 						Calendar cal = Calendar.getInstance();
 						Date currentTime = cal.getTime();
 						card.getPhotoFile().setSendTime(currentTime);
-						card.setUserAccount(user);
+						
 						if(card.getId() !=null){
 							card.setNbRejets(Card.findCard(card.getId()).getNbRejets());
 							card.merge();
@@ -146,7 +143,7 @@ public class WsRestEsupSgcApiController {
 							card.setNbRejets(Long.valueOf(0));
 							card.persist();
 						}
-						
+						card.setUserAccount(user);
 						card.setDueDate(user.getDueDate());
 						if(card.getCrousTransient()!=null && card.getCrousTransient()) {
 							user.setCrous(true);
@@ -215,7 +212,7 @@ public class WsRestEsupSgcApiController {
 		}
 		return new ResponseEntity<String>("Importation de la carte extérieure de " + eppn + " OK", HttpStatus.OK);
 	}
-	
+
 }
 
 
