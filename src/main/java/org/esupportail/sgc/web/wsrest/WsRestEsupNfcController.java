@@ -219,6 +219,9 @@ public class WsRestEsupNfcController {
 				case "csn":
 					secondaryId = taglog.csn;
 					break;
+				case "reverseCsn":
+					secondaryId = card.getReverseCsn();
+					break;
 				case "cardUID":
 					secondaryId = taglog.csn;
 					break;
