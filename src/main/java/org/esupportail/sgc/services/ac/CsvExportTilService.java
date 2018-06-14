@@ -12,10 +12,10 @@ import javax.annotation.Resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
@@ -35,14 +35,16 @@ public class CsvExportTilService implements Export2AccessControlService {
 	@Resource
 	AccessService tilVfsAccessService;
 	
+	@Resource
+	AppliConfigService appliConfigService;
+	
 	/* (non-Javadoc)
 	 * @see org.esupportail.sgc.services.ac.Export2AccessControlService#sync(java.util.List)
 	 */
 	@Override
 	public void sync(List<String> eppns) throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_TIL);
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("TIL_EXPORT_CSV_FILE_NAME");
-		String filename = appliConfig.getValue();
+		String filename = appliConfigService.getTilExportcsvFilename();
 		tilVfsAccessService.putFile(null, filename, csv, true);
 	} 
 	
@@ -52,8 +54,7 @@ public class CsvExportTilService implements Export2AccessControlService {
 	@Override
 	public void sync(String eppn) throws IOException {
 		
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("TIL_EXPORT_CSV_FILE_NAME");
-		String filename = appliConfig.getValue();
+		String filename = appliConfigService.getTilExportcsvFilename();
 		
 		String csvStr = sgc2csv4eppn(eppn).toString();
 		

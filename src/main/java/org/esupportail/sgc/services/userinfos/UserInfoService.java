@@ -15,21 +15,19 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.User.CnousReferenceStatut;
+import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.AuthApiCrousService;
 import org.esupportail.sgc.services.crous.EsistCrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.tools.DateUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -60,6 +58,9 @@ public class UserInfoService {
 
 	@Resource
 	DateUtils dateUtils;
+	
+	@Resource
+	AppliConfigService appliConfigService;
 	
 	@Autowired
 	public void setExtUserInfoServices(List<ExtUserInfoService> extUserInfoServices) {
@@ -286,8 +287,7 @@ public class UserInfoService {
 
 	public void setDefaultValues4NullAttributes(Map<String, String> userInfos, User user) {
 		if(!userInfos.containsKey("schacExpiryDate") || (userInfos.get("schacExpiryDate")).isEmpty()) {
-			String timeString = AppliConfig.findAppliConfigByKey("DEFAULT_DATE_FIN_DROITS").getValue();
-			Date dateFinDroits = new DateTime(timeString).toDate();;
+			Date dateFinDroits = appliConfigService.getDefaultDateFinDroits();
 			user.setDueDate(dateFinDroits);
 		} 
 		if(!userInfos.containsKey("institute") || (userInfos.get("institute")).isEmpty()) {

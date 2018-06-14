@@ -38,6 +38,9 @@ public class LogService {
 	@Resource
 	SupervisorService supervisorService;
 	
+	@Resource
+	AppliConfigService appliConfigService;
+	
 	public void log(Long cardId, ACTION action, RETCODE success, String comment, String eppnCible, String ip) {
 
 		TYPE type = TYPE.SYSTEM;
@@ -89,8 +92,7 @@ public class LogService {
 	@Scheduled(cron="0 0 10 * * *")
 	public void purge() {
 		
-		AppliConfig daysNbConfig = AppliConfig.findAppliConfigByKey("RETENTION_LOGS_DB_DAYS");
-		int daysNb = Integer.parseInt(daysNbConfig.getValue());
+		int daysNb = appliConfigService.getDaysNbConfig();
 				
 		Date currentDate = new Date();
 		Calendar cal = Calendar.getInstance();

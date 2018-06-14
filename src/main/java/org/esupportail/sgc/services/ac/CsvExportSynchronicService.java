@@ -13,10 +13,10 @@ import javax.annotation.Resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
@@ -38,18 +38,19 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	@Resource
 	AccessService synchronicVfsAccessService;
 	
+	@Resource
+	AppliConfigService appliConfigService;
+	
 	/* Méthode en 1 seul fichier */
 	public void sync(List<String> eppns) throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_P2S);
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("SYNCHRONIC_EXPORT_CSV_FILE_NAME");
-		String filename = appliConfig.getValue();
+		String filename = appliConfigService.getSynchronicExportcsvFilename();
 		synchronicVfsAccessService.putFile(null, filename, csv, true);
 	} 
 	
 	public void sync(String eppn) throws IOException {
 		
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("SYNCHRONIC_EXPORT_CSV_FILE_NAME");
-		String filename = appliConfig.getValue();
+		String filename = appliConfigService.getSynchronicExportcsvFilename();
 		
 		String csvStr = sgc2csv4eppn(eppn).toString();
 		

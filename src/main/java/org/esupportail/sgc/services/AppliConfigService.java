@@ -1,22 +1,30 @@
 package org.esupportail.sgc.services;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class AppliConfigService {
 	
+	enum AppliConfigKey {
+		DISPLAY_FORM_CNIL, DISPLAY_FORM_CROUS, DISPLAY_FORM_ADRESSE, DISPLAY_FORM_RULES, MONTANT_RENOUVELLEMENT, MAIL_LISTE_PRINCIPALE, MAIL_SUBJECT_AUTO,
+		MAIL_NO_REPLY, PAYBOX_MSG_SUCCESS, USER_MSG_HELP, USER_MSG_FREE_RENEWAL, USER_MSG_PAID_RENEWAL, USER_MSG_CAN_PAID_RENEWAL, USER_MSG_NEW_CARD, USER_MSG_CHECKED_OR_ENCODED_CARD,
+		USER_MSG_REJECTED_CARD, USER_MSG_ENABLED_CARD, USER_MSG_ENABLED_PERS_CARD, ANNEE_UNIV, USER_MSG_FORM_REJECTED, USER_FORM_RULES, USER_FREE_FORCED_RENEWAL, 
+		USER_TIP_MSG, STATS_BANNED_IP, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, MODE_BORNES, ENABLE_CROUS, 
+		ENABLE_EUROPEAN_CARD, DISPLAY_FORM_EUROPEAN_CARD, PAGE_FOOTER, EXT_USER_EPPN_REGEXP, RETENTION_LOGS_DB_DAYS, P2S_EXPORT_CSV_FILE_NAME, P2S_EXPORT_CSV_NB_LINES_PER_FILE,
+		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS
+	}
+	
 	public List<String> getTypes() {
 		return Arrays.asList(new String[] {TypeConfig.HTML.name(), TypeConfig.TEXT.name(), TypeConfig.BOOLEAN.name()});
 	}  
-	
 	
 	public void merge(AppliConfig appliConfig) {
 		appliConfig.merge();
@@ -34,120 +42,113 @@ public class AppliConfigService {
 	
 	
 	public String displayFormCnil() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_CNIL");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_CNIL);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String displayFormCrous() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_CROUS");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_CROUS);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String displayFormAdresse() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_ADRESSE");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_ADRESSE);
 		return appliConfig.getValue();
 	}
 	
 		
 	public String displayFormRules() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_RULES");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_RULES);
 		return appliConfig.getValue();
 	}
 	
 	public Double getMontantRenouvellement() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MONTANT_RENOUVELLEMENT");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MONTANT_RENOUVELLEMENT);
 		return new Double(appliConfig.getValue());
 	}
 	
 	
 	public String getListePpale() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MAIL_LISTE_PRINCIPALE");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MAIL_LISTE_PRINCIPALE);
 		return appliConfig.getValue();
 	}
-	
-	
-	public String getListeCc() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MAIL_LISTE_CC");
-		return appliConfig.getValue();
-	}
-	
 	
 	public String getSubjectAutoCard() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MAIL_SUBJECT_AUTO");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MAIL_SUBJECT_AUTO);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getNoReplyMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MAIL_NO_REPLY");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MAIL_NO_REPLY);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getPayboxMessage() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("PAYBOX_MSG_SUCCESS");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.PAYBOX_MSG_SUCCESS);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getUserHelpMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_HELP");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_HELP);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getUseFreeRenewalMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_FREE_RENEWAL");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_FREE_RENEWAL);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getUserPaidRenewalMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_PAID_RENEWAL");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_PAID_RENEWAL);
 		return appliConfig.getValue();
 	}		
 	
 	
 	public String getUserCanPaidRenewalMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_CAN_PAID_RENEWAL");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_CAN_PAID_RENEWAL);
 		return appliConfig.getValue();
 	}
 	
 	public String getNewCardlMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_NEW_CARD");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_NEW_CARD);
 		return appliConfig.getValue();
 	}	
 	
 	
 	public String getCheckedOrEncodedCardMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_CHECKED_OR_ENCODED_CARD");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_CHECKED_OR_ENCODED_CARD);
 		return appliConfig.getValue();
 	}	
 	
 	
 	public String getRejectedCardMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_REJECTED_CARD");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_REJECTED_CARD);
 		return appliConfig.getValue();
 	}	
 	
 	
 	public String getEnabledCardMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_ENABLED_CARD");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_ENABLED_CARD);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getEnabledCardPersMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_ENABLED_PERS_CARD");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_ENABLED_PERS_CARD);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getCurrentAnneeUniv() {
 		if(AppliConfig.countFindAppliConfigsByKeyEquals("ANNEE_UNIV")>0){
-			AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("ANNEE_UNIV");
+			AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ANNEE_UNIV);
 			return appliConfig.getValue();
 		}else{
 			return null;
@@ -156,99 +157,147 @@ public class AppliConfigService {
 	
 	
 	public String getUserFormRejectedMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_MSG_FORM_REJECTED");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_MSG_FORM_REJECTED);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getUserFormRules() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_FORM_RULES");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_FORM_RULES);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getUserFreeForcedRenewal() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_FREE_FORCED_RENEWAL");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_FREE_FORCED_RENEWAL);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getUserTipMsg() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("USER_TIP_MSG");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_TIP_MSG);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getBannedIpStats() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("STATS_BANNED_IP");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.STATS_BANNED_IP);
 		return appliConfig.getValue();
 	}
 	
 	//
 	public Boolean getEnableAuto() {
-		AppliConfig enableAutoConfig = AppliConfig.findAppliConfigByKey("ENABLE_AUTO");
+		AppliConfig enableAutoConfig = getAppliConfigByKey(AppliConfigKey.ENABLE_AUTO);
 		return enableAutoConfig!=null && "true".equalsIgnoreCase(enableAutoConfig.getValue());
 	}
 	
 	
 	public String getHelpManager() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("HELP_MANAGER");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.HELP_MANAGER);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getHelpUser() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("HELP_USER");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.HELP_USER);
 		return appliConfig.getValue();
 	}
 	
 	
 	public String getHelpAdmin() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("HELP_ADMIN");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.HELP_ADMIN);
 		return appliConfig.getValue();
 	}
 	
 	//
 	public Boolean isQrCodeEscEnabled() {
-		AppliConfig enableAutoConfig = AppliConfig.findAppliConfigByKey("QRCODE_ESC_ENABLED");
+		AppliConfig enableAutoConfig = getAppliConfigByKey(AppliConfigKey.QRCODE_ESC_ENABLED);
 		return enableAutoConfig!=null && "true".equalsIgnoreCase(enableAutoConfig.getValue());
 	}
 
 	public String getQrcodeFormat() {
-		AppliConfig qrcodeWidth = AppliConfig.findAppliConfigByKey("QRCODE_FORMAT");
+		AppliConfig qrcodeWidth = getAppliConfigByKey(AppliConfigKey.QRCODE_FORMAT);
 		return qrcodeWidth==null ? "PNG" : qrcodeWidth.getValue();
 	}
 		
 	public String getModeLivraison() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MODE_LIVRAISON");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MODE_LIVRAISON);
 		return appliConfig.getValue();
 	}
 	
 		
 	public String getModeBornes() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("MODE_BORNES");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MODE_BORNES);
 		return appliConfig.getValue();
 	}
 	
 	public String isCrousEnabled() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("ENABLE_CROUS");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ENABLE_CROUS);
 		return appliConfig.getValue();
 	}
 	
 	public String isEuropeanCardEnabled() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("ENABLE_EUROPEAN_CARD");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ENABLE_EUROPEAN_CARD);
 		return appliConfig.getValue();
 	}
 	
 	public String displayFormEuropeanCard() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("DISPLAY_FORM_EUROPEAN_CARD");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_EUROPEAN_CARD);
 		return appliConfig.getValue();
 	}
 	
 	public String pageFooter() {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("PAGE_FOOTER");
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.PAGE_FOOTER);
 		return appliConfig==null ? "" : appliConfig.getValue();
 	}
+	
+	public String getEppnRegexpExt() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.EXT_USER_EPPN_REGEXP);
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
+	
+	public int getDaysNbConfig() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.RETENTION_LOGS_DB_DAYS);
+		return appliConfig==null ? 36000 : Integer.parseInt(appliConfig.getValue());
+	}
+	
+	public String getP2sExportcsvFilename() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.P2S_EXPORT_CSV_FILE_NAME);
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
+	
+	public int getP2sExportcsvNbLinesMax() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.P2S_EXPORT_CSV_NB_LINES_PER_FILE);
+		return appliConfig==null ? 100 : Integer.parseInt(appliConfig.getValue());
+	}
+	
+	public String getSynchronicExportcsvFilename() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.SYNCHRONIC_EXPORT_CSV_FILE_NAME);
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
+	
+	public String getTilExportcsvFilename() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.TIL_EXPORT_CSV_FILE_NAME);
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
+	
+	public Long getDefaultCnousIdCompagnyRate() {
+		return Long.valueOf(getAppliConfigByKey(AppliConfigKey.DEFAULT_CNOUS_ID_COMPAGNY_RATE).getValue());
+	}
+	
+	public Long getDefaultCnousIdRate() {
+		return Long.valueOf(getAppliConfigByKey(AppliConfigKey.DEFAULT_CNOUS_ID_RATE).getValue());
+	}
+	
+	public Date getDefaultDateFinDroits() {
+		String timeString = getAppliConfigByKey(AppliConfigKey.DEFAULT_DATE_FIN_DROITS).getValue();
+		Date dateFinDroits = new DateTime(timeString).toDate();
+		return dateFinDroits;
+	}
 
+	private AppliConfig getAppliConfigByKey(AppliConfigKey appliConfigKey) {
+		return AppliConfig.findAppliConfigByKey(appliConfigKey.name());
+	}
 }
+
 

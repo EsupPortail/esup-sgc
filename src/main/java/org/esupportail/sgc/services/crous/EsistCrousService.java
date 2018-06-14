@@ -8,16 +8,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
+import org.esupportail.sgc.services.AppliConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -32,20 +33,22 @@ public class EsistCrousService {
 	String esistFileOverridePath;
 
 	List<CrousRule> rules = new ArrayList<CrousRule>();
+	
+	@Resource
+	AppliConfigService appliConfigService;
 
 	public void setEsistFiles(List<String> esistFilePathes) {
 		this.esistFilePathes = esistFilePathes;
 
 	}
 	
-
 	@PostConstruct
 	public void parseEsistFiles(){
 
 		for(String esistFilePath : esistFilePathes) {
 			try {
 				
-				Resource esistResource = new ClassPathResource(esistFilePath);
+				ClassPathResource esistResource = new ClassPathResource(esistFilePath);
 				
 				File esistXmlFile = esistResource.getFile();
 				
@@ -97,8 +100,8 @@ public class EsistCrousService {
 	}
 
 	public List<Long> compute(User user) {
-		Long defaultCnousIdCompagnyRate  = Long.valueOf(AppliConfig.findAppliConfigByKey("DEFAULT_CNOUS_ID_COMPAGNY_RATE").getValue());
-		Long defaultCnousIdRate  = Long.valueOf(AppliConfig.findAppliConfigByKey("DEFAULT_CNOUS_ID_RATE").getValue());
+		Long defaultCnousIdCompagnyRate  = appliConfigService.getDefaultCnousIdCompagnyRate();
+		Long defaultCnousIdRate  = appliConfigService.getDefaultCnousIdRate();
 		List<Long> idCompagnyRateAndIdRate = Arrays.asList(new Long[] {defaultCnousIdCompagnyRate, defaultCnousIdRate});
 		CrousRule matchRule = null;
 		Long indice = user.getIndice();

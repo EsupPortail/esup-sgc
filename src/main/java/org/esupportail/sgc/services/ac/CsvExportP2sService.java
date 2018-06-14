@@ -18,6 +18,7 @@ import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
@@ -39,13 +40,15 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 	
 	@Resource
 	CardEtatService cardEtatService;
+	
+	@Resource
+	AppliConfigService appliConfigService;
 
 	private Set<String> queueEppns2Update = new HashSet<String>();
 	
 	public void sync() throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(null).toString(), ENCODING_P2S);
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("P2S_EXPORT_CSV_FILE_NAME");
-		String filename = appliConfig.getValue();
+		String filename = appliConfigService.getP2sExportcsvFilename();
 		Date date = new Date();
 		p2sVfsAccessService.putFile(null, date.getTime() + "_" + filename, csv, false);
 	} 
@@ -57,11 +60,8 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 			return;
 		}
 		
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("P2S_EXPORT_CSV_FILE_NAME");
-		String filename = appliConfig.getValue();
-		
-		AppliConfig appliConfigNbLines = AppliConfig.findAppliConfigByKey("P2S_EXPORT_CSV_NB_LINES_PER_FILE");
-		int nbLinesMax = Integer.parseInt(appliConfigNbLines.getValue());
+		String filename = appliConfigService.getP2sExportcsvFilename();
+		int nbLinesMax = appliConfigService.getP2sExportcsvNbLinesMax();
 		
 		String csvStr = sgc2csv(eppns).toString();
 		List<String> csvStrList =  Arrays.asList(csvStr.split("\\r?\\n"));
@@ -115,8 +115,7 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 	}
 	
 	private void export2P2S4EppnWoQueue(String eppn) throws IOException {
-		AppliConfig appliConfig = AppliConfig.findAppliConfigByKey("P2S_EXPORT_CSV_FILE_NAME");
-		String filename = appliConfig.getValue();
+		String filename = appliConfigService.getP2sExportcsvFilename();
 		
 		String csvStr = sgc2csv4eppn(eppn).toString();
 		
