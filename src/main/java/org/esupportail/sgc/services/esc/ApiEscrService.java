@@ -105,9 +105,9 @@ public class ApiEscrService extends ValidateService {
 		}
 	}
 
-	protected EscrStudent getEscrStudent(String eppn) {
+	public EscrStudent getEscrStudent(String eppn) {
 		List<EscrStudent> escrStudents = EscrStudent.findEscrStudentsByEppnEquals(eppn).getResultList();
-		if(escrStudents.isEmpty()) {
+		if(escrStudents.isEmpty() || !enable) {
 			return null;
 		} else {
 			EscrStudent escrStudentInDb = escrStudents.get(0);
@@ -116,7 +116,7 @@ public class ApiEscrService extends ValidateService {
 			HttpEntity entity = new HttpEntity(headers);
 			log.debug("Try to get ESCR Student : " + escrStudentInDb.getEuropeanStudentIdentifier()); 
 			ResponseEntity<EscrStudent> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscrStudent.class);
-			log.info(eppn + " retireved in ESCR as Student -> " + response.getBody());	
+			log.info(eppn + " retrieved in ESCR as Student -> " + response.getBody());	
 			return response.getBody();
 		}
 	}

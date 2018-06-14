@@ -117,7 +117,7 @@ public class UserInfoService {
 			} else if("institute".equalsIgnoreCase(key)) {
 				user.setInstitute(userInfos.get(key));
 			} else if("supannEtablissement".equalsIgnoreCase(key)) {
-				String rneEtablissemnt = null;
+				String rneEtablissemnt = "";
 				String supannEtablissementAttr = userInfos.get(key);
 				if(supannEtablissementAttr!=null) {
 					List<String> supannEtablissementList = Arrays.asList(supannEtablissementAttr.split(";"));

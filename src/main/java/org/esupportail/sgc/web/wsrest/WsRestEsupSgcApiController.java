@@ -136,6 +136,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 						Date currentTime = cal.getTime();
 						card.getPhotoFile().setSendTime(currentTime);
 						card.setUserAccount(user);
+						
 						if(card.getId() !=null){
 							card.setNbRejets(Card.findCard(card.getId()).getNbRejets());
 							card.merge();

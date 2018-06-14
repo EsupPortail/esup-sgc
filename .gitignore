@@ -15,3 +15,6 @@ hs_err_*
 /.springBeans
 cas.log
 perfStats.log
+src/main/webapp/css/esup-sgc.min.css
+src/main/webapp/js/esup-sgc-vanilla.min.js
+		

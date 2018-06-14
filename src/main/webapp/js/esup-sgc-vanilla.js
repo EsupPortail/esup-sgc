@@ -952,25 +952,28 @@ document.addEventListener('DOMContentLoaded', function() {
 				checkboxes[i].checked = this.checked;
 			}
 	
-			const values = Array.from(document.querySelectorAll('input[type="checkbox"]'))
-			  .filter((checkbox) => checkbox.checked)
-			  .map((checkbox) => checkbox.value);
-	
+			const values = Array.from(document.querySelectorAll('input[type="checkbox"]')).
+			filter(function(checkbox) {
+				  return checkbox.checked;
+			}).map(function(checkbox) {
+				  return checkbox.value;
+			});
 			for(var i=0, n=checkboxes.length;i<n;i++){
 				checkboxes[i].checked = this.checked;
 			}
-	
-			idArray = Array.from(document.querySelectorAll("input[name='case']"))
-			  .filter((checkbox) => checkbox.checked)
-			  .map((checkbox) => checkbox.value);
+			idArray = Array.from(document.querySelectorAll("input[name='case']")).filter(function(checkbox) {
+				  return checkbox.checked;
+			}).map(function(checkbox) {
+				  return checkbox.value;
+			});
 			multiUpdateForm(idArray);
 			if(listeIds != null){
 				listeIds.innerHTML = idArray;
 			}
 		});
 	
-	   	Array.from(checkboxes).forEach(link => {
-	   	    link.addEventListener('click', function(event) {
+	   	Array.from(checkboxes).forEach(function(link) {
+	   		return link.addEventListener('click', function(event) {
 	   			if(idArray.indexOf(this.value)< 0){
 	   				idArray.push(this.value);
 	   			}else{
@@ -983,7 +986,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				if(listeIds != null){
 					listeIds.innerHTML = idArray;
 				}
-	   	    });
+	   	    }); 
 	   	});
 	
 	   	window.onload = function(e){ 
@@ -1015,8 +1018,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			}			
 		});
 		
-	   	Array.from(caseFields).forEach(link => {
-	   	    link.addEventListener('click', function(event) {
+	   	Array.from(caseFields).forEach(function(link) {
+	   		return link.addEventListener('click', function(event) {
 	   	    	if(!this.checked){
 	   	    		selectAllFields.checked = false;
 	   	    	}		
@@ -1179,8 +1182,8 @@ document.addEventListener('DOMContentLoaded', function() {
  	//Bouton imprimer bordereau
     var printPage = document.querySelectorAll('.printPage')
     if(printPage != null){
-	   	Array.from(printPage).forEach(link => {
-	   	    link.addEventListener('click', function(event) {
+	   	Array.from(printPage).forEach(function(link) {
+	   		return link.addEventListener('click', function(event) {
 		   		 window.print();
 				 return false;
 	   	    });
@@ -1197,8 +1200,8 @@ document.addEventListener('DOMContentLoaded', function() {
     	
         var freeSelect = document.querySelectorAll('.freeSelect')
         if(freeSelect != null){
-    	   	Array.from(freeSelect).forEach(link => {
-    	   	    link.addEventListener('change', function(event) {
+    	   	Array.from(freeSelect).forEach(function(link) {
+    	   		return link.addEventListener('change', function(event) {
     	    		var indice = link.id.replace("fields","");
     	    		selectedField = link.value;
     	    		displayResultFreefield(selectedField, fieldsValue, indice);
@@ -1306,8 +1309,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		  
 		  var imageInput = document.querySelectorAll('.ezcrop-image-input')
 		  if(imageInput != null){
-			Array.from(imageInput).forEach(link => {
-			    link.addEventListener('change', function(event) {
+			Array.from(imageInput).forEach(function(link) {
+		   		return link.addEventListener('change', function(event) {
 				  cropper.options.exportZoom = 2;
 				  changeMsg();
 			    });
@@ -1409,8 +1412,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		      	loadImages(sources, buildStage);
 		        var sliders = document.querySelectorAll('#filterSliders input');
 		        if(sliders != null){
-		    	   	Array.from(sliders).forEach(link => {
-		    	    	link.value = 0;
+		    	   	Array.from(sliders).forEach(function(link) {
+		    	   		return link.value = 0;
 		    	   	});
 		    	}
 			    });
@@ -1427,8 +1430,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			    	empty("container"); 
 			        var sliders = document.querySelectorAll('#filterSliders input');
 			        if(sliders != null){
-			    	   	Array.from(sliders).forEach(link => {
-			    	    	link.value = 0;
+			    	   	Array.from(sliders).forEach(function(link) {
+			    	   		return link.value = 0;
 			    	   	});
 			    	}
 			        document.querySelectorAll(".ezcrop-image-zoom-input")[0].removeAttribute("disabled");
@@ -1608,8 +1611,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	
     //Tabs Configs
 	var tabsConfig = document.querySelectorAll('#configList .nav-tabs li a');
-   	Array.from(tabsConfig).forEach(link => {
-   	    link.addEventListener('click', function(event) {
+   	Array.from(tabsConfig).forEach(function(link) {
+   		return link.addEventListener('click', function(event) {
 	    	type = this.hash.substr(1,this.hash.length);
 	    	if(type != 0){
 		    	if(typeof tabsUrl != "undefined"){
@@ -1624,7 +1627,7 @@ document.addEventListener('DOMContentLoaded', function() {
    	
    	//configs
    	var appliConfig = document.getElementById('appliConfig');
-   	if(appliConfig != null){
+   	if(appliConfig != null){ 
    		appliConfig.addEventListener('submit', function(e) {
    			document.getElementById("valeur").value = document.querySelectorAll(".input_editor")[0].contentDocument.body.innerHTML;
    		});
@@ -1657,8 +1660,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		
 		var radioType = document.querySelectorAll('input[type=radio][name=type]');
-	   	Array.from(radioType).forEach(link => {
-	   	    link.addEventListener('click', function(event) {
+	   	Array.from(radioType).forEach(function(link) {
+	   		return link.addEventListener('click', function(event) {
 				displayFormconfig(this.value, 12,  valeur.value);
 		    });
 		});
@@ -1667,8 +1670,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		if(typeConfigSelect != null){
 			displayFormconfig(typeConfigSelect.value ,3, valeur.value);
 			var selectType = document.querySelectorAll('select[name=type]');
-		   	Array.from(selectType).forEach(link => {
-		   	    link.addEventListener('change', function(event) {
+		   	Array.from(selectType).forEach(function(link) {
+		   		return link.addEventListener('change', function(event) {
 					displayFormconfig(this.value, 3,  valeur.value);
 			    });
 			});

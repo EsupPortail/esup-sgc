@@ -211,6 +211,8 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value="/secondaryId",  method=RequestMethod.POST)
 	@ResponseBody
 	public String secondaryId(@RequestBody EsupNfcTagLog taglog, @RequestParam String idName, Model uiModel) {
+		log.trace("idName : " + idName);
+		log.trace("taglog : " + taglog);
 		String secondaryId = null;
 		Card card = Card.findCard(taglog.csn);
 		if(card!=null && card.isEnabled()) {
@@ -239,6 +241,7 @@ public class WsRestEsupNfcController {
 					break;
 			}
 		}
+		log.trace("secondaryId : " + secondaryId);
 		return secondaryId;
 	}
 	

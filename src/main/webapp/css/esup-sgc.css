@@ -40,7 +40,7 @@ dd {
 }
 
 hr{
-	clear: left
+	clear: left;
 }
 
 h2{
@@ -64,7 +64,7 @@ h2 a{
 	margin-left: 10px;
 }
 h3{
-	border-bottom: 1px solid #ccc
+	border-bottom: 1px solid #ccc;
 }
 h4{
 	background-color: #d9edf7;

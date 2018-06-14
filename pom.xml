@@ -15,6 +15,7 @@
 		<slf4j.version>1.7.5</slf4j.version>
 		<spring.version>3.2.18.RELEASE</spring.version>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
+		<skipTests>true</skipTests>
 	</properties>
 	<repositories>
 		<repository>
@@ -584,6 +585,8 @@
 					<excludes>
 						<exclude>**/*_Roo_*</exclude>
 					</excludes>
+					<skipTests>${skipTests}</skipTests>
+					<useFile>false</useFile>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -689,6 +692,33 @@
 					<classpathScope>compile</classpathScope>
 				</configuration>
 			</plugin>
+		      <plugin>
+		        <groupId>com.samaxes.maven</groupId>
+		        <artifactId>minify-maven-plugin</artifactId>
+		        <version>1.7.6</version>
+		        <executions>
+		          <execution>
+		            <id>default-minify</id>
+		            <configuration>
+		              <cssSourceIncludes>
+		                <cssSourceInclude>esup-sgc.css</cssSourceInclude>
+		              </cssSourceIncludes>
+		  			  <cssTargetDir>css</cssTargetDir>
+		  			  <cssFinalFile>esup-sgc.min.css</cssFinalFile>
+		              <jsSourceIncludes>
+		                <jsSourceInclude>esup-sgc-vanilla.js</jsSourceInclude>
+		              </jsSourceIncludes>
+		              <jsFinalFile>esup-sgc-vanilla.min.js</jsFinalFile>
+					  <jsTargetDir>js</jsTargetDir>
+					  <webappTargetDir>src/main/webapp</webappTargetDir>
+					  <skipMerge>true</skipMerge>
+		            </configuration>
+		            <goals>
+		              <goal>minify</goal>
+		            </goals>
+		          </execution>
+		        </executions>
+		      </plugin>
 		</plugins>
 	</build>
 </project>
