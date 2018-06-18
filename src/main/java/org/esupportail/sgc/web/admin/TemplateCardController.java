@@ -122,7 +122,7 @@ public class TemplateCardController {
 		String eppn = auth.getName();
     	TemplateCard beforeMaj = TemplateCard.findTemplateCard(templateCard.getId());
     	uiModel.asMap().clear();
-    	
+    	beforeMaj.setKey(templateCard.getKey());
     	beforeMaj.setName(templateCard.getName());
     	beforeMaj.setNumVersion(templateCard.getNumVersion());
     	beforeMaj.setDescription(templateCard.getDescription());
