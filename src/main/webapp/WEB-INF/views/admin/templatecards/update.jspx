@@ -17,7 +17,7 @@
             <div class="panel-body">
                 <form:create cssClass="form-horizontal well" id="fu_org_esupportail_sgc_domain_TemplateCard" modelAttribute="templateCard" multipart="true" path="/admin/templatecards/update" z="user-managed">
                     <input name="id" type="hidden" value="${templateCard.id}"/>
-                    <field:input colInput="col-md-6" cssClass="form-control" field="key" readonly="true" id="c_org_esupportail_sgc_domain_TemplateCard_key" label="Clé" z="user-managed"/>
+                    <field:input colInput="col-md-6" cssClass="form-control" field="key" id="c_org_esupportail_sgc_domain_TemplateCard_key" label="Clé" z="user-managed"/>
                     <field:input colInput="col-md-6" cssClass="form-control" field="numVersion" id="c_org_esupportail_sgc_domain_TemplateCard_numVersion" z="user-managed"/>
                     <field:input colInput="col-md-6" cssClass="form-control" field="name" id="c_org_esupportail_sgc_domain_TemplateCard_name" z="user-managed"/>
                     <field:textarea colInput="col-md-6" colLabel="col-md-3" cssClass="form-control" field="description" id="c_org_esupportail_sgc_domain_TemplateCard_description" row="3" z="user-managed"/>
