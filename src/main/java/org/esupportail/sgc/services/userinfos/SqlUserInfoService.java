@@ -15,9 +15,8 @@ import org.esupportail.sgc.domain.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.roo.addon.javabean.RooJavaBean;
 
-@RooJavaBean
+
 public class SqlUserInfoService implements ExtUserInfoService {
 	
 	private String sqlQuery;
@@ -30,6 +29,26 @@ public class SqlUserInfoService implements ExtUserInfoService {
 
 	public void setDataSource(DataSource datesource) {
 		this.jdbcTemplate = new JdbcTemplate(datesource);
+	}
+
+	public Long getOrder() {
+		return order;
+	}
+
+	public void setOrder(Long order) {
+		this.order = order;
+	}
+
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
+
+	public void setSqlQuery(String sqlQuery) {
+		this.sqlQuery = sqlQuery;
 	}
 
 	@Override

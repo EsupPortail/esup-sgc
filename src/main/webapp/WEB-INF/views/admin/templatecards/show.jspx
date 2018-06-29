@@ -23,7 +23,7 @@
                     <field:display field="description" id="s_org_esupportail_sgc_domain_TemplateCard_description" object="${templatecard}" z="nPw5NW/QVxH9DraZvtWL4qGo/6s="/>
                     <dt>Style css</dt>
                     <pre>${templatecard.cssStyle}</pre>
-                     <dt>Style mobile css</dt>
+                    <dt>Style mobile css</dt>
                     <pre>${templatecard.cssMobileStyle}</pre>
                     <dt>Masque</dt>
                     <dd>
@@ -38,7 +38,7 @@
                         <img class="thumb-image" src="${photoLocalPrefix}qrCode/${templatecard.id}"/>
                     </dd>
                     <field:display field="modificateur" id="s_org_esupportail_sgc_domain_TemplateCard_modificateur" object="${templatecard}" z="user-managed"/>
-                    <field:display render="false" field="cssMobileStyle" id="s_org_esupportail_sgc_domain_TemplateCard_cssMobileStyle" object="${templatecard}" z="user-managed"/>
+                    <field:display field="cssMobileStyle" id="s_org_esupportail_sgc_domain_TemplateCard_cssMobileStyle" object="${templatecard}" render="false" z="user-managed"/>
                     <field:display date="true" dateTimePattern="${templateCard_datemodification_date_format}" field="dateModification" id="s_org_esupportail_sgc_domain_TemplateCard_dateModification" object="${templatecard}" z="vxL1Vc+bxiSdKEX1W7H5xc86khE="/>
                     <field:display field="cssStyle" id="s_org_esupportail_sgc_domain_TemplateCard_cssStyle" object="${templatecard}" render="false" z="user-managed"/>
                     <field:display field="masque" id="s_org_esupportail_sgc_domain_TemplateCard_masque" object="${templatecard}" render="false" z="user-managed"/>
@@ -47,6 +47,7 @@
                     <field:display field="photoFileMasque" id="s_org_esupportail_sgc_domain_TemplateCard_photoFileMasque" object="${templatecard}" render="false" z="user-managed"/>
                     <field:display field="photoFileQrCode" id="s_org_esupportail_sgc_domain_TemplateCard_photoFileQrCode" object="${templatecard}" render="false" z="user-managed"/>
                     <field:display field="qrCode" id="s_org_esupportail_sgc_domain_TemplateCard_qrCode" object="${templatecard}" render="false" z="user-managed"/>
+                    <field:display field="codeBarres" id="s_org_esupportail_sgc_domain_TemplateCard_codeBarres" object="${templatecard}" z="Rw/ejE8hwTEBJsaRXLpZ3xzOPhc="/>
                 </page:show>
             </div>
         </div>
@@ -97,9 +98,8 @@
                                 <img id="photo" src="${photoUrl}"/>
                                 <img id="logo-ur" src="${logoUrl}"/>
                             </div>
-                           
                         </div>
-                         <hr />
+                        <hr/>
                     </div>
                 </div>
                 <div class="col-lg-6">

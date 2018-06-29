@@ -56,6 +56,8 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
 					modelAndView.addObject("esupNfcTagDroidApkUrl", esupNfcTagDroidApkUrl);
 					String esupNfcTagDesktopJarUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-jar";
 					modelAndView.addObject("esupNfcTagDesktopJarUrl", esupNfcTagDesktopJarUrl);
+					String esupNfcTagKeyboardJarUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-keyb";
+					modelAndView.addObject("esupNfcTagKeyboardJarUrl", esupNfcTagKeyboardJarUrl);
 				}
 				
 				// modelAndView.addObject("versionEsuSgc", AppliVersion.getCacheVersion());

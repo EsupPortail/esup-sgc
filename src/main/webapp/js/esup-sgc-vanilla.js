@@ -1264,13 +1264,18 @@ document.addEventListener('DOMContentLoaded', function() {
 		    		return false;
 		    	}
 			  },onFileChange: function(e) {
-		          var file = e.target.files[0]
-		          if (file && file.name) {
-		              EXIF.getData(file, function() {
-		                  var exifData = EXIF.pretty(this);
-		                  orientation = EXIF.getTag(file, "Orientation");
-		              });
-		          }
+		        var file = e.target.files[0];
+			    if(file.size > photoSizeMax){
+				       alert(messages['photoTooBig'] + photoSizeMax/1000+ "Ko");
+				     document.querySelectorAll(".ezcrop-image-input")[0].value = '';
+				 }else{
+			          if (file && file.name) {
+			              EXIF.getData(file, function() {
+			                  var exifData = EXIF.pretty(this);
+			                  orientation = EXIF.getTag(file, "Orientation");
+			              });
+			          }
+				 }
 		      },previewSize:{
 		    	  width: 150, height: 188},
 		    	  maxZoom:1.8,
@@ -1553,7 +1558,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    	}
 	     	if(radio3 != null && radio3.checked && adresse != null && adresse.value.trim().length>250){
 	    		alert (messages['alertTooChar']);
-	    		return false;	
+	    		e.preventDefault();
 	     	}
 	    });
 	}
@@ -1775,5 +1780,20 @@ document.addEventListener('DOMContentLoaded', function() {
 	if(footer != null){
 		footer.innerHTML = " - " + (new Date()).getFullYear();
 	}
+
+	//Workaround pour le 1er bouton supprimer d'un tableau Rooo...
+	var deleteClass = document.querySelectorAll('.deleteTableBtn');
+   	Array.from(deleteClass).forEach(function(link) {
+   		if(link.children[0].id!="command"){
+   			var action = link.querySelector('#urlPath').value;
+   			var form = document.createElement('form');
+   			form.setAttribute("id", "command");
+   			form.setAttribute("action", action);
+   			form.setAttribute("method", "post");
+   			form.innerHTML = link.innerHTML;
+   			link.innerHTML = "";
+   			link.appendChild(form);
+   		}
+	});
 	
 })

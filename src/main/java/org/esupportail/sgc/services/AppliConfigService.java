@@ -13,13 +13,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppliConfigService {
 	
+	private static final String DELIMITER_MULTIPLE_VALUES = ";";
+	
 	enum AppliConfigKey {
 		DISPLAY_FORM_CNIL, DISPLAY_FORM_CROUS, DISPLAY_FORM_ADRESSE, DISPLAY_FORM_RULES, MONTANT_RENOUVELLEMENT, MAIL_LISTE_PRINCIPALE, MAIL_SUBJECT_AUTO,
 		MAIL_NO_REPLY, PAYBOX_MSG_SUCCESS, USER_MSG_HELP, USER_MSG_FREE_RENEWAL, USER_MSG_PAID_RENEWAL, USER_MSG_CAN_PAID_RENEWAL, USER_MSG_NEW_CARD, USER_MSG_CHECKED_OR_ENCODED_CARD,
 		USER_MSG_REJECTED_CARD, USER_MSG_ENABLED_CARD, USER_MSG_ENABLED_PERS_CARD, ANNEE_UNIV, USER_MSG_FORM_REJECTED, USER_FORM_RULES, USER_FREE_FORCED_RENEWAL, 
 		USER_TIP_MSG, STATS_BANNED_IP, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, MODE_BORNES, ENABLE_CROUS, 
 		ENABLE_EUROPEAN_CARD, DISPLAY_FORM_EUROPEAN_CARD, PAGE_FOOTER, EXT_USER_EPPN_REGEXP, RETENTION_LOGS_DB_DAYS, P2S_EXPORT_CSV_FILE_NAME, P2S_EXPORT_CSV_NB_LINES_PER_FILE,
-		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS
+		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS, PHOTO_SIZE_MAX
+	}
+	
+
+	private List<String> splitConfigValues(AppliConfig appliConfig) {
+		String userTypeAsString = appliConfig.getValue();
+		List<String> userTypes = Arrays.asList(userTypeAsString.split(""));
+		if(userTypeAsString.contains(DELIMITER_MULTIPLE_VALUES)) {
+			userTypes = Arrays.asList(userTypeAsString.split(DELIMITER_MULTIPLE_VALUES));
+		}
+		return userTypes;
 	}
 	
 	public List<String> getTypes() {
@@ -41,27 +53,27 @@ public class AppliConfigService {
 	}
 	
 	
-	public String displayFormCnil() {
+	public List<String> userTypes2displayFormCnil() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_CNIL);
-		return appliConfig.getValue();
+		return splitConfigValues(appliConfig);
 	}
 	
 	
-	public String displayFormCrous() {
+	public List<String> userTypes2displayFormCrous() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_CROUS);
-		return appliConfig.getValue();
+		return splitConfigValues(appliConfig);
 	}
 	
 	
-	public String displayFormAdresse() {
+	public List<String> userTypes2displayFormAdresse() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_ADRESSE);
-		return appliConfig.getValue();
+		return splitConfigValues(appliConfig);
 	}
 	
 		
-	public String displayFormRules() {
+	public List<String> userTypes2displayFormRules() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_RULES);
-		return appliConfig.getValue();
+		return splitConfigValues(appliConfig);
 	}
 	
 	public Double getMontantRenouvellement() {
@@ -231,19 +243,19 @@ public class AppliConfigService {
 		return appliConfig.getValue();
 	}
 	
-	public String isCrousEnabled() {
+	public List<String> userTypes4isCrousEnabled() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ENABLE_CROUS);
-		return appliConfig.getValue();
+		return splitConfigValues(appliConfig);
 	}
 	
-	public String isEuropeanCardEnabled() {
+	public List<String> userTypes4isEuropeanCardEnabled() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ENABLE_EUROPEAN_CARD);
-		return appliConfig.getValue();
+		return splitConfigValues(appliConfig);
 	}
 	
-	public String displayFormEuropeanCard() {
+	public List<String> userTypes2displayFormEuropeanCard() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.DISPLAY_FORM_EUROPEAN_CARD);
-		return appliConfig.getValue();
+		return splitConfigValues(appliConfig);
 	}
 	
 	public String pageFooter() {
@@ -293,6 +305,15 @@ public class AppliConfigService {
 		String timeString = getAppliConfigByKey(AppliConfigKey.DEFAULT_DATE_FIN_DROITS).getValue();
 		Date dateFinDroits = new DateTime(timeString).toDate();
 		return dateFinDroits;
+	}
+	
+	public Long getFileSizeMax() {
+		String fileSizeMax = "200000";
+		if(getAppliConfigByKey(AppliConfigKey.PHOTO_SIZE_MAX) != null){
+			fileSizeMax = getAppliConfigByKey(AppliConfigKey.PHOTO_SIZE_MAX).getValue();
+		}
+		
+		return Long.valueOf(fileSizeMax);
 	}
 
 	private AppliConfig getAppliConfigByKey(AppliConfigKey appliConfigKey) {

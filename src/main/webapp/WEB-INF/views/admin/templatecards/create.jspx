@@ -46,6 +46,13 @@
         <field:select field="photoFileQrCode" id="c_org_esupportail_sgc_domain_TemplateCard_photoFileQrCode" itemValue="id" items="${photofiles}" path="/photofiles" render="false" z="user-managed"/>
         <field:input field="qrCode" id="c_org_esupportail_sgc_domain_TemplateCard_qrCode" render="false" z="user-managed"/>
         <field:input field="numVersion" id="c_org_esupportail_sgc_domain_TemplateCard_numVersion" render="false" z="user-managed"/>
+        <field:checkbox field="codeBarres" id="c_org_esupportail_sgc_domain_TemplateCard_codeBarres" render="false" z="user-managed"/>
+		<div class="form-group">
+		 	<label class="col-md-3  control-label control-label">Code-barres</label>
+		    <div class="col-md-3">
+		    	<input type="checkbox" name="codeBarres"  id="codeBarres" /> Code-barres
+		    </div>
+		 </div>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_esupportail_sgc_domain_TemplateCard" render="${not empty dependencies}" z="zBH83b1SHf2CdsqYGRFadLCG08c="/>
 </div>

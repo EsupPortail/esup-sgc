@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 
 privileged aspect User_Roo_JavaBean {
@@ -347,12 +348,12 @@ privileged aspect User_Roo_JavaBean {
         this.templateKey = templateKey;
     }
     
-    public String User.getLastCardTemplate() {
-        return this.lastCardTemplate;
+    public TemplateCard User.getLastCardTemplatePrinted() {
+        return this.lastCardTemplatePrinted;
     }
     
-    public void User.setLastCardTemplate(String lastCardTemplate) {
-        this.lastCardTemplate = lastCardTemplate;
+    public void User.setLastCardTemplatePrinted(TemplateCard lastCardTemplatePrinted) {
+        this.lastCardTemplatePrinted = lastCardTemplatePrinted;
     }
     
     public Set<String> User.getRoles() {

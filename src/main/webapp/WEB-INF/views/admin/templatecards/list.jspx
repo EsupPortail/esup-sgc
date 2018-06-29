@@ -5,20 +5,22 @@
     <spring:url value="/admin/templatecards/photo/" var="photoLocalPrefix"/>
     <spring:url value="/admin/templatecards?form" var="createUrl"/>
     <h2>Thèmes carte 	    
-	    <a href="${createUrl}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"/></a>
+	    <a class="btn btn-primary" href="${createUrl}">
+            <span class="glyphicon glyphicon-plus"/>
+        </a>
     </h2>
-    <page:list id="pl_org_esupportail_sgc_domain_TemplateCard" create="false" items="${templatecards}" z="user-managed" >
-        <table:table  create="false" data="${templatecards}" id="l_org_esupportail_sgc_domain_TemplateCard" path="/admin/templatecards" z="user-managed">
+    <page:list create="false" id="pl_org_esupportail_sgc_domain_TemplateCard" items="${templatecards}" z="user-managed">
+        <table:table create="false" data="${templatecards}" id="l_org_esupportail_sgc_domain_TemplateCard" path="/admin/templatecards" z="user-managed">
             <table:column id="c_org_esupportail_sgc_domain_TemplateCard_name" label="Nom" property="name" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_TemplateCard_key" label="Clé" property="key" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_TemplateCard_numVersion" label="Version" property="numVersion" z="user-managed"/>
-            <table:column id="c_org_esupportail_sgc_domain_TemplateCard_description" property="description" z="jGULxaWsNr3M+Gg3ccS3RiSuUAE="/>
             <table:column cssClass="photo centerCell" id="c_org_esupportail_sgc_domain_TemplateCard_masque" image="true" imagePrefix="${photoLocalPrefix}masque/" property="id" z="user-managed"/>
             <table:column cssClass="photo centerCell" id="c_org_esupportail_sgc_domain_TemplateCard_logo" image="true" imagePrefix="${photoLocalPrefix}logo/" property="id" z="user-managed"/>
             <table:column cssClass="photo centerCell" id="c_org_esupportail_sgc_domain_TemplateCard_qrCode" image="true" imagePrefix="${photoLocalPrefix}qrCode/" property="id" z="user-managed"/>
+            <table:column cssClass="centerCell" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_TemplateCard_codeBarres" property="codeBarres" render="true" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_TemplateCard_photoFileLogo" property="photoFileLogo" render="false" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_TemplateCard_cssStyle" property="cssStyle" z="MUWSMshSUmRGUKfGik+dL3O25OY="/>
-            <table:column label="Css mobile" id="c_org_esupportail_sgc_domain_TemplateCard_cssMobileStyle" property="cssMobileStyle" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_TemplateCard_cssMobileStyle" label="Css mobile" property="cssMobileStyle" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_TemplateCard_modificateur" property="modificateur" z="user-managed"/>
             <table:column date="true" dateTimePattern="${templateCard_datemodification_date_format}" id="c_org_esupportail_sgc_domain_TemplateCard_dateModification" property="dateModification" z="user-managed"/>
         </table:table>

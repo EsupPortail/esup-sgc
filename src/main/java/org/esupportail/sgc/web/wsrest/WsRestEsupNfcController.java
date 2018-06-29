@@ -525,7 +525,7 @@ public class WsRestEsupNfcController {
 				String csn = qrcodeAndCsn.get("csn");
 				Card cardWithThisCsn = Card.findCard(csn);
 				if(cardWithThisCsn != null && !cardWithThisCsn.getId().equals(cards.get(0).getId())) {
-					String errorMsg = "This card (with this csn" + csn + ") is already used in ESUP-SGC";
+					String errorMsg = "This card (with this csn" + csn + ") is already used in ESUP-SGC : " + cardWithThisCsn;
 					return new ResponseEntity<String>(errorMsg, responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 				} else {
 					Card card = cards.get(0);

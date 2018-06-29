@@ -24,8 +24,10 @@ public class DateUtils {
 	
 	public String schadDateOfBirthDay2FrenchDate(String schadDateOfBirthDay) {
     	Date date = parseSchacDateOfBirth(schadDateOfBirthDay);
-    	String dateFr = dateFormatterFr.format(date);
- 
+    	String dateFr = "";
+    	if(date != null) {
+    		dateFr = dateFormatterFr.format(date);
+    	}
     	return dateFr;
     }
 	

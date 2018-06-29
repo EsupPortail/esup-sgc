@@ -2,14 +2,16 @@ package org.esupportail.sgc.batch;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.esupportail.sgc.domain.AppliConfig;
+import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
 import org.esupportail.sgc.domain.AppliVersion;
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
@@ -23,7 +25,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	final static String currentEsupSgcVersion = "0.1.y";
+	final static String currentEsupSgcVersion = "0.1.z";
 		
 	@Resource
 	DataSource dataSource;
@@ -94,6 +96,28 @@ public class DbToolService {
 				
 	    		esupSgcVersion = "0.1.y";
 	    		
+			}
+			if("0.1.y".equals(esupSgcVersion)) {
+				
+				String sqlUpdate = "alter table user_account drop column last_card_template;";
+				sqlUpdate += "alter table user_account disable trigger tsvectorupdateuser;";
+				sqlUpdate += "with cards as (select distinct on(request_date) template_card, eppn, request_date from card order by request_date desc) update user_account set last_card_template_printed = cards.template_card from cards where cards.eppn = user_account.eppn;";
+				sqlUpdate += "alter table user_account enable trigger tsvectorupdateuser;";
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+				AppliConfig appliConfig = new AppliConfig();
+				appliConfig.setKey("PHOTO_SIZE_MAX");
+				appliConfig.setDescription("Taille maximale (en octets) de la photo que l''on peut télécharger lors de la demande de carte");
+				appliConfig.setValue("200000");
+				appliConfig.setType(TypeConfig.TEXT);
+				appliConfig.persist();
+							
+	    		esupSgcVersion = "0.1.z";
 			}
 			else {
 				log.warn("\n\n#####\n\t" +

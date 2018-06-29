@@ -14,6 +14,8 @@ import org.springframework.util.StopWatch;
 
 public class LdapGroup2UserRoleService {
 	
+	private static String MULTIPLE_ROLES_DELIMITER = ";";
+	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	public final static String ROLE_USER_NO_EDITABLE = "ROLE_USER_NO_EDITABLE";
@@ -39,8 +41,9 @@ public class LdapGroup2UserRoleService {
 		Set<String> roles = new HashSet<String>();
 		for(String groupName : groupService.getGroupsForEppn(eppn)) {
 			if(mappingGroupesRoles.containsKey(groupName)) {
-				String role = mappingGroupesRoles.get(groupName);
-				roles.add(role);
+				for(String role : mappingGroupesRoles.get(groupName).split(MULTIPLE_ROLES_DELIMITER)) {
+					roles.add(role);
+				}
 			}
 		}
 		return roles;
@@ -69,40 +72,41 @@ public class LdapGroup2UserRoleService {
 		StopWatch stopWatch = new StopWatch();
 		Set<String> allEppnUsers = new HashSet<String>(User.findAllEppns());
 		for(String groupName : mappingGroupesRoles.keySet()) {
-			String role = mappingGroupesRoles.get(groupName);
-			stopWatch.start("sync " + role);
-			
-			Set<String> eppnUsersWithRole = new HashSet<String>(User.findAllEppnsWithRole(role));
-			Set<String> ldapGroupMembers = new HashSet<String>(groupService.getMembers(groupName));
-			
-			stopWatch.stop();
-			stopWatch.start("copy " + role);
-			Set<String> eppnMembersUsers2Add = new HashSet<String>(ldapGroupMembers);
-			stopWatch.stop();
-			stopWatch.start("removeAll " + role);
-			eppnMembersUsers2Add.removeAll(eppnUsersWithRole);
-			stopWatch.stop();
-			stopWatch.start("retainAll " + role);
-			eppnMembersUsers2Add.retainAll(allEppnUsers);
-			stopWatch.stop();
-			stopWatch.start("add sync " + role);
-			for(String eppn : eppnMembersUsers2Add) {
-				if(ldapGroup2OneUserRoleService.addRole(eppn, role)) {
-					membersAdded++;
-				} 
-			}
-
-			stopWatch.stop();
-			stopWatch.start("remove sync " + role);
-			Set<String> eppnMembersUsers2Remove = new HashSet<String>(allEppnUsers);	
-			eppnMembersUsers2Remove.removeAll(ldapGroupMembers);
-			eppnMembersUsers2Remove.retainAll(eppnUsersWithRole);
-			for(String eppn : eppnMembersUsers2Remove) {
-				if(ldapGroup2OneUserRoleService.removeRole(eppn, role)) {
-					membersRemoved++;
+			for(String role : mappingGroupesRoles.get(groupName).split(MULTIPLE_ROLES_DELIMITER)) {
+				stopWatch.start("sync " + role);
+				
+				Set<String> eppnUsersWithRole = new HashSet<String>(User.findAllEppnsWithRole(role));
+				Set<String> ldapGroupMembers = new HashSet<String>(groupService.getMembers(groupName));
+				
+				stopWatch.stop();
+				stopWatch.start("copy " + role);
+				Set<String> eppnMembersUsers2Add = new HashSet<String>(ldapGroupMembers);
+				stopWatch.stop();
+				stopWatch.start("removeAll " + role);
+				eppnMembersUsers2Add.removeAll(eppnUsersWithRole);
+				stopWatch.stop();
+				stopWatch.start("retainAll " + role);
+				eppnMembersUsers2Add.retainAll(allEppnUsers);
+				stopWatch.stop();
+				stopWatch.start("add sync " + role);
+				for(String eppn : eppnMembersUsers2Add) {
+					if(ldapGroup2OneUserRoleService.addRole(eppn, role)) {
+						membersAdded++;
+					} 
 				}
+	
+				stopWatch.stop();
+				stopWatch.start("remove sync " + role);
+				Set<String> eppnMembersUsers2Remove = new HashSet<String>(allEppnUsers);	
+				eppnMembersUsers2Remove.removeAll(ldapGroupMembers);
+				eppnMembersUsers2Remove.retainAll(eppnUsersWithRole);
+				for(String eppn : eppnMembersUsers2Remove) {
+					if(ldapGroup2OneUserRoleService.removeRole(eppn, role)) {
+						membersRemoved++;
+					}
+				}
+				stopWatch.stop();
 			}
-			stopWatch.stop();
 		}
 		log.debug("Total execution time to sync ldap groups on DB " + stopWatch.getTotalTimeMillis()/1000.0 + "sec");
 		log.trace(stopWatch.prettyPrint());

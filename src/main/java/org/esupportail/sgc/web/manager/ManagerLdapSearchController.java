@@ -8,8 +8,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
@@ -21,8 +21,7 @@ import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -75,13 +74,18 @@ public class ManagerLdapSearchController {
 		return cardActionMessageService.getCardActionMessages();
 	}
 	
+	@ModelAttribute("ldapTemplatesNames")
+	public List<String> getLdapTemplatesNames() {
+		return userService.getLdapTemplatesNames();
+	}
 	
 	@RequestMapping(value="/ldapSearch")
-	public String ldapSearch(Model uiModel, @RequestParam(value="searchString", required=false) String searchString, @RequestHeader("User-Agent") String userAgent) {
+	@PreAuthorize("hasRole('ROLE_SUPER_MANAGER')")
+	public String ldapSearch(Model uiModel, @RequestParam(value="searchString", required=false) String searchString, @RequestParam(required=false) String ldapTemplateName, @RequestHeader("User-Agent") String userAgent) {
 		
 		List<User> users = new ArrayList<User>();
 		if(searchString!=null && !searchString.trim().isEmpty()) {
-			users = userService.getSgcLdapMix(searchString);	
+			users = userService.getSgcLdapMix(searchString, ldapTemplateName);	
 			Collections.sort(users, (u1, u2) -> u1.getEppn().compareTo(u2.getEppn()));
 			for(User user : users) {
 				userInfoService.setAdditionalsInfo(user, null);
@@ -97,6 +101,7 @@ public class ManagerLdapSearchController {
 	}
 	
 	@RequestMapping(value="/ldapUserForm", method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_SUPER_MANAGER')")
 	public String ldapUserForm(@RequestParam(value="eppn") String eppn, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
 		
 		User dummyUser = User.findUser(eppn);
@@ -126,6 +131,7 @@ public class ManagerLdapSearchController {
 		uiModel.addAttribute("displayFormParts", displayFormParts);
 		uiModel.addAttribute("fromLdap", isFromLdap);
 		uiModel.addAttribute("eppn", eppn);
+		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
 		
 		return "user/card-request";
 
@@ -133,6 +139,7 @@ public class ManagerLdapSearchController {
 	
 	
 	@RequestMapping(value="/ldapUserExtForm", method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_SUPER_MANAGER')")
 	public String ldapUserExtForm(@RequestParam(value="eppn") String eppn) {
 
 		Card externalCard = externalCardService.importExternalCard(eppn, null);

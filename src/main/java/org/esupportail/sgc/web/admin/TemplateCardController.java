@@ -130,6 +130,7 @@ public class TemplateCardController {
     	beforeMaj.setDescription(templateCard.getDescription());
     	beforeMaj.setCssMobileStyle(templateCard.getCssMobileStyle());
     	beforeMaj.setDateModification(currentTime);
+    	beforeMaj.setCodeBarres(templateCard.isCodeBarres());
     	beforeMaj.setModificateur(eppn);
     	beforeMaj.merge();
     	if(templateCard.getLogo().isEmpty()){

@@ -45,6 +45,20 @@
      <div class="jumbotron">
      <div class="from-group">
 	      <label for="j_username" class="control-label col-lg-3 col-md-3 col-xs-6">Recherche sur nom / prénom : </label>
+	      	<c:if test="${not empty ldapTemplatesNames}">
+	      		<select name="ldapTemplateName">
+	      			<c:forEach items="${ldapTemplatesNames}" var="ldapTemplateName"> 
+	      				<c:choose>
+	      					<c:when test="${param['ldapTemplateName'] eq ldapTemplateName}">
+	      						<option value="${ldapTemplateName}" selected="selected">${ldapTemplateName}</option>
+	      					</c:when>
+	      					<c:otherwise>
+	      						<option value="${ldapTemplateName}">${ldapTemplateName}</option>
+	      					</c:otherwise>
+	      				</c:choose>
+	      			</c:forEach>
+	      		</select>
+	      	</c:if> 
 	      	<input type="text" class="form-control"  id="searchLdap"  name="searchString" maxlength="100" minlength="3"  required="required" value="${searchItem}" />&amp;nbsp
 	      	<button type="submit" class="btn btn-success">Valider</button>
 	      </div>

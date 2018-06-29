@@ -66,6 +66,14 @@ privileged aspect TemplateCard_Roo_JavaBean {
         this.modificateur = modificateur;
     }
     
+    public Boolean TemplateCard.getCodeBarres() {
+        return this.codeBarres;
+    }
+    
+    public void TemplateCard.setCodeBarres(Boolean codeBarres) {
+        this.codeBarres = codeBarres;
+    }
+    
     public Date TemplateCard.getDateModification() {
         return this.dateModification;
     }

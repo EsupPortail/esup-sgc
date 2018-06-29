@@ -13,9 +13,7 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.roo.addon.javabean.RooJavaBean;
 
-@RooJavaBean
 public class SpelUserInfoService implements ExtUserInfoService {
 	
 	private Map<String, String> sgcParam2spelExp = new HashMap<String, String>();
@@ -27,6 +25,26 @@ public class SpelUserInfoService implements ExtUserInfoService {
 	@Resource
 	DateUtils dateUtils; 
 	
+	public Long getOrder() {
+		return order;
+	}
+
+	public void setOrder(Long order) {
+		this.order = order;
+	}
+
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
+
+	public void setSgcParam2spelExp(Map<String, String> sgcParam2spelExp) {
+		this.sgcParam2spelExp = sgcParam2spelExp;
+	}
+
 	@Override
 	public Map<String, String> getUserInfos(User user, HttpServletRequest request, final Map<String, String> userInfosInComputing) {
 		

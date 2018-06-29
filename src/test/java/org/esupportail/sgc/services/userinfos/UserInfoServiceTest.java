@@ -58,7 +58,7 @@ public class UserInfoServiceTest {
     
     protected String getEppnFromLdap() {
     	String eppn2test = null;
-		List<PersonLdap> personsLdap = ldapPersonService.searchByCommonName("A");
+		List<PersonLdap> personsLdap = ldapPersonService.searchByCommonName("A", null);
 		if(!personsLdap.isEmpty()) {
 			eppn2test = personsLdap.get(0).getEduPersonPrincipalName();
 		}

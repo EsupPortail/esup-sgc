@@ -6,9 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.domain.User;
-import org.springframework.roo.addon.javabean.RooJavaBean;
 
-@RooJavaBean
 public class ShibUserInfoService implements ExtUserInfoService {
 	
 	private Map<String, String> sgcParam2requestHeader = new HashMap<String, String>();
@@ -17,6 +15,26 @@ public class ShibUserInfoService implements ExtUserInfoService {
 
 	private String eppnFilter = ".*";
 	
+	public Long getOrder() {
+		return order;
+	}
+
+	public void setOrder(Long order) {
+		this.order = order;
+	}
+
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
+
+	public void setSgcParam2requestHeader(Map<String, String> sgcParam2requestHeader) {
+		this.sgcParam2requestHeader = sgcParam2requestHeader;
+	}
+
 	@Override
 	public Map<String, String> getUserInfos(User user, HttpServletRequest request, final Map<String, String> userInfosInComputing) {
 		Map<String, String> userInfos = new HashMap<String, String>(); 

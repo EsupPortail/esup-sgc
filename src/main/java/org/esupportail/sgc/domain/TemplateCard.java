@@ -15,11 +15,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.dbre.RooDbManaged;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.web.multipart.MultipartFile;
 
 @RooJavaBean
-@RooToString
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "TemplateCard", finders = { "findTemplateCardsByKeyEquals" })
 public class TemplateCard {
@@ -45,6 +43,9 @@ public class TemplateCard {
 
     @Column
     private String modificateur;
+    
+    @Column
+    private Boolean codeBarres= false;
 
     @Column
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
@@ -67,7 +68,11 @@ public class TemplateCard {
 
     @Transient
     private MultipartFile qrCode;
-    
+       
+    public boolean isCodeBarres() {
+        return this.codeBarres!=null && this.codeBarres;
+    }
+   
     public static List<Object> countTemplateCardByNameVersion() {
         String sql = "SELECT CONCAT(name, ' / V', num_version) as nom, count(*) from card,template_card where card.template_card= template_card.id GROUP BY nom";
 
@@ -76,4 +81,9 @@ public class TemplateCard {
 
         return q.getResultList();
     }
+
+	public String toString() {
+		return String.format("%s / V%d", this.getName(), this.getNumVersion());
+	}
+   
 }

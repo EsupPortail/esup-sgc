@@ -52,22 +52,35 @@
 					<sec:authorize access="hasRole('ROLE_MANAGER')">
 					     <spring:url value="/manager/clientjws" var="clientJwsUrl"/>
 			    		 <li class="menuTools">
-			    		 	<spring:url value="/resources/images/esup-sgc-client-icon.svg" var="clientJwsUrlIcon"/>
-			    		 	<a href="${clientJwsUrl}"><span class="glyphicon glyphicon-qrcode"><!--  --></span>Encodeur</a>
+			    		 	<a href="${clientJwsUrl}">
+			    		 		<span class="glyphicon glyphicon-qrcode"><!--  --></span>
+			    		 		Encodeur
+		    		 		</a>
 			    		 </li>
 			    		 <li class="menuTools">
-			    		 	<spring:url value="/resources/images/esup-sgc-client-icon.svg" var="clientJwsUrlIcon"/>
 			    		 	<a href="${clientJwsUrl}/r2d2">
-			    		 	<span style="background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>Encodeur - robot ZXP3</a>
+				    		 	<span style="background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
+				    		 	Encodeur - robot ZXP3
+			    		 	</a>
 			    		 </li>
 					 </sec:authorize>
 					<li class="menuTools">
-						<spring:url value="/resources/images/nfctagdroid-icon.svg" var="esupNfcTagDroidApkUrlIcon"/>
-						<a href="${esupNfcTagDroidApkUrl}"><span class="fa fa-android"><!--  --></span>Application Android</a>
+						<a href="${esupNfcTagDroidApkUrl}">
+							<span style="background-size:15px;background-image: url('/resources/images/esupnfctagdroid.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
+							Lecteur NFC pour Android (apk)
+						</a>
 					</li>
 					<li class="menuTools">
-						<spring:url value="/resources/images/nfctagdroid-icon.svg" var="esupNfcTagDesktopJarUrlIcon"/>
-						<a href="${esupNfcTagDesktopJarUrl}"><span class="fa fa-desktop"><!--  --></span>Application Java</a>
+						<a href="${esupNfcTagDesktopJarUrl}">
+							<span style="background-size:15px;background-image: url('/resources/images/esupnfctagdesktop.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
+							Lecteur NFC pour Desktop (jar)
+						</a>
+					</li>
+					<li class="menuTools">
+						<a href="${esupNfcTagKeyboardJarUrl}">
+							<span style="background-size:15px;background-image: url('/resources/images/esupnfctagkeyboard.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
+							Lecteur NFC pour emulation clavier (jar)
+						</a>
 					</li>
 	    		 </ul>
     		 </li>

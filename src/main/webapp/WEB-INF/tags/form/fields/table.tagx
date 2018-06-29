@@ -371,7 +371,7 @@
 							</a></td>
 						</c:if>
 						<c:if test="${delete}">
-							<td class="utilbox ${classDelete}"><spring:url value="${path}/${itemId}" var="delete_form_url" /> <spring:url value="/resources/images/delete.png"
+							<td class="utilbox deleteTableBtn ${classDelete}"><spring:url value="${path}/${itemId}" var="delete_form_url" /> <spring:url value="/resources/images/delete.png"
 									var="delete_image_url" /> <form:form action="${delete_form_url}" method="DELETE">
 									<spring:message arguments="${typeName}" code="entity_delete" var="delete_label" htmlEscape="false" />
 									<c:set var="delete_confirm_msg">
@@ -379,6 +379,7 @@
 											<spring:message code="entity_delete_confirm" htmlEscape="false" />
 										</spring:escapeBody>
 									</c:set>
+									<input type="hidden" id="urlPath" value="${delete_form_url}" />
 									<input alt="${fn:escapeXml(delete_label)}" class="btn btn-danger" src="${delete_image_url}" title="${fn:escapeXml(delete_label)}" type="image"
 										value="${fn:escapeXml(delete_label)}" onclick="return confirm('${delete_confirm_msg}');" />
 									<c:if test="${not empty param.page}">

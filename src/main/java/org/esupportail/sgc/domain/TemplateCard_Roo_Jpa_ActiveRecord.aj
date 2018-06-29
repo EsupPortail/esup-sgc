@@ -14,7 +14,7 @@ privileged aspect TemplateCard_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager TemplateCard.entityManager;
     
-    public static final List<String> TemplateCard.fieldNames4OrderClauseFilter = java.util.Arrays.asList("key", "name", "numVersion", "cssStyle", "cssMobileStyle", "description", "modificateur", "dateModification", "photoFileLogo", "photoFileMasque", "photoFileQrCode", "masque", "logo", "qrCode");
+    public static final List<String> TemplateCard.fieldNames4OrderClauseFilter = java.util.Arrays.asList("key", "name", "numVersion", "cssStyle", "cssMobileStyle", "description", "modificateur", "codeBarres", "dateModification", "photoFileLogo", "photoFileMasque", "photoFileQrCode", "masque", "logo", "qrCode");
     
     public static final EntityManager TemplateCard.entityManager() {
         EntityManager em = new TemplateCard().entityManager;

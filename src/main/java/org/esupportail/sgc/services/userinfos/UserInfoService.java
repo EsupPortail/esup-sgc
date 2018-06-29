@@ -230,6 +230,9 @@ public class UserInfoService {
 			} else if("editable".equalsIgnoreCase(key)) {
 				Boolean editable = "true".equalsIgnoreCase(userInfos.get(key));
 				user.setEditable(editable);
+			} else if("requestFree".equalsIgnoreCase(key)) {
+				Boolean requestFree = "true".equalsIgnoreCase(userInfos.get(key));
+				user.setRequestFree(requestFree);
 			} 
 		}
 		
@@ -279,9 +282,7 @@ public class UserInfoService {
 		card.setRecto7Printed(user.getRecto7());
 		card.setTemplateCard(user.getTemplateCard());
 		if(user.getTemplateCard() != null) {
-			String templateName = user.getTemplateCard().getName() != null ? user.getTemplateCard().getName() : "";
-			String templateVersion = String.valueOf(user.getTemplateCard().getNumVersion());
-			card.getUser().setLastCardTemplate(templateName.concat(" / V").concat(templateVersion));
+			card.getUser().setLastCardTemplatePrinted(user.getTemplateCard());
 		}
 	}
 

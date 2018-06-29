@@ -86,31 +86,50 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/QRCode")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String>  getQRCode(@RequestParam Long cardId, HttpServletResponse response) throws WriterException, IOException {
-
+	public ResponseEntity<String>  getQRCode(@RequestParam Long cardId, HttpServletResponse response) throws WriterException, IOException, SQLException {
 		Card card = Card.findCard(cardId);
+		PhotoFile photoFile = null;
+		boolean isCodeBarres = false;
+		if( card.getTemplateCard()!=null){
+			isCodeBarres = card.getTemplateCard().isCodeBarres();
+			photoFile = card.getTemplateCard().getPhotoFileQrCode();
+		}else if(card.getUserAccount().getTemplateCard()!=null){
+			isCodeBarres = card.getUserAccount().getTemplateCard().isCodeBarres();
+			photoFile = card.getUserAccount().getTemplateCard().getPhotoFileQrCode();
+		}
+		
 		String value = card.getQrcode();
 		
 		if(value != null) {
-			
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "image/svg+xml");
-			
-			Map<EncodeHintType, Object> hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
-			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-			hints.put(EncodeHintType.MARGIN, 0);	
-			hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-			
-			BitMatrix matrix = new QRCodeWriter().encode(value, BarcodeFormat.QR_CODE, 100, 100, hints); 
-			
-			if("SVG".equalsIgnoreCase(appliConfigService.getQrcodeFormat())) {
+			if(!isCodeBarres){
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Content-Type", "image/svg+xml");
+				
+				Map<EncodeHintType, Object> hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+				hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+				hints.put(EncodeHintType.MARGIN, 0);	
+				hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+				
+				BitMatrix matrix = new QRCodeWriter().encode(value, BarcodeFormat.QR_CODE, 100, 100, hints); 
+				
+				if("SVG".equalsIgnoreCase(appliConfigService.getQrcodeFormat())) {
+						
+					return new ResponseEntity<String>(cardService.getQrCodeSvg(value), headers, HttpStatus.OK);	
 					
-				return new ResponseEntity<String>(cardService.getQrCodeSvg(value), headers, HttpStatus.OK);	
-				
-			} else {
-				
-				headers.add("Content-Type", "image/png");
-				MatrixToImageWriter.writeToStream(matrix, "PNG", response.getOutputStream());
+				} else {
+					
+					headers.add("Content-Type", "image/png");
+					MatrixToImageWriter.writeToStream(matrix, "PNG", response.getOutputStream());
+				}
+			}else{
+				if(photoFile != null){
+					Long size = photoFile.getFileSize();
+					String contentType = photoFile.getContentType();
+					response.setContentType(contentType);
+					response.setContentLength(size.intValue());
+					IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
+					log.debug("code-barres is used for this card " + cardId);
+				}
 			}
 
 		}
@@ -229,12 +248,12 @@ public class ManagerCardControllerNoHtml {
 	
 	@RequestMapping(value="/searchLdap")
 	@ResponseBody
-	public  String searchLdap(@RequestParam(value="searchString") String searchString) {
+	public  String searchLdap(@RequestParam(value="searchString") String searchString, @RequestParam(required=false) String ldapTemplateName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<PersonLdap> ldapList = new ArrayList<PersonLdap>();
 		if(!searchString.trim().isEmpty()) {
-			ldapList = ldapPersonService.searchByCommonName(searchString);
+			ldapList = ldapPersonService.searchByCommonName(searchString, ldapTemplateName);
 		}
 		
 		String flexJsonString = "Aucune info à récupérer";

@@ -12,6 +12,7 @@
 			var lastPhotoUrl = '${lastPhotoUrl}';
 			var isISmartPhone = '${isISmartPhone}';
 			var fromLdap ='${fromLdap}';
+			var photoSizeMax ='${photoSizeMax}';
 		</script>
 		<h2>Demande de carte</h2>
 		<c:choose>

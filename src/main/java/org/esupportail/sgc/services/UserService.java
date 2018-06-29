@@ -44,7 +44,7 @@ public class UserService {
 	}
 
     public boolean isFreeRenewal(User user){
-		return user.isRequestFree() && !isFirstRequest(user) && !isOutOfDueDate(user) && !hasRequestCard(user) && !user.hasExternalCard();
+		return user.isRequestFree() && !isFirstRequest(user) && !isOutOfDueDate(user) && !hasRequestCard(user) && !user.getHasExternalCard();
     }
 
 	public boolean isPaidRenewal(User user){
@@ -63,7 +63,7 @@ public class UserService {
 			displayRenewalForm = true;
 		}
 		
-		if(user != null && user.hasExternalCard()) {
+		if(user != null && user.getHasExternalCard()) {
 			displayRenewalForm = false;
 		}
 		
@@ -90,11 +90,11 @@ public class UserService {
 	}
 	
 	public boolean isEsupManager(User user) {
-		return user.getRoles().contains("ROLE_MANAGER");
+		return user.getRoles().contains("ROLE_SUPER_MANAGER");
 	}
 
 	public Boolean canPaidRenewal(User user) {
-		if(user != null && user.hasExternalCard()) {
+		if(user != null && user.getHasExternalCard()) {
 			return false;
 		}
 		return !isOutOfDueDate(user) && !user.isRequestFree() && !isPaidRenewal(user) && !hasRequestCard(user);
@@ -177,11 +177,11 @@ public class UserService {
 		
 	}
 	
-	public List<User> getSgcLdapMix(String cn){
+	public List<User> getSgcLdapMix(String cn, String ldapTemplateName){
 		
 		ArrayList<User> users = new ArrayList<User>();
 		
-		List<PersonLdap> ldapResults =   ldapPersonService.searchByCommonName(cn);
+		List<PersonLdap> ldapResults =   ldapPersonService.searchByCommonName(cn, ldapTemplateName);
 		
 		for(PersonLdap item: ldapResults){
 			if(item.getEduPersonPrincipalName() !=null && !item.getEduPersonPrincipalName().isEmpty()) {
@@ -201,6 +201,10 @@ public class UserService {
 		}
 		
 		return users;
+	}
+
+	public List<String> getLdapTemplatesNames() {
+		return ldapPersonService.getLdapTemplatesNames();
 	}
 	
 }

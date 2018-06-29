@@ -201,6 +201,7 @@ public class UserCardController {
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
 		uiModel.addAttribute("fromLdap", false);
+		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
 		return "user/card-request";
 	}
 	

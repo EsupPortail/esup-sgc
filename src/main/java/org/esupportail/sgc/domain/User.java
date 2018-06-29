@@ -15,8 +15,11 @@ import javax.persistence.ElementCollection;
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Query;
 import javax.persistence.Transient;
@@ -137,7 +140,8 @@ public class User {
 	
 	private String templateKey;
 	
-	private String lastCardTemplate;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private TemplateCard lastCardTemplatePrinted;
 
 	@ElementCollection
     @CollectionTable(name="roles", joinColumns=@JoinColumn(name="user_account"))
@@ -151,7 +155,7 @@ public class User {
 		return getName() + " " + getFirstname();
 	}
 	
-	public Boolean hasExternalCard() {
+	public Boolean getHasExternalCard() {
 		for(Card card : cards) {
 			if(card.getExternal()) {
 				return true;

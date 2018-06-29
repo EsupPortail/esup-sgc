@@ -113,7 +113,7 @@
                                 <dt>template</dt>
                                 <dd>${user.templateKey}</dd>
                                 <dt>template de la dernière carte</dt>
-                                <dd>${user.lastCardTemplate}</dd>
+                                <dd>${user.lastCardTemplatePrinted}</dd>
                                 <dt>recto1</dt>
                                 <dd>${user.recto1}</dd>
                                 <dt>recto2</dt>
@@ -440,7 +440,7 @@
                                                                 <i>Aucun thème défini</i>
                                                             </c:when>
                                                             <c:otherwise>
-                                                    			${card.templateCard.name} / V${card.templateCard.numVersion}
+                                                    			${card.templateCard}
                                                     		</c:otherwise>
                                                         </c:choose>
                                                     </dd>

@@ -114,7 +114,7 @@ public class CardService {
 		
 		boolean displayCnil = false;
 		
-		if(type!=null && appliConfigService.displayFormCnil().contains(type)){
+		if(type!=null && appliConfigService.userTypes2displayFormCnil().contains(type)){
 			displayCnil = true;
 		}
 		
@@ -126,7 +126,7 @@ public class CardService {
 		boolean displayCrous = false;
 		
 		// When crous is accepted ones, we can't unaccept it
-		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.displayFormCrous().contains(user.getUserType())){
+		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.userTypes2displayFormCrous().contains(user.getUserType())){
 			displayCrous = true;
 		}
 		
@@ -137,7 +137,7 @@ public class CardService {
 		
 		boolean enableCrous = false;
 		
-		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.isCrousEnabled().contains(user.getUserType())){
+		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.userTypes4isCrousEnabled().contains(user.getUserType())){
 			enableCrous = true;
 		}
 		
@@ -148,7 +148,7 @@ public class CardService {
 		
 		boolean displayEC = false;
 		
-		if((user==null || !user.getEuropeanStudentCard()) && user.getUserType()!=null && appliConfigService.displayFormEuropeanCard().contains(user.getUserType())){
+		if((user==null || !user.getEuropeanStudentCard()) && user.getUserType()!=null && appliConfigService.userTypes2displayFormEuropeanCard().contains(user.getUserType())){
 			displayEC = true;
 		}
 		
@@ -159,7 +159,7 @@ public class CardService {
 		
 		boolean enableEC = false;
 		
-		if((user==null || !user.getEuropeanStudentCard()) && user.getUserType()!=null && appliConfigService.isEuropeanCardEnabled().contains(user.getUserType())){
+		if(user != null && user.getEuropeanStudentCard() && user.getUserType()!=null && appliConfigService.userTypes4isEuropeanCardEnabled().contains(user.getUserType())){
 			enableEC = true;
 		}
 		
@@ -170,7 +170,7 @@ public class CardService {
 		
 		boolean displayAdresse = false;
 		
-		if(type!=null && appliConfigService.displayFormAdresse().contains(type)){
+		if(type!=null && appliConfigService.userTypes2displayFormAdresse().contains(type)){
 			displayAdresse = true;
 		}
 		
@@ -181,7 +181,7 @@ public class CardService {
 		
 		boolean displayRules = false;
 		
-		if(type!=null && appliConfigService.displayFormRules().contains(type)){
+		if(type!=null && appliConfigService.userTypes2displayFormRules().contains(type)){
 			displayRules = true;
 		}
 		

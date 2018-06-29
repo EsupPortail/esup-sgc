@@ -18,9 +18,11 @@
         <button class="btn btn-info navbar-btn navbar-right hidden-lg hidden-md" data-target="#searchCollapse" data-toggle="collapse" type="button">
             <span class="glyphicon glyphicon-search"/>
         </button>
-	    <a class="btn btn-info navbar-btn navbar-right" href="${ldapUrl}" id="btnLdap" title="Recherche Ldap">
-            <span class="glyphicon glyphicon-search"/>
-        </a>        
+        <sec:authorize access="hasRole('ROLE_SUPER_MANAGER')">
+		    <a class="btn btn-info navbar-btn navbar-right" href="${ldapUrl}" id="btnLdap" title="Recherche Ldap">
+	            <span class="glyphicon glyphicon-search"/>
+	        </a>   
+        </sec:authorize>   
     </h2>
     <jsp:include page="includes/megamenu.jspx"/>
     <jsp:include page="includes/header.jspx"/>
