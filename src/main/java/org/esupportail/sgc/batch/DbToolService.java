@@ -99,7 +99,7 @@ public class DbToolService {
 			}
 			if("0.1.y".equals(esupSgcVersion)) {
 				
-				String sqlUpdate = "alter table user_account drop column last_card_template;";
+				String sqlUpdate = "alter table user_account drop column if exists last_card_template;";
 				sqlUpdate += "alter table user_account disable trigger tsvectorupdateuser;";
 				sqlUpdate += "with cards as (select distinct on(request_date) template_card, eppn, request_date from card order by request_date desc) update user_account set last_card_template_printed = cards.template_card from cards where cards.eppn = user_account.eppn;";
 				sqlUpdate += "alter table user_account enable trigger tsvectorupdateuser;";
@@ -110,12 +110,14 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				
-				AppliConfig appliConfig = new AppliConfig();
-				appliConfig.setKey("PHOTO_SIZE_MAX");
-				appliConfig.setDescription("Taille maximale (en octets) de la photo que l''on peut télécharger lors de la demande de carte");
-				appliConfig.setValue("200000");
-				appliConfig.setType(TypeConfig.TEXT);
-				appliConfig.persist();
+				if(AppliConfig.findAppliConfigsByKeyEquals("PHOTO_SIZE_MAX").getResultList().isEmpty()) {
+					AppliConfig appliConfig = new AppliConfig();
+					appliConfig.setKey("PHOTO_SIZE_MAX");
+					appliConfig.setDescription("Taille maximale (en octets) de la photo que l''on peut télécharger lors de la demande de carte");
+					appliConfig.setValue("200000");
+					appliConfig.setType(TypeConfig.TEXT);
+					appliConfig.persist();
+				}
 							
 	    		esupSgcVersion = "0.1.z";
 			}
@@ -125,6 +127,9 @@ public class DbToolService {
 	    				"\n#####\n");
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
+			if(appliVersion.getVersion() == null) {
+				appliVersion.setVersion(0);
+			}
 			appliVersion.merge();
 		} catch(Exception e) {
 			throw new RuntimeException("Erreur durant le mise à jour de la base de données", e);
