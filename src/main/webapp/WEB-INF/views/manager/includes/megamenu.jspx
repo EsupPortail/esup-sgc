@@ -41,13 +41,22 @@
 				    </spring-form:select>
 			    </div>
 			  	<div class="form-group">
+			  	 	<label style="display:none" >-- Dernier thème --</label>
+			  		<spring-form:select path="searchBean.lastTemplateCardPrinted"  id="searchBeanLastTemplateCardPrinted">
+			  			<spring-form:option value="" data-placeholder="true"></spring-form:option>
+					 	<c:forEach items="${lastTemplateCardsPrinted}" var="lastTemplateCardPrinted">
+					  		<spring-form:option value="${lastTemplateCardPrinted.id}">${lastTemplateCardPrinted}</spring-form:option>
+					  	</c:forEach>
+				    </spring-form:select>
+			  	</div>	  
+			  	<div class="form-group">
 			  	 	<label style="display:none" >-- Statut --</label>
 			  		<spring-form:select path="searchBean.editable"  id="searchBeanEditable">
 			  				<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<spring-form:option value="true">Editable</spring-form:option>
 					  		<spring-form:option value="false">Non editable</spring-form:option>
 				    </spring-form:select>
-			  	</div>	    
+			  	</div>	 
 			    <div class="form-group">
 			    	<label style="display:none" >-- Gestion --</label>
 			  		<spring-form:select path="searchBean.ownOrFreeCard" id="searchBeanOwnOrFreeCard">

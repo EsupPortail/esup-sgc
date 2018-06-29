@@ -632,6 +632,19 @@ public class User {
 		List<String> distinctResults = q.getResultList();
 		return distinctResults;
 	}
+
+	public static List<TemplateCard> findDistinctLastTemplateCardsPrinted() {
+		List<TemplateCard> templateCards = new ArrayList<TemplateCard>();
+		EntityManager em = User.entityManager();
+		Query q = em.createNativeQuery("SELECT DISTINCT last_card_template_printed FROM user_account");
+		List<BigInteger> last_card_template_ids = q.getResultList();
+		for(BigInteger id : last_card_template_ids) {
+			if(id != null) {
+				templateCards.add(TemplateCard.findTemplateCard(id.longValue()));
+			}
+		}	
+		return templateCards;
+	}
     
 }
 

@@ -6,6 +6,7 @@ package org.esupportail.sgc.web.manager;
 import java.util.HashMap;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.FlagAdresse;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.web.manager.CardSearchBean;
 
 privileged aspect CardSearchBean_Roo_JavaBean {
@@ -80,6 +81,14 @@ privileged aspect CardSearchBean_Roo_JavaBean {
     
     public void CardSearchBean.setNbRejets(Long nbRejets) {
         this.nbRejets = nbRejets;
+    }
+    
+    public TemplateCard CardSearchBean.getLastTemplateCardPrinted() {
+        return this.lastTemplateCardPrinted;
+    }
+    
+    public void CardSearchBean.setLastTemplateCardPrinted(TemplateCard lastTemplateCardPrinted) {
+        this.lastTemplateCardPrinted = lastTemplateCardPrinted;
     }
     
     public HashMap<Integer, String> CardSearchBean.getFreeField() {

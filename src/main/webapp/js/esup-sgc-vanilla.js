@@ -1140,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    });
 		};
     }
-    var idSlimSelect = ['searchBeanAdress','searchBeanEtat','searchBeanEditable', 'searchBeanOwnOrFreeCard', 'searchBeanNbCards', 'searchBeanNbRejets', 'searchBeanFlagAdresse'];
+    var idSlimSelect = ['searchBeanAdress','searchBeanEtat','searchBeanEditable', 'searchBeanOwnOrFreeCard', 'searchBeanNbCards', 'searchBeanNbRejets', 'searchBeanFlagAdresse', 'searchBeanLastTemplateCardPrinted'];
     //Recherche simple
     idSlimSelect.forEach(function(element, i) {
     	if(document.getElementById(element) != null ){

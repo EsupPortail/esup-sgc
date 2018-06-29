@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.FlagAdresse;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 
 @RooJavaBean
@@ -26,6 +27,8 @@ public class CardSearchBean {
 	private Long nbCards;
 	
 	private Long nbRejets;
+	
+	private TemplateCard lastTemplateCardPrinted;
 	
 	HashMap<Integer, String> freeField;
 	

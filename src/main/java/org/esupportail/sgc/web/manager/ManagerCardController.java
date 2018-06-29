@@ -348,6 +348,7 @@ public class ManagerCardController {
         
     	uiModel.addAttribute("types", userInfoService.getListExistingType());
     	uiModel.addAttribute("etats", cardEtatService.getDistinctEtats());
+    	uiModel.addAttribute("lastTemplateCardsPrinted", userInfoService.getDistinctLastTemplateCardsPrinted());
     	List<BigInteger> nbCards = User.getDistinctNbCards();
 		uiModel.addAttribute("nbCards", nbCards);
 		List<BigInteger> nbRejets = Card.getDistinctNbRejets();
