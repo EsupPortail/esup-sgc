@@ -574,6 +574,10 @@ public class Card {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("address").in(searchBean.getAddress()));
         }
+        if (searchBean.getLastTemplateCardPrinted() != null) {
+        	Join<Card, User> u = c.join("userAccount");
+            predicates.add(u.get("lastCardTemplatePrinted").in(searchBean.getLastTemplateCardPrinted()));
+        }
         if (searchBean.getEtat() != null) {
             predicates.add(criteriaBuilder.equal(c.get("etat"), searchBean.getEtat()));
         }
