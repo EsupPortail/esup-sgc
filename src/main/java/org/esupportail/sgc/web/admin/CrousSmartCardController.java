@@ -62,7 +62,7 @@ public class CrousSmartCardController {
 			crousSmartCardService.consumeCsv(stream, inverseCsn);
 		}
 
-		return "redirect:/admin/crouscards";
+		return "redirect:/admin/crouscards?page=1&size=10";
 	}
 
 	

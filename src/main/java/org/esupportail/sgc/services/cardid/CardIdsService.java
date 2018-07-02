@@ -44,9 +44,9 @@ public class CardIdsService {
 		return cardIdServices.get(appName).decodeCardId(desfireId);
 	}
 	
-	public void generateQrcode4Card(Card card) {
-		escUidFactoryService.generateEscnUid(card);
+	public void generateQrcode4Card(Card card) {		
 		if(appliConfigService.isQrCodeEscEnabled()) {
+			escUidFactoryService.generateEscnUid(card);
 			card.setQrcode(escUidFactoryService.getQrCodeUrl(card));
 		} else {
 			card.setQrcode(card.getEppn());

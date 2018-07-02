@@ -1224,14 +1224,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	    			  try {
 	    				  var data = JSON.parse(this.response);
 							empty("searchBeanAdress");
-							if(data.length>1){
+							if(Object.keys(data).length>1){
 								searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");  
 							}
-							data.forEach(function(value, index) {
-				        		searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='"+ value + "'>" + value + "</option>");  
-				        	});
+							for(let key in data) {
+				        		searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='"+ key + "'>" + data[key] + "</option>");  
+				        	};
 	    			  }
 	    			  catch(e){
+	    				  console.log(e);
 	    			  }
 	    		  }
 	    		};

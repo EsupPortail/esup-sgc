@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -70,6 +72,9 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	LdapPersonService ldapPersonService;
+	
+	@Resource
+	MemoryMapStringEncodingUtils urlEncodingUtils;
 	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
@@ -161,18 +166,16 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/filterAdress", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody
 	@Transactional
-	public String filtrerAdresse(@RequestParam(value="etat") String etat, @RequestParam(value="tabType") String tabType) {
-		
-		String flexJsonString = "Aucune donnée récupérable";
+	public Map<String, String> filtrerAdresse(@RequestParam(value="etat") String etat, @RequestParam(value="tabType") String tabType) {
+		Map<String, String> adressesMap = new HashMap<String, String>();
 		try {
 			List<String> adresses = userInfoService.getListAdresses(tabType, etat);
-			JSONSerializer serializer = new JSONSerializer();
-			flexJsonString = serializer.serialize(adresses);
+			adressesMap = urlEncodingUtils.getMapWithEncodedString(adresses);
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les données", e);
 		}
 		
-    	return flexJsonString;
+    	return adressesMap;
 	}
 	
 	@RequestMapping(value="/getCrousRightHolder", headers = "Accept=application/json; charset=utf-8")
@@ -248,24 +251,14 @@ public class ManagerCardControllerNoHtml {
 	
 	@RequestMapping(value="/searchLdap")
 	@ResponseBody
-	public  String searchLdap(@RequestParam(value="searchString") String searchString, @RequestParam(required=false) String ldapTemplateName) {
+	public List<PersonLdap> searchLdap(@RequestParam(value="searchString") String searchString, @RequestParam(required=false) String ldapTemplateName) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<PersonLdap> ldapList = new ArrayList<PersonLdap>();
 		if(!searchString.trim().isEmpty()) {
 			ldapList = ldapPersonService.searchByCommonName(searchString, ldapTemplateName);
 		}
-		
-		String flexJsonString = "Aucune info à récupérer";
-		try {
-			JSONSerializer serializer = new JSONSerializer();
-			flexJsonString = serializer.deepSerialize(ldapList);
-			
-		} catch (Exception e) {
-			log.warn("Impossible de récupérer les infos ldap" );
-		}
-		
-		return flexJsonString;
+		return ldapList;
    }
 }
 

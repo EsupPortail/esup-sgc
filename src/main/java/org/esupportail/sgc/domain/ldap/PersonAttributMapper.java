@@ -17,9 +17,6 @@ public class PersonAttributMapper implements AttributesMapper {
 		if (null!=attrs.get("sn")) {
 			p.setSn(attrs.get("sn").get().toString());
 		}
-		if (null!=attrs.get("uid")) {
-			p.setUid(attrs.get("uid").get().toString());
-		}
 		if (null!=attrs.get("cn")) {
 			p.setCn(attrs.get("cn").get().toString());
 		}
@@ -40,6 +37,5 @@ public class PersonAttributMapper implements AttributesMapper {
 		}
 		return p;
 	}
-	
-	
 }
+

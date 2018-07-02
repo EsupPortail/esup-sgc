@@ -18,6 +18,7 @@ import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
@@ -80,6 +81,9 @@ public class CardEtatService {
 	@Resource
 	UserInfoService userInfoService;
 	
+	@Autowired(required = false)
+	CardIdsService cardIdsService;
+	
 	@Transactional
 	public void disableCardWithMotif(Card card, MotifDisable motifDisable, boolean actionFromAnAdmin) {
 		card.setMotifDisable(motifDisable);
@@ -114,7 +118,7 @@ public class CardEtatService {
 		if(!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat)) {
 			return false;
 		}
-		
+
 		// only one card can be enabled at any time for a user
 		if(Etat.ENABLED.equals(etat)) {
 			User user = card.getUser();
@@ -124,6 +128,14 @@ public class CardEtatService {
 				}
 			}
 		}
+		
+		if(Etat.IN_PRINT.equals(etat) && cardIdsService!=null) {
+			// be sure that card have qrcode : 
+			if(card.getQrcode() == null || card.getQrcode().isEmpty()) {
+				cardIdsService.generateQrcode4Card(card);
+			}
+		}
+		
 		if(Etat.IN_PRINT.equals(card.getEtat()) && (Etat.PRINTED.equals(etat) || Etat.ENCODED.equals(etat))) {
 			userInfoService.setPrintedInfo(card);
 		}		

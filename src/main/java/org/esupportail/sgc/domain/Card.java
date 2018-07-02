@@ -492,7 +492,7 @@ public class Card {
 	    		}
         	}
         }
-        if (!searchBean.getAddress().isEmpty()) {
+        if (searchBean.getAddress()!=null && !searchBean.getAddress().isEmpty()) {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("address").in(searchBean.getAddress()));
         }
@@ -570,7 +570,7 @@ public class Card {
 	    		}
         	}
         }
-        if (!searchBean.getAddress().isEmpty()) {
+        if (searchBean.getAddress()!=null && !searchBean.getAddress().isEmpty()) {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("address").in(searchBean.getAddress()));
         }

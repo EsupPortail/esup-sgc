@@ -38,6 +38,7 @@ import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
@@ -109,6 +110,9 @@ public class ManagerCardController {
 	
 	@Resource
 	FormService formService;
+	
+	@Resource
+	MemoryMapStringEncodingUtils urlEncodingUtils;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -336,10 +340,15 @@ public class ManagerCardController {
     			}
     		}
     	}
+    	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
     	if(index !=null && "first".equals(index)){
 	    	searchBean.setEditable(preferencesService.getPrefValue(eppn, "EDITABLE"));
 	    	searchBean.setOwnOrFreeCard(Boolean.valueOf(preferencesService.getPrefValue(eppn, "OWNORFREECARD")));
     	}
+    	if(searchBean.getLastTemplateCardPrinted()!=null && searchBean.getLastTemplateCardPrinted().getId()==null) {
+    		searchBean.setLastTemplateCardPrinted(null);
+    	}
+    	
     	sizeNo = size == null ? 10 : size.intValue();
     	firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
     	long countCards = Card.countFindCards(searchBean, eppn);
@@ -376,11 +385,15 @@ public class ManagerCardController {
     		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
     	}
     	uiModel.addAttribute("size",  size);
+    	List<String> addresses = null;
     	if(searchBean.getEtat()!=null){
-    		uiModel.addAttribute("addresses", getFilteredAdresses(searchBean.getType(),searchBean.getEtat().name()));
+    		addresses = getFilteredAdresses(searchBean.getType(),searchBean.getEtat().name());
     	}else{
-    		uiModel.addAttribute("addresses", userInfoService.getListAdresses(searchBean.getType(),null));
+    		addresses = userInfoService.getListAdresses(searchBean.getType(), null);
     	}
+    	Map<String, String> addressesMap = urlEncodingUtils.getMapWithEncodedString(addresses);
+    	uiModel.addAttribute("addresses", addressesMap);
+    	searchBean.setAddress(urlEncodingUtils.encodeString(searchBean.getAddress()));
 		uiModel.addAttribute("eppn", eppn);
     	addDateTimeFormatPatterns(uiModel);
     	

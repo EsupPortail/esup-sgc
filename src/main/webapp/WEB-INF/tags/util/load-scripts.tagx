@@ -12,7 +12,7 @@
 	<spring:url value="/resources/css/suneditor.css" var="suneditor_css_url" />
 	<spring:url value="/resources/css/dragula.min.css" var="dragula_css_url" />
 	<spring:url value="/resources/css/slimselect.min.css" var="slimselect_css_url" />
-	<spring:url value="/resources/css/esup-sgc.min.css" var="esupSgc_css_url" />
+	<spring:url value="/resources/css/esup-sgc.css" var="esupSgc_css_url" />
 
 	<spring:url value="/resources/js/bootstrap-native-custom.min.js" var="bootstrap_js__url" />
 	<spring:url value="/resources/js/ezcrop.js" var="ezcrop_js_url" />
@@ -25,7 +25,7 @@
 	<spring:url value="/resources/js/dragula.min.js" var="dragula_js_url" />
 	<spring:url value="/resources/js/webcam.min.js" var="webcam_url" />
 	<spring:url value="/resources/js/slimselect.min.js" var="slimselect_js_url" />
-	<spring:url value="/resources/js/esup-sgc-vanilla.min.js" var="esupSgcVanilla_js_url" />
+	<spring:url value="/resources/js/esup-sgc-vanilla.js" var="esupSgcVanilla_js_url" />
 	<spring:url value="/resources/images/favicon.png" var="favicon" />
 	
 	<link rel="SHORTCUT ICON" href="${favicon}" />
