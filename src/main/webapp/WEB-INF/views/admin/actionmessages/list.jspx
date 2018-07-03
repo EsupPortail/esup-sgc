@@ -10,7 +10,7 @@
     </h2>
     <page:list id="pl_org_esupportail_sgc_domain_CardActionMessage" items="${cardactionmessages}" z="user-managed">
         <table:table data="${cardactionmessages}" id="l_org_esupportail_sgc_domain_CardActionMessage" path="/admin/actionmessages" view="false" z="user-managed">
-            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" property="etatInitial" sort="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" property="etatInitial" sort="true" z="user-managed" />
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_etatFinal" property="etatFinal" sort="true" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_message" maxLength="500" property="message" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_auto" property="auto" sort="true" z="user-managed"/>

@@ -39,7 +39,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 								<button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#crousCollapse">Modifier</button>
 							</c:if>
 						</dd>
-						<c:if test="${displayFormParts['enableEuropeanCard']}">
+						<c:if test="${displayFormParts['displayEuropeanCard'] or user.europeanStudentCard}">
 							<dt>Carte européenne :</dt>
 							<dd>${user.europeanStudentCard ? 'Oui' : 'non'} &amp;nbsp
 								<c:if test="${!user.europeanStudentCard}">
@@ -104,16 +104,14 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 							</div>
 						</form>
 					</div>
-					<c:if test="${isEuropeanStudent}">
-						<div class="collapse" id="europeanCollapse">
-							<spring:url value="/user/enableEuropeanCard" var="europeanUrl" />
-							<form action="${europeanUrl}" method="post" id="europeanForm">
-								<div class="alert alert-warning"><strong>Je souhaite adhérer au projet de carte étudiante européenne. </strong>
-									<input type="submit" class="btn btn-success" value="Valider"/>
-								</div>
-							</form>
-						</div>
-					</c:if>
+					<div class="collapse" id="europeanCollapse">
+						<spring:url value="/user/enableEuropeanCard" var="europeanUrl" />
+						<form action="${europeanUrl}" method="post" id="europeanForm">
+							<div class="alert alert-warning"><strong>Je souhaite adhérer au projet de carte étudiante européenne. </strong>
+								<input type="submit" class="btn btn-success" value="Valider"/>
+							</div>
+						</form>
+					</div>
 					<c:if test="${not empty payboxList}">
 					 <h4>Historique des paiements</h4>
 						<table class="table table-striped" id="tablePaybox">

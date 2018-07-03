@@ -148,6 +148,7 @@ public class CardService {
 		
 		boolean displayEC = false;
 		
+		// When escr is accepted ones, we can't unaccept it
 		if((user==null || !user.getEuropeanStudentCard()) && user.getUserType()!=null && appliConfigService.userTypes2displayFormEuropeanCard().contains(user.getUserType())){
 			displayEC = true;
 		}
