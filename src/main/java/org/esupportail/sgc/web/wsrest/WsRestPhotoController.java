@@ -125,7 +125,9 @@ public class WsRestPhotoController extends AbstractRestController {
 				}
 			} else {
 				ClassPathResource noImg = new ClassPathResource(ManagerCardController.IMG_INTERDIT);
-				return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), HttpStatus.FORBIDDEN);
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.IMAGE_PNG);
+				return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), headers, HttpStatus.FORBIDDEN);
 			}
 		} else {
 			return new ResponseEntity("No photo found for this request.", HttpStatus.NOT_FOUND);
