@@ -17,7 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,8 +125,7 @@ public class WsRestPhotoController extends AbstractRestController {
 				}
 			} else {
 				ClassPathResource noImg = new ClassPathResource(ManagerCardController.IMG_INTERDIT);
-				IOUtils.copy(noImg.getInputStream(), response.getOutputStream());
-				return new ResponseEntity(noImg.getInputStream(), HttpStatus.FORBIDDEN);
+				return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), HttpStatus.FORBIDDEN);
 			}
 		} else {
 			return new ResponseEntity("No photo found for this request.", HttpStatus.NOT_FOUND);
