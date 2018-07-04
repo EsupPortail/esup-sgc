@@ -13,7 +13,8 @@
 	<jsp:directive.attribute name="link" type="java.lang.Boolean" required="false" rtexprvalue="true" description="Indicate if the contents of this tag and all enclosed tags should be rendered (default 'true')" />
 	<jsp:directive.attribute name="renderLabel" type="java.lang.Boolean" required="false" rtexprvalue="true" description="Indicate if the contents of the label should be rendered (default 'true')" />
 	<jsp:directive.attribute name="z" type="java.lang.String" required="false" description="Used for checking if element has been modified (to recalculate simply provide empty string value)" />
-
+  	<jsp:directive.attribute name="translationPrefix" type="java.lang.String"  required="false" description="spring message - translation prefix" />	
+  
 	<c:if test="${empty render or render}">
 		<c:if test="${not empty object and empty label}">
 			<spring:message code="label_${fn:toLowerCase(fn:substringAfter(id,'_'))}" var="label" htmlEscape="false" />
@@ -58,6 +59,10 @@
 				</c:when>
 				<c:when test="${link}">
 					<a href="${object[field]}"><spring:eval expression="object[field]" /></a>
+				</c:when>
+				<c:when test="${not empty translationPrefix}">
+					<spring:eval expression="object[field]" var="txt" />
+					<spring:message code="${translationPrefix}.${txt}"/>
 				</c:when>
 				<c:otherwise>
 					<spring:eval expression="object[field]" />

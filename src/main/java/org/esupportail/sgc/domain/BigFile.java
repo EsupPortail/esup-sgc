@@ -1,11 +1,14 @@
 package org.esupportail.sgc.domain;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.SQLException;
 
 import javax.persistence.Basic;
 import javax.persistence.FetchType;
 
+import org.apache.commons.io.IOUtils;
 import org.hibernate.LobHelper;
 import org.hibernate.Session;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -38,6 +41,11 @@ public class BigFile {
         Session session = (Session) this.entityManager.getDelegate(); 
         LobHelper helper = session.getLobHelper(); 
         this.binaryFile = helper.createBlob(bytes); 
+    }
+    
+    public byte[] getBinaryFileasBytes() throws IOException, SQLException {		
+        Blob blob = this.getBinaryFile();
+        return IOUtils.toByteArray(blob.getBinaryStream());
     }
     
 }

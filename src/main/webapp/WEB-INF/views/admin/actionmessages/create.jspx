@@ -10,7 +10,7 @@
                 <select class="form-control" name="etatInitial">
                     <option value=""/>
                     <c:forEach items="${etats}" var="etat">
-                        <option value="${etat}">${etat}</option>
+                        <option value="${etat}"><spring:message code="card.label.${etat}"/></option>
                     </c:forEach>
                 </select>
             </div>
@@ -20,7 +20,7 @@
             <div class="col-lg-6">
                 <select class="form-control" name="etatFinal">
                     <c:forEach items="${etats}" var="etat">
-                        <option value="${etat}">${etat}</option>
+                        <option value="${etat}"><spring:message code="card.label.${etat}"/></option>
                     </c:forEach>
                 </select>
             </div>

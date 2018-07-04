@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+<div xmlns:spring="http://www.springframework.org/tags" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <page:show id="ps_org_esupportail_sgc_domain_CardActionMessage" object="${cardactionmessage}" path="/admin/actionmessages" z="owPNITNIjgPLwXp1bErsm68Zusg=">
-        <field:display field="etatFinal" id="s_org_esupportail_sgc_domain_CardActionMessage_etatFinal" object="${cardactionmessage}" z="KqfFLBfFpuMyt+9xC89BNqJMkug="/>
+    	<field:display field="etatInitial" id="s_org_esupportail_sgc_domain_CardActionMessage_etatInitial" object="${cardactionmessage}" z="TvmQpXQjURuYTCYhVdN75B39orw=" translationPrefix="card.label"/>
+        <field:display field="etatFinal" id="s_org_esupportail_sgc_domain_CardActionMessage_etatFinal" object="${cardactionmessage}" z="KqfFLBfFpuMyt+9xC89BNqJMkug=" translationPrefix="card.label"/>
         <field:display field="message" id="s_org_esupportail_sgc_domain_CardActionMessage_message" object="${cardactionmessage}" z="gBjOS9XeBn/rfBZAI4TGCIaN0K8="/>
         <field:display field="auto" id="s_org_esupportail_sgc_domain_CardActionMessage_auto" object="${cardactionmessage}" z="N7a946U1870ztWp4aY0RXdXFV9g="/>
         <field:display field="defaut" id="s_org_esupportail_sgc_domain_CardActionMessage_defaut" object="${cardactionmessage}" z="iYqRpn0Lgo9ni4hfuawsA0WcMEA="/>
-        <field:display field="etatInitial" id="s_org_esupportail_sgc_domain_CardActionMessage_etatInitial" object="${cardactionmessage}" z="TvmQpXQjURuYTCYhVdN75B39orw="/>
     </page:show>
 </div>

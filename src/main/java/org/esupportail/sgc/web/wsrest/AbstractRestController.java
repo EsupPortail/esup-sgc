@@ -33,8 +33,8 @@ public class AbstractRestController {
     @ExceptionHandler({ InvocationTargetException.class, IllegalArgumentException.class, ClassCastException.class,
             ConversionFailedException.class })
     @ResponseBody
-    public ResponseEntity handleMiscFailures(Throwable t) {
-        return errorResponse(t, HttpStatus.BAD_REQUEST);
+    public ResponseEntity handleMiscFailures(Exception e) {
+        return errorResponse(e, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -47,12 +47,12 @@ public class AbstractRestController {
         return errorResponse(ex, HttpStatus.CONFLICT);
     }
 
-    protected ResponseEntity<String> errorResponse(Throwable throwable, HttpStatus status) {
-        if (throwable != null && throwable.getMessage() != null) {
-            log.error("error caught: " + throwable.getMessage(), throwable);
-            return new ResponseEntity<String>(throwable.getMessage(), new HttpHeaders(), status);
+    protected ResponseEntity<String> errorResponse(Exception e, HttpStatus status) {
+        if (e != null && e.getMessage() != null) {
+            log.error("error caught: " + e.getMessage(), e);
+            return new ResponseEntity<String>(e.getMessage(), new HttpHeaders(), status);
         } else {
-            log.error("unknown error caught in RESTController, {}", throwable);
+            log.error("unknown error caught in RESTController, {}", e);
             return new ResponseEntity<String>("Erreur interne", new HttpHeaders(), status);
         }
     }

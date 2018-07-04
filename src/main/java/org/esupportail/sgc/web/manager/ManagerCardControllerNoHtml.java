@@ -28,8 +28,10 @@ import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,14 +80,15 @@ public class ManagerCardControllerNoHtml {
 	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
-	public void writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
+	public ResponseEntity writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
 		Card card = Card.findCard(cardId);
 		PhotoFile photoFile = card.getPhotoFile();
 		Long size = photoFile.getFileSize();
 		String contentType = photoFile.getContentType();
-		response.setContentType(contentType);
-		response.setContentLength(size.intValue());
-		IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.parseMediaType(contentType));
+		headers.setContentLength(size.intValue());
+		return new ResponseEntity(photoFile.getBigFile().getBinaryFileasBytes(), headers, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/QRCode")
