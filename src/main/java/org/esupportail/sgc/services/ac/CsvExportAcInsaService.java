@@ -106,7 +106,7 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		String reversedCsnAsDecimal = getReversedCsnAsDecimal(card.getReverseCsn());
 		fields.add(reversedCsnAsDecimal);
 		
-		return StringUtils.join(fields, ";");
+		return StringUtils.join(fields, ",");
 	}
 
 	private String getReversedCsnAsDecimal(String rcsn) {
