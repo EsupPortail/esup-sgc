@@ -9,7 +9,15 @@
         </a>
     </h2>
     <jsp:include page="../../manager/includes/modals.jspx"/>
-    <div class="well">
+    <p>
+    	<h4>
+		    <a data-toggle="collapse" href="#actionMessagesHelp" class="glyphicon glyphicon-plus">
+		    Aide / Descriptif
+		    </a>
+		    <hr/>
+	    </h4>
+    </p>
+    <div class="panel-collapse collapse well" id="actionMessagesHelp">
     	<p>Vous pouvez ici paramétrer des messages mails qui seront envoyés à l'utilisateur lors des changements d'état de la carte.</p>
     	<p>Lors du passage d'une carte d'un état à un autre - voir le  descriptif du workflow ici :  
     	<button class="btn btn-primary navbar-btn" data-target="#noticeEtats" data-toggle="modal" title="Etats" type="button">
@@ -28,7 +36,7 @@
         	</ul>
         </p>
         <p>
-        <h3>Exemples :</h3>
+        <h5>Exemples :</h5>
         <ul>
         	<li>Si on souhaite envoyer un message de confirmation de réactivation de cartes, on pourra proposer un message avec 
         		<ul>
@@ -39,6 +47,10 @@
         		</ul>
         	</li>
         </ul>
+        </p>
+        <p>
+        <h5>MAIL_LISTE_PRINCIPALE</h5>
+        	Le mail ainsi calculé, en plus d'être envoyé à l'utilisateur, est envoyé (en copie) à la liste donnée dans la configuration MAIL_LISTE_PRINCIPALE.
         </p>
     </div>
     <page:list id="pl_org_esupportail_sgc_domain_CardActionMessage" items="${cardactionmessages}" z="user-managed">
