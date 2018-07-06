@@ -41,31 +41,38 @@
 	</script>
  
     <spring:url value="/manager/ldapSearch" var="ldapldapSearchUrl"/>
-    <form class="form-horizontal" action="${ldapldapSearchUrl}" method="GET" id="searchLdapForm">
-     <div class="jumbotron">
-     <div class="from-group">
-	      <label for="j_username" class="control-label col-lg-3 col-md-3 col-xs-6">Recherche sur nom / prénom : </label>
-	      	<c:if test="${not empty ldapTemplatesNames}">
-	      		<select name="ldapTemplateName">
-	      			<c:forEach items="${ldapTemplatesNames}" var="ldapTemplateName"> 
-	      				<c:choose>
-	      					<c:when test="${param['ldapTemplateName'] eq ldapTemplateName}">
-	      						<option value="${ldapTemplateName}" selected="selected">${ldapTemplateName}</option>
-	      					</c:when>
-	      					<c:otherwise>
-	      						<option value="${ldapTemplateName}">${ldapTemplateName}</option>
-	      					</c:otherwise>
-	      				</c:choose>
-	      			</c:forEach>
-	      		</select>
-	      	</c:if> 
-	      	<input type="text" class="form-control"  id="searchLdap"  name="searchString" maxlength="100" minlength="3"  required="required" value="${searchItem}" />&amp;nbsp
-	      	<button type="submit" class="btn btn-success">Valider</button>
-	      </div>
-      </div>
-    </form>
-    
-    <c:if test="${not empty ldapList}">
+	<form class="form-inline" action="${ldapldapSearchUrl}" method="GET"
+		id="searchLdapForm">
+		<div class="jumbotron">
+			<div class="from-group">
+				<label for="j_username"
+					class="control-label col-lg-offset-3 col-md-offset-2 col-sm-offset-1">Recherche
+					sur nom / prénom : </label>
+				<c:if test="${not empty ldapTemplatesNames}">
+					<select name="ldapTemplateName" id="ldapTemplateName"
+						class=" form-control">
+						<c:forEach items="${ldapTemplatesNames}" var="ldapTemplateName">
+							<c:choose>
+								<c:when test="${param['ldapTemplateName'] eq ldapTemplateName}">
+									<option value="${ldapTemplateName}" selected="selected">${ldapTemplateName}</option>
+								</c:when>
+								<c:otherwise>
+									<option value="${ldapTemplateName}">${ldapTemplateName}</option>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
+					</select>
+				</c:if>
+
+				<input type="text" class="form-control" id="searchLdap"
+					name="searchString" maxlength="100" minlength="3"
+					required="required" value="${searchItem}" />&amp;nbsp
+				<button type="submit" class="btn btn-success">Valider</button>
+			</div>
+		</div>
+	</form>
+
+	<c:if test="${not empty ldapList}">
     <table class="table table-bordered">
     	<thead><th>Eppn</th><th>Prénom</th><th>Nom</th><th>Date de naissance</th><th>Mail</th><th>Nb de cartes</th><th>Type</th><th>Affectation</th><th>ACTION</th></thead>
     	<tbody>

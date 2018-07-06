@@ -539,7 +539,10 @@ public class ManagerCardController {
 		String reportName = "cards.csv";
 		response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 		response.setHeader("Content-disposition", "attachment;filename=" + reportName);
-		
+    	if(searchBean.getLastTemplateCardPrinted()!=null && searchBean.getLastTemplateCardPrinted().getId()==null) {
+    		searchBean.setLastTemplateCardPrinted(null);
+    	}
+    	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
 		importExportService.exportCsv2OutputStream(searchBean, eppn, fields, response.getOutputStream());
 	}
 	
@@ -567,6 +570,10 @@ public class ManagerCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		
+    	if(searchBean.getLastTemplateCardPrinted()!=null && searchBean.getLastTemplateCardPrinted().getId()==null) {
+    		searchBean.setLastTemplateCardPrinted(null);
+    	}
+    	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
 		List<Card> cards = Card.findCards(searchBean, eppn, "address", "ASC").getResultList();
 		
 		uiModel.addAttribute("cards", cards);

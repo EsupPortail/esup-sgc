@@ -20,11 +20,13 @@
 		<form action="${bordereauUrl}" id="searchCsvForm" modelAttribute="searchBean">
 		<p class="text-info"><strong>Nb de résultats : ${countCards}</strong>		
 			<input type="hidden" id="address" name="address"
-				value="${searchBean.address ne null ? searchBean.address : ''}" />
+				value="${searchBean.address eq 0 ? '' : searchBean.address}" />
 			<input type="hidden" id="type" name="type"
 				value="${searchBean.type ne null ? searchBean.type : ''}" />
 			<input type="hidden" id="etat" name="etat"
 				value="${searchBean.etat ne null ? searchBean.etat : ''}" />
+			<input type="hidden" id="lastCardTemplatePrinted" name="lastTemplateCardPrinted.id"
+				value="${searchBean.lastTemplateCardPrinted ne null ? searchBean.lastTemplateCardPrinted.id : ''}" />
 			<input type="hidden" id="editable" name="editable"
 				value="${searchBean.editable ne null ? searchBean.editable : ''}" />
 			<input type="hidden" id="ownOrFreeCard" name="ownOrFreeCard"

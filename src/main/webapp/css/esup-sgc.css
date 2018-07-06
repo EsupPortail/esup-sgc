@@ -491,4 +491,7 @@ span.icon-flipped{
 }
 .sun-editor .sun-editor-container{
 	height: auto!important;
-  }
+ }
+ #searchLdapForm input{
+ 	margin: 10px 10px;
+ }

@@ -391,7 +391,7 @@ function rgb2hex(rgb){
 }
 
 //autocomplete eppn
-function searchEppnAutocomplete(id, url, field) {
+function searchEppnAutocomplete(id, url, field, param2) {
 	var searchBox = document.getElementById(id);
 	if(searchBox != null){
 	 	var awesomplete = new Awesomplete(searchBox, {
@@ -400,8 +400,14 @@ function searchEppnAutocomplete(id, url, field) {
 	 		});
 	 	searchBox.addEventListener("keyup", function(){
 			if(this.value.length>2) {
+				if(param2 == "ldapTemplateName"){
+					var ldapTemplateName = document.getElementById("ldapTemplateName");
+					var param2Url =  "&ldapTemplateName=" +  ldapTemplateName.value;
+				}else{
+					var param2Url = "";
+				}
 				var request = new XMLHttpRequest();
-				request.open('GET', url + "?searchString=" + this.value, true);
+				request.open('GET', url + "?searchString=" + this.value + param2Url, true);
 				request.onload = function() {
 				  if (request.status >= 200 && request.status < 400) {
 				    var data = JSON.parse(this.response);
@@ -872,7 +878,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		 var searchEppn = document.getElementById("searchEppn");
 		 var searchEppnForm =  document.getElementById("searchEppnForm");
 		 if(searchEppn != null){
-			 searchEppnAutocomplete("searchEppn", searchEppnUrl, "eppn");
+			 searchEppnAutocomplete("searchEppn", searchEppnUrl, "eppn", "");
 			
 			 searchEppn.addEventListener("awesomplete-selectcomplete", function(){
 				 searchEppnForm.submit();
@@ -880,7 +886,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		 }
 		 var searchEppnTemp = document.getElementById("searchEppnTemp");
 		 if(searchEppnTemp != null){
-			 searchEppnAutocomplete("searchEppnTemp", searchEppnUrl, "eppn");
+			 searchEppnAutocomplete("searchEppnTemp", searchEppnUrl, "eppn", "");
 			 searchEppnTemp.addEventListener("awesomplete-selectcomplete", function(){
 				 searchEppnAction("searchEppnTemp");
 			 });
@@ -893,7 +899,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		 }
 	}
     if (typeof searchLdapUrl != "undefined") {
-    	searchEppnAutocomplete("searchLdap", searchLdapUrl, "sn");
+    	searchEppnAutocomplete("searchLdap", searchLdapUrl, "sn", "ldapTemplateName");
 		var searchLdap = document.getElementById("searchLdap");
 		var searchLdapForm =  document.getElementById("searchLdapForm");
 		searchLdap.addEventListener("awesomplete-selectcomplete", function(event){
