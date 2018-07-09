@@ -71,7 +71,9 @@ public class ApiEscrService extends ValidateService {
 		if(user.getEuropeanStudentCard() && enable) {
 			try {
 				postOrUpdateEscrStudent(card.getEppn());
-				postEscrCard(card);
+				if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
+					postEscrCard(card);
+				}
 			} catch(HttpClientErrorException clientEx) {
 				log.error("HttpClientErrorException : " + clientEx.getResponseBodyAsString());
 				throw clientEx; 
@@ -85,7 +87,9 @@ public class ApiEscrService extends ValidateService {
 		if(user.getEuropeanStudentCard() && enable) {
 			try {
 				postOrUpdateEscrStudent(card.getEppn());
-				deleteEscrCard(card);
+				if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
+					deleteEscrCard(card);
+				}
 			} catch(HttpClientErrorException clientEx) {
 				log.error("HttpClientErrorException : " + clientEx.getResponseBodyAsString());
 				throw clientEx; 
