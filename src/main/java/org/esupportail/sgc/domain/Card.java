@@ -239,6 +239,10 @@ public class Card {
     public void setDifPhoto(Boolean cnil) {
         getUserAccount().setDifPhoto(cnil);
     }
+    
+    public Boolean getEuropeanStudentCard() {
+        return getUserAccount().getEuropeanStudentCard() && this.getEscnUid() != null && !this.getEscnUid().isEmpty();
+    }
 
     public String getAddress() {
         return getUserAccount().getAddress();
