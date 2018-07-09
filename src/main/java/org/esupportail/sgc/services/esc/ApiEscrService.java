@@ -182,18 +182,16 @@ public class ApiEscrService extends ValidateService {
 	}
 	
 	protected void deleteEscrCard(Card card) {
-		EscrStudent escrStudent = EscrStudent.findEscrStudentsByEppnEquals(card.getEppn()).getSingleResult();
-		String url = webUrl + "/students/" + escrStudent.getEuropeanStudentIdentifier() + "/cards";
-		HttpHeaders headers = this.getJsonHeaders();			
+		EscrStudent escrStudent = EscrStudent.findEscrStudentsByEppnEquals(card.getEppn()).getSingleResult();		
 		List<EscrCard> escrCards = EscrCard.findEscrCardsByCardUidEquals(card.getCsn()).getResultList();
 		if(escrCards.isEmpty()) {
 			log.warn("No EscrCard found for this card " + card.getCsn() + " so we can't desactivate it on ESCR");
 		} else {
-			EscrCard escrCard = escrCards.get(0);
+			EscrCard escrCard = escrCards.get(0);			
 			String europeanStudentIdentifier = escrCard.getEuropeanStudentCardNumber();
-			Map<String, String> body = new HashMap<String, String>();
-			body.put("europeanStudentIdentifier", europeanStudentIdentifier);
-			HttpEntity entity = new HttpEntity(body, headers);
+			String url = webUrl + "/students/" + escrStudent.getEuropeanStudentIdentifier() + "/cards/" + europeanStudentIdentifier;
+			HttpHeaders headers = this.getJsonHeaders();			
+			HttpEntity entity = new HttpEntity(null, headers);
 			log.debug("Try to delete card : " + escrCard); 
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 			log.info(card.getCsn() + " deleted in ESCR -> " + response.getBody());
