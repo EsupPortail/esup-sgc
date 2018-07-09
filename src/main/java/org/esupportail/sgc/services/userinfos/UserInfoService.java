@@ -249,7 +249,12 @@ public class UserInfoService {
 			if(Long.valueOf(7999).equals(user.getIdCompagnyRate())) {
 				try {
 					RightHolder rightHolder = authApiCrousService.getRightHolder(user.getEppn());
-					user.setIdRate(rightHolder.getIdRate());
+					if(rightHolder == null) {
+						log.debug("rightHolder on crous is null for "  + user.getEppn());
+					} else {
+						user.setIdRate(rightHolder.getIdRate());
+						log.debug("7999 idCompagnyRate case : idRate from crous for "  + user.getEppn() + " is " + user.getIdRate());
+					}
 				} catch(HttpClientErrorException ex) {
 					log.debug("Exception getting crous rightHolder for " + user.getEppn(), ex);
 				}

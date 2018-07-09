@@ -50,13 +50,13 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 			throws UsernameNotFoundException {
 
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-	 
+		
 		resynchronisationUserService.synchronizeUserInfo(targetUser.getEppn());
 		ldapGroup2UserRoleService.syncUser(targetUser.getEppn());
 		
-		for(String role : targetUser.getRoles()) {
+		for(String role : targetUser.getReachableRoles()) {
 			authorities.add(new SimpleGrantedAuthority(role));
-		}
+		}		
 
 		return new org.springframework.security.core.userdetails.User(targetUser.getEppn(), "dummy", 
 				true, // enabled

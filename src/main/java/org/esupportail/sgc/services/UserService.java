@@ -86,11 +86,11 @@ public class UserService {
 	
 	public boolean isEsupSgcUser(User user) {
 		String eppn = user.getEppn();
-		return user.getRoles().contains("ROLE_USER") || extUserRuleService.isExtEsupSgcUser(eppn);
+		return user.getReachableRoles().contains("ROLE_USER") || extUserRuleService.isExtEsupSgcUser(eppn);
 	}
 	
 	public boolean isEsupManager(User user) {
-		return user.getRoles().contains("ROLE_SUPER_MANAGER");
+		return user.getReachableRoles().contains("ROLE_SUPER_MANAGER");
 	}
 
 	public Boolean canPaidRenewal(User user) {

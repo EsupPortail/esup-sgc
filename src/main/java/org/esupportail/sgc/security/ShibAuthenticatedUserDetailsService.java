@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +30,10 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	
 	protected Map<String, String> mappingGroupesRoles;
 	
-	protected LdapGroup2UserRoleService ldapGroup2UserRoleService;;
+	protected LdapGroup2UserRoleService ldapGroup2UserRoleService;
+	
+	@Resource
+	RoleHierarchy sgcRoleHierarchy;
 	
 	public void setMappingGroupesRoles(Map<String, String> mappingGroupesRoles) {
 		this.mappingGroupesRoles = mappingGroupesRoles;
@@ -48,8 +54,15 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		for(String roleFromLdap : ldapGroup2UserRoleService.getRoles(token.getName())) {
 			authorities.add(new SimpleGrantedAuthority(roleFromLdap));
 		}
-		log.info("Shib & Ldap Credentials for " + token.getName() + " -> " + authorities);
-		return createUserDetails(token, authorities);
+		log.debug("Shib & Ldap Credentials for " + token.getName() + " -> " + authorities);
+		
+		List<GrantedAuthority> reachableAuthorities = new ArrayList<GrantedAuthority>();
+		for(GrantedAuthority authority : sgcRoleHierarchy.getReachableGrantedAuthorities(authorities)) {
+			reachableAuthorities.add(authority);
+		}
+		log.info("Shib & Ldap Reachable (adding sgcRoleHierarchy) Credentials for " + token.getName() + " -> " + reachableAuthorities);
+		
+		return createUserDetails(token, reachableAuthorities);
 	}
 
 	protected UserDetails createUserDetails(Authentication token, Collection<? extends GrantedAuthority> authorities) {

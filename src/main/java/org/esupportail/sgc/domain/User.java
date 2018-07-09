@@ -25,6 +25,7 @@ import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
+import org.esupportail.sgc.security.SgcRoleHierarchy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.dbre.RooDbManaged;
@@ -164,10 +165,15 @@ public class User {
 		return false;
 	}
 
+	public Set<String> getReachableRoles() {
+		return SgcRoleHierarchy.getReachableRoles(this.getRoles());
+	}
+	
 	public List<String> getVersoText() {
 		String[] versoText = new String[] {verso1, verso2, verso3, verso4, verso5, verso6, verso7};
 		return Arrays.asList(versoText);
 	}
+	
 	
 	public static User findUser(String eppn) {
 		User user = null;

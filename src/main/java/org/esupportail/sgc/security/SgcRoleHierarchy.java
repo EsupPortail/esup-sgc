@@ -3,6 +3,7 @@ package org.esupportail.sgc.security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class SgcRoleHierarchy implements RoleHierarchy {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	@Override
 	public Collection<GrantedAuthority> getReachableGrantedAuthorities(
 			Collection<? extends GrantedAuthority> authorities) {
@@ -52,6 +53,26 @@ public class SgcRoleHierarchy implements RoleHierarchy {
         }
 
         return new ArrayList<GrantedAuthority>(reachableRoles);
+	}
+	
+	
+	static public Set<String> getReachableRoles(Set<String> roles) {
+		Set<String> reachableRoles = new HashSet<String>();
+		if (roles.contains("ROLE_ADMIN")) {
+			 reachableRoles.add("ROLE_SUPER_MANAGER");
+			 reachableRoles.add("ROLE_MANAGER");
+		 } else if (roles.contains("ROLE_SUPER_MANAGER")) {
+			 reachableRoles.add("ROLE_MANAGER");
+		 } else {
+	        for (String role : roles) {
+	            if (role.startsWith("ROLE_MANAGER_")) {
+	                reachableRoles.add("ROLE_MANAGER");
+	                break;
+	            }
+	        }
+		 }		
+		reachableRoles.addAll(roles);
+		return reachableRoles;
 	}
 
 }
