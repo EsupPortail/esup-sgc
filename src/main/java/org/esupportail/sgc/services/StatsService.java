@@ -92,13 +92,14 @@ public class StatsService {
     }
     
     @SuppressWarnings("serial")
-	public  LinkedHashMap<String,Object> getStats(String typeInd, String typeStats) throws ParseException {
+	public  LinkedHashMap<String,Object> getStats(String typeInd, String typeStats, String anneeUniv) throws ParseException {
 			
 		LinkedHashMap<String, Object> results = new LinkedHashMap<String, Object>() {
 			   
 			   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			   Date date = formatter.parse(getCurrentAnneUniv());
-			
+			   LinkedHashMap<String,String>  anneeUnivs = getAnneeUnivs();
+			   Date date = formatter.parse(anneeUnivs.get(anneeUniv));
+			   Date dateFin = getDateFinAnneeUniv(anneeUniv);
 	        {
 	        	if("cardsByYearEtat".equals(typeStats)){
 	        		put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), 3));
@@ -122,37 +123,31 @@ public class StatsService {
 	        		put("nbCards",mapField(User.countNbCardsByuser(typeInd), 2));
 	        	}else if("editable".equals(typeStats)){
 	        		put("editable",mapField(User.countNbEditable(), 2));
-	        	}else if("verso5".equals(typeStats)){
-	        		put("verso5",mapField(User.countNbVerso5(), 2));
 	        	}else if("browsers".equals(typeStats)){
 	        		put("browsers",mapField(Card.countBrowserStats(typeInd), 2));
 	        	}else if("os".equals(typeStats)){
 	        		put("os",mapField(Card.countOsStats(typeInd), 2));
 	        	}else if("nbRejets".equals(typeStats)){
-	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd, date), 2));
+	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd, date, dateFin), 2));
 	        	}else if("notDelivered".equals(typeStats)){
-	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(date), 2));
-	        	}else if("cardsMajByDay".equals(typeStats)){
-	        		put("cardsMajByDay",mapField(Log.countNbLogByDay("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 3));
-	        	}else if("cardsMajByIp".equals(typeStats)){
-	        		put("cardsMajByIp",mapField(Log.countNbLogByAction("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 2));
-	        	}else if("lineCardsMajByDay".equals(typeStats)){
-	        		put("lineCardsMajByDay",mapField(Log.countNbLogByDay2("MAJVERSO", ipService.setCasesRequest("remote_address"), ipService.getBannedIp()), 3));
+	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(date, dateFin), 2));
 	        	}else if("deliveryByAdress".equals(typeStats)){
-	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress(date).getResultList(),2));
+	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress(date, dateFin).getResultList(),2));
 	        	}else if("userDeliveries".equals(typeStats)){
 	        		put("userDeliveries",mapField(Log.countUserDeliveries(),2));
 	        	}else if("tarifsCrousBars".equals(typeStats)){
 	        		put("tarifsCrousBars",mapField(User.countTarifCrousByType(),3));
 	        	}else if("cardsByMonth".equals(typeStats)){
-	        		put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd, date), 2));
-	        		put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd, date), 2));
+	        		put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd, date, dateFin), 2));
+	        		put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd, date, dateFin), 2));
 	        	}else if("nbRejetsByMonth".equals(typeStats)){
 	        		put("nbRejetsByMonth",mapField(Card.countNbRejetsByMonth(typeInd), 2));
 	        	}else if("requestFree".equals(typeStats)){
 	        		put("requestFree",mapField(User.countNbRequestFree(),3));
 	        	}else if("templateCards".equals(typeStats)){
 	        		put("templateCards",mapField(TemplateCard.countTemplateCardByNameVersion(),2));
+	        	}else if("europeanCardChart".equals(typeStats)){
+	        		put("europeanCardChart",mapField(User.countNbEuropenCards(),2));
 	        	}
 	        }
 	    };
@@ -186,43 +181,53 @@ public class StatsService {
     	return finalMap;
     }
     
-    public LinkedHashMap<String, String> getYesterdayCardsByPopulationCrous (String typeDate, boolean maj){
+    public LinkedHashMap<String, String> getYesterdayCardsByPopulationCrous (String typeDate){
     	
     	LinkedHashMap<String, String> finalMap = new LinkedHashMap<String, String>();
     	
-    	if(maj){
-    		finalMap = getStatsCardsByPopulationCrous (User.countYesterdayMajCardsByPopulationCrous(this.getDates().get("isMonday")));
-    	}else{
-    	  	finalMap = getStatsCardsByPopulationCrous (User.countYesterdayCardsByPopulationCrous(this.getDates().get("isMonday"),typeDate));
-    	}
+    	finalMap = getStatsCardsByPopulationCrous (User.countYesterdayCardsByPopulationCrous(this.getDates().get("isMonday"),typeDate));
     	
     	return finalMap;
     }
     
-    public LinkedHashMap<String, String> getMonthCardsByPopulationCrous (String typeDate, boolean maj){
+    public LinkedHashMap<String, String> getMonthCardsByPopulationCrous (String typeDate){
     	
     	LinkedHashMap<String, String> finalMap = new LinkedHashMap<String, String>();
     	
-    	if(maj){
-    		finalMap = getStatsCardsByPopulationCrous (User.countMonthMajCardsByPopulationCrous(this.getDates().get("likeMonth")));
-    	}else{
-    		finalMap = getStatsCardsByPopulationCrous (User.countMonthCardsByPopulationCrous(this.getDates().get("likeMonth"),typeDate));
-    	}
+    	finalMap = getStatsCardsByPopulationCrous (User.countMonthCardsByPopulationCrous(this.getDates().get("likeMonth"),typeDate));
     	
     	return finalMap;
     }
     
-    public LinkedHashMap<String, String> getYearEnabledCardsByPopulationCrous (String typeDate, boolean maj){
+    public LinkedHashMap<String, String> getYearEnabledCardsByPopulationCrous (String typeDate, String anneeUniv) throws ParseException{
     	
     	LinkedHashMap<String, String> finalMap = new LinkedHashMap<String, String>();
     	
-    	if(maj){
-    		finalMap = getStatsCardsByPopulationCrous (User.countYearMajEnabledCardsByPopulationCrous( StringToDate("yyyy-mm-dd", this.getDates().get("year"))));
-    	}else{
-    		finalMap = getStatsCardsByPopulationCrous (User.countYearEnabledCardsByPopulationCrous(this.getDates().get("year"),typeDate));
-    	}
+    	Date dateFin = getDateFinAnneeUniv(anneeUniv);
+
+    	finalMap = getStatsCardsByPopulationCrous (User.countYearEnabledCardsByPopulationCrous(anneeUniv,typeDate, dateFin));
     	
     	return finalMap;
+    }
+    
+    public LinkedHashMap<String, LinkedHashMap<String, String>> getAllPastYearEnabledCardsByPopulationCrous (String typeDate) throws ParseException{
+    	
+    	LinkedHashMap<String, LinkedHashMap<String, String>> anneesMap = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+    	int i = 0; 
+    	for(Map.Entry<String, String> entry : this.getAnneeUnivs().entrySet()){
+    		if(i!=0){
+	    		LinkedHashMap<String, String> finalMap = new LinkedHashMap<String, String>();
+	        	
+	        	Date dateFin = getDateFinAnneeUniv(entry.getValue());
+	
+	        	finalMap = getStatsCardsByPopulationCrous (User.countYearEnabledCardsByPopulationCrous(entry.getValue(),typeDate, dateFin));
+	    		
+	    		anneesMap.put(entry.getKey(), finalMap);
+    		}
+    		i++;
+    	}
+    	
+    	return anneesMap;
     }
     
     public LinkedHashMap<String, String> getDates(){
@@ -245,14 +250,17 @@ public class StatsService {
         String yesterday = dateFormat.format(cal.getTime());
         String month = "01".concat(dateFormat1.format(cal.getTime()));
         String likeMonth = dateFormat2.format(cal.getTime()).concat("%");
-        String splitYear []= getCurrentAnneUniv().split("-");
-        String formatYear = splitYear[2].concat("-").concat(splitYear[1]).concat("-").concat(splitYear[0]);
+        
+		String splitYear []= getCurrentAnneUniv().split("/");
+        
+        String splitcrrentYear []= splitYear[splitYear.length-1].split("-");
+        String formatYear = splitcrrentYear[2].concat("-").concat(splitcrrentYear[1]).concat("-").concat(splitcrrentYear[0]);
     	
         mapDates.put("isMonday", isMonday);
     	mapDates.put("yesterday", yesterday);
     	mapDates.put("month", month);
     	mapDates.put("likeMonth", likeMonth);
-    	mapDates.put("year", getCurrentAnneUniv());
+    	mapDates.put("year", splitYear[splitYear.length-1]);
     	mapDates.put("formatYear", formatYear);
     	
     	return mapDates;
@@ -270,6 +278,45 @@ public class StatsService {
 			}
 			return String.valueOf(year).concat("-07-01");
 		}
+	}
+	
+	public LinkedHashMap<String,String> getAnneeUnivs(){
+		
+		LinkedHashMap<String,String> annneUniv = new LinkedHashMap<String,String>();
+		//Vrai date univ sinon par défaut 1er juillet de l'année courante ou passée
+		if(appliConfigService.getCurrentAnneeUniv()!=null){
+			String splitYear []= getCurrentAnneUniv().split("/");
+			for(int i=splitYear.length-1; i>-1; i--){
+				String annee = splitYear[i].split("-")[0].trim();
+				annneUniv.put(annee,  splitYear[i].trim());
+			}
+		}else{
+			int year = Calendar.getInstance().get(Calendar.YEAR);
+			int month = Calendar.getInstance().get(Calendar.MONTH);
+			if(month <7){
+				year = year-1;
+			}
+			annneUniv.put(String.valueOf(year), String.valueOf(year).concat("-07-01"));
+		}
+		
+		return annneUniv;
+	}
+	
+	public Date getDateFinAnneeUniv(String date) throws ParseException{
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		String splitDate []= date.split("/");
+		String realDate =  splitDate[0];
+		String splitRealDate [] = realDate.split("-");
+		int endYear = Integer.valueOf(splitRealDate[0]) + 1;
+		LinkedHashMap<String,String> anneesUnivs = this.getAnneeUnivs();
+		String endDate = anneesUnivs.get(String.valueOf(endYear));
+		Date dateFin = null;
+		if(endDate!= null){
+			dateFin = formatter.parse(endDate);
+		}
+		
+		return dateFin;
 	}
 	
 	public Date StringToDate(String pattern, String dateInString){

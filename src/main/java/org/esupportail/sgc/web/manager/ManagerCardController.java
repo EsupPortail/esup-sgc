@@ -38,6 +38,7 @@ import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.tools.MapUtils;
 import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +113,9 @@ public class ManagerCardController {
 	FormService formService;
 	
 	@Resource
+	MapUtils mapUtils;
+	
+	@Resource
 	MemoryMapStringEncodingUtils urlEncodingUtils;
 	
 	@ModelAttribute("active")
@@ -128,12 +132,7 @@ public class ManagerCardController {
 	public String getHelp() {
 		return appliConfigService.getHelpManager();
 	}   
-	
-	@ModelAttribute("actionMessages")
-	public Map<Etat, List<CardActionMessage>> getCardActionMessages() {
-		return cardActionMessageService.getCardActionMessages();
-	}
-	
+
 	@ModelAttribute("searchBean")
 	public CardSearchBean getDefaultCardSearchBean() {
 		CardSearchBean searchBean =  new CardSearchBean();
@@ -193,6 +192,7 @@ public class ManagerCardController {
         if(!user.getCards().isEmpty()){
         	for(Card cardItem : user.getCards()){
         		cardEtatService.updateEtatsAvailable4Card(cardItem);
+        		cardActionMessageService.updateCardActionMessages(cardItem);
         		cardItem.setIsPhotoEditable(cardEtatService.isPhotoEditable(cardItem));
         	}
         }
@@ -349,6 +349,37 @@ public class ManagerCardController {
     		searchBean.setLastTemplateCardPrinted(null);
     	}
     	
+    	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
+    		HashMap<Integer, String[]> test = searchBean.getFreeFieldValue();
+    		test.values().removeAll(Collections.singleton(""));
+    		uiModel.addAttribute("collapse", test.size() > 0 ? "in" : "");
+    		List<String> values = new ArrayList<String>(); 
+    		
+    		for(String[] value : searchBean.getFreeFieldValue().values()){
+    			List<String> tempList = new ArrayList<String>();
+    			for(int i=0; i<value.length; i++){
+    				tempList.add(value[i]);
+    			}
+    			String joinString = StringUtils.join(tempList.toArray(), ",");
+    			values.add(joinString);
+    		}
+    		String finalJoin = StringUtils.join(values, ",");
+    		uiModel.addAttribute("fieldsValue", finalJoin);
+    		HashMap<Integer, String[]> tempMap = new HashMap<Integer, String[]>() ;
+    		
+    		for (Map.Entry<Integer, String[]> entry : searchBean.getFreeFieldValue().entrySet()) {
+    			List<String> tempList = new ArrayList<String>();
+    			for(int i=0; i<entry.getValue().length; i++){
+    				tempList.add(urlEncodingUtils.decodeString(entry.getValue()[i]));
+    			}
+    			tempMap.put(entry.getKey(), tempList.toArray(new String[tempMap.size()]));
+    		}
+    		searchBean.setFreeFieldValue(tempMap);	
+    		
+    	}else{
+    		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
+    	}
+    	
     	sizeNo = size == null ? 10 : size.intValue();
     	firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
     	long countCards = Card.countFindCards(searchBean, eppn);
@@ -369,21 +400,6 @@ public class ManagerCardController {
     	uiModel.addAttribute("selectedType",  searchBean.getType());
     	uiModel.addAttribute("freeFields",  formService.getFieldList());
     	uiModel.addAttribute("nbFields", new String[formService.getNbFields()]);
-    	
-    	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
-    		HashMap<Integer, String[]> test = searchBean.getFreeFieldValue();
-    		test.values().removeAll(Collections.singleton(""));
-    		uiModel.addAttribute("collapse", test.size() > 0 ? "in" : "");
-    		List<String> values = new ArrayList<String>(); 
-    		for(String[] value : searchBean.getFreeFieldValue().values()){
-    			String joinString = StringUtils.join(value, ",");
-    			values.add(joinString);
-    		}
-    		String finalJoin = StringUtils.join(values, "@@");
-    		uiModel.addAttribute("fieldsValue", finalJoin);
-    	}else{
-    		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
-    	}
     	uiModel.addAttribute("size",  size);
     	List<String> addresses = null;
     	if(searchBean.getEtat()!=null){
@@ -392,7 +408,7 @@ public class ManagerCardController {
     		addresses = userInfoService.getListAdresses(searchBean.getType(), null);
     	}
     	Map<String, String> addressesMap = urlEncodingUtils.getMapWithEncodedString(addresses);
-    	uiModel.addAttribute("addresses", addressesMap);
+    	uiModel.addAttribute("addresses", mapUtils.sortByValue(addressesMap, false));
     	searchBean.setAddress(urlEncodingUtils.encodeString(searchBean.getAddress()));
 		uiModel.addAttribute("eppn", eppn);
     	addDateTimeFormatPatterns(uiModel);
@@ -413,6 +429,8 @@ public class ManagerCardController {
     	List<Card> cards = new ArrayList<Card>();
     	if(listeIds!=null) {
     		int i = 0;
+    		// we want to preserve order so we reverse listeIds
+    		Collections.reverse(listeIds);
     		for(Long id : listeIds) {
     			try {
     				i++;
@@ -475,6 +493,8 @@ public class ManagerCardController {
 			uiModel.addAttribute("cardIds", cardIds);
 		} else {
 			List<Etat> etatsAvailable = cardEtatService.getEtatsAvailable4Cards(cardIds);
+			Map<Etat, List<CardActionMessage>> actionMessages  = cardActionMessageService.getCardActionMessagesForCards(cardIds);
+			uiModel.addAttribute("actionMessages", actionMessages);
 			uiModel.addAttribute("allEtats", Arrays.asList(Etat.values()));
 			uiModel.addAttribute("etatsAvailable", etatsAvailable);
 			uiModel.addAttribute("cardIds", cardIds);
@@ -560,7 +580,9 @@ public class ManagerCardController {
 		} catch (Exception e) {
 			log.warn("Impossible de sauvegarder les préférences", e);
 		}
-
+		 
+		uiModel.asMap().clear();
+		  
 		return "redirect:/manager?index=first";
 	}
 	

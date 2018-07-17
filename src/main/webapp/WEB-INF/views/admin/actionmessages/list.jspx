@@ -10,56 +10,59 @@
     </h2>
     <jsp:include page="../../manager/includes/modals.jspx"/>
     <p>
-    	<h4>
-		    <a data-toggle="collapse" href="#actionMessagesHelp" class="glyphicon glyphicon-plus">
+        <h4>
+            <a class="glyphicon glyphicon-plus" data-toggle="collapse" href="#actionMessagesHelp">
 		    Aide / Descriptif
 		    </a>
-		    <hr/>
-	    </h4>
+            <hr/>
+        </h4>
     </p>
     <div class="panel-collapse collapse well" id="actionMessagesHelp">
-    	<p>Vous pouvez ici paramétrer des messages mails qui seront envoyés à l'utilisateur lors des changements d'état de la carte.</p>
-    	<p>Lors du passage d'une carte d'un état à un autre - voir le  descriptif du workflow ici :  
+        <p>Vous pouvez ici paramétrer des messages mails qui seront envoyés à l'utilisateur lors des changements d'état de la carte.</p>
+        <p>Lors du passage d'une carte d'un état à un autre - voir le  descriptif du workflow ici :  
     	<button class="btn btn-primary navbar-btn" data-target="#noticeEtats" data-toggle="modal" title="Etats" type="button">
-            <span class="glyphicon glyphicon-info-sign"/>
-        </button>
+                <span class="glyphicon glyphicon-info-sign"/>
+            </button>
         </p>
         <p>
         	esup-sgc va sélectionner parmi les messages donnés ici le message qui correspondra à la transition effectuée.
         	<ul>
-        		<li>l'état final est obligatoire, mais l'état initial non : en ne définissant pas l'état initial celà permet de proposer un même message pour toutes les transitions dont l'état final est celui sélectionné</li>
-        		<li>le message correspond au mail qui sera envoyé à l'utilisateur final, ce même message sera affiché également dans sa vue utilisateur (en fait esup-sgc lui affiche le dernier message envoyé, 
+                <li>l'état final est obligatoire, mais l'état initial non : en ne définissant pas l'état initial celà permet de proposer un même message pour toutes les transitions dont l'état final est celui sélectionné</li>
+                <li>le message correspond au mail qui sera envoyé à l'utilisateur final, ce même message sera affiché également dans sa vue utilisateur (en fait esup-sgc lui affiche le dernier message envoyé, 
         		c'est à dire le message correspondant à la dernière transition effectuée par la carte)</li>
-        		<li>Auto permet de préciser un message/mail à envoyer de manière automatique : si auto est à false, le message ne sera envoyé que si c'est le gestionnaire qui opère une transition sur la carte et que 
+                <li>Auto permet de préciser un message/mail à envoyer de manière automatique : si auto est à false, le message ne sera envoyé que si c'est le gestionnaire qui opère une transition sur la carte et que 
         		celui-ci sélectionne et valide l'envoi du message (qu'il peut modifier au moment de la validation de la transition).</li>
-        		<li>Defaut permet de préselectionner ce message/mail pour le gestionnaire parmi tous les autres messages qui peuvent correspondre à la transition alors effectuée.</li>
-        	</ul>
+                <li>Defaut permet de préselectionner ce message/mail pour le gestionnaire parmi tous les autres messages qui peuvent correspondre à la transition alors effectuée.</li>
+            </ul>
         </p>
         <p>
-        <h5>Exemples :</h5>
-        <ul>
-        	<li>Si on souhaite envoyer un message de confirmation de réactivation de cartes, on pourra proposer un message avec 
+            <h5>Exemples :</h5>
+            <ul>
+                <li>Si on souhaite envoyer un message de confirmation de réactivation de cartes, on pourra proposer un message avec 
         		<ul>
-        			<li>Etat Initial à <span title="DISABLED" class="label label-disabled">DÉSACTIVÉ</span></li>
-        			<li>Etat Final à <span title="ENABLED" class="label label-enabled">ACTIVÉ</span></li>
-        			<li>Auto à true</li>
-        			<li>Defaut à false</li>
-        		</ul>
-        	</li>
-        </ul>
+                        <li>Etat Initial à <span class="label label-disabled" title="DISABLED">DÉSACTIVÉ</span>
+                        </li>
+                        <li>Etat Final à <span class="label label-enabled" title="ENABLED">ACTIVÉ</span>
+                        </li>
+                        <li>Auto à true</li>
+                        <li>Defaut à false</li>
+                    </ul>
+                </li>
+            </ul>
         </p>
         <p>
-        <h5>MAIL_LISTE_PRINCIPALE</h5>
+            <h5>MAIL_LISTE_PRINCIPALE</h5>
         	Le mail ainsi calculé, en plus d'être envoyé à l'utilisateur, est envoyé (en copie) à la liste donnée dans la configuration MAIL_LISTE_PRINCIPALE.
         </p>
     </div>
     <page:list id="pl_org_esupportail_sgc_domain_CardActionMessage" items="${cardactionmessages}" z="user-managed">
         <table:table data="${cardactionmessages}" id="l_org_esupportail_sgc_domain_CardActionMessage" path="/admin/actionmessages" view="false" z="user-managed">
-            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" property="etatInitial" sort="true" z="user-managed" translation="true" btLabel="card.label"/>
-            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_etatFinal" property="etatFinal" sort="true" z="user-managed" translation="true" btLabel="card.label"/>
+            <table:column btLabel="card.label" id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" property="etatInitial" sort="true" translation="true" z="user-managed"/>
+            <table:column btLabel="card.label" id="c_org_esupportail_sgc_domain_CardActionMessage_etatFinal" property="etatFinal" sort="true" translation="true" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_message" maxLength="500" property="message" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_auto" property="auto" sort="true" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_defaut" property="defaut" sort="true" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_userTypes" property="userTypes" z="Ve/3nSVtZGX7nOD89U56kt8yrU0="/>
         </table:table>
     </page:list>
 </div>

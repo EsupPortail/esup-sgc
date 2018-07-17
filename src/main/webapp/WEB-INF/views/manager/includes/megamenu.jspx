@@ -11,6 +11,15 @@
 	  	<div class="alert alert-info" id="searchBar">
 			<form action="${searchUrl}" class="navbar-form navbar-left form-inline" role="search" id="searchEppnForm" >
 				<div class="form-group">
+					<label style="display:none" >-- Etat --</label>
+				  	<spring-form:select path="searchBean.etat" id="searchBeanEtat">
+				  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
+					 	<c:forEach items="${etats}" var="etat">
+					  		<spring-form:option value="${etat}"><spring:message code="card.step.${etat}"/></spring-form:option>
+					  	</c:forEach>
+				    </spring-form:select>
+			    </div>			
+				<div class="form-group">
 					<label style="display:none" >-- Adresse --</label>
 					<spring-form:select path="searchBean.address" id="searchBeanAdress">
 						<spring-form:option value="" data-placeholder="true"></spring-form:option>
@@ -31,15 +40,6 @@
 		 				</c:forEach>
 		 			</spring-form:select>
 		 		</div>
-				<div class="form-group">
-					<label style="display:none" >-- Etat --</label>
-				  	<spring-form:select path="searchBean.etat" id="searchBeanEtat">
-				  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
-					 	<c:forEach items="${etats}" var="etat">
-					  		<spring-form:option value="${etat}"><spring:message code="card.step.${etat}"/></spring-form:option>
-					  	</c:forEach>
-				    </spring-form:select>
-			    </div>
 			  	<div class="form-group">
 			  	 	<label style="display:none" >-- Dernier thème --</label>
 			  		<spring-form:select path="searchBean.lastTemplateCardPrinted.id"  id="searchBeanLastTemplateCardPrinted">

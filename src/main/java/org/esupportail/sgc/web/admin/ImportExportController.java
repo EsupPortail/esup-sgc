@@ -79,8 +79,8 @@ public class ImportExportController {
 		return "redirect:/admin/import";
 	}
 
-	@RequestMapping(value = "/exportCsvFile/{stats}", method = RequestMethod.GET)
-	public void getCsv(@PathVariable("stats") String stats, HttpServletRequest request, HttpServletResponse response, Locale locale) throws UnsupportedEncodingException, IOException {
+	@RequestMapping(value = "/exportCsvFile/{stats}/{anneeUniv}", method = RequestMethod.GET)
+	public void getCsv(@PathVariable("stats") String stats,@PathVariable("anneeUniv") String anneeUniv, HttpServletRequest request, HttpServletResponse response, Locale locale) throws UnsupportedEncodingException, IOException {
 		
 		response.setContentType("text/csv");
 		String reportName = "editable.csv";
@@ -96,7 +96,7 @@ public class ImportExportController {
 		beanWriter.writeHeader(header);
 		
 		try{
-			List<ExportBean>  objs = exportService.getBean(stats, locale);
+			List<ExportBean>  objs = exportService.getBean(stats, locale, anneeUniv);
 			for(ExportBean item : objs) {
 				beanWriter.write(item, header);
 			}

@@ -14,7 +14,7 @@ privileged aspect CardActionMessage_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager CardActionMessage.entityManager;
     
-    public static final List<String> CardActionMessage.fieldNames4OrderClauseFilter = java.util.Arrays.asList("etatInitial", "etatFinal", "message", "auto", "defaut");
+    public static final List<String> CardActionMessage.fieldNames4OrderClauseFilter = java.util.Arrays.asList("etatInitial", "etatFinal", "message", "auto", "defaut", "userTypes");
     
     public static final EntityManager CardActionMessage.entityManager() {
         EntityManager em = new CardActionMessage().entityManager;

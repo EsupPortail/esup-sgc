@@ -206,7 +206,7 @@ public class UserInfoService {
 				Date birthday = dateUtils.parseSchacDateOfBirth(userInfos.get(key));
 				user.setBirthday(birthday);
 			} else if("supannRefId4ExternalCard".equalsIgnoreCase(key)) {
-				// TODO : passage de liste directement
+				// supannRefId4ExternalCard deprecated : use csn4ExternalCard and access-control4ExternalCard fields
 				List<String> supannRefIds = Arrays.asList((userInfos.get(key)).split(";"));
 				for(String supannRefId: supannRefIds) {
 					if(StringUtils.contains(supannRefId, "{ISO15693}")) {
@@ -220,6 +220,12 @@ public class UserInfoService {
 						user.getExternalCard().getDesfireIds().put(AccessControlService.AC_APP_NAME, desfireIdExternalCard);
 					}
 				}
+			} else if("access-control4ExternalCard".equalsIgnoreCase(key)) {
+				user.getExternalCard().setUserAccount(user);
+				user.getExternalCard().getDesfireIds().put(AccessControlService.AC_APP_NAME, userInfos.get(key));
+			} else if("csn4ExternalCard".equalsIgnoreCase(key)) {
+				user.getExternalCard().setUserAccount(user);
+				user.getExternalCard().setCsn(userInfos.get(key));
 			} else if("jpegPhoto4ExternalCard".equalsIgnoreCase(key)) {
 				byte[] bytes = ImportExportCardService.loadNoImgPhoto();
 				if(userInfos.get(key) != null && !userInfos.get(key).isEmpty()) {

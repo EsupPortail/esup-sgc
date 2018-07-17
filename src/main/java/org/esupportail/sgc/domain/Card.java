@@ -30,6 +30,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -164,6 +165,9 @@ public class Card {
 
     @Transient
     List<Etat> etatsAvailable = new ArrayList<Etat>();
+    
+    @Transient
+    Map<Etat, List<CardActionMessage>> cardActionMessages = new HashMap<Etat, List<CardActionMessage>>();
 
     @Transient
     Boolean crousTransient = false;
@@ -768,24 +772,38 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbEditedCardNotDelivered(Date date) {
+    public static List<Object> countNbEditedCardNotDelivered(Date date, Date dateFin) {
         EntityManager em = Card.entityManager();
+        String endDate = "";
+        if(dateFin != null){
+        	endDate = " AND request_date<:dateFin ";
+        }        
         String sql = "select CASE WHEN user_type= 'I' THEN 'Invité' WHEN user_type= 'E' THEN 'Etudiant' WHEN user_type= 'P' THEN 'Personnel' ELSE user_type END AS userType, count(*) " 
-        		+ "FROM card, user_account WHERE card.user_account= user_account.id AND delivered_date is null and etat='ENABLED' " + "AND request_date>=:date "
+        		+ "FROM card, user_account WHERE card.user_account= user_account.id AND delivered_date is null and etat='ENABLED' " + endDate  + "AND request_date>=:date "
         				+ "AND user_type NOT LIKE '' GROUP BY userType;";
         Query q = em.createNativeQuery(sql);
         q.setParameter("date", date);
+        if(dateFin != null){
+        	q.setParameter("dateFin", dateFin);
+        }
         return q.getResultList();
     }
 
-    public static List<Object> countNbCardsByRejets(String userType, Date date) {
+    public static List<Object> countNbCardsByRejets(String userType, Date date, Date dateFin) {
         EntityManager em = Card.entityManager();
-        String sql = "SELECT nb_rejets, count(*) FROM card WHERE request_date>=:date GROUP BY nb_rejets";
+        String endDate = "";
+        if(dateFin != null){
+        	endDate = " AND request_date<:dateFin ";
+        }
+        String sql = "SELECT nb_rejets, count(*) FROM card WHERE request_date>=:date " + endDate + " GROUP BY nb_rejets";
         if (!userType.isEmpty()) {
-            sql = "SELECT nb_rejets, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND request_date>=:date  AND user_type = :userType GROUP BY nb_rejets";
+            sql = "SELECT nb_rejets, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND request_date>=:date " + endDate + " AND user_type = :userType GROUP BY nb_rejets";
         }
         Query q = em.createNativeQuery(sql);
         q.setParameter("date", date);
+        if(dateFin != null){
+        	q.setParameter("dateFin", dateFin);
+        }
         if (!userType.isEmpty()) {
             q.setParameter("userType", userType);
         }
@@ -838,11 +856,18 @@ public class Card {
         return ((Long) q.getSingleResult());
     }
 
-    public static Query countDeliveryByAddress(Date date) {
+    public static Query countDeliveryByAddress(Date date, Date dateFin) {
         EntityManager em = User.entityManager();
-        String sql = "SELECT address, count(*) FROM card INNER JOIN user_account ON card.user_account=user_account.id " + "AND request_date>=:date AND delivered_date is null GROUP BY address ORDER BY count DESC";
+        String endDate = "";
+        if(dateFin != null){
+        	endDate = " AND request_date<:dateFin ";
+        }
+        String sql = "SELECT address, count(*) FROM card INNER JOIN user_account ON card.user_account=user_account.id " + "AND request_date>=:date " + endDate + " AND delivered_date is null GROUP BY address ORDER BY count DESC";
         Query q = em.createNativeQuery(sql);
         q.setParameter("date", date);
+        if(dateFin != null){
+        	q.setParameter("dateFin", dateFin);
+        }
         return q;
     }
 
@@ -869,10 +894,14 @@ public class Card {
         return q.getResultList();
 	}
 	
-    public static List<Object> countNbCardRequestByMonth(String userType, Date date) {
-        String sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card WHERE request_date>=:date GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
+    public static List<Object> countNbCardRequestByMonth(String userType, Date date, Date dateFin) {
+        String endDate = "";
+        if(dateFin != null){
+        	endDate = " AND request_date<:dateFin ";
+        }
+        String sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card WHERE request_date>=:date " + endDate + " GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
-            sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND request_date>=:date AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
+            sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND request_date>=:date " + endDate + " AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
         }
         EntityManager em = Card.entityManager();
 
@@ -881,13 +910,20 @@ public class Card {
         if (!userType.isEmpty()) {
             q.setParameter("userType", userType);
         }
+        if(dateFin != null){
+        	q.setParameter("dateFin", dateFin);
+        }
         return q.getResultList();
     }
     
-    public static List<Object> countNbCardEncodedByMonth(String userType, Date date) {
-        String sql = "SELECT to_char(encoded_date, 'MM-YYYY') tochar, count(*) FROM card WHERE encoded_date>=:date GROUP BY tochar ORDER BY to_date(to_char(encoded_date, 'MM-YYYY'), 'MM-YYYY')";
+    public static List<Object> countNbCardEncodedByMonth(String userType, Date date, Date dateFin) {
+        String endDate = "";
+        if(dateFin != null){
+        	endDate = " AND request_date<:dateFin ";
+        }
+        String sql = "SELECT to_char(encoded_date, 'MM-YYYY') tochar, count(*) FROM card WHERE encoded_date>=:date " + endDate + " GROUP BY tochar ORDER BY to_date(to_char(encoded_date, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
-            sql = "SELECT to_char(encoded_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND encoded_date>=:date AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(encoded_date, 'MM-YYYY'), 'MM-YYYY')";
+            sql = "SELECT to_char(encoded_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND encoded_date>=:date " + endDate + " AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(encoded_date, 'MM-YYYY'), 'MM-YYYY')";
         }
         EntityManager em = Card.entityManager();
 
@@ -896,7 +932,9 @@ public class Card {
         if (!userType.isEmpty()) {
             q.setParameter("userType", userType);
         }        
-
+        if(dateFin != null){
+        	q.setParameter("dateFin", dateFin);
+        }
         return q.getResultList();
     }
     

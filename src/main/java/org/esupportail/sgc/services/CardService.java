@@ -362,7 +362,6 @@ public class CardService {
 		photoFile.setFilename(card.getPhotoFile().getFilename());
 		photoFile.setContentType(card.getPhotoFile().getContentType());
 		photoFile.setFileSize(card.getPhotoFile().getFileSize());
-		photoFile.setBigFile(card.getPhotoFile().getBigFile());
 		photoFile.getBigFile().setBinaryFile(card.getPhotoFile().getBigFile().getBinaryFile());
 		photoFile.setSendTime(currentTime);
 		copyCard.setPhotoFile(photoFile);

@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.FormService;
 import org.springframework.stereotype.Service;
 
 @Service("urlEncodingUtils")
@@ -31,10 +33,20 @@ public class MemoryMapStringEncodingUtils {
 
 	Map<String, String> idsMap = new HashMap<String, String>();
 	
+	@Resource
+	FormService formService;
+	
 	@PostConstruct
 	void preloadStringMap() {
 		for(String s : User.findDistinctAddresses(null, null)) {
 			encodeString(s);
+		}
+		List<String> list = formService.getFieldList();
+		for(String s1 : list) {
+			List<String> results = formService.getField1List(s1);
+			for(String s2 : results) {
+				encodeString(s2);
+			}
 		}
 	}
 	

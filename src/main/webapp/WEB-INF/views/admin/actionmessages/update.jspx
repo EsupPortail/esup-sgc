@@ -12,10 +12,14 @@
                     <c:forEach items="${etats}" var="etat">
                         <c:choose>
                             <c:when test="${cardActionMessage.etatInitial eq etat}">
-                                <option selected="selected" value="${etat}"><spring:message code="card.label.${etat}"/></option>
+                                <option selected="selected" value="${etat}">
+                                    <spring:message code="card.label.${etat}"/>
+                                </option>
                             </c:when>
                             <c:otherwise>
-                                <option value="${etat}"><spring:message code="card.label.${etat}"/></option>
+                                <option value="${etat}">
+                                    <spring:message code="card.label.${etat}"/>
+                                </option>
                             </c:otherwise>
                         </c:choose>
                     </c:forEach>
@@ -29,10 +33,14 @@
                     <c:forEach items="${etats}" var="etat">
                         <c:choose>
                             <c:when test="${cardActionMessage.etatFinal eq etat}">
-                                <option selected="selected" value="${etat}"><spring:message code="card.label.${etat}"/></option>
+                                <option selected="selected" value="${etat}">
+                                    <spring:message code="card.label.${etat}"/>
+                                </option>
                             </c:when>
                             <c:otherwise>
-                                <option value="${etat}"><spring:message code="card.label.${etat}"/></option>
+                                <option value="${etat}">
+                                    <spring:message code="card.label.${etat}"/>
+                                </option>
                             </c:otherwise>
                         </c:choose>
                     </c:forEach>
@@ -44,5 +52,6 @@
         <field:input field="etatFinal" id="c_org_esupportail_sgc_domain_CardActionMessage_etatFinal" render="false" z="user-managed"/>
         <field:checkbox field="defaut" id="c_org_esupportail_sgc_domain_CardActionMessage_defaut" z="D/6nqYn+OJvVu7AYlwt/NZqnE3o="/>
         <field:input field="etatInitial" id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" render="false" z="user-managed"/>
+        <field:select path="userTypes" field="userTypes" items="${userTypes}" multiple="true" id="c_org_esupportail_sgc_domain_CardActionMessage_userTypes" z="E5tvaA++dCvWBBaiLCfrT0HrEzk="/>
     </form:update>
 </div>

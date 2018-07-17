@@ -19,7 +19,7 @@ public class AppliConfigService {
 		DISPLAY_FORM_CNIL, DISPLAY_FORM_CROUS, DISPLAY_FORM_ADRESSE, DISPLAY_FORM_RULES, MONTANT_RENOUVELLEMENT, MAIL_LISTE_PRINCIPALE, MAIL_SUBJECT_AUTO,
 		MAIL_NO_REPLY, PAYBOX_MSG_SUCCESS, USER_MSG_HELP, USER_MSG_FREE_RENEWAL, USER_MSG_PAID_RENEWAL, USER_MSG_CAN_PAID_RENEWAL, USER_MSG_NEW_CARD, USER_MSG_CHECKED_OR_ENCODED_CARD,
 		USER_MSG_REJECTED_CARD, USER_MSG_ENABLED_CARD, USER_MSG_ENABLED_PERS_CARD, ANNEE_UNIV, USER_MSG_FORM_REJECTED, USER_FORM_RULES, USER_FREE_FORCED_RENEWAL, 
-		USER_TIP_MSG, STATS_BANNED_IP, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, MODE_BORNES, ENABLE_CROUS, 
+		USER_TIP_MSG, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, ENABLE_CROUS, 
 		ENABLE_EUROPEAN_CARD, DISPLAY_FORM_EUROPEAN_CARD, PAGE_FOOTER, EXT_USER_EPPN_REGEXP, RETENTION_LOGS_DB_DAYS, P2S_EXPORT_CSV_FILE_NAME, P2S_EXPORT_CSV_NB_LINES_PER_FILE,
 		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS, PHOTO_SIZE_MAX
 	}
@@ -190,14 +190,7 @@ public class AppliConfigService {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.USER_TIP_MSG);
 		return appliConfig.getValue();
 	}
-	
-	
-	public String getBannedIpStats() {
-		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.STATS_BANNED_IP);
-		return appliConfig.getValue();
-	}
-	
-	//
+
 	public Boolean getEnableAuto() {
 		AppliConfig enableAutoConfig = getAppliConfigByKey(AppliConfigKey.ENABLE_AUTO);
 		return enableAutoConfig!=null && "true".equalsIgnoreCase(enableAutoConfig.getValue());
@@ -237,11 +230,6 @@ public class AppliConfigService {
 		return appliConfig.getValue();
 	}
 	
-		
-	public String getModeBornes() {
-		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MODE_BORNES);
-		return appliConfig.getValue();
-	}
 	
 	public List<String> userTypes4isCrousEnabled() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ENABLE_CROUS);

@@ -19,7 +19,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Query;
 import javax.persistence.Transient;
@@ -470,24 +469,8 @@ public class User {
         	mondayorNot = " AND to_char(" + typeDate + ", 'DD-MM-YYYY') = to_char((now() - interval '3 day'), 'DD-MM-YYYY')";
         }
         String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count "
-        		+ "FROM card, user_account WHERE card.user_account=user_account.id "
+        		+ "FROM card, user_account WHERE card.user_account=user_account.id AND etat IN ('ENABLED','DISABLED','CADUC','ENCODED') "
         		+ mondayorNot + " GROUP BY cnous_reference_statut";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    
-    public static List<Object[]> countYesterdayMajCardsByPopulationCrous(String isMonday) {
-        EntityManager em = User.entityManager();
-        
-        String mondayorNot = " AND to_date(to_char(log_date, 'DD-MM-YYYY'), 'DD-MM-YYYY')= TIMESTAMP 'yesterday'";
-        if("true".equals(isMonday)){
-        	mondayorNot = " AND to_char(log_date, 'DD-MM-YYYY') = to_char((now() - interval '3 day'), 'DD-MM-YYYY')";
-        }
-        String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count FROM log, user_account "
-        			+ " WHERE log.eppn_cible=user_account.eppn " + mondayorNot + " AND action='MAJVERSO' GROUP BY cnous_reference_statut";
 
         Query q = em.createNativeQuery(sql);
 
@@ -497,7 +480,7 @@ public class User {
     public static List<Object[]> countMonthCardsByPopulationCrous(String date, String typeDate) {
         EntityManager em = User.entityManager();
         String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count "
-        		+ "FROM card, user_account WHERE card.user_account=user_account.id "
+        		+ "FROM card, user_account WHERE card.user_account=user_account.id AND etat IN ('ENABLED','DISABLED','CADUC','ENCODED') "
         		+ "AND to_char(" + typeDate + ", 'yyyy-mm-dd') like '" + date + "' GROUP BY cnous_reference_statut";
 
         Query q = em.createNativeQuery(sql);
@@ -505,41 +488,24 @@ public class User {
         return q.getResultList();
     }
     
-    public static List<Object[]> countMonthMajCardsByPopulationCrous(String date) {
+    public static List<Object[]> countYearEnabledCardsByPopulationCrous(String date, String typeDate, Date dateFin) {
         EntityManager em = User.entityManager();
-
-        String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count FROM log, user_account " 
-        		+ " WHERE log.eppn_cible=user_account.eppn AND to_char(log_date, 'yyyy-mm-dd') LIKE '" + date + "' AND action='MAJVERSO' GROUP BY cnous_reference_statut";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countYearEnabledCardsByPopulationCrous(String date, String typeDate) {
-        EntityManager em = User.entityManager();
+        String endDate = "";
+        System.out.println(dateFin);
+        if(dateFin != null){
+        	endDate = " AND " + typeDate + "<:dateFin ";
+        }
         String majCond = "";
         String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count FROM card, user_account "
-        		+ " WHERE card.user_account=user_account.id AND etat IN ('ENABLED','DISABLED','CADUC') "
-        		+ "AND " + typeDate + " >='" + date + "' GROUP BY cnous_reference_statut";
+        		+ " WHERE card.user_account=user_account.id AND etat IN ('ENABLED','DISABLED','CADUC','ENCODED') "
+        		+ "AND " + typeDate + " >='" + date + "' " + endDate  +  "GROUP BY cnous_reference_statut";
 
         Query q = em.createNativeQuery(sql);
-
+        if(dateFin != null){
+        	q.setParameter("dateFin", dateFin);
+        }
         return q.getResultList();
     }
-    
-    public static List<Object[]> countYearMajEnabledCardsByPopulationCrous(Date date) {
-        EntityManager em = User.entityManager();
-
-        String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count FROM log, user_account "
-        		+ " WHERE log.eppn_cible=user_account.eppn AND log_date >= :date  AND action='MAJVERSO' GROUP BY cnous_reference_statut";
-
-        Query q = em.createNativeQuery(sql);
-        q.setParameter("date", date);
-
-        return q.getResultList();
-    }
-
 
 	public static List<BigInteger> getDistinctNbCards() {
 		EntityManager em = Card.entityManager();
@@ -573,13 +539,6 @@ public class User {
         String sql = "SELECT CASE WHEN editable = 't' THEN 'Editable' ELSE 'Non editable' END AS etat, name, firstname, email  FROM card, user_account WHERE card.user_account=user_account.id AND etat='NEW' ORDER BY etat DESC, name";
         Query q = em.createNativeQuery(sql);
         return q;
-    }
-    
-    public static List<Object> countNbVerso5() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT CASE WHEN verso5 like '' THEN 'VIDE' ELSE verso5  END AS verso5, COUNT(*) FROM user_account GROUP BY verso5 ORDER BY COUNT DESC";
-        Query q = em.createNativeQuery(sql);
-        return q.getResultList();
     }
     
 	public static List<String> findDistinctUserType() {
@@ -633,7 +592,7 @@ public class User {
 	public static List<String> getDistinctFreeField(String field) {
 		EntityManager em = Card.entityManager();
 		// FormService.getField1List uses its preventing sql injection
-		String req = "SELECT DISTINCT " + field + " FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
+		String req = "SELECT DISTINCT CAST(" + field + " AS VARCHAR) FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
 		Query q = em.createNativeQuery(req);
 		List<String> distinctResults = q.getResultList();
 		return distinctResults;
@@ -651,6 +610,15 @@ public class User {
 		}	
 		return templateCards;
 	}
+	
+    public static List<Object> countNbEuropenCards() {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT european_student_card, count(*) as count FROM user_account, card WHERE user_account.id= card.user_account AND etat='ENABLED' AND user_type='E' GROUP BY european_student_card ORDER BY count DESC";
+
+        Query q = em.createNativeQuery(sql);
+
+        return q.getResultList();
+    }
     
 }
 

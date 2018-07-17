@@ -68,12 +68,7 @@ public class ManagerLdapSearchController {
 	public String getHelp() {
 		return appliConfigService.getHelpManager();
 	}   
-	
-	@ModelAttribute("actionMessages")
-	public Map<Etat, List<CardActionMessage>> getCardActionMessages() {
-		return cardActionMessageService.getCardActionMessages();
-	}
-	
+
 	@ModelAttribute("ldapTemplatesNames")
 	public List<String> getLdapTemplatesNames() {
 		return userService.getLdapTemplatesNames();

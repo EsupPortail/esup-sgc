@@ -52,32 +52,31 @@
 			  	</c:forEach>
 			  	<td class="bold">${loopYear}</td>
 		  	</tr>
-			<c:if test="${bornes}"> 	
-			  	<th colspan="${colspanVal}" class="titleStats majStats"><spring:message code="stats.table.maj.yesterday" /> ${dates['yesterday']}</th> 
-			  	<tr id="cartesJour">
-				  	<c:forEach items="${yesterdayMajCards}" var="yesMaj">
-				  		<c:set var="loopYesMaj" value="${loopYesMaj + yesMaj.value}" />
-				  		<td>${yesMaj.value}</td>
-				  	</c:forEach>
-				  	<td class="bold">${loopYesMaj}</td>
-			  	</tr>
-			  	<th colspan="${colspanVal}" class="titleStats majStats"><spring:message code="stats.table.maj.month" /> ${dates['month']}</th>
+		  </tbody>
+		</table>
+	 </div>
+	<div class="well">
+		<h4>Années universitaires précédentes</h4>
+		<c:set var="colspanVal" value="${populationCrous.size()+1}" />
+		<table class="table table-bordered">
+		  <thead>
+		  <tr>
+		  	<c:forEach items="${populationCrous}" var="popu">
+		  		<th>${popu.value}</th>
+		  	</c:forEach>
+		  	<th><b>TOTAL</b></th>
+		  </tr></thead>
+		  <tbody>
+			  <c:forEach items="${allYearCards}" var="year">
+			  	<th colspan="${colspanVal}" class="titleStats editedStats"><spring:message code="stats.table.edited.all" /> ${year.key }</th>
 			  	<tr id="cartesPeriode">
-				  	<c:forEach items="${monthMajCards}" var="monthMaj">
-				  		<c:set var="loopMonthMaj" value="${loopMonthMaj + monthMaj.value}" />
-				  		<td>${monthMaj.value}</td>
+				  	<c:forEach items="${year.value}" var="year">
+				  		<c:set var="loopYear" value="${loopYear + year.value}" />
+				  		<td>${year.value}</td>
 				  	</c:forEach>
-				  	<td class="bold">${loopMonthMaj}</td>
+				  	<td class="bold">${loopYear}</td>
 			  	</tr>
-			  	<th colspan="${colspanVal}" class="titleStats majStats"><spring:message code="stats.table.maj.year" /> ${dates['formatYear']}</th>
-			  	<tr id="cartesPeriode">
-				  	<c:forEach items="${yearMajCards}" var="yearMaj">
-				  		<c:set var="loopYearMaj" value="${loopYearMaj + yearMaj.value}" />
-				  		<td>${yearMaj.value}</td>
-				  	</c:forEach>
-				  	<td class="bold">${loopYearMaj}</td>
-			  	</tr>
-		  	</c:if>
+			  </c:forEach>
 		  </tbody>
 		</table>
 	 </div>

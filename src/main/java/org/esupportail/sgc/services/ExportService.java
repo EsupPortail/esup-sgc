@@ -29,20 +29,21 @@ public class ExportService {
 	@Autowired
     MessageSource messageSource;
 
-	public List<ExportBean> getBean(String stats, Locale locale) throws ParseException{
+	public List<ExportBean> getBean(String stats, Locale locale, String anneeUniv) throws ParseException{
 		
 		List<Object[]> objs = new ArrayList<>();
 		List<List<Object[]>> statsList = new ArrayList<List<Object[]>>(2);
 		LinkedHashMap<Integer, String> typeCsv =  null;
 		
-	   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
-	   Date date = formatter.parse(appliConfigService.getCurrentAnneeUniv());
-	  // Date date = formatter.parse("2017-06-07");
-		
+	    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	   
+	    LinkedHashMap<String,String> anneeUnivs = statsService.getAnneeUnivs();
+	    Date date = formatter.parse(anneeUnivs.get(anneeUniv));
+	   
 		if("editable".equals(stats)){
 			objs = User.selectEditableCsv().getResultList();
 		}else if("notDelivered".equals(stats)){
-			objs = Card.countDeliveryByAddress(date).getResultList();
+			objs = Card.countDeliveryByAddress(date, statsService.getDateFinAnneeUniv(anneeUnivs.get(anneeUniv))).getResultList();
 		}else if("tableStats".equals(stats)){
 			LinkedHashMap<String, String> datesStats =  statsService.getDates();
 			typeCsv = new LinkedHashMap<Integer, String> ();
@@ -55,20 +56,8 @@ public class ExportService {
 			typeCsv.put(1, message + datesStats.get("month"));
 			statsList.add(objs); objs = new ArrayList<>();
 			message = messageSource.getMessage("stats.table.edited.year", null, locale);
-			objs = User.countYearEnabledCardsByPopulationCrous(statsService.getDates().get("year"), "request_date");
+			objs = User.countYearEnabledCardsByPopulationCrous(statsService.getDates().get("year"), "request_date", statsService.getDateFinAnneeUniv(statsService.getDates().get("year")));
 			typeCsv.put(2, message + datesStats.get("formatYear"));
-			statsList.add(objs); objs = new ArrayList<>();
-			message = messageSource.getMessage("stats.table.maj.yesterday", null, locale);
-			objs = User.countYesterdayMajCardsByPopulationCrous(statsService.getDates().get("year"));
-			typeCsv.put(3, message + datesStats.get("yesterday"));
-			statsList.add(objs); objs = new ArrayList<>();
-			message = messageSource.getMessage("stats.table.maj.month", null, locale);
-			objs = User.countMonthMajCardsByPopulationCrous(statsService.getDates().get("likeMonth"));
-			typeCsv.put(4, message + datesStats.get("month"));
-			statsList.add(objs); objs = new ArrayList<>();
-			message = messageSource.getMessage("stats.table.maj.year", null, locale);
-			objs = User.countYearMajEnabledCardsByPopulationCrous(statsService.StringToDate("yyyy-mm-dd", statsService.getDates().get("year")));
-			typeCsv.put(5, message +  datesStats.get("formatYear"));
 			statsList.add(objs);
 		}
 		
@@ -81,9 +70,21 @@ public class ExportService {
 				if("editable".equals(stats)){
 					exportBean = new ExportBean();
 					exportBean.setEditable(item[0].toString());
-					exportBean.setNom(item[1].toString());
-					exportBean.setPrenom(item[2].toString());
-					exportBean.setEmail(item[3].toString());
+					String nom = "";
+					if(item[3] != null){
+						nom= item[1].toString();
+					}
+					exportBean.setNom(nom);
+					String prenom = "";
+					if(item[2] != null){
+						prenom= item[2].toString();
+					}	
+					exportBean.setPrenom(prenom);
+					String email = "";
+					if(item[3] != null){
+						email= item[3].toString();
+					}
+					exportBean.setEmail(email);
 				}else if("notDelivered".equals(stats)){
 					exportBean = new ExportBean();
 					exportBean.setAdresse(item[0].toString());

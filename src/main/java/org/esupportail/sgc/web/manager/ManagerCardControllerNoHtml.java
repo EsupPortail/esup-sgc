@@ -25,10 +25,10 @@ import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.tools.MapUtils;
 import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -77,6 +77,9 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	MemoryMapStringEncodingUtils urlEncodingUtils;
+	
+	@Resource
+	MapUtils mapUtils;
 	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
@@ -178,7 +181,7 @@ public class ManagerCardControllerNoHtml {
 			log.warn("Impossible de récupérer les données", e);
 		}
 		
-    	return adressesMap;
+    	return mapUtils.sortByValue(adressesMap, true);
 	}
 	
 	@RequestMapping(value="/getCrousRightHolder", headers = "Accept=application/json; charset=utf-8")
@@ -238,12 +241,14 @@ public class ManagerCardControllerNoHtml {
 	@ResponseBody
 	public String getResultsFreefield(@RequestParam(value="field") String field) {
 		
-		String flexJsonString = "Aucune donnée récupérable";
+		Map<String, String> resultsMap = new HashMap<String, String>();
+		String flexJsonString = "";
 		try {
 			if(!field.isEmpty()){
 				List<String> results = formService.getField1List(field);
 				JSONSerializer serializer = new JSONSerializer();
-				flexJsonString = serializer.serialize(results);
+				resultsMap = urlEncodingUtils.getMapWithEncodedString(results);
+				flexJsonString = serializer.serialize(MapUtils.sortByValue(resultsMap, true));
 			}
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les données", e);

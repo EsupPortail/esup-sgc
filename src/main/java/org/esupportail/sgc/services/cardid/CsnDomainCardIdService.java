@@ -51,9 +51,9 @@ public class CsnDomainCardIdService implements CardIdService {
 	@Override
 	public String generateCardId(Long cardId) {
 		Card card = Card.findCard(cardId);
-		if(card.getDesfireIds().get(appName) == null || card.getDesfireIds().get(appName).isEmpty()) {
-			String domain = card.getEppn().replaceAll(".*@", "");
-			String desfireId = MessageFormat.format(identifierFormat, card.getCsn(), domain);
+		String domain = card.getEppn().replaceAll(".*@", "");
+		String desfireId = MessageFormat.format(identifierFormat, card.getCsn(), domain);
+		if(!desfireId.equals(card.getDesfireIds().get(appName))) {
 			card.getDesfireIds().put(appName, desfireId);
 			card.merge();
 			log.info("generate card Id for " + card.getEppn() + " : " + appName + " -> "  + desfireId);

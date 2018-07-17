@@ -13,6 +13,7 @@ import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
 import org.esupportail.sgc.domain.CardActionMessage;
+import org.esupportail.sgc.domain.User;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,6 +53,11 @@ public class CardActionMessageController {
 		}
 		Collections.sort(etats);
 		return etats;
+	}
+	
+	@ModelAttribute("userTypes")
+	public List<String> getUserTypes() {
+		return User.findDistinctUserType();
 	}
 	
 	@ModelAttribute("footer")

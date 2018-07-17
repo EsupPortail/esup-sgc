@@ -216,6 +216,9 @@ public class CardEtatService {
 		for(Card card : cards) {
 			updateEtatsAvailable4Card(card);
 			etatsAvailable.retainAll(new HashSet<Etat>(card.getEtatsAvailable()));
+			if(etatsAvailable.isEmpty()) {
+				continue;
+			}
 		}
 		return new ArrayList<Etat>(etatsAvailable);
 	}
@@ -276,7 +279,7 @@ public class CardEtatService {
 	public void sendMailInfo(Etat etatInitial, Etat etatFinal, User user, String mailMessage, boolean actionFromAnAdmin){
 		if(user.getEmail() != null && !user.getEmail().isEmpty()) {
 			if(mailMessage == null || mailMessage.isEmpty()) {
-				for(CardActionMessage msg : CardActionMessage.findCardActionMessagesByEtatFinal(etatFinal).getResultList()){
+				for(CardActionMessage msg : CardActionMessage.findCardActionMessagesByEtatFinalAndUserType(etatFinal, user.getUserType()).getResultList()){
 					if(msg.getEtatInitial() == null || msg.getEtatInitial().equals(etatInitial)) {
 						if(actionFromAnAdmin || msg.isAuto()) {
 							if(msg.isAuto()) {
@@ -287,7 +290,7 @@ public class CardEtatService {
 					}
 				}
 			}
-			if(mailMessage != null && !mailMessage.isEmpty()) {
+			if(mailMessage != null && !mailMessage.trim().isEmpty()) {
 				try {
 					cardService.sendMailCard(appliConfigService.getNoReplyMsg(), user.getEmail(), appliConfigService.getListePpale(), 
 					appliConfigService.getSubjectAutoCard().concat(" -- ".concat(user.getEppn())), mailMessage);

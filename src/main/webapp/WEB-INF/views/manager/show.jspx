@@ -209,13 +209,13 @@
                                                                                             <input class="ezcrop-image-zoom-input" type="range"/>
                                                                                             <label>Rotation</label>
                                                                                             <br/>
-                                                                                            <button id="rotate-ccw" class="rotate-ccw" type="button">
+                                                                                            <button class="rotate-ccw" id="rotate-ccw" type="button">
                                                                                                 <span aria-hidden="true" class="glyphicon glyphicon-repeat icon-flipped"/>
                                                                                             </button>
-                                                                                            <button id="rotate-cw" class="rotate-cw" type="button">
+                                                                                            <button class="rotate-cw" id="rotate-cw" type="button">
                                                                                                 <span aria-hidden="true" class="glyphicon glyphicon-repeat"/>
                                                                                             </button>
-                                                                                            <input type="file" class="ezcrop-image-input" style="display:none;"/>
+                                                                                            <input class="ezcrop-image-input" style="display:none;" type="file"/>
                                                                                             <br/>
                                                                                         </div>
                                                                                         <div class="well" id="filterSliders">
@@ -232,7 +232,7 @@
                                                                                             <button class="btn btn-primary" id="btnColors" type="button">Filtres</button>&amp;nbsp
                                                                                     	<button class="btn btn-warning" id="scaleBtn" type="button">Echelle</button>&amp;nbsp
                                                                                     	<button class="btn btn-default" id="resetBtn" type="button">Effacer</button>&amp;nbsp
-                                                                                        <button id="exportAdmin" class="btn btn-success" onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
+                                                                                        <button class="btn btn-success" id="exportAdmin" onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
                                                                                         </div>
                                                                                         <input id="cardId" name="cardId" type="hidden" value="${card.id}"/>
                                                                                         <input class="ezcrop-image-data" name="imageData" type="hidden"/>
@@ -336,7 +336,7 @@
                                                             <c:forEach items="${card.etatsAvailable}" var="etatAvailable" varStatus="j">
                                                                 <form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
                                                                     <c:choose>
-                                                                        <c:when test="${not empty actionMessages[etatAvailable]}">
+                                                                        <c:when test="${not empty card.cardActionMessages[etatAvailable]}">
                                                                             <button class="btn btn-success btn-block" data-target="#commentEtat${i.index}-${j.index}" data-toggle="modal" type="button">
                                                                                 <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
                                                                             </button>
@@ -349,8 +349,8 @@
                                                                                         </div>
                                                                                         <div class="modal-body">
                                                                                             <div class="form-group">
-                                                                                                <textarea class="form-control" id="comment" name="comment" rows="5">
-                                                                                                    <c:forEach items="${actionMessages}" var="message" varStatus="loop">
+                                                                                                <textarea class="form-control" id="comment_${i.index}_${j.index}" name="comment" rows="5">
+                                                                                                    <c:forEach items="${card.cardActionMessages}" var="message" varStatus="loop">
                                                                                                         <c:if test="${message.key eq  etatAvailable}">
                                                                                                             <c:forEach items="${message.value}" var="msg" varStatus="loop">
                                                                                                                 <c:if test="${msg.defaut}">${msg.message}
@@ -366,20 +366,20 @@
                                                                                             <h4>Messages prédéfinis</h4>
                                                                                             <div class="panel-default">
                                                                                                 <div class="panel-heading">
-                                                                                                    <a class="accordion-toggle" data-parent="#accordionfilter" data-toggle="collapse" href="#msgChoice">
-                                                                                                        <span class="glyphicon glyphicon-plus">&amp;nbsp;</span>
-                                                                                                    </a>Choisir
+                                                                                                    <a class="accordion-toggle" data-parent="#accordionfilter" data-toggle="collapse" href="#msgChoice_${i.index}_${j.index}">
+                                                                                                        <span class="glyphicon glyphicon-plus">Choisir</span>
+                                                                                                    </a>
 																							</div>
-                                                                                                <div class="panel-collapse collapse well" id="msgChoice">
+                                                                                                <div class="panel-collapse collapse well" id="msgChoice_${i.index}_${j.index}">
                                                                                                     <ul>
-                                                                                                        <c:forEach items="${actionMessages}" var="message" varStatus="loop">
+                                                                                                        <c:forEach items="${card.cardActionMessages}" var="message" varStatus="loop">
                                                                                                             <c:if test="${message.key eq  etatAvailable}">
                                                                                                                 <c:forEach items="${message.value}" var="msg" varStatus="loop">
                                                                                                                     <li>
-                                                                                                                        <button class="btn btn-default btn-xs" id="msg_${loop.index}" type="button">
-                                                                                                                            <span aria-hidden="true" class="glyphicon glyphicon-edit"/>
+                                                                                                                        <button class="btn btn-default btn-xs" type="button">
+                                                                                                                            <span id="msg_${i.index}_${j.index}_${loop.index}" aria-hidden="true" class="glyphicon glyphicon-edit"/>
                                                                                                                         </button>
-                                                                                                                        <span id="span_${loop.index}">${msg.message}</span>
+                                                                                                                        <span id="span_${i.index}_${j.index}_${loop.index}">${msg.message}</span>
                                                                                                                     </li>
                                                                                                                 </c:forEach>
                                                                                                             </c:if>
@@ -510,7 +510,7 @@
                                                     <dd>${card.requestOs}</dd>
                                                 </dl>
                                                 <c:if test="${not empty card.crousSmartCard}">
-                                                	<dl class="dl-horizontal col-lg-5">
+                                                    <dl class="dl-horizontal col-lg-5">
                                                         <h4>Restauration CROUS</h4>
                                                         <dt>Numéro Crous : </dt>
                                                         <dd>${card.crousSmartCard.idZdc}</dd>
@@ -519,17 +519,17 @@
                                                             <fmt:formatDate pattern="dd/MM/yyyy" value="${card.crousSmartCard.zdcCreationDate}"/>
                                                         </dd>
                                                         <dt>Emetteur : </dt>
-                                                        <dd>${card.crousSmartCard.idTransmitter}</dd> 
-                                                	</dl>
-                                                	<c:if test="${not empty card.csn}">
-	                                                	<h5>
-							                                <spring:url value="/manager/getCrousSmartCardUrlHtmlPart?csn=${card.csn}" var="getCrousSmartCardUrl"/>
-							                                <a href="${getCrousSmartCardUrl}" class="getCrousSmartCard">Cliquer pour visualiser les données côté CROUS :</a>
-							                            </h5>
-							                            <div class="getCrousSmartCardDiv">
-							                             	<!--  -->
-							                            </div>
-						                            </c:if>
+                                                        <dd>${card.crousSmartCard.idTransmitter}</dd>
+                                                    </dl>
+                                                    <c:if test="${not empty card.csn}">
+                                                        <h5>
+                                                            <spring:url value="/manager/getCrousSmartCardUrlHtmlPart?csn=${card.csn}" var="getCrousSmartCardUrl"/>
+                                                            <a class="getCrousSmartCard" href="${getCrousSmartCardUrl}">Cliquer pour visualiser les données côté CROUS :</a>
+                                                        </h5>
+                                                        <div class="getCrousSmartCardDiv">
+                                                            <!--  -->
+                                                        </div>
+                                                    </c:if>
                                                 </c:if>
                                                 <dl class="dl-horizontal col-lg-5">
                                                     <h4>Carte d'étudiant européenne</h4>
@@ -617,5 +617,6 @@
         <field:display field="templateCard" id="s_org_esupportail_sgc_domain_Card_templateCard" object="${card}" z="x6QYNZR4lHXpv9/jpM8fllW4/ws="/>
         <field:display field="recto6Printed" id="s_org_esupportail_sgc_domain_Card_recto6Printed" object="${card}" z="J51COVal13NCQaOBYmF34Qow0lc="/>
         <field:display field="recto7Printed" id="s_org_esupportail_sgc_domain_Card_recto7Printed" object="${card}" z="M+1zERjxfeXcA95eLDDE0DTNnhA="/>
+        <field:display field="cardActionMessages" id="s_org_esupportail_sgc_domain_Card_cardActionMessages" object="${card}" z="Q2nASsfKrG3reov0jF273XLPkr0="/>
     </page:show>
 </div>

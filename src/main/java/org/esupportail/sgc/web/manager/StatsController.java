@@ -1,5 +1,6 @@
 package org.esupportail.sgc.web.manager;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,11 +70,6 @@ public class StatsController {
 		return appliConfigService.getModeLivraison();
 	}
 	
-	@ModelAttribute("bornes")
-	public String getBornesConfig() {
-		return appliConfigService.getModeBornes();
-	}
-	
 	@ModelAttribute("footer")
 	public String getFooter() {
 		return appliConfigService.pageFooter();
@@ -115,6 +111,7 @@ public class StatsController {
 		uiModel.addAttribute("prefs",jsonStats);
 		uiModel.addAttribute("prefsRm",jsonStatsRm);
 		uiModel.addAttribute("prefsRmList",prefsStatsRm);
+		uiModel.addAttribute("annees",statsService.getAnneeUnivs());
 		return "manager/stats";
 	}
 	
@@ -128,11 +125,11 @@ public class StatsController {
 	
 	@RequestMapping(value="json", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody 
-	public String getStats( @RequestParam(value="typeInd")  String typeInd, @RequestParam(value="type") String type) {
+	public String getStats( @RequestParam(value="typeInd")  String typeInd, @RequestParam(value="type") String type, @RequestParam(value="anneeUniv") String anneeUniv) {
 		String flexJsonString = "Aucune statistique à récupérer";
 		try {
 			JSONSerializer serializer = new JSONSerializer();
-			flexJsonString = serializer.deepSerialize(statsService.getStats(typeInd, type));
+			flexJsonString = serializer.deepSerialize(statsService.getStats(typeInd, type, anneeUniv));
 			
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les statistiques " + type , e);
@@ -142,15 +139,13 @@ public class StatsController {
 	}
 	
 	@RequestMapping(value="/table", produces = "text/html")
-	public String getTableStats( Model uiModel) {
+	public String getTableStats( Model uiModel) throws ParseException {
 		uiModel.addAttribute("dates", statsService.getDates());
 		uiModel.addAttribute("populationCrous", statsService.getPopulationCrous());
-		uiModel.addAttribute("yesterdayCards", statsService.getYesterdayCardsByPopulationCrous("encoded_date", false));
-		uiModel.addAttribute("monthCards", statsService.getMonthCardsByPopulationCrous("encoded_date", false));
-		uiModel.addAttribute("yearCards", statsService.getYearEnabledCardsByPopulationCrous("request_date", false));
-		uiModel.addAttribute("yesterdayMajCards", statsService.getYesterdayCardsByPopulationCrous("log_date", true));
-		uiModel.addAttribute("monthMajCards", statsService.getMonthCardsByPopulationCrous("log_date", true));
-		uiModel.addAttribute("yearMajCards", statsService.getYearEnabledCardsByPopulationCrous("log_date", true));
+		uiModel.addAttribute("yesterdayCards", statsService.getYesterdayCardsByPopulationCrous("encoded_date"));
+		uiModel.addAttribute("monthCards", statsService.getMonthCardsByPopulationCrous("encoded_date"));
+		uiModel.addAttribute("yearCards", statsService.getYearEnabledCardsByPopulationCrous("request_date", statsService.getDates().get("year")));
+		uiModel.addAttribute("allYearCards", statsService.getAllPastYearEnabledCardsByPopulationCrous("request_date"));
 		return "manager/stats/table";
 	}
 	

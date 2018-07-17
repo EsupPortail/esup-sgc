@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
@@ -283,6 +284,14 @@ privileged aspect Card_Roo_JavaBean {
     
     public void Card.setEtatsAvailable(List<Etat> etatsAvailable) {
         this.etatsAvailable = etatsAvailable;
+    }
+    
+    public Map<Etat, List<CardActionMessage>> Card.getCardActionMessages() {
+        return this.cardActionMessages;
+    }
+    
+    public void Card.setCardActionMessages(Map<Etat, List<CardActionMessage>> cardActionMessages) {
+        this.cardActionMessages = cardActionMessages;
     }
     
     public Boolean Card.getCrousTransient() {

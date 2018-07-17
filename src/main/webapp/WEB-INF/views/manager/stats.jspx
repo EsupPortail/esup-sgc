@@ -14,6 +14,11 @@
 		var prefsStatsRm = ${prefsRm};
 	</script>
     <h2>Statistiques
+				<select	class="" id="anneeUniv">
+					<c:forEach items="${annees}" var="annee">
+						<option value="${annee.key}">${annee.key}/${annee.key + 1}</option>
+					</c:forEach>
+				</select>
 		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
             <span class="glyphicon glyphicon-home"></span>
         </a>
@@ -87,6 +92,24 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="europeanCard">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Carte euopéenne étudiante
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="europeanCardChart" width="400" height="400">&amp;nbsp;</canvas>
+					<div class="chartjs-tooltip">
+						<table>
+							<!--  -->
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>		
 		<c:if test="${livraison}">
 			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDeLivraison">
 				<div class="panel panel-primary">
@@ -121,7 +144,7 @@
 							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
 							<sec:authorize access="hasRole('ROLE_ADMIN')">
-								<a href="${downloadUrl}/notDelivered" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
+								<a href="${downloadUrl}/notDelivered" title="${downloadUrl}/notDelivered" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
 								<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
 							</sec:authorize>							
 						</h5>
@@ -150,81 +173,16 @@
 				</div>
 			</div>
 		</c:if>
-		<c:if test="${bornes}">
-			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="maj30DerniersJours">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h5>MAJ des 30 derniers jours
-							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-						</h5>
-					</div>
-					<div class="panel-body ">
-						<canvas id="cardsMajByDay" width="400" height="400">&amp;nbsp;</canvas>
-					</div>
-				</div>
-			</div>
-			
-			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="majParBorne">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h5>MaJ par borne
-							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-						</h5>
-					</div>
-					<div class="panel-body ">
-						<canvas id="cardsMajByIp" width="400" height="400">&amp;nbsp;</canvas>
-						<div class="chartjs-tooltip">
-							<table>
-								<!--  -->
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="activiteBornes">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h5>Activité bornes
-							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-						</h5>
-					</div>
-					<div class="panel-body ">
-						<canvas id="lineCardsMajByDay" width="400" height="400">&amp;nbsp;</canvas>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="verso">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h5>Verso
-							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-						</h5>
-					</div>
-					<div class="panel-body ">
-						<canvas id="verso5" width="400" height="400">&amp;nbsp;</canvas>
-						<div class="chartjs-tooltip">
-							<table>
-								<!--  -->
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		</c:if>
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editables">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
 					<h5>Cartes editables pour les nouvelles demandes 
-						<sec:authorize access="hasRole('ROLE_ADMIN')">
-							<a href="${downloadUrl}/editable" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
-							<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
-						</sec:authorize>
 						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						<sec:authorize access="hasRole('ROLE_ADMIN')">
+							<a href="${downloadUrl}/editable" title="${downloadUrl}/editable" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
+							<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
+						</sec:authorize>
 					</h5>
 				</div>
 				<div class="panel-body ">

@@ -10,17 +10,21 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 	<spring:url value="/manager/multiUpdate" var="etatActionUrl" />
+	
+	<spring:url value="/resources/js/bootstrap-native-custom.min.js" var="bootstrap_js__url" />
+	<script src="${bootstrap_js__url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	
 	<c:if test="${not empty cardIds}">
 		<c:choose>
 			<c:when test="${not empty etatsAvailable}">
-				<div class="editActions">
+				<div class="editActions" id="editActions">
 					<div id="selectNb">
 						<span class="badge">${cardIds.size()}</span>
 					</div>
 					<div id="etatsChoice">
 						<div id="btnBlock">
 						<div class="col-lg-6">
-							<c:forEach items="${etatsAvailable}" var="etatAvailable">
+							<c:forEach items="${etatsAvailable}" var="etatAvailable" varStatus="j">
 								<form action="${etatActionUrl}?etatFinal=${etatAvailable}"
 									id="${etatAvailable}Form" method="POST">
 									<c:forEach var="cardId" items="${cardIds}">	
@@ -43,7 +47,7 @@
 														</div>
 														<div class="modal-body">
 															<div class="form-group">
-																<textarea class="form-control" id="comment"
+																<textarea class="form-control" id="comment_${j.index}"
 																	name="comment" rows="5">
 																		<c:forEach items="${actionMessages}" var="message"
 																			varStatus="loop">
@@ -67,11 +71,11 @@
 																<div class="panel-heading">
 																	<a class="accordion-toggle"
 																		data-parent="#accordionfilter" data-toggle="collapse"
-																		href="#msgChoice"> <span
-																		class="glyphicon glyphicon-plus">&amp;nbsp;</span>
-																	</a>Choisir
+																		href="#msgChoice_${j.index}"> <span
+																		class="glyphicon glyphicon-plus">Choisir</span>
+																	</a>
 																</div>
-																<div class="panel-collapse collapse well" id="msgChoice">
+																<div class="panel-collapse well collapse" id="msgChoice_${j.index}">
 																	<ul>
 																		<c:forEach items="${actionMessages}" var="message"
 																			varStatus="loop">
@@ -80,10 +84,10 @@
 																					varStatus="loop">
 																					<li>
 																						<button class="btn btn-default btn-xs"
-																							id="msg_${loop.index}" type="button">
-																							<span aria-hidden="true"
+																							type="button">
+																							<span aria-hidden="true" id="msg_${j.index}_${loop.index}"
 																								class="glyphicon glyphicon-edit" />
-																						</button> <span id="span_${loop.index}">${msg.message}</span>
+																						</button> <span id="span_${j.index}_${loop.index}">${msg.message}</span>
 																					</li>
 																				</c:forEach>
 																			</c:if>
@@ -247,4 +251,6 @@
 		</div>
 
 	</c:if>
+		
 </div>
+

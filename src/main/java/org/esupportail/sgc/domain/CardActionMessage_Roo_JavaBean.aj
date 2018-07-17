@@ -3,6 +3,7 @@
 
 package org.esupportail.sgc.domain;
 
+import java.util.Set;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CardActionMessage;
 
@@ -46,6 +47,14 @@ privileged aspect CardActionMessage_Roo_JavaBean {
     
     public void CardActionMessage.setDefaut(boolean defaut) {
         this.defaut = defaut;
+    }
+    
+    public Set<String> CardActionMessage.getUserTypes() {
+        return this.userTypes;
+    }
+    
+    public void CardActionMessage.setUserTypes(Set<String> userTypes) {
+        this.userTypes = userTypes;
     }
     
 }

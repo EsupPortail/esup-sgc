@@ -1,9 +1,20 @@
 package org.esupportail.sgc.domain;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.esupportail.sgc.domain.Card.Etat;
 import org.springframework.roo.addon.dbre.RooDbManaged;
@@ -14,7 +25,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooDbManaged(automaticallyDelete = true)
-@RooJpaActiveRecord(finders = { "findCardActionMessagesByEtatFinal" })
+@RooJpaActiveRecord
 public class CardActionMessage {
 
     @Column
@@ -34,19 +45,44 @@ public class CardActionMessage {
     @Column
     private boolean defaut;
     
-    public static Long countFindCardActionMessagesByEtatFinal(Etat etatFinal) {
+    @Column
+    @ElementCollection(targetClass=String.class)
+    private Set<String> userTypes = new HashSet<String>();
+
+    public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatFinalAndUserType(Etat etatFinal, String userType) {
         if (etatFinal == null) throw new IllegalArgumentException("The etatFinal argument is required");
         EntityManager em = CardActionMessage.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CardActionMessage AS o WHERE o.etatFinal = :etatFinal", Long.class);
+        TypedQuery<CardActionMessage> q = em.createQuery("SELECT o FROM CardActionMessage AS o WHERE o.etatFinal = :etatFinal and :userType MEMBER OF o.userTypes", CardActionMessage.class);
         q.setParameter("etatFinal", etatFinal);
-        return ((Long) q.getSingleResult());
-    }
-    
-    public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatFinal(Etat etatFinal) {
-        if (etatFinal == null) throw new IllegalArgumentException("The etatFinal argument is required");
-        EntityManager em = CardActionMessage.entityManager();
-        TypedQuery<CardActionMessage> q = em.createQuery("SELECT o FROM CardActionMessage AS o WHERE o.etatFinal = :etatFinal", CardActionMessage.class);
-        q.setParameter("etatFinal", etatFinal);
+        q.setParameter("userType", userType);
         return q;
     }
+    
+    public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatInitialAndEtatFinalAndUserType(Etat etatInitial, Etat etatFinal, String userType) {
+        EntityManager em = CardActionMessage.entityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<CardActionMessage> query = criteriaBuilder.createQuery(CardActionMessage.class);
+        Root<CardActionMessage> c = query.from(CardActionMessage.class);
+        final List<Predicate> predicates = new ArrayList<Predicate>();
+        final List<Order> orders = new ArrayList<Order>();
+        orders.add(criteriaBuilder.desc(c.get("defaut")));
+        if (etatInitial != null) {
+        	List<Predicate> orPredicates = new ArrayList<Predicate>();
+        	orPredicates.add(criteriaBuilder.isNull(c.get("etatInitial")));
+        	orPredicates.add(criteriaBuilder.equal(c.get("etatInitial"), etatInitial));
+            predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
+        }
+        if (etatFinal != null) {
+        	predicates.add(criteriaBuilder.equal(c.get("etatFinal"), etatFinal));
+        }
+        
+        predicates.add(criteriaBuilder.isMember(userType, c.get("userTypes")));
+        		
+        orders.add(criteriaBuilder.desc(c.get("id")));
+        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+        query.orderBy(orders);
+        query.select(c);
+        return em.createQuery(query);
+    }
+    
 }

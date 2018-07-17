@@ -495,3 +495,10 @@ span.icon-flipped{
  #searchLdapForm input{
  	margin: 10px 10px;
  }
+ #statsManager .ss-main{
+	width: 130px;
+	font-size: 15px;
+ }
+ #searchBeanAdress + .ss-main{
+ 	min-width: 180px;
+ }
