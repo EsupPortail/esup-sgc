@@ -44,9 +44,26 @@ public class DbToolService {
 		if(appliVersions.isEmpty()) {
 			appliVersion = new AppliVersion();
 			appliVersion.setEsupSgcVersion("0.0.x");
+			appliVersion.setVersion(1);
 			appliVersion.persist();
 		} else {
 			appliVersion = appliVersions.get(0);
+			if(appliVersion.getVersion() == null) {
+				try{
+					String sqlUpdate = "update appli_version set version=2;";
+					log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+					Connection connection = dataSource.getConnection();
+					CallableStatement statement = connection.prepareCall(sqlUpdate);
+					statement.execute();
+					connection.close();
+					log.warn("\n\n#####\n\t" +
+		    				"appli_version fixé, merci de relancer la commande dbupgrade" +
+		    				"\n#####\n");
+					return;
+				} catch(Exception e) {
+					log.warn("Erreur durant le fixe sur appli_version", e);
+				}
+			}
 			for(int i = 1; i<appliVersions.size() ; i++) {
 				appliVersions.get(i).remove();
 			}
@@ -151,7 +168,7 @@ public class DbToolService {
 					photoFile.getBigFile().setBinaryFile(photoFile4Copy.getBigFile().getBinaryFileasBytes());
 					photoFile.setFileSize(photoFile4Copy.getFileSize());
 					photoFile.merge();
-				}				
+				}
 				connection.close();
 				
 				Set<String> userTypes = new HashSet<String>(User.findDistinctUserType());
@@ -170,7 +187,7 @@ public class DbToolService {
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
 		} catch(Exception e) {
-			throw new RuntimeException("Erreur durant le mise à jour de la base de données", e);
+			throw new RuntimeException("Erreur durant la mise à jour de la base de données", e);
 		}
 	}
 
