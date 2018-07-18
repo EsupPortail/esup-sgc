@@ -50,7 +50,7 @@ public class CardActionMessage {
     private Set<String> userTypes = new HashSet<String>();
 
     public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatFinalAndUserType(Etat etatFinal, String userType) {
-        if (etatFinal == null) throw new IllegalArgumentException("The etatFinal argument is required");
+        if (etatFinal == null || userType == null) throw new IllegalArgumentException("The etatFinal and the userType can't ben null");
         EntityManager em = CardActionMessage.entityManager();
         TypedQuery<CardActionMessage> q = em.createQuery("SELECT o FROM CardActionMessage AS o WHERE o.etatFinal = :etatFinal and :userType MEMBER OF o.userTypes", CardActionMessage.class);
         q.setParameter("etatFinal", etatFinal);
@@ -59,6 +59,7 @@ public class CardActionMessage {
     }
     
     public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatInitialAndEtatFinalAndUserType(Etat etatInitial, Etat etatFinal, String userType) {
+    	if(userType == null) throw new IllegalArgumentException("The userType can't ben null");
         EntityManager em = CardActionMessage.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<CardActionMessage> query = criteriaBuilder.createQuery(CardActionMessage.class);

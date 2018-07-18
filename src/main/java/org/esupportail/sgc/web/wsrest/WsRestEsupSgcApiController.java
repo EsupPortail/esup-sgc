@@ -37,6 +37,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import eu.bitwalker.useragentutils.UserAgent;
 
 @RequestMapping("/wsrest/api")
@@ -213,7 +216,25 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 		}
 		return new ResponseEntity<String>("Importation de la carte extérieure de " + eppn + " OK", HttpStatus.OK);
 	}
-
+	
+	/**
+	 * Example to use it :
+	 * curl https://esup-sgc.univ-ville.fr/wsrest/api/get?eppn=toto@univ-ville.fr
+	 * @throws JsonProcessingException 
+	 */
+	@Transactional
+	@RequestMapping(value="/get", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public ResponseEntity<String>  get(@RequestParam String eppn) throws JsonProcessingException {			
+		User user = User.findUser(eppn);
+		if(user == null) {
+			return new ResponseEntity<String>("User " + eppn + " not found", HttpStatus.NOT_FOUND);
+		} else {
+			ObjectMapper mapper = new ObjectMapper();
+			String jsonUser = mapper.writeValueAsString(user);
+			return new ResponseEntity<String>(jsonUser, HttpStatus.OK);
+		}
+	}
+	
 }
 
 

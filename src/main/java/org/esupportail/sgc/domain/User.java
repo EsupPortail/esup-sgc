@@ -32,10 +32,13 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @RooJavaBean
 @RooToString(excludeFields={"cards"})
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous" })
+@JsonIgnoreProperties(value={"roles", "lastCardTemplatePrinted", "externalCard", "templateCard"})
 public class User {
 	
 	private final static Logger log = LoggerFactory.getLogger(User.class);
@@ -543,7 +546,7 @@ public class User {
     
 	public static List<String> findDistinctUserType() {
 		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery("SELECT DISTINCT user_type FROM user_account");
+		Query q = em.createNativeQuery("SELECT DISTINCT user_type FROM user_account where user_type is not null");
 		return q.getResultList();
 	}
 

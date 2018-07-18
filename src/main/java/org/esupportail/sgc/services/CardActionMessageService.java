@@ -32,7 +32,9 @@ public class CardActionMessageService {
 	public void updateCardActionMessages(Card card) {
 		Map<Etat, List<CardActionMessage>> messages = new HashMap<Etat, List<CardActionMessage>>();
 		for(Etat etatFinal : card.getEtatsAvailable()) {
-			messages.put(etatFinal, CardActionMessage.findCardActionMessagesByEtatInitialAndEtatFinalAndUserType(card.getEtat(), etatFinal, card.getUser().getUserType()).getResultList());
+			if(card.getUser().getUserType() != null) {
+				messages.put(etatFinal, CardActionMessage.findCardActionMessagesByEtatInitialAndEtatFinalAndUserType(card.getEtat(), etatFinal, card.getUser().getUserType()).getResultList());
+			}
 		}
 		card.setCardActionMessages(messages);
 	}
