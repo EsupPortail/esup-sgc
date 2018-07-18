@@ -39,13 +39,14 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @RooJavaBean
 @RooToString
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "Card", finders = { "findCardsByEppnEquals", "findCardsByEppnAndEtatEquals", "findCardsByEppnLike", "findCardsByEtatEqualsAndDateDemandeLessThan", "findCardsByDesfireId", "findCardsByCsn", "findCardsByEppnAndEtatNotEquals" })
-@JsonIgnoreProperties(value={"userAccount", "photoFile", "etatsAvailable", "cardActionMessages", "crousTransient", "europeanTransient", "difPhotoTransient", "isPhotoEditable", "user", "templateCard"})
+@JsonFilter("cardFilter")
 public class Card {
 
     public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire", "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate");

@@ -32,13 +32,15 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @RooJavaBean
 @RooToString(excludeFields={"cards"})
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous" })
-@JsonIgnoreProperties(value={"roles", "lastCardTemplatePrinted", "externalCard", "templateCard"})
+@JsonFilter("userFilter")
 public class User {
 	
 	private final static Logger log = LoggerFactory.getLogger(User.class);
@@ -50,6 +52,7 @@ public class User {
 		psg, etd, prs, hbg, fct, fpa, stg;
 	};
 
+	@JsonInclude
     @Column(unique=true)
     private String eppn;
     

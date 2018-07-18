@@ -1,7 +1,9 @@
 package org.esupportail.sgc.web.wsrest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +41,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -219,22 +224,26 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	
 	/**
 	 * Example to use it :
-	 * curl https://esup-sgc.univ-ville.fr/wsrest/api/get?eppn=toto@univ-ville.fr
+	 * curl 'https://esup-sgc.univ-ville.fr/wsrest/api/get?eppn=toto@univ-ville.fr&eppn=titi@univ-ville.fr'
 	 * @throws JsonProcessingException 
 	 */
 	@Transactional
 	@RequestMapping(value="/get", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public ResponseEntity<String>  get(@RequestParam String eppn) throws JsonProcessingException {			
-		User user = User.findUser(eppn);
-		if(user == null) {
-			return new ResponseEntity<String>("User " + eppn + " not found", HttpStatus.NOT_FOUND);
-		} else {
-			ObjectMapper mapper = new ObjectMapper();
-			String jsonUser = mapper.writeValueAsString(user);
-			return new ResponseEntity<String>(jsonUser, HttpStatus.OK);
+	public ResponseEntity<String>  get(@RequestParam(value="eppn") List<String> eppns) throws JsonProcessingException {
+		List<User> users = new ArrayList<User>();
+		for(String eppn : eppns) {
+			User user = User.findUser(eppn);
+			if(user != null) {
+				users.add(user);
+			}
 		}
+		ObjectMapper mapper = new ObjectMapper();
+		FilterProvider filters = new SimpleFilterProvider()
+				.addFilter("userFilter", SimpleBeanPropertyFilter.filterOutAllExcept("eppn", "cards", "crous", "europeanStudentCard", "difPhoto", "name", "firstname", "birthday", "email", "dueDate"))
+				.addFilter("cardFilter", SimpleBeanPropertyFilter.filterOutAllExcept("csn", "etat", "dateEtat", "desfireIds", "escnUid"));
+		String jsonUsers = mapper.writer(filters).writeValueAsString(users);
+		return new ResponseEntity<String>(jsonUsers, HttpStatus.OK);
 	}
-	
 }
 
 
