@@ -9,7 +9,7 @@
   <c:if test="${empty render or render}">
 
 
-    <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+    <button class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar">
       <span class="icon-bar">
         <!--  -->
       </span> <span class="icon-bar">
@@ -20,7 +20,7 @@
     </button>
     <spring:url value="/" var="rootUrl" />
     <a class="navbar-brand" href="${rootUrl}">${appName}</a>
-    <div class="navbar-collapse collapse">
+    <div class="navbar-collapse collapse" id="bs-navbar">
       <ul class="nav navbar-nav" id="${fn:escapeXml(id)}">
         <jsp:doBody />
       </ul>
