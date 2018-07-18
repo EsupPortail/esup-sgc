@@ -160,7 +160,7 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public List<String> getLocationsVerso(@RequestParam String eppn) {
 		List<String> locations = new ArrayList<String>();
-		List<String> managerGroups = shibAuthenticatedUserDetailsService.getConsultManagerGroups();
+		List<String> managerGroups = shibAuthenticatedUserDetailsService.getVersoGroups();
 		List<String> userGroups = groupService.getGroupsForEppn(eppn);
 		for(String managerGroup : managerGroups) {
 			if(userGroups.contains(managerGroup)) {
@@ -613,8 +613,9 @@ public class WsRestEsupNfcController {
 			versoText = user.getVersoText();
 			card.setVersoTextPrinted(StringUtils.join(versoText, "\n"));
 			String comment = "";
-			if(ipService.getMaps().containsKey(request.getRemoteAddr()))
+			if(ipService.getMaps().containsKey(request.getRemoteAddr())) {
 				comment = ipService.getMaps().get(request.getRemoteAddr());
+			}
 			logService.log(card.getId(), ACTION.MAJVERSO, RETCODE.SUCCESS, comment, card.getEppn(), request.getRemoteAddr());
 		}
 		return versoText;
@@ -624,7 +625,6 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/isCnousEncodeEnabled", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public Boolean isCnousEncodeEnabled(@RequestParam String authToken) throws IOException, ParseException {
-		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
 			log.info("Bad authotoken : " + authToken);

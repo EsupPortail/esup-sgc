@@ -89,6 +89,16 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		return groups;
 	}
 	
+	public List<String> getVersoGroups() {
+		List<String> groups = new ArrayList<String>();
+		for(String group : mappingGroupesRoles.keySet()) {
+			if("ROLE_SUPER_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_CONSULT".equals(mappingGroupesRoles.get(group)) || "ROLE_VERSO".equals(mappingGroupesRoles.get(group))) {
+				groups.add(group);
+			}
+		}
+		return groups;
+	}
+	
 	public List<String> getUpdaterGroups() {
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
