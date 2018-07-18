@@ -41,7 +41,7 @@ public class RestValidateService extends ValidateService {
 
 	protected void callGetOnUrl(String restUrl, Card card) {
 		if(restUrl == null || restUrl.isEmpty()) {
-			log.warn("RestValidateService configured with no restUrl ?!");
+			log.warn("RestValidateService [" + this.getBeanName() + "] configured with no restUrl ?!");
 		} else {
 			String url = String.format(restUrl, card.getEppn(), card.getCsn()); 
 			log.debug("Try to send a get here : " + url); 
