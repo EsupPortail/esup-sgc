@@ -280,7 +280,7 @@ public class CardEtatService {
 	public void sendMailInfo(Etat etatInitial, Etat etatFinal, User user, String mailMessage, boolean actionFromAnAdmin){
 		if(user.getEmail() != null && !user.getEmail().isEmpty()) {
 			if(mailMessage == null || mailMessage.isEmpty()) {
-				for(CardActionMessage msg : CardActionMessage.findCardActionMessagesByEtatFinalAndUserType(etatFinal, user.getUserType()).getResultList()){
+				for(CardActionMessage msg : CardActionMessage.findCardActionMessagesByEtatFinalAndUserType(etatFinal, user.getUserType())){
 					if(msg.getEtatInitial() == null || msg.getEtatInitial().equals(etatInitial)) {
 						if(actionFromAnAdmin || msg.isAuto()) {
 							if(msg.isAuto()) {

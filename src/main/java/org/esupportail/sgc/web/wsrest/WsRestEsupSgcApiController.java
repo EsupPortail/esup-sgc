@@ -86,7 +86,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	
 	/**
 	 * Example to use it :
-	 * curl   -F "eppn=toto@univ-ville.fr" -F "difPhotoTransient=true" -F "crousTransient=true" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
+	 * curl   -F "eppn=toto@univ-ville.fr" -F "difPhotoTransient=true" -F "crousTransient=true" -F "europeanTransient=true" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
 	 */
 	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
@@ -154,6 +154,11 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 						}
 						
 						card.setDueDate(user.getDueDate());
+						
+						if(card.getEuropeanTransient()!=null && card.getEuropeanTransient()) {
+							user.setEuropeanStudentCard(true);
+						}
+						
 						if(card.getCrousTransient()!=null && card.getCrousTransient()) {
 							user.setCrous(true);
 							userInfoService.setAdditionalsInfo(user, request);

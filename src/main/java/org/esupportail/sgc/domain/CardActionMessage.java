@@ -49,13 +49,15 @@ public class CardActionMessage {
     @ElementCollection(targetClass=String.class)
     private Set<String> userTypes = new HashSet<String>();
 
-    public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatFinalAndUserType(Etat etatFinal, String userType) {
-        if (etatFinal == null || userType == null) throw new IllegalArgumentException("The etatFinal and the userType can't ben null");
+    public static List<CardActionMessage> findCardActionMessagesByEtatFinalAndUserType(Etat etatFinal, String userType) {
+        if (etatFinal == null || userType == null) {
+        	return new ArrayList<CardActionMessage>();
+        }
         EntityManager em = CardActionMessage.entityManager();
         TypedQuery<CardActionMessage> q = em.createQuery("SELECT o FROM CardActionMessage AS o WHERE o.etatFinal = :etatFinal and :userType MEMBER OF o.userTypes", CardActionMessage.class);
         q.setParameter("etatFinal", etatFinal);
         q.setParameter("userType", userType);
-        return q;
+        return q.getResultList();
     }
     
     public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatInitialAndEtatFinalAndUserType(Etat etatInitial, Etat etatFinal, String userType) {
