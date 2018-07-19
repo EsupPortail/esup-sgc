@@ -58,7 +58,7 @@
 	    <c:if test="${not empty types}">
 	    	<c:forEach items="${types}" var="type">
 	    		<sec:authorize access="hasRole('ROLE_MANAGER_${type}') or hasRole('ROLE_SUPER_MANAGER')">
-	    			<li role="presentation" class="${selectedType eq type ? 'active' : 'sleep' }"><a href="#${type}" role="tab" data-toggle="tab"><spring:message code="manager.type.${type}" htmlEscape="false" /></a></li>
+	    			<li role="presentation" class="${selectedType eq type ? 'active' : 'sleep' }"><a href="#${type}" role="tab"><spring:message code="manager.type.${type}" htmlEscape="false" /></a></li>
 	    		</sec:authorize>
 	    	</c:forEach>
 	    </c:if>

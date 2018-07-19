@@ -1066,15 +1066,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		    result.addEventListener('click', function() {
 		    	var type = this.hash
 		    	type = type.substr(1,3);
+		    	searchEppnForm.querySelectorAll("select").forEach(function(element) {
+					element.disabled = true;
+				});
+		    	document.getElementById("searchEppn").disabled = true;
 		    	document.getElementById("searchBeanType").value = type;
-		    	document.getElementById("searchBeanAdress").value ="";
-		    	document.getElementById("searchBeanEtat").value = "all";
-		    	document.getElementById("searchBeanEditable").value = "";
-		    	document.getElementById("searchBeanOwnOrFreeCard").value = "false";
-		    	document.getElementById("searchEppn").value = "";
-		    	document.getElementById("searchBeanNbCards").value = "";
-		    	document.getElementById("searchBeanNbRejets").value = "";
-		    	document.getElementById("searchBeanFlagAdresse").value = "";
+		    	document.getElementById("searchBeanType").disabled = false;
 		    	searchEppnForm.submit();
 		    });
 		}
