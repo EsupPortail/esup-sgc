@@ -7,9 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
-@Service
 public class MapUtils {
 	
 	

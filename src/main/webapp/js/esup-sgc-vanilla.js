@@ -240,17 +240,17 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 				  var freeFieldValue = document.getElementById("freeFieldValue" + indice); 
 				  if(data.length>1){
 						freeFieldValue.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");  
-				   }
+				  }
 				  for(let key in data){
 					  var selected = "";
-			      	  var splitFieldsFirstLevel = fieldsValue.split(',');
-			      	if(fieldsValue.indexOf(key.substring(1, key.length))!=-1){
-	        			selected ="selected='selected'";
-	        		}
-			      	  	freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ key.substring(1, key.length) + "' " + selected +  ">" + data[key] + "</option>");  
-		          	};  
-			  }
-			  catch(e){
+			      	  var fieldsValue4thisField = fieldsValue.split(';')[indice];
+				      if(typeof fieldsValue4thisField != "undefined" && fieldsValue4thisField.split(",").includes(key.substring(1, key.length))){
+		        		selected ="selected='selected'";
+				      }
+			      	  freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ key.substring(1, key.length) + "' " + selected +  ">" + data[key] + "</option>");  
+		          };            
+			  } catch(e){
+				  console.log(e);
 			  }
 		  }
 		};

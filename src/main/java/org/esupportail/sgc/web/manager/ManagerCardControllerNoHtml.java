@@ -78,9 +78,6 @@ public class ManagerCardControllerNoHtml {
 	@Resource
 	MemoryMapStringEncodingUtils urlEncodingUtils;
 	
-	@Resource
-	MapUtils mapUtils;
-	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
 	public ResponseEntity writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
@@ -181,7 +178,7 @@ public class ManagerCardControllerNoHtml {
 			log.warn("Impossible de récupérer les données", e);
 		}
 		
-    	return mapUtils.sortByValue(adressesMap, true);
+    	return MapUtils.sortByValue(adressesMap, true);
 	}
 	
 	@RequestMapping(value="/getCrousRightHolder", headers = "Accept=application/json; charset=utf-8")
@@ -242,7 +239,7 @@ public class ManagerCardControllerNoHtml {
 	public String getResultsFreefield(@RequestParam(value="field") String field) {
 		
 		Map<String, String> resultsMap = new HashMap<String, String>();
-		String flexJsonString = "";
+		String flexJsonString = "{}";
 		try {
 			if(!field.isEmpty()){
 				List<String> results = formService.getField1List(field);
