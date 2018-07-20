@@ -23,6 +23,7 @@ public class ServletExceptionHandler extends HttpServlet {
 	        log.error("Caught unhandled exception: " + e, e);
 
 	        RequestDispatcher rd = request.getRequestDispatcher("/uncaughtException");
+	       	request.setAttribute("exception", e);
 	        rd.forward(request, response);
 	    }
 }
