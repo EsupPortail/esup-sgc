@@ -923,7 +923,7 @@ document.addEventListener('DOMContentLoaded', function() {
     	function loadStats(anneeUniv, selectedType,monthsArray){
 	    	getStats("cardsByYearEtat", "multiBar", anneeUniv, selectedType, 0);
 	    	getStats("crous", "pie", anneeUniv, selectedType, 1);
-	    	getStats("difPhoto", "pie", selectedType, 2);
+	    	getStats("difPhoto", "pie", anneeUniv, selectedType, 2);
 	    	getStats("cardsByDay", "chartBar", anneeUniv, selectedType, 3);
 	    	getStats("paybox", "multiBar", anneeUniv, selectedType, 4);
 	    	getStats("motifs", "chartBar", anneeUniv, selectedType, 5);
