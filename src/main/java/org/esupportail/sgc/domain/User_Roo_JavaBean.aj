@@ -372,4 +372,12 @@ privileged aspect User_Roo_JavaBean {
         this.externalCard = externalCard;
     }
     
+    public String User.getBlockUserMsg() {
+        return this.blockUserMsg;
+    }
+    
+    public void User.setBlockUserMsg(String blockUserMsg) {
+        this.blockUserMsg = blockUserMsg;
+    }
+    
 }

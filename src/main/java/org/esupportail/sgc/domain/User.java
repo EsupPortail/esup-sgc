@@ -33,7 +33,6 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @RooJavaBean
@@ -156,6 +155,8 @@ public class User {
 	
 	@Transient
 	private Card externalCard = new Card();
+	
+	private String blockUserMsg;
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();
@@ -436,6 +437,11 @@ public class User {
 				{log.trace("templateKey <>"); return false;}
 		} else if (!templateKey.equals(other.templateKey))
 			{log.trace("templateKey <>"); return false;}
+		if (blockUserMsg == null) {
+			if (other.blockUserMsg != null)
+				{log.trace("blockUserMsg <>"); return false;}
+		} else if (!blockUserMsg.equals(other.blockUserMsg))
+			{log.trace("blockUserMsg <>"); return false;}
 		return true;
 	}
 

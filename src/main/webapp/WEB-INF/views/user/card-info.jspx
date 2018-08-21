@@ -10,6 +10,13 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
   <spring:url value="/user/card-payment" var="PaymentUrl"/>
   <spring:url value="/user/forcedFreeRenewal" var="forcedFreeRenewalUrl"/>
   <util:panel id="title" title="${title}">
+
+	<c:choose>
+	<c:when test="${not empty user.blockUserMsg}">
+		<c:out value="${user.blockUserMsg}" escapeXml="false"/>
+	</c:when>
+	<c:otherwise>
+	
 	<h2>Informations Carte</h2>
  	<c:if test="${not empty message}">
 		<div class="alert alert-danger">
@@ -333,6 +340,10 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 		</c:if>
 	 </c:if>
 	</div>
+	
+	</c:otherwise>
+	</c:choose>
+	
 	</util:panel>
 	
 </div>

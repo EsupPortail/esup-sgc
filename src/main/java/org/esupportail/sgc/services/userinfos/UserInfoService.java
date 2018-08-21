@@ -199,6 +199,9 @@ public class UserInfoService {
 			} else if("userType".equalsIgnoreCase(key)) {
 				String userType  = userInfos.get(key);
 				user.setUserType(userType);
+			} else if("blockUserMsg".equalsIgnoreCase(key)) {
+				String blockUserMsg  = userInfos.get(key);
+				user.setBlockUserMsg(blockUserMsg);
 			} else if("template".equalsIgnoreCase(key)) {
 				String templateKey  = userInfos.get(key);
 				user.setTemplateKey(templateKey);
