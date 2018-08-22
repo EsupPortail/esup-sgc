@@ -14,8 +14,12 @@
 			var fromLdap ='${fromLdap}';
 			var photoSizeMax ='${photoSizeMax}';
 		</script>
+	
 		<h2>Demande de carte</h2>
 		<c:choose>
+		  <c:when test="${not empty user.blockUserMsg}">
+			<c:out value="${user.blockUserMsg}" escapeXml="false"/>
+		  </c:when>
 		  <c:when test="${displayFormParts['displayForm'] or isRejected}">
 			<c:choose>
 				<c:when test="${displayFormParts['isFreeRenewal']}">
