@@ -16,7 +16,7 @@
 		</a>
     </h2>
 	<div class="well">
-	    <h3>Statistiques LEOCARTE -- Université de Rouen</h3>
+	    <h3>Statistiques cartes éditées</h3>
 		<h4>Année universitaire débutant au ${dates['formatYear']}</h4>
 		<c:set var="colspanVal" value="${populationCrous.size()+1}" />
 		<table class="table table-bordered">

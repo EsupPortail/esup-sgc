@@ -4,6 +4,10 @@
 	}
 }
 
+body{
+	padding-bottom: 30px;
+}
+
 #main {
 	margin: 50px 0px 0px 0px;
 	position: relative;
@@ -409,6 +413,7 @@ h4.modal-title{
 	text-transform: capitalize
 }
 
+#getEscrStudentDiv dl,
 #getCrousRighHolderDiv dl {
 margin-left: 10px;
 border: 1px solid #800;

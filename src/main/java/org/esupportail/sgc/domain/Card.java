@@ -775,15 +775,14 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbEditedCardNotDelivered(Date date, Date dateFin) {
+    public static List<Object> countNbEditedCardNotDelivered(Date date, Date dateFin, String typeCase) {
         EntityManager em = Card.entityManager();
         String endDate = "";
         if(dateFin != null){
         	endDate = " AND request_date<:dateFin ";
         }        
-        String sql = "select CASE WHEN user_type= 'I' THEN 'Invité' WHEN user_type= 'E' THEN 'Etudiant' WHEN user_type= 'P' THEN 'Personnel' ELSE user_type END AS userType, count(*) " 
-        		+ "FROM card, user_account WHERE card.user_account= user_account.id AND delivered_date is null and etat='ENABLED' " + endDate  + "AND request_date>=:date "
-        				+ "AND user_type NOT LIKE '' GROUP BY userType;";
+        String sql = "SELECT " + typeCase + ", count(*) FROM card, user_account WHERE card.user_account= user_account.id AND delivered_date is null AND etat IN ('ENABLED', 'ENCODED') " + endDate  + "AND request_date>=:date "
+        				+ "AND user_type NOT LIKE '' GROUP BY user_type";
         Query q = em.createNativeQuery(sql);
         q.setParameter("date", date);
         if(dateFin != null){

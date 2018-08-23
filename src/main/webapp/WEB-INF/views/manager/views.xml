@@ -51,5 +51,8 @@
 	
 	<definition name="manager/crousSmartCard" template="/WEB-INF/views/manager/crousSmartCard.jspx"/>
 	
+	<definition name="manager/escrStudent" template="/WEB-INF/views/manager/escrStudent.jspx"/>
+		
+	<definition name="manager/escrCard" template="/WEB-INF/views/manager/escrCard.jspx"/>
 	
 </tiles-definitions>

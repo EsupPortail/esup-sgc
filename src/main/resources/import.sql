@@ -62,3 +62,4 @@ INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hi
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'DISPLAY_FORM_EUROPEAN_CARD', '', 'Dans le formulaire de demande de carte, population pour laquelle on affiche la partie ''Carte Européenne''. E=Etudiant, I=Invité, P=Personnel', 'TEXT');
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'PAGE_FOOTER', 'Esup-sgc', 'Texte du pied de page de l''application', 'HTML');
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'PHOTO_SIZE_MAX', '200000', 'Taille maximale (en octets) de la photo que l''on peut télécharger lors de la demande de carte', 'TEXT');
+INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'PHOTO_BORDEREAU', 'true', 'Affiche ou non la photo dans le bordereau', 'BOOLEAN');

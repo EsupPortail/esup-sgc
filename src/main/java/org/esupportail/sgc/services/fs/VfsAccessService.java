@@ -65,6 +65,8 @@ public class VfsAccessService implements DisposableBean, AccessService {
 			FileObject folder = root;
 			if(dir != null) {
 				folder = root.resolveFile(dir);
+			} else {
+				dir = "";
 			}
 			newFile = folder.resolveFile(filename);
 			if(override && newFile.exists()) {
@@ -75,8 +77,9 @@ public class VfsAccessService implements DisposableBean, AccessService {
 				OutputStream outstr = newFile.getContent().getOutputStream();
 				FileCopyUtils.copy(inputStream, outstr);
 				success = true;
+				log.info("Fichier " + filename + " envoyé dans " + this.uri + dir);
 			} else {
-				log.warn("Fichier " + filename + " existe déjà et pas d'override de demandé");
+				log.warn("Fichier " + filename + " existe déjà dans " + this.uri + dir + " et pas d'override de demandé");
 			}
 		} catch (FileSystemException e) {
 			log.warn("can't upload file : " + e.getMessage(), e);

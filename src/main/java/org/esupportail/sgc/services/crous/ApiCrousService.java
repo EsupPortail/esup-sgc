@@ -309,6 +309,11 @@ public class ApiCrousService {
 				log.info("Card can't be added : IZLY account is locked");
 				return;
 			}
+			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+				log.info("NOT_FOUND : " + clientEx.getResponseBodyAsString());
+				log.info("Card can't be added : IZLY account should be closed (see logs before)");
+				return;
+			}
 			throw clientEx;
 		}
 	}

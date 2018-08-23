@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.TemplateCard;
@@ -36,6 +37,9 @@ public class StatsService {
 	
 	@Autowired
     MessageSource messageSource;
+	
+	@Resource 
+	UserInfoService userInfoService;
 	
 	public LinkedHashMap<String, String> getPopulationCrous(){
 		
@@ -130,7 +134,7 @@ public class StatsService {
 	        	}else if("nbRejets".equals(typeStats)){
 	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd, date, dateFin), 2));
 	        	}else if("notDelivered".equals(typeStats)){
-	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(date, dateFin), 2));
+	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(date, dateFin, mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), 2));
 	        	}else if("deliveryByAdress".equals(typeStats)){
 	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress(date, dateFin).getResultList(),2));
 	        	}else if("userDeliveries".equals(typeStats)){
@@ -343,6 +347,10 @@ public class StatsService {
 		}else if("motifs".equals(type)){
 			 for (MotifDisable m : MotifDisable.values()) {
 				 map.put(m.name(), messageSource.getMessage(msg.concat(".").concat(m.name()), null, locale));
+			 }	
+		}else if("types".equals(type)){
+			for(String userType : userInfoService.getListExistingType()) {
+				 map.put(userType, messageSource.getMessage(msg.concat(".").concat(userType), null, locale));
 			 }	
 		}
 		

@@ -1626,8 +1626,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 	/* CROUS SmartCard API View*/
-	var crousSmartCard = document.querySelectorAll('.getCrousSmartCard')[0];
-	if(crousSmartCard != null){
+	document.querySelectorAll('.getCrousSmartCard').forEach(function(crousSmartCard) {
 		crousSmartCard.addEventListener('click', function(e) {
 			e.preventDefault();
 			var request = new XMLHttpRequest();
@@ -1637,13 +1636,52 @@ document.addEventListener('DOMContentLoaded', function() {
 			  if (request.status >= 200 && request.status < 400) {
 				  var message = this.response;
 					if (message && message.length) {
-						document.querySelectorAll('.getCrousSmartCardDiv')[0].innerHTML = message;
+						crousSmartCard.parentNode.nextSibling.innerHTML = message;
 					}
 			  }
 			};
 			request.send();
 		});
+	});
+	
+	/* ESCR Student API View*/
+	var escrStudent  = document.getElementById("getEscrStudent");
+	if(escrStudent != null){
+		escrStudent.addEventListener('click', function(e) {
+		 	if (typeof getEscrStudentUrl != "undefined") {
+				var request = new XMLHttpRequest();
+				request.open('GET', getEscrStudentUrl, true);
+				request.onload = function() {
+				  if (request.status >= 200 && request.status < 400) {
+					  var message = this.response;
+						if (message && message.length) {
+							document.getElementById('getEscrStudentDiv').insertAdjacentHTML('beforeend', message);
+							escrStudent.setAttribute("disabled", true);
+						}
+				  }
+				};
+				request.send();
+			}
+		});
 	}
+	/* ESCR Card API View*/
+	document.querySelectorAll('.getEscrCard').forEach(function(escrCard) {
+		escrCard.addEventListener('click', function(e) {
+			e.preventDefault();
+			var request = new XMLHttpRequest();
+			request.open('GET', this.href, true);
+			var parent = this;
+			request.onload = function() {
+			  if (request.status >= 200 && request.status < 400) {
+				  var message = this.response;
+					if (message && message.length) {
+						escrCard.parentNode.nextSibling.innerHTML = message;
+					}
+			  }
+			};
+			request.send();
+		});
+	});
 	
     //Cartes : sélection du message à envoyer
 	document.addEventListener('click', function(e) {

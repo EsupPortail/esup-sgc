@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
+import org.esupportail.sgc.domain.EscrCard;
+import org.esupportail.sgc.domain.EscrStudent;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
@@ -23,6 +25,7 @@ import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.FormService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
+import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
@@ -77,6 +80,9 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	MemoryMapStringEncodingUtils urlEncodingUtils;
+	
+	@Resource
+	ApiEscrService apiEscrService;
 	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
@@ -209,6 +215,25 @@ public class ManagerCardControllerNoHtml {
 		uiModel.addAttribute("crousSmartCard", crousSmartCard);
 		return "manager/crousSmartCard";
 	}
+	
+	
+	@RequestMapping(value="/getEscrStudentHtmlPart")
+	@Transactional
+    public String getEscrStudentHtmlPart(@RequestParam String eppn, Model uiModel) {
+		EscrStudent escrStudent = apiEscrService.getEscrStudent(eppn);
+		uiModel.addAttribute("escrStudent", escrStudent);
+		return "manager/escrStudent";
+	}
+	
+	
+	@RequestMapping(value="/getEscrCardHtmlPart")
+	@Transactional
+    public String getEscrCardHtmlPart(@RequestParam String eppn, @RequestParam String csn, Model uiModel) {
+		EscrCard escrCard = apiEscrService.getEscrCard(eppn, csn);
+		uiModel.addAttribute("escrCard", escrCard);
+		return "manager/escrCard";
+	}
+	
 	
 	
 	@RequestMapping(value="/templatePhoto/{type}/{templateId}")

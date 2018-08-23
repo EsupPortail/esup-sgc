@@ -596,6 +596,7 @@ public class ManagerCardController {
 		List<Card> cards = Card.findCards(searchBean, eppn, "address", "ASC").getResultList();
 		
 		uiModel.addAttribute("cards", cards);
+		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());
 		
 		return "manager/bordereau";
 	}

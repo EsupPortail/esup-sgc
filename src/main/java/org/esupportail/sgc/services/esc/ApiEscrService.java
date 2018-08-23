@@ -1,8 +1,8 @@
 package org.esupportail.sgc.services.esc;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import javax.persistence.TypedQuery;
 
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.EscrCard;
@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -132,8 +133,22 @@ public class ApiEscrService extends ValidateService {
 		EscrStudent escrStudent = this.computeEscrStudent(eppn);
 		HttpEntity entity = new HttpEntity(escrStudent, headers);
 		log.debug("Try to post to ESCR Student : " + escrStudent); 
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-		log.info(eppn + " sent in ESCR as Student -> " + response.getBody());	
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+			log.info(eppn + " sent in ESCR as Student -> " + response.getBody());
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.CONFLICT.equals(clientEx.getStatusCode())) {
+				// conflit -> un post précédent avait été fait mais non persité en base (transaction - TODO à régler avec @Transactional(propagation=Propagation.REQUIRES_NEW) ?)
+				EscrStudent escrStudentFromEscr = getEscrStudent(eppn);
+				if(!escrStudentFromEscr.getEmailAddress().equals(escrStudent.getEmailAddress())) {
+					throw new SgcRuntimeException(String.format("Pb - conflit ESCR avec %s / %s - emails des utilisateurs en conflit : %s et %s" , 
+							escrStudent.getEuropeanStudentIdentifier(), eppn, escrStudent.getEmailAddress(), escrStudentFromEscr.getEmailAddress()), clientEx);
+				}
+				log.info("POST précédent sur ESCR avait fonctionné mais pas la persistence en base pour cause probable de transaction interrompue");
+			} else {
+				throw clientEx;
+			}
+		}
 		escrStudent.persist();
 	}
 	
@@ -167,6 +182,31 @@ public class ApiEscrService extends ValidateService {
 		escrStudent.setName(user.getDisplayName());
 		return escrStudent;
 		
+	}
+
+	public EscrCard getEscrCard(String eppn, String csn) {
+		List<EscrCard> escrCards = EscrCard.findEscrCardsByCardUidEquals(csn).getResultList();
+		if(escrCards.isEmpty() || !enable) {
+			return null;
+		} else {
+			EscrCard escrCard = escrCards.get(0);
+			String url = webUrl + "/students/" + getEuropeanStudentIdentifier(eppn) + "/cards/" + escrCard.getEuropeanStudentCardNumber();
+			HttpHeaders headers = this.getJsonHeaders();			
+			HttpEntity entity = new HttpEntity(headers);
+			log.debug(String.format("Try to get ESCR Card : %s - %s - %s - %s" , eppn, getEuropeanStudentIdentifier(eppn), csn, escrCard.getEuropeanStudentCardNumber())); 
+			try {
+				ResponseEntity<EscrCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscrCard.class);
+				log.info(csn + " retrieved in ESCR as Card -> " + response.getBody());	
+				return response.getBody();
+			} catch(HttpClientErrorException clientEx) {
+				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+					log.info(String.format("Card non trouvé sur ESCR pour %s - %s : %s  ", eppn, csn, clientEx.getResponseBodyAsString()), clientEx);
+					return null;
+				} else {
+					throw clientEx;
+				}
+			}	
+		}
 	}
 	
 	protected void postEscrCard(Card card) {

@@ -5,9 +5,11 @@
     <spring:url value="/manager?index=first" var="listeUrl"/>
     <spring:url value="/manager/photo/" var="photoRootUrl"/>
     <spring:url value="/manager/getCrousRightHolderHtmlPart?eppn=${user.eppn}" var="getCrousRightHolderUrl"/>
+    <spring:url value="/manager/getEscrStudentHtmlPart?eppn=${user.eppn}" var="getEscrStudentUrl"/>
     <script type="text/javascript">
 		var photorUrl = '${photoRootUrl}';
 		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
+		getEscrStudentUrl = '${getEscrStudentUrl}';
 	</script>
     <h2>Utilisateur
 		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
@@ -80,6 +82,12 @@
                                 <dd class="fieldWs">
                                     ${user.europeanStudentCard ? 'oui' : 'non'}
                                 </dd>
+                                <c:if test="${user.europeanStudentCard}">
+                                    <button id="getEscrStudent" type="button">Visualiser les données côté ESCR</button>
+                                    <div id="getEscrStudentDiv">
+                                        <!--  -->
+                                    </div>
+                                </c:if>
                                 <dt class="fieldWs">Diffusion Photo : </dt>
                                 <dd class="fieldWs">
                                     ${user.difPhoto ? 'oui' : 'non'}
@@ -535,6 +543,15 @@
                                                     <h4>Carte d'étudiant européenne</h4>
                                                     <dt>Numéro de carte d'étudiant européenne : </dt>
                                                     <dd>${card.escnUid}</dd>
+                                                    <c:if test="${not empty card.csn and not empty card.escnUid}">
+                                                        <h5>
+                                                            <spring:url value="/manager/getEscrCardHtmlPart?eppn=${card.eppn}&amp;csn=${card.csn}" var="getEscrCardUrlHtmlPart"/>
+                                                            <a class="getEscrCard" href="${getEscrCardUrlHtmlPart}">Cliquer pour visualiser les données côté ESCR :</a>
+                                                        </h5>
+                                                        <div class="getEscrCardDiv">
+                                                            <!--  -->
+                                                        </div>
+                                                    </c:if>
                                                 </dl>
                                                 <sec:authorize access="hasRole('ROLE_ADMIN')">
                                                     <div class="col-lg-5">
