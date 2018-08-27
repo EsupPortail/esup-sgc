@@ -86,7 +86,7 @@ public class WsRestEsupNfcController {
 	
 	@Resource
 	SearchLongPollController searchLongPollController;
-	
+
 	/**
 	 * Example :
 	 * curl -v -H "Content-Type: application/json" http://localhost:8080/wsrest/nfc/locations?eppn=joe@univ-ville.fr
@@ -281,13 +281,8 @@ public class WsRestEsupNfcController {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);		
 		} else if(EsupNfcTagLog.VERSO_CARTE.equals(esupNfcTagLog.getLocation())){
 			log.info("isTagable for verso " + eppn + ", " + csn);
-			if(card.isEnabled()){
-				log.info("card "+ csn + " verso OK");
-				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-			}else{
-				log.warn(eppn + ", " + csn + " carte non active");
-				return new ResponseEntity<String>("Carte non active", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+			log.info("card "+ csn + " verso OK");
+			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		}else if(EsupNfcTagLog.SECONDARY_ID.equals(esupNfcTagLog.getLocation())){
 			log.info("isTagable for secondary Id " + eppn + ", " + csn);
 			if(card.isEnabled()){
@@ -605,10 +600,9 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/getVersoText", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public List<String> getVersoText(@RequestParam String csn,  HttpServletRequest request) throws IOException, ParseException {
-		// List<String> versoText = Arrays.asList(new String[] {"", "", "", "", ""});
 		List<String> versoText = Arrays.asList(new String[] {}); 
 		Card card = Card.findCard(csn);
-		if(card!=null && (Etat.ENABLED.equals(card.getEtat()) || Etat.ENCODED.equals(card.getEtat()))) {
+		if(card!=null) {
 			User user = User.findUser(card.getEppn());
 			versoText = user.getVersoText();
 			card.setVersoTextPrinted(StringUtils.join(versoText, "\n"));

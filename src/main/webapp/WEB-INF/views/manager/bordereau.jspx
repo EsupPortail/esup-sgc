@@ -2,7 +2,7 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
 	<jsp:output omit-xml-declaration="yes" />
 	<spring:url value="/manager?index=first" var="listeUrl"/>
-	<spring:url value="/wsrest/photo" var="photoUrl"/>
+	<spring:url value="/manager/photo" var="photoUrl"/>
     <h2>Bordereau
 		<a class="btn btn-primary pull-right hidden-print" href="${listeUrl}" type="button">
             <span class="glyphicon glyphicon-home"></span></a>
@@ -28,7 +28,7 @@
 		  	<c:if test="${card.userAccount.address eq lastAdress}">
 		  	</c:if>
 			<tr><td>${lastCcount}</td>
-			<c:if test="${displayPhoto}"><td><img src="${photoUrl}/${card.userAccount.eppn}/restrictedPhoto" width="60" height="75"/></td></c:if>
+			<c:if test="${displayPhoto}"><td><img src="${photoUrl}/${card.id}" width="60" height="75"/></td></c:if>
 			<td>${card.userAccount.supannEmpId}${card.userAccount.supannEtuId}</td><td>${card.userAccount.name}</td><td>${card.userAccount.firstname}</td><td><c:out value="${not empty card.userAccount.supannCodeINE ? card.userAccount.supannCodeINE: '--'}"/></td></tr>
 			<c:set var="lastAdress" value="${card.userAccount.address}" />
 		  </c:forEach>

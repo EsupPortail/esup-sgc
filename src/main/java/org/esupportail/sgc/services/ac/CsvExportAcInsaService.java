@@ -95,8 +95,18 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		User user = User.findUser(card.getEppn());
 		
 		fields.add(user.getSecondaryId()); 
-		fields.add(user.getName());	
-		fields.add(user.getFirstname());
+		if(user.getName() == null) {
+			fields.add("");
+		} else {
+			// nom 15 caractères max
+			fields.add(user.getName().substring(0, 15));	
+		}
+		if(user.getFirstname() == null) {
+			fields.add("");
+		} else {
+			// prenom 13 caractères max
+			fields.add(user.getFirstname().substring(0, 13));	
+		}
 		fields.add("");
 		fields.add(user.getRneEtablissement());
 		fields.add(user.getVerso7());

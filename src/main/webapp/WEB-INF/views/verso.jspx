@@ -4,6 +4,7 @@
     <div class="item" style="width: 100%; background-color: #ede6b4; padding:20px; font-size: 15px; text-align: left;">
     	<H1>${card.displayName}</H1>
      	<b>
+     	<font color="${card.etat eq 'ENABLED' ? 'green' : 'red'}"><spring:message code="card.step.${card.etat}"/></font><br/>
 		${card.userAccount.verso1}<br/>
 		${card.userAccount.verso2}<br/>
 		${card.userAccount.verso3}<br/>
