@@ -87,25 +87,25 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	
 	/**
 	 * @param card
-	 * @return Leocode,NOM,Prénom,,supannEtablissement(sanslepréfixe{UAI}),verso7,Date d'activation de la carte,schacExpiryDate,13,ReversedCSN passé en décimal 
+	 * @return Verso6,NOM,Prénom,,supannEtablissement(sanslepréfixe{UAI}),verso7,Date d'activation de la carte,schacExpiryDate,13,ReversedCSN passé en décimal 
 	 */
 	private String sgc2csv(Card card) {
 		ArrayList<String> fields = new ArrayList<String>();
 		
 		User user = User.findUser(card.getEppn());
 		
-		fields.add(user.getSecondaryId()); 
-		if(user.getName() == null) {
-			fields.add("");
-		} else {
-			// nom 15 caractères max
+		fields.add(user.getVerso6()); 
+		// nom 15 caractères max
+		if(user.getName().length()>15) {
 			fields.add(user.getName().substring(0, 15));	
-		}
-		if(user.getFirstname() == null) {
-			fields.add("");
 		} else {
-			// prenom 13 caractères max
+			fields.add(user.getName());	
+		}
+		// prenom 13 caractères max
+		if(user.getFirstname().length()>13) {
 			fields.add(user.getFirstname().substring(0, 13));	
+		} else {
+			fields.add(user.getFirstname());	
 		}
 		fields.add("");
 		fields.add(user.getRneEtablissement());
@@ -135,7 +135,7 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		String dateFt = "";
 		if(date!=null) {
 			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-			dateFt = df.format(date);
+			dateFt = "'"+df.format(date);
 		}
 		return dateFt;
 	}
