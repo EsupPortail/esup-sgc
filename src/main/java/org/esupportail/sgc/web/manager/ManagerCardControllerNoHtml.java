@@ -3,10 +3,14 @@ package org.esupportail.sgc.web.manager;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -164,6 +168,14 @@ public class ManagerCardControllerNoHtml {
 		List<Card> eppnList = new ArrayList<Card>();
 		if(!searchString.trim().isEmpty()) {
 			eppnList = Card.findCardsByEppnLike(searchString, "eppn", "ASC").getResultList();
+			// hack : we keep only one card for one eppn
+			Map<String, Card> cardsMap = eppnList.stream()
+					.collect(
+                    Collectors.toMap(c -> c.getEppn(), c -> c, 
+                            (oldValue, newValue) -> newValue,       // if same key, take the old key
+                            LinkedHashMap::new                      // returns a LinkedHashMap, keep order
+                    ));
+			eppnList = new ArrayList<Card>(cardsMap.values());
 		}
 		return new ResponseEntity<String>(toJsonArrayLight(eppnList), headers, HttpStatus.OK);
    }

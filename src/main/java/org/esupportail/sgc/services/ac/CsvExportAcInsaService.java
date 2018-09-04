@@ -65,9 +65,9 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		
 		List<Card> cards = null;
 		if(eppns == null) {
-			cards = cardEtatService.getAllEncodedCardsWithEppnDistinct();
+			cards = cardEtatService.getAllEnableableCardsWithEppnDistinct();
 		} else {
-			cards = cardEtatService.getAllEncodedCardsWithEppnDistinct(eppns);
+			cards = cardEtatService.getAllEnableableCardsWithEppnDistinct(eppns);
 		}
 		
         for(Card card : cards) {

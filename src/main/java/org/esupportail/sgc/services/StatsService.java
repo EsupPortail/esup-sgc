@@ -152,6 +152,8 @@ public class StatsService {
 	        		put("templateCards",mapField(TemplateCard.countTemplateCardByNameVersion(),2));
 	        	}else if("europeanCardChart".equals(typeStats)){
 	        		put("europeanCardChart",mapField(User.countNbEuropenCards(),2));
+	        	}else if("nbRoles".equals(typeStats)){
+	        		put("nbRoles",mapField(User.countNbRoles(),2));
 	        	}
 	        }
 	    };

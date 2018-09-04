@@ -503,7 +503,6 @@ public class User {
     public static List<Object[]> countYearEnabledCardsByPopulationCrous(String date, String typeDate, Date dateFin) {
         EntityManager em = User.entityManager();
         String endDate = "";
-        System.out.println(dateFin);
         if(dateFin != null){
         	endDate = " AND " + typeDate + "<:dateFin ";
         }
@@ -626,6 +625,15 @@ public class User {
     public static List<Object> countNbEuropenCards() {
         EntityManager em = User.entityManager();
         String sql = "SELECT european_student_card, count(*) as count FROM user_account, card WHERE user_account.id= card.user_account AND etat='ENABLED' AND user_type='E' GROUP BY european_student_card ORDER BY count DESC";
+
+        Query q = em.createNativeQuery(sql);
+
+        return q.getResultList();
+    }
+    
+    public static List<Object> countNbRoles() {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT role, count(role) AS count FROM roles, user_account WHERE roles.user_account=user_account.id GROUP BY role ORDER BY count DESC";
 
         Query q = em.createNativeQuery(sql);
 

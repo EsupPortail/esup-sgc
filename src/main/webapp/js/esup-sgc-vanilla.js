@@ -944,6 +944,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    	getStats("requestFree", "multiBar", anneeUniv, selectedType, 24);
 	    	getStats("templateCards", "doughnut", anneeUniv, selectedType, 25);
 	    	getStats("europeanCardChart", "pie", anneeUniv, selectedType, 26);
+	    	getStats("nbRoles", "doughnut", anneeUniv, selectedType, 27);
     	}
     	var anneeUniv = document.getElementById("anneeUniv");
     	
@@ -1873,6 +1874,13 @@ document.addEventListener('DOMContentLoaded', function() {
    			link.appendChild(form);
    		}
 	});
+   	var megamenu = document.querySelectorAll('.megamenu');
+   	Array.from(megamenu).forEach(function(link) {
+   		return link.addEventListener('change', function(event) {
+   		 var searchEppnForm = document.getElementById("searchEppnForm");
+   			searchEppnForm.submit();
+   	    }); 
+   	})
    	
 })
 

@@ -1,6 +1,7 @@
 package org.esupportail.sgc.web.wsrest;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +49,9 @@ public class WsRestPhotoController extends AbstractRestController {
 			@RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date dateEtatAfter,HttpServletResponse response) throws IOException, SQLException {
 		List<Card> validCards = null;
 		if(cardEtat==null) {
-			validCards = Card.findCardsByEppnAndEtatNotEquals(eppn, Etat.REJECTED, "dateEtat", "desc").getResultList();
+			Etat [] etatsIn = {Etat.ENABLED,  Etat.CADUC, Etat.DISABLED};
+			String [] eppns = {eppn};
+			validCards = Card.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
 		} else {
 			validCards = Card.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
 		}
@@ -100,7 +103,9 @@ public class WsRestPhotoController extends AbstractRestController {
 			@RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date dateEtatAfter, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
 		List<Card> validCards = null;
 		if(cardEtat==null) {
-			validCards = Card.findCardsByEppnAndEtatNotEquals(eppn, Etat.REJECTED, "dateEtat", "desc").getResultList();
+			Etat [] etatsIn = {Etat.ENABLED,  Etat.CADUC, Etat.DISABLED};
+			String [] eppns = {eppn};
+			validCards = Card.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
 		} else {
 			validCards = Card.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
 		}

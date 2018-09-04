@@ -12,7 +12,7 @@
 			<form action="${searchUrl}" class="navbar-form navbar-left form-inline" role="search" id="searchEppnForm" >
 				<div class="form-group">
 					<label style="display:none" >-- Etat --</label>
-				  	<spring-form:select path="searchBean.etat" id="searchBeanEtat">
+				  	<spring-form:select path="searchBean.etat" id="searchBeanEtat" cssClass="megamenu">
 				  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					 	<c:forEach items="${etats}" var="etat">
 					  		<spring-form:option value="${etat}"><spring:message code="card.step.${etat}"/></spring-form:option>
@@ -21,7 +21,7 @@
 			    </div>			
 				<div class="form-group">
 					<label style="display:none" >-- Adresse --</label>
-					<spring-form:select path="searchBean.address" id="searchBeanAdress">
+					<spring-form:select path="searchBean.address" id="searchBeanAdress" cssClass="megamenu">
 						<spring-form:option value="" data-placeholder="true"></spring-form:option>
 						<c:forEach items="${addresses}" var="address">
 							<spring-form:option value="${address.key}">
@@ -31,7 +31,7 @@
 					</spring-form:select>
 				</div>
 				<div class="" style="display:none">
-					<spring-form:select path="searchBean.type" id="searchBeanType">
+					<spring-form:select path="searchBean.type" id="searchBeanType" cssClass="megamenu">
 		 				<spring-form:option value="">-- Population --</spring-form:option>
 						<c:forEach items="${types}" var="type">
 							<spring-form:option value="${type}">
@@ -42,7 +42,7 @@
 		 		</div>
 			  	<div class="form-group">
 			  	 	<label style="display:none" >-- Dernier thème --</label>
-			  		<spring-form:select path="searchBean.lastTemplateCardPrinted.id"  id="searchBeanLastTemplateCardPrinted">
+			  		<spring-form:select path="searchBean.lastTemplateCardPrinted.id"  id="searchBeanLastTemplateCardPrinted" cssClass="megamenu">
 			  			<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					 	<c:forEach items="${lastTemplateCardsPrinted}" var="lastTemplateCardPrinted">
 					  		<spring-form:option value="${lastTemplateCardPrinted.id}">${lastTemplateCardPrinted}</spring-form:option>
@@ -51,7 +51,7 @@
 			  	</div>	  
 			  	<div class="form-group">
 			  	 	<label style="display:none" >-- Statut --</label>
-			  		<spring-form:select path="searchBean.editable"  id="searchBeanEditable">
+			  		<spring-form:select path="searchBean.editable"  id="searchBeanEditable" cssClass="megamenu">
 			  				<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<spring-form:option value="true">Editable</spring-form:option>
 					  		<spring-form:option value="false">Non editable</spring-form:option>
@@ -59,14 +59,14 @@
 			  	</div>	 
 			    <div class="form-group">
 			    	<label style="display:none" >-- Gestion --</label>
-			  		<spring-form:select path="searchBean.ownOrFreeCard" id="searchBeanOwnOrFreeCard">
+			  		<spring-form:select path="searchBean.ownOrFreeCard" id="searchBeanOwnOrFreeCard" cssClass="megamenu">
 					  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<spring-form:option value="true">Libres ou gérées par moi</spring-form:option>
 				    </spring-form:select>
 			  	</div>
 			  	 <div class="form-group">
 			  	 	<label style="display:none" >-- Nb Cartes --</label>
-			  		<spring-form:select path="searchBean.nbCards" id="searchBeanNbCards">
+			  		<spring-form:select path="searchBean.nbCards" id="searchBeanNbCards" cssClass="megamenu">
 					  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<c:forEach items="${nbCards}" var="nbCard">
 					  			<spring-form:option value="${nbCard}">${nbCard} carte(s)</spring-form:option>
@@ -75,7 +75,7 @@
 			  	</div>
 			  	 <div class="form-group">
 			  	 	<label style="display:none" >-- Nb Rejets --</label>
-			  		<spring-form:select path="searchBean.nbRejets" id="searchBeanNbRejets">
+			  		<spring-form:select path="searchBean.nbRejets" id="searchBeanNbRejets" cssClass="megamenu">
 					  		<spring-form:option value="" data-placeholder="true"></spring-form:option>
 					  		<c:forEach items="${nbRejets}" var="nbRejet">
 					  			<spring-form:option value="${nbRejet}">${nbRejet} rejet(s)</spring-form:option>
@@ -84,14 +84,14 @@
 			  	</div>
 			  	<div class="form-group">
 			  		<label style="display:none" >-- Type adresse --</label>
-			  		<spring-form:select path="searchBean.flagAdresse" id="searchBeanFlagAdresse">
+			  		<spring-form:select path="searchBean.flagAdresse" id="searchBeanFlagAdresse" cssClass="megamenu">
 		  				<spring-form:option value="" data-placeholder="true"></spring-form:option>
 				  		<spring-form:option value="INT">Adresse interne</spring-form:option>
 				  		<spring-form:option value="EXT">Adresse externe</spring-form:option>
 				    </spring-form:select>
 			  	</div>	  
 				<div class="form-group">
-		    		<input type="text" class="form-control" placeholder="nom, prénom, email, n°" id="searchEppn" name="searchText" value="${searchBean.searchText}"/>
+		    		<input type="text" class="form-control megamenu" placeholder="nom, prénom, email, n°" id="searchEppn" name="searchText" value="${searchBean.searchText}"/>
 		  		</div>	
 				<button type="submit" class="btn btn-success">OK</button>
 				<button type="button" class="btn btn-danger" id="nofilter" title="Enlever tous les filtres"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
@@ -111,7 +111,7 @@
 							</div>
 							<div class="col-lg-2">
 								<label style="display:none" >-- Champ libre : résultats -</label>
-								<select  multiple="multiple" data-dropup-auto="false" data-live-search="true" name="freeFieldValue['${status.index}']"  id="freeFieldValue${status.index}" data-size="15" >
+								<select  multiple="multiple" data-dropup-auto="false" data-live-search="true" name="freeFieldValue['${status.index}']"  id="freeFieldValue${status.index}" data-size="15" class="megamenu">
 									<option value="" data-placeholder="true"></option>
 								</select>
 							</div>

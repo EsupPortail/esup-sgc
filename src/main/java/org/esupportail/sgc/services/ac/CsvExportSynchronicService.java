@@ -65,9 +65,9 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		/* Synchronic ne s'attend à avoir qu'une seule carte par individu - il faut donc lui transmettre la dernière en date */
 		List<Card> cards = null;
 		if(eppns4UpdateSynchronic == null) {
-			cards = cardEtatService.getAllEncodedCardsWithEppnDistinct();
+			cards = cardEtatService.getAllEnableableCardsWithEppnDistinct();
 		} else {
-			cards = cardEtatService.getAllEncodedCardsWithEppnDistinct(eppns4UpdateSynchronic);
+			cards = cardEtatService.getAllEnableableCardsWithEppnDistinct(eppns4UpdateSynchronic);
 		}
 		
         for(Card card : cards) {

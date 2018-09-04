@@ -45,7 +45,7 @@
   				<menu:item id="adminview" label="Admin" url="/admin/currentsessions" activeMenu="${role=='admin'}"/>
 				<menu:item id="su" label="SU" url="/admin/su" activeMenu="${role=='supervisor'}"/>
 			</sec:authorize>
-			 <sec:authorize access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT')">
+			 <sec:authorize access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_LIVREUR') or hasRole('ROLE_UPDATER') or hasRole('ROLE_VERSO')">
 			 <li class="dropdown">
 			 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apps<span class="caret"><!--  --></span></a>
 			 	<ul class="dropdown-menu">

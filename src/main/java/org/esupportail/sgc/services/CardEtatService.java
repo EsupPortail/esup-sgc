@@ -35,7 +35,9 @@ public class CardEtatService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	public final static List<Etat> etatsEncoded = Arrays.asList(new Etat[] {Etat.ENCODED, Etat.ENABLED, Etat.DISABLED, Etat.CADUC}); 
+	public final static List<Etat> etatsEncoded = Arrays.asList(new Etat[] {Etat.ENCODED, Etat.ENABLED, Etat.DISABLED, Etat.CADUC});
+	
+	public final static List<Etat> etatsEnableable = Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}); 
 	
 	private final static List<Etat> etatsRequest = Arrays.asList(new Etat[] {Etat.NEW, Etat.RENEWED, Etat.REQUEST_CHECKED, Etat.REJECTED, Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.ENCODED});
 	
@@ -247,13 +249,13 @@ public class CardEtatService {
 		return Card.findCardsByEppnInAndEtatIn(eppns, etatsEncoded, null, null).getResultList();
 	}
 
-	public List<Card> getAllEncodedCardsWithEppnDistinct() {
-		List<Card> cards = Card.findCardsByEtatIn(etatsEncoded).getResultList();
+	public List<Card> getAllEnableableCardsWithEppnDistinct() {
+		List<Card> cards = Card.findCardsByEtatIn(etatsEnableable).getResultList();
 		return groupByEppn(cards);
 	}
 
-	public List<Card> getAllEncodedCardsWithEppnDistinct(List<String> eppns) {
-		List<Card> cards =  Card.findCardsByEppnInAndEtatIn(eppns, etatsEncoded).getResultList();
+	public List<Card> getAllEnableableCardsWithEppnDistinct(List<String> eppns) {
+		List<Card> cards =  Card.findCardsByEppnInAndEtatIn(eppns, etatsEnableable).getResultList();
 		return groupByEppn(cards);
 	}
 

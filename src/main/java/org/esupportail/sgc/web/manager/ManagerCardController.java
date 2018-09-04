@@ -224,6 +224,10 @@ public class ManagerCardController {
 		card.merge();
 		logService.log(card.getId(), ACTION.MANAGER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
 		uiModel.asMap().clear();
+		if(!Etat.ENABLED.equals(card.getEtat())) {
+			log.info("livraison of " + card.getCsn() + " -> activation");
+			cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, "Activation suite à la livraison.", null, false, false);
+		}
 		return "redirect:/manager/" + card.getId();
 	}
 	
@@ -239,6 +243,10 @@ public class ManagerCardController {
 					card.setDeliveredDate(new Date());
 					card.merge();
 					logService.log(card.getId(), ACTION.MANAGER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
+					if(!Etat.ENABLED.equals(card.getEtat())) {
+						log.info("livraison of " + card.getCsn() + " -> activation");
+						cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, "Activation suite à la livraison.", null, false, false);
+					}
 				}
 			} catch (Exception e) {
 				log.info("La carte avec l'id suivant n'a pas pu être marquée comme livrée : " + id, e);
@@ -296,7 +304,12 @@ public class ManagerCardController {
 			uiModel.asMap().clear();
 			if(Etat.RENEWED.equals(etatFinal)) {
 				Card newCard = cardService.requestRenewalCard(card);
-				return "redirect:/manager/" + newCard.getId();
+				if(newCard != null) {
+					return "redirect:/manager/" + newCard.getId();
+				} else {
+					uiModel.addAttribute("messageError", "Cette carte n'a pu être renouvelée (action impossible)");
+					return "redirect:/manager/" + card.getId();
+				}
 			} else {
 				cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false);
 				return "redirect:/manager/" + card.getId();

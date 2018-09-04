@@ -349,32 +349,38 @@ public class CardService {
 
 	@Transactional
 	public Card requestRenewalCard(Card card){
-
-		Calendar cal = Calendar.getInstance();
-		Date currentTime = cal.getTime();
-		Card copyCard = new Card();
-		copyCard.setEppn(card.getEppn());
-		copyCard.setRequestDate(new Date());
-		copyCard.setRequestBrowser(card.getRequestBrowser());
-		copyCard.setRequestOs(card.getRequestOs());
-		cardIdsService.generateQrcode4Card(copyCard);
-		PhotoFile photoFile = new PhotoFile();
-		photoFile.setFilename(card.getPhotoFile().getFilename());
-		photoFile.setContentType(card.getPhotoFile().getContentType());
-		photoFile.setFileSize(card.getPhotoFile().getFileSize());
-		photoFile.getBigFile().setBinaryFile(card.getPhotoFile().getBigFile().getBinaryFile());
-		photoFile.setSendTime(currentTime);
-		copyCard.setPhotoFile(photoFile);
-		copyCard.setNbRejets(card.getNbRejets());
-		User user = User.findUser(card.getEppn());
-		copyCard.setUserAccount(user);
-		copyCard.setDueDate(user.getDueDate());
-		String messageLog = "Demande de renouvellement de carte pour :  " + card.getEppn() + " effectuée.";
-		cardEtatService.setCardEtat(copyCard, Etat.RENEWED, messageLog, null, false, false);
-		copyCard.persist();
-		log.info(messageLog);
-		
-
-		return copyCard;
+		String lockKey = "ESUP-SGC-CARD-requestRenewal-" + card.getId();
+		synchronized(lockKey.intern()) {
+			cardEtatService.updateEtatsAvailable4Card(card);
+			if(card.getEtatsAvailable().contains(Etat.RENEWED)) {
+				Calendar cal = Calendar.getInstance();
+				Date currentTime = cal.getTime();
+				Card copyCard = new Card();
+				copyCard.setEppn(card.getEppn());
+				copyCard.setRequestDate(new Date());
+				copyCard.setRequestBrowser(card.getRequestBrowser());
+				copyCard.setRequestOs(card.getRequestOs());
+				cardIdsService.generateQrcode4Card(copyCard);
+				PhotoFile photoFile = new PhotoFile();
+				photoFile.setFilename(card.getPhotoFile().getFilename());
+				photoFile.setContentType(card.getPhotoFile().getContentType());
+				photoFile.setFileSize(card.getPhotoFile().getFileSize());
+				photoFile.getBigFile().setBinaryFile(card.getPhotoFile().getBigFile().getBinaryFile());
+				photoFile.setSendTime(currentTime);
+				copyCard.setPhotoFile(photoFile);
+				copyCard.setNbRejets(card.getNbRejets());
+				User user = User.findUser(card.getEppn());
+				copyCard.setUserAccount(user);
+				copyCard.setDueDate(user.getDueDate());
+				String messageLog = "Demande de renouvellement de carte pour :  " + card.getEppn() + " effectuée.";
+				cardEtatService.setCardEtat(copyCard, Etat.RENEWED, messageLog, null, false, false);
+				copyCard.persist();
+				log.info(messageLog);
+				return copyCard;
+			} else {
+				log.warn(String.format("card %s (%s) can't be renewed", card.getCsn(), card.getEppn()));
+			}
+			return null;
+		}
 	}
 }

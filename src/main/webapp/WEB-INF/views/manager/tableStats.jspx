@@ -68,13 +68,13 @@
 		  </tr></thead>
 		  <tbody>
 			  <c:forEach items="${allYearCards}" var="year">
-			  	<th colspan="${colspanVal}" class="titleStats editedStats"><spring:message code="stats.table.edited.all" /> ${year.key }</th>
+			  	<th colspan="${colspanVal}" class="titleStats editedStats"><spring:message code="stats.table.edited.all" /> ${year.key}</th>
 			  	<tr id="cartesPeriode">
 				  	<c:forEach items="${year.value}" var="year">
-				  		<c:set var="loopYear" value="${loopYear + year.value}" />
+				  		<c:set var="loopYear1" value="${loopYear1 + year.value}" />
 				  		<td>${year.value}</td>
 				  	</c:forEach>
-				  	<td class="bold">${loopYear}</td>
+				  	<td class="bold">${loopYear1}</td>
 			  	</tr>
 			  </c:forEach>
 		  </tbody>

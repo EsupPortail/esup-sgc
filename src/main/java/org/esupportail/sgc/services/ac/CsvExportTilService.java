@@ -72,9 +72,9 @@ public class CsvExportTilService implements Export2AccessControlService {
 		 * TODO : et pour TIL ??? */
 		List<Card> cards = null;
 		if(eppns4UpdateSynchronic == null) {
-			cards = cardEtatService.getAllEncodedCardsWithEppnDistinct();
+			cards = cardEtatService.getAllEnableableCardsWithEppnDistinct();
 		} else {
-			cards = cardEtatService.getAllEncodedCardsWithEppnDistinct(eppns4UpdateSynchronic);
+			cards = cardEtatService.getAllEnableableCardsWithEppnDistinct(eppns4UpdateSynchronic);
 		}
 		
         for(Card card : cards) {

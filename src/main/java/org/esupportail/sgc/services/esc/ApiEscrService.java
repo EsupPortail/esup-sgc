@@ -100,9 +100,9 @@ public class ApiEscrService extends ValidateService {
 	
 	public void postOrUpdateEscrStudent(String eppn) {
 		User user = User.findUser(eppn);
-			if(user.getEuropeanStudentCard() && enable) {
+		if(user.getEuropeanStudentCard() && enable) {
 			EscrStudent escrStudent = getEscrStudent(eppn);
-			if(escrStudent == null) {
+			if(escrStudent == null || EscrStudent.findEscrStudentsByEppnEquals(eppn).getResultList().isEmpty()) {
 				postEscrStudent(eppn);
 			} else {
 				updateEscrStudent(eppn);
@@ -111,18 +111,28 @@ public class ApiEscrService extends ValidateService {
 	}
 
 	public EscrStudent getEscrStudent(String eppn) {
-		List<EscrStudent> escrStudents = EscrStudent.findEscrStudentsByEppnEquals(eppn).getResultList();
-		if(escrStudents.isEmpty() || !enable) {
+		String europeanStudentIdentifier = "";
+		try {
+			europeanStudentIdentifier = getEuropeanStudentIdentifier(eppn);
+		} catch(SgcRuntimeException e) {
+			log.info("No europeanStudentIdentifier retrieved for " + eppn, e);
 			return null;
-		} else {
-			EscrStudent escrStudentInDb = escrStudents.get(0);
-			String url = webUrl + "/students/" + escrStudentInDb.getEuropeanStudentIdentifier();
+		}
+		try {
+			String url = webUrl + "/students/" + europeanStudentIdentifier;
 			HttpHeaders headers = this.getJsonHeaders();			
 			HttpEntity entity = new HttpEntity(headers);
-			log.debug("Try to get ESCR Student : " + escrStudentInDb.getEuropeanStudentIdentifier()); 
+			log.debug("Try to get ESCR Student : " + europeanStudentIdentifier); 
 			ResponseEntity<EscrStudent> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscrStudent.class);
 			log.info(eppn + " retrieved in ESCR as Student -> " + response.getBody());	
 			return response.getBody();
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+				log.info("No ESCR Student found on API for " + eppn);
+				return null;
+			} else {
+				throw clientEx;
+			}
 		}
 	}
 	

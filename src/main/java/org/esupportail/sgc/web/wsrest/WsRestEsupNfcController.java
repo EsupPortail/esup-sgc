@@ -334,7 +334,7 @@ public class WsRestEsupNfcController {
 			card.merge();
 			if(!Etat.ENABLED.equals(card.getEtat())) {
 				log.info("livraison of " + card.getCsn() + " -> activation");
-				cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, null, null, false, false);
+				cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, "Activation suite à la livraison.", null, false, false);
 			}
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.SALLE_SEARCH.equals(esupNfcTagLog.getLocation())) {
