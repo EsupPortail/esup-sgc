@@ -102,7 +102,7 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		if(userIsExternal) {
 			String id4ac = user.getId().toString();
 			// padding de 8-2->6
-			id4ac = String.format("%6s", id4ac).replace(' ', '*');
+			id4ac = String.format("%6s", id4ac).replace(' ', '0');
 			// ajout du préfixe 07
 			id4ac = "07" + id4ac;
 			fields.add(id4ac);
