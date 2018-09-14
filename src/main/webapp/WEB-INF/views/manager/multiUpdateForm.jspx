@@ -105,9 +105,7 @@
 											</div>
 										</c:when>
 										<c:otherwise>
-											<button class="btn btn-success btn-block" type="submit">
-												<spring:message
-													code="manager.action.${etatInit}-${etatAvailable}" />
+											<button id="${etatAvailable}Btn" class="btn btn-success btn-block" type="submit"><spring:message code="manager.action.${etatInit}-${etatAvailable}" />
 											</button>
 										</c:otherwise>
 									</c:choose>

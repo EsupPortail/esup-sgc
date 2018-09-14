@@ -1874,6 +1874,7 @@ document.addEventListener('DOMContentLoaded', function() {
    			link.appendChild(form);
    		}
 	});
+   	//envoi du formulaire de recherche automatiquement
    	var megamenu = document.querySelectorAll('.megamenu');
    	Array.from(megamenu).forEach(function(link) {
    		return link.addEventListener('change', function(event) {
