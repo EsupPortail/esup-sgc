@@ -111,11 +111,9 @@ public class ApiEscrService extends ValidateService {
 	}
 
 	public EscrStudent getEscrStudent(String eppn) {
-		String europeanStudentIdentifier = "";
-		try {
-			europeanStudentIdentifier = getEuropeanStudentIdentifier(eppn);
-		} catch(SgcRuntimeException e) {
-			log.info("No europeanStudentIdentifier retrieved for " + eppn, e);
+		String europeanStudentIdentifier = getEuropeanStudentIdentifier(eppn);
+		if(europeanStudentIdentifier == null) {
+			log.info("No europeanStudentIdentifier retrieved for " + eppn);
 			return null;
 		}
 		try {
@@ -141,6 +139,9 @@ public class ApiEscrService extends ValidateService {
 		String url = webUrl + "/students";
 		HttpHeaders headers = this.getJsonHeaders();			
 		EscrStudent escrStudent = this.computeEscrStudent(eppn);
+		if(escrStudent == null) {
+			throw new SgcRuntimeException(String.format("Can't compute escrStudent for %s, because EuropeanStudentIdentifier can't be generated ?", eppn), null);
+		}
 		HttpEntity entity = new HttpEntity(escrStudent, headers);
 		log.debug("Try to post to ESCR Student : " + escrStudent); 
 		try {
@@ -182,9 +183,13 @@ public class ApiEscrService extends ValidateService {
 	}
 	
 	private EscrStudent computeEscrStudent(String eppn) {
+		String europeanStudentIdentifier = getEuropeanStudentIdentifier(eppn);
+		if(europeanStudentIdentifier == null) {
+			return null;
+		}
 		EscrStudent escrStudent = new EscrStudent();
 		escrStudent.setEppn(eppn);
-		escrStudent.setEuropeanStudentIdentifier(getEuropeanStudentIdentifier(eppn));
+		escrStudent.setEuropeanStudentIdentifier(europeanStudentIdentifier);
 		escrStudent.setPicInstitutionCode(picInstitutionCode);
 		User user = User.findUser(eppn);
 		escrStudent.setEmailAddress(user.getEmail());
@@ -195,15 +200,14 @@ public class ApiEscrService extends ValidateService {
 	}
 
 	public EscrCard getEscrCard(String eppn, String csn) {
-		List<EscrCard> escrCards = EscrCard.findEscrCardsByCardUidEquals(csn).getResultList();
-		if(escrCards.isEmpty() || !enable) {
+		Card card = Card.findCard(csn);
+		if(card.getEscnUid() == null || card.getEscnUid().isEmpty() || getEuropeanStudentIdentifier(eppn) == null || !enable) {
 			return null;
 		} else {
-			EscrCard escrCard = escrCards.get(0);
-			String url = webUrl + "/students/" + getEuropeanStudentIdentifier(eppn) + "/cards/" + escrCard.getEuropeanStudentCardNumber();
+			String url = webUrl + "/students/" + getEuropeanStudentIdentifier(eppn) + "/cards/" + card.getEscnUid();
 			HttpHeaders headers = this.getJsonHeaders();			
 			HttpEntity entity = new HttpEntity(headers);
-			log.debug(String.format("Try to get ESCR Card : %s - %s - %s - %s" , eppn, getEuropeanStudentIdentifier(eppn), csn, escrCard.getEuropeanStudentCardNumber())); 
+			log.debug(String.format("Try to get ESCR Card : %s - %s - %s - %s" , eppn, getEuropeanStudentIdentifier(eppn), csn, card.getEscnUid())); 
 			try {
 				ResponseEntity<EscrCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscrCard.class);
 				log.info(csn + " retrieved in ESCR as Card -> " + response.getBody());	
@@ -226,8 +230,22 @@ public class ApiEscrService extends ValidateService {
 		EscrCard escrCard = this.computeEscrCard(card);
 		HttpEntity entity = new HttpEntity(escrCard, headers);
 		log.debug("Try to post to ESCR Card : " + escrCard); 
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-		log.info(card.getCsn() + " sent in ESCR as Student -> " + response.getBody());	
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+			log.info(card.getCsn() + " sent in ESCR as Card -> " + response.getBody());	
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.CONFLICT.equals(clientEx.getStatusCode())) {
+				// conflit -> un post précédent avait été fait mais non persité en base (transaction - TODO à régler avec @Transactional(propagation=Propagation.REQUIRES_NEW) ?)
+				EscrCard escrCardFromEscr = getEscrCard(card.getEppn(), card.getCsn());
+				if(!escrCardFromEscr.getCardUid().equals(escrCard.getCardUid())) {
+					throw new SgcRuntimeException(String.format("Pb - conflit ESCR avec %s / %s - cardUid (csn) des utilisateurs en conflit : %s et %s" , 
+							escrCard.getEuropeanStudentCardNumber(), escrCardFromEscr.getEuropeanStudentCardNumber(), escrCard.getCardUid(), escrCardFromEscr.getCardUid()), clientEx);
+				}
+				log.info("POST précédent sur ESCR avait fonctionné mais pas la persistence en base pour cause probable de transaction interrompue");
+			} else {
+				throw clientEx;
+			}
+		}
 		escrCard.persist();
 	}
 	
@@ -268,7 +286,8 @@ public class ApiEscrService extends ValidateService {
 		User user = User.findUser(eppn);
 		String supannCodeINE = user.getSupannCodeINE();
 		if(supannCodeINE==null || supannCodeINE.isEmpty()) {
-			throw new SgcRuntimeException(eppn + " has no or empty supannCodeINE and this attribute is required for the European Student Card !", null);
+			log.info(eppn + " has no or empty supannCodeINE and this attribute is required for the European Student Card !");
+			return null;
 		}
 		return countryCode + "-" + picInstitutionCode + "-" + supannCodeINE;
 	}

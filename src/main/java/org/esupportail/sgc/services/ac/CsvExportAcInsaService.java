@@ -94,22 +94,41 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		
 		User user = User.findUser(card.getEppn());
 		
-		fields.add(user.getVerso6()); 
+		// Hack : verso6 contient identifiant base métier pour personnels et étudiants insa, ce préfixé par 08, ce sur 8 caractères
+		// pour cartes extérieurs, sans verso6, on construit cet identifant en préfixant par 07 l'identifiant BD du user de esup-sgc
+		
+		Boolean userIsExternal = user.getHasExternalCard();
+		
+		if(userIsExternal) {
+			String id4ac = user.getId().toString();
+			// padding de 8-2->6
+			id4ac = String.format("%6s", id4ac).replace(' ', '*');
+			// ajout du préfixe 07
+			id4ac = "07" + id4ac;
+			fields.add(id4ac);
+		} else {
+			fields.add(user.getVerso6());
+		}
+		
 		// nom 15 caractères max
-		if(user.getName().length()>15) {
+		if(user.getName()!=null && user.getName().length()>15) {
 			fields.add(user.getName().substring(0, 15));	
 		} else {
 			fields.add(user.getName());	
 		}
 		// prenom 13 caractères max
-		if(user.getFirstname().length()>13) {
+		if(user.getFirstname()!=null && user.getFirstname().length()>13) {
 			fields.add(user.getFirstname().substring(0, 13));	
 		} else {
 			fields.add(user.getFirstname());	
 		}
 		fields.add("");
 		fields.add(user.getRneEtablissement());
-		fields.add(user.getVerso7());
+		if(userIsExternal) {
+			fields.add("011");
+		} else {
+			fields.add(user.getVerso7());
+		}
 		fields.add(formatDate(card.getEnnabledDate()));
 		fields.add(formatDate(card.getDueDate()));
 		fields.add("13");

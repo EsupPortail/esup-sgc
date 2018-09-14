@@ -30,6 +30,10 @@ public class LdapValidateService extends ValidateService {
 	
 	private String CSN_RETURN = "%reverse_csn%";
 	
+	private String SECONDARYID = "%secondary_id%";
+	
+	private String EPPN = "%eppn%";
+	
 	private String PHOTO = "%photo%";
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -137,6 +141,10 @@ public class LdapValidateService extends ValidateService {
 		Object ldapValue = null;
 		ldapValueRef = ldapValueRef.replaceAll(CSN, card.getCsn());
 		ldapValueRef = ldapValueRef.replaceAll(CSN_RETURN, card.getReverseCsn());
+		ldapValueRef = ldapValueRef.replaceAll(EPPN, card.getEppn());
+		if(card.getUser().getSecondaryId() != null) {
+			ldapValueRef = ldapValueRef.replaceAll(SECONDARYID, card.getUser().getSecondaryId());
+		}
 		for(String appName : card.getDesfireIds().keySet()) {
 			ldapValueRef = ldapValueRef.replaceAll("%" + appName + "%", card.getDesfireIds().get(appName));
 		}		

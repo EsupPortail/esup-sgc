@@ -377,14 +377,17 @@ public class ManagerCardController {
     		}
     		String allFreeFieldValueJoinString = StringUtils.join(allFreeFieldValueList, ";");
     		uiModel.addAttribute("fieldsValue", allFreeFieldValueJoinString);
-    		HashMap<Integer, String[]> freeFieldValueDecoded = new HashMap<Integer, String[]>() ; 		
+    		HashMap<Integer, String[]> freeFieldValueDecoded = new HashMap<Integer, String[]>() ; 	
+    		HashMap<String, String[]> fieldsValueEncoded = new HashMap<String, String[]>() ; 
     		for (Map.Entry<Integer, String[]> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
     			String[] entryValuesDecoded = new String[freeFieldEncoded.getValue().length];
     			for(int i=0; i<freeFieldEncoded.getValue().length; i++){
     				entryValuesDecoded[i] = urlEncodingUtils.decodeString(freeFieldEncoded.getValue()[i]);
     			}
     			freeFieldValueDecoded.put(freeFieldEncoded.getKey(), entryValuesDecoded);
+    			fieldsValueEncoded.put(freeFieldEncoded.getKey().toString(), freeFieldEncoded.getValue());
     		}
+    		uiModel.addAttribute("fieldsValueEncoded", fieldsValueEncoded);
     		searchBean.setFreeFieldValue(freeFieldValueDecoded);	
     	} else {
     		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
@@ -562,7 +565,7 @@ public class ManagerCardController {
 
 	@PreAuthorize("hasRole('ROLE_MANAGER')")
 	@RequestMapping(value="/csvSearch", method = RequestMethod.GET)
-	public void getCsvFromSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, @RequestParam(value="fields",required=false) List<String> fields, HttpServletResponse response) throws IOException {
+	public void getCsvFromSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, Model uiModel, @RequestParam(value="fields",required=false) List<String> fields, HttpServletResponse response) throws IOException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();	
 		response.setContentType("text/csv");
@@ -573,6 +576,38 @@ public class ManagerCardController {
     		searchBean.setLastTemplateCardPrinted(null);
     	}
     	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
+    	
+    	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
+    		HashMap<Integer, String[]> noEmptyFreeFieldValue = new HashMap<Integer, String[]>(searchBean.getFreeFieldValue());
+    		HashMap<String, String[]> fieldsValueEncoded = new HashMap<String, String[]>() ;
+    		noEmptyFreeFieldValue.values().removeAll(Collections.singleton(""));
+    		List<String> allFreeFieldValueList = new ArrayList<String>();    	
+    		for(int j=0; j < Collections.max(searchBean.getFreeFieldValue().keySet())+1; j++) {
+    			String[] value = searchBean.getFreeFieldValue().get(j);
+    			List<String> freeFieldValueList = new ArrayList<String>();
+    			if(value!=null) {
+	    			for(int i=0; i<value.length; i++){
+	    				freeFieldValueList.add(value[i]);
+	    			}
+    			}
+    			String freeFieldValueJoinString = StringUtils.join(freeFieldValueList.toArray(), ",");
+    			allFreeFieldValueList.add(freeFieldValueJoinString);
+    		}
+    		String allFreeFieldValueJoinString = StringUtils.join(allFreeFieldValueList, ";");
+    		HashMap<Integer, String[]> freeFieldValueDecoded = new HashMap<Integer, String[]>() ; 		
+    		for (Map.Entry<Integer, String[]> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
+    			String[] entryValuesDecoded = new String[freeFieldEncoded.getValue().length];
+    			for(int i=0; i<freeFieldEncoded.getValue().length; i++){
+    				entryValuesDecoded[i] = urlEncodingUtils.decodeString(freeFieldEncoded.getValue()[i]);
+    			}
+    			freeFieldValueDecoded.put(freeFieldEncoded.getKey(), entryValuesDecoded);
+    			fieldsValueEncoded.put(freeFieldEncoded.getKey().toString(), freeFieldEncoded.getValue());
+    		}
+    		uiModel.addAttribute("fieldsValueEncoded", fieldsValueEncoded);
+    		searchBean.setFreeFieldValue(freeFieldValueDecoded);	
+    	}
+    	
+    	
 		importExportService.exportCsv2OutputStream(searchBean, eppn, fields, response.getOutputStream());
 	}
 	
@@ -606,7 +641,38 @@ public class ManagerCardController {
     		searchBean.setLastTemplateCardPrinted(null);
     	}
     	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
+    	
+    	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
+    		HashMap<Integer, String[]> noEmptyFreeFieldValue = new HashMap<Integer, String[]>(searchBean.getFreeFieldValue());
+    		HashMap<String, String[]> fieldsValueEncoded = new HashMap<String, String[]>() ;
+    		noEmptyFreeFieldValue.values().removeAll(Collections.singleton(""));
+    		List<String> allFreeFieldValueList = new ArrayList<String>();    	
+    		for(int j=0; j < Collections.max(searchBean.getFreeFieldValue().keySet())+1; j++) {
+    			String[] value = searchBean.getFreeFieldValue().get(j);
+    			List<String> freeFieldValueList = new ArrayList<String>();
+    			if(value!=null) {
+	    			for(int i=0; i<value.length; i++){
+	    				freeFieldValueList.add(value[i]);
+	    			}
+    			}
+    			String freeFieldValueJoinString = StringUtils.join(freeFieldValueList.toArray(), ",");
+    			allFreeFieldValueList.add(freeFieldValueJoinString);
+    		}
+    		HashMap<Integer, String[]> freeFieldValueDecoded = new HashMap<Integer, String[]>() ; 		
+    		for (Map.Entry<Integer, String[]> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
+    			String[] entryValuesDecoded = new String[freeFieldEncoded.getValue().length];
+    			for(int i=0; i<freeFieldEncoded.getValue().length; i++){
+    				entryValuesDecoded[i] = urlEncodingUtils.decodeString(freeFieldEncoded.getValue()[i]);
+    			}
+    			freeFieldValueDecoded.put(freeFieldEncoded.getKey(), entryValuesDecoded);
+    			fieldsValueEncoded.put(freeFieldEncoded.getKey().toString(), freeFieldEncoded.getValue());
+    		}
+    		searchBean.setFreeFieldValue(freeFieldValueDecoded);	
+    	}
+    	
+    	
 		List<Card> cards = Card.findCards(searchBean, eppn, "address", "ASC").getResultList();
+		
 		
 		uiModel.addAttribute("cards", cards);
 		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());

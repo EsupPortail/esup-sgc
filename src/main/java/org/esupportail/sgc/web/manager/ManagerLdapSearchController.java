@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
-import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
@@ -135,11 +134,12 @@ public class ManagerLdapSearchController {
 	
 	@RequestMapping(value="/ldapUserExtForm", method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_SUPER_MANAGER')")
-	public String ldapUserExtForm(@RequestParam(value="eppn") String eppn) {
+	public String ldapUserExtForm(@RequestParam(value="eppn") String eppn, Model uiModel) {
 
 		Card externalCard = externalCardService.importExternalCard(eppn, null);
 		cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
-
+		
+		uiModel.asMap().clear();
 		return "redirect:/manager/" + externalCard.getId();
 
 	}

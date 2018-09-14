@@ -532,27 +532,29 @@
                                                     <c:if test="${not empty card.csn}">
                                                         <h5>
                                                             <spring:url value="/manager/getCrousSmartCardUrlHtmlPart?csn=${card.csn}" var="getCrousSmartCardUrl"/>
-                                                            <a class="getCrousSmartCard" href="${getCrousSmartCardUrl}">Cliquer pour visualiser les données côté CROUS :</a>
+                                                            <a class="getCrousSmartCard btn btn-default" href="${getCrousSmartCardUrl}">Cliquer pour visualiser les données côté CROUS :</a>
                                                         </h5>
                                                         <div class="getCrousSmartCardDiv">
                                                             <!--  -->
                                                         </div>
                                                     </c:if>
                                                 </c:if>
-                                                <dl class="dl-horizontal col-lg-5">
-                                                    <h4>Carte d'étudiant européenne</h4>
-                                                    <dt>Numéro de carte d'étudiant européenne : </dt>
-                                                    <dd>${card.escnUid}</dd>
-                                                    <c:if test="${not empty card.csn and not empty card.escnUid}">
-                                                        <h5>
-                                                            <spring:url value="/manager/getEscrCardHtmlPart?eppn=${card.eppn}&amp;csn=${card.csn}" var="getEscrCardUrlHtmlPart"/>
-                                                            <a class="getEscrCard" href="${getEscrCardUrlHtmlPart}">Cliquer pour visualiser les données côté ESCR :</a>
-                                                        </h5>
-                                                        <div class="getEscrCardDiv">
-                                                            <!--  -->
-                                                        </div>
-                                                    </c:if>
-                                                </dl>
+                                                <c:if test="${user.europeanStudentCard}">
+	                                                <dl class="dl-horizontal col-lg-5">
+	                                                    <h4>Carte d'étudiant européenne</h4>
+	                                                    <dt>Numéro de carte d'étudiant européenne : </dt>
+	                                                    <dd>${card.escnUid}</dd>
+	                                                    <c:if test="${not empty card.csn and not empty card.escnUid}">
+	                                                        <h5>
+	                                                            <spring:url value="/manager/getEscrCardHtmlPart?eppn=${card.eppn}&amp;csn=${card.csn}" var="getEscrCardUrlHtmlPart"/>
+	                                                            <a class="getEscrCard btn btn-default" href="${getEscrCardUrlHtmlPart}">Cliquer pour visualiser les données côté ESCR :</a>
+	                                                        </h5>
+	                                                        <div class="getEscrCardDiv">
+	                                                            <!--  -->
+	                                                        </div>
+	                                                    </c:if>
+	                                                </dl>
+                                                </c:if>
                                                 <sec:authorize access="hasRole('ROLE_ADMIN')">
                                                     <div class="col-lg-5">
                                                         <h4>Historique</h4>

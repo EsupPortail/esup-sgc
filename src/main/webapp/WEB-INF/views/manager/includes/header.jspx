@@ -39,11 +39,17 @@
 				value="${searchBean.flagAdresse ne null ? searchBean.flagAdresse : ''}" />
 			<c:forEach items="${csvFiltres}" var="filtre" varStatus="status">
 				<c:set var="index" value="${status.index}" />
-				<c:if test="${not empty searchBean.freeFieldValue[index]['0']}">
+				<c:if test="${not empty fieldsValueEncoded}">
 					<input type="hidden" id="freeField${status.index}" name="freeField['${status.index}']" 
 						value="${searchBean.freeField[index]}"  />
-					<input type="hidden" id="freeFieldValue${status.index}" name="freeFieldValue['${status.index}']"
-						value="${searchBean.freeFieldValue[index]['0']}"  />
+					<c:forEach var="entry" items="${fieldsValueEncoded}">
+						<c:if test="${entry.key eq  status.index}">
+						  	<c:forEach var="entry2" items="${entry.value}">
+						  		<input type="hidden" id="freeFieldValue${entry.key}" name="freeFieldValue['${entry.key}']"
+									value="${entry2}"  />
+						  	</c:forEach>
+						</c:if>
+					</c:forEach>
 				</c:if>	
 			</c:forEach>
 			<button type="button" title="Export CSV" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button>&amp;nbsp
