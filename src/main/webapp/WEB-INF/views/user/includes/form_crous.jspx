@@ -3,15 +3,16 @@
 		<legend class="scheduler-border">Crous</legend>
 		<div class="radio">
 			<label for="radio1"> <input type="radio"
-				name="crousTransient" id="radio1" value="false" /> Je
-				ne souhaite pas bénéficier du service de restauration CROUS sur
-				ma léocarte
+				name="crousTransient" id="radio1" value="false" /> Je ne souhaite pas bénéficier des services CROUS 
+				<a href="#" data-toggle="tooltip" title="" data-original-title="Restauration CROUS, machines à café IZLY, ...">*</a> 
+				sur ma léocarte
 			</label>
 		</div>
 		<div class="radio">
 			<label for="radio2"> <input value="true" type="radio"
-				name="crousTransient" id="radio2" /> Je souhaite bénéficier du
-				service de restauration CROUS sur ma léocarte
+				name="crousTransient" id="radio2" /> Je souhaite bénéficier des services CROUS 
+				<a href="#" data-toggle="tooltip" title="" data-original-title="Restauration CROUS, machines à café IZLY, ...">*</a>
+				sur ma léocarte
 			</label>
 		</div>
 		<div class="alert alert-info">En acceptant, j’autorise

@@ -34,7 +34,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 						<!-- <dt>Statut : </dt><dd>${user.cnousReferenceStatut}</dd> -->
 						<dt>Email : </dt><dd>${user.email}</dd>
 						<c:if test="${!user.hasExternalCard}">
-						<dt>Restauration Crous :</dt>
+						<dt>Services Crous <a href="#" data-toggle="tooltip" title="" data-original-title="Restauration CROUS, machines à café IZLY, ...">*</a> :</dt>
 						<dd>${user.crous  ? 'Oui' : 'Non'} &amp;nbsp
 							<c:if test="${!user.crous}">
 								<button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#crousCollapse">Modifier</button>
@@ -94,8 +94,8 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 					<div class="collapse" id="crousCollapse">
 						<spring:url value="/user/enableCrous" var="crousUrl" />
 						<form action="${crousUrl}" method="post" id="crousForm">
-							<div class="alert alert-warning"><strong>Je souhaite bénéficier du
-								service de restauration CROUS sur ma léocarte.</strong>
+							<div class="alert alert-warning"><strong>Je souhaite bénéficier des services CROUS 
+								<a href="#" data-toggle="tooltip" title="" data-original-title="Restauration CROUS, machines à café IZLY, ...">*</a> sur ma léocarte.</strong>
 								<div class="alert alert-info">En acceptant, j’autorise
 									l’Université à transmettre les données : nom – prénom– code tarif
 									– code société – adresse mail institutionnelle au CROUS de Rouen,
