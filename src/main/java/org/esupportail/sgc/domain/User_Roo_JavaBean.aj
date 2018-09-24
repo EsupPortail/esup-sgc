@@ -380,4 +380,12 @@ privileged aspect User_Roo_JavaBean {
         this.blockUserMsg = blockUserMsg;
     }
     
+    public Boolean User.getHasCardRequestPending() {
+        return this.hasCardRequestPending;
+    }
+    
+    public void User.setHasCardRequestPending(Boolean hasCardRequestPending) {
+        this.hasCardRequestPending = hasCardRequestPending;
+    }
+    
 }

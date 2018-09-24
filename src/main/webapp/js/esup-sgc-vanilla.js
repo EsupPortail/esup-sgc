@@ -1182,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    });
 		};
     }
-    var idSlimSelect = ['searchBeanAdress','searchBeanEtat','searchBeanEditable', 'searchBeanOwnOrFreeCard', 'searchBeanNbCards', 'searchBeanNbRejets', 'searchBeanFlagAdresse', 'searchBeanLastTemplateCardPrinted'];
+  var idSlimSelect = ['searchBeanAdress','searchBeanEtat','searchBeanEditable', 'searchBeanOwnOrFreeCard', 'searchBeanNbCards', 'searchBeanNbRejets', 'searchBeanFlagAdresse', 'searchBeanHasRequestCard', 'searchBeanLastTemplateCardPrinted'];
     //Recherche simple
     idSlimSelect.forEach(function(element, i) {
     	if(document.getElementById(element) != null ){
@@ -1879,6 +1879,11 @@ document.addEventListener('DOMContentLoaded', function() {
    	Array.from(megamenu).forEach(function(link) {
    		return link.addEventListener('change', function(event) {
    		 var searchEppnForm = document.getElementById("searchEppnForm");
+			 searchEppnForm.querySelectorAll("select").forEach(function(element) {
+				 if(!element.value) {
+					 element.disabled = true;
+				 }
+			});
    			searchEppnForm.submit();
    	    }); 
    	})

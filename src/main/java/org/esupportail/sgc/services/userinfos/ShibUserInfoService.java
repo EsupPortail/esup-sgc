@@ -41,7 +41,9 @@ public class ShibUserInfoService implements ExtUserInfoService {
 		if(request != null) {
 			for(String name: sgcParam2requestHeader.keySet()) {
 				String value = request.getHeader(sgcParam2requestHeader.get(name));
-				userInfos.put(name, value);
+				if(value!=null) {
+					userInfos.put(name, value);
+				}
 			}
 		}
 		return userInfos;

@@ -183,6 +183,18 @@
                 </map>
             </property>
         </bean>
+
+
+        <!-- synchronize à false si pas d'email (== compte purgé dans ldap/bd du si) -->
+        <bean id="spelUserInfoServiceSynchronizeFlag" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="7">
+            <property name="sgcParam2spelExp">
+                <map>
+                    <entry key="synchronize" value="#userInfosInComputing['email'] == Null ? 'false' : 'true'"/>
+                </map>
+            </property>
+        </bean>
+        
+
         
         <bean id="cardIdsService" class="org.esupportail.sgc.services.cardid.CardIdsService">
             <property name="cardIdServices">

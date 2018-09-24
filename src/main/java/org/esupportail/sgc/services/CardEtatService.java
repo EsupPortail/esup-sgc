@@ -182,6 +182,8 @@ public class CardEtatService {
 			card.setPayCmdNum(null);
 		}
 		
+		card.getUser().setHasCardRequestPending(etatsRequest.contains(card.getEtat()) || this.hasRequestCard(eppn));
+		
 		this.sendMailInfo(etatInitial, card.getEtat(), card.getUser(), mailMessage, actionFromAnAdmin);
 		
 		return true;

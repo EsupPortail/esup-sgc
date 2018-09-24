@@ -157,6 +157,9 @@ public class User {
 	private Card externalCard = new Card();
 	
 	private String blockUserMsg;
+	
+	@Column
+	private Boolean hasCardRequestPending = false;
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();

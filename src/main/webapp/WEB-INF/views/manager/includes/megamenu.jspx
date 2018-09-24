@@ -89,7 +89,15 @@
 				  		<spring-form:option value="INT">Adresse interne</spring-form:option>
 				  		<spring-form:option value="EXT">Adresse externe</spring-form:option>
 				    </spring-form:select>
-			  	</div>	  
+			  	</div>	 
+			  	<div class="form-group">
+			  		<label style="display:none" >-- Demande en cours --</label>
+			  		<spring-form:select path="searchBean.hasRequestCard" id="searchBeanHasRequestCard" cssClass="megamenu">
+		  				<spring-form:option value="" data-placeholder="true"></spring-form:option>
+				  		<spring-form:option value="true">oui</spring-form:option>
+				  		<spring-form:option value="false">non</spring-form:option>
+				    </spring-form:select>
+			  	</div>	 
 				<div class="form-group">
 		    		<input type="text" class="form-control megamenu" placeholder="nom, prénom, email, n°" id="searchEppn" name="searchText" value="${searchBean.searchText}"/>
 		  		</div>	

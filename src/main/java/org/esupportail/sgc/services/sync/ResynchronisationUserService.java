@@ -72,8 +72,15 @@ public class ResynchronisationUserService {
 		dummyUser.setNbCards(user.getNbCards());
 		dummyUser.setRequestFree(user.isRequestFree());
 		dummyUser.setDifPhoto(user.getDifPhoto());
-		userInfoService.setAdditionalsInfo(dummyUser, null);
-		if(log.isTraceEnabled()) {
+		boolean syncUserInfoServiceFlag = userInfoService.setAdditionalsInfo(dummyUser, null);
+		
+		if(!syncUserInfoServiceFlag) {
+			log.debug("Flag synchronize false for " + eppn + " -> no synchronize");
+			return false;
+		} else {
+		
+		if(log.isTraceEnabled()) {		
+			log.trace("Flag synchronize true for " + eppn);
 			log.trace("'user' computed from userInfoServices : " + dummyUser);
 		}
 
@@ -207,6 +214,7 @@ public class ResynchronisationUserService {
 			accessControlService.sync(eppn);
 		}
 		return updated;
+		}
 	}
 
 }

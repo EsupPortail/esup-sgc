@@ -31,7 +31,7 @@
 										<input type="hidden" name="listeIds" id="listeIds" value="${cardId}"/>
 									</c:forEach>
 									<c:choose>
-										<c:when test="${not empty actionMessages[etatAvailable]}">
+										<c:when test="${not empty actionMessages[etatAvailable] and etatAvailable ne 'REQUEST_CHECKED' and etatAvailable ne 'PRINTED' and etatAvailable ne 'IN_PRINT' and etatAvailable ne 'DESTROYED'}">
 											<button class="btn btn-success btn-block"
 												data-target="#commentEtat" data-toggle="modal" type="button" id="${etatAvailable}Btn">
 												<spring:message

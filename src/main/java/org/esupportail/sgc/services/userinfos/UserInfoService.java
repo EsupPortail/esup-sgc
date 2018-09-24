@@ -88,8 +88,14 @@ public class UserInfoService {
 		return dateUTCsecFormatter;
 	}
 
-	public void setAdditionalsInfo(User user, HttpServletRequest request) {
+	
+	/**
+	 * Get and set userInfos from userInfoservices to user object
+	 * Return false if synchronize is set to true by userInfoservices computing
+	 */
+	public boolean setAdditionalsInfo(User user, HttpServletRequest request) {
 		Map<String, String> userInfos = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER); 
+		userInfos.put("synchronize", "true");
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
 			if(user.getEppn().matches(extUserInfoService.getEppnFilter())) {
 				userInfos.putAll(extUserInfoService.getUserInfos(user, request, userInfos));
@@ -244,6 +250,7 @@ public class UserInfoService {
 				Boolean requestFree = "true".equalsIgnoreCase(userInfos.get(key));
 				user.setRequestFree(requestFree);
 			} 
+
 		}
 		
 		setDefaultValues4NullAttributes(userInfos, user);
@@ -282,6 +289,9 @@ public class UserInfoService {
 				user.setDueDate(dueDateIncluded);
 			}
 		}
+		
+		
+		return "true".equalsIgnoreCase(userInfos.get("synchronize"));
 		
 	}
 	

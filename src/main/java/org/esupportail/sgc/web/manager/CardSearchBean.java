@@ -33,4 +33,7 @@ public class CardSearchBean {
 	HashMap<Integer, String> freeField;
 	
 	HashMap<Integer, String[]> freeFieldValue;
+	
+	String hasRequestCard;
+	
 }

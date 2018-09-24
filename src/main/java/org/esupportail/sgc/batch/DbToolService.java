@@ -3,6 +3,7 @@ package org.esupportail.sgc.batch;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import org.esupportail.sgc.domain.BigFile;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +31,17 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	final static String currentEsupSgcVersion = "0.2.u";
+	final static String currentEsupSgcVersion = "0.2.v";
 		
 	@Resource
 	DataSource dataSource;
 	
 	@Resource
 	UserInfoService userInfoService;
-
+	
+	@Resource
+	CardEtatService cardEtatService;
+	
 	@Transactional
 	public void upgrade() {
 		AppliVersion appliVersion = null;
@@ -179,6 +184,25 @@ public class DbToolService {
 				
 	    		esupSgcVersion = "0.2.u";
 			}
+			if("0.2.u".equals(esupSgcVersion)) {
+				
+				String sqlUpdate = "alter table user_account disable trigger tsvectorupdateuser;";
+				sqlUpdate += "update user_account set has_card_request_pending = false;";
+				sqlUpdate += "with counted as ("
+						+ "select eppn from card where etat in ('REJECTED', 'REQUEST_CHECKED', 'IN_PRINT', 'NEW', 'ENCODED', 'RENEWED', 'PRINTED','IN_ENCODE') "
+						+ "group by eppn) "
+						+ "update user_account set has_card_request_pending = true from counted c "
+						+ "where c.eppn = user_account.eppn;";
+				sqlUpdate += "alter table user_account enable trigger tsvectorupdateuser;";
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+	    		esupSgcVersion = "0.2.v";
+			}
 			else {
 				log.warn("\n\n#####\n\t" +
 	    				"Base de données à jour !" +
@@ -190,5 +214,6 @@ public class DbToolService {
 			throw new RuntimeException("Erreur durant la mise à jour de la base de données", e);
 		}
 	}
+
 
 }

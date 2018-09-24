@@ -34,7 +34,7 @@
         <field:checkbox field="auto" id="c_org_esupportail_sgc_domain_CardActionMessage_auto" render="true" z="user-managed"/>
         <field:checkbox field="defaut" id="c_org_esupportail_sgc_domain_CardActionMessage_defaut" z="D/6nqYn+OJvVu7AYlwt/NZqnE3o="/>
         <field:input field="etatInitial" id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" render="false" z="user-managed"/>
-        <field:select path="userTypes" field="userTypes" items="${userTypes}" multiple="true" id="c_org_esupportail_sgc_domain_CardActionMessage_userTypes" z="E5tvaA++dCvWBBaiLCfrT0HrEzk="/>
+        <field:select field="userTypes" id="c_org_esupportail_sgc_domain_CardActionMessage_userTypes" items="${userTypes}" multiple="true" path="userTypes" z="user-managed"/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_esupportail_sgc_domain_CardActionMessage" render="${not empty dependencies}" z="1xqoiyebfPoP28Ldx+V51N3NdeQ="/>
 </div>

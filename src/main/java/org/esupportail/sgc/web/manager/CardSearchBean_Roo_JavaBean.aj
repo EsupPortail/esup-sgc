@@ -107,4 +107,12 @@ privileged aspect CardSearchBean_Roo_JavaBean {
         this.freeFieldValue = freeFieldValue;
     }
     
+    public String CardSearchBean.getHasRequestCard() {
+        return this.hasRequestCard;
+    }
+    
+    public void CardSearchBean.setHasRequestCard(String hasRequestCard) {
+        this.hasRequestCard = hasRequestCard;
+    }
+    
 }

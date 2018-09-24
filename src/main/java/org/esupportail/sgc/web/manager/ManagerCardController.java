@@ -455,6 +455,8 @@ public class ManagerCardController {
     					Etat firstEtat = card.getEtat();
     					card.setEtat(forcedEtatFinal);
     					card.merge();
+    					card.getUser().setHasCardRequestPending(cardEtatService.hasRequestCard(card.getEppn()));
+    					card.getUser().merge();
     					log.info("Changement d'etat manuel à " + forcedEtatFinal + " pour la carte de " + card.getEppn());
     					logService.log(card.getId(), ACTION.FORCEDUPDATE, RETCODE.SUCCESS, firstEtat.name() + " -> " + forcedEtatFinal, card.getEppn(), null);
     				} else {

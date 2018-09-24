@@ -546,6 +546,15 @@ public class Card {
         if (searchBean.getNbRejets() != null) {
             predicates.add(criteriaBuilder.equal(c.get("nbRejets"), searchBean.getNbRejets()));
         }
+        if (searchBean.getHasRequestCard() != null) {
+        	Join<Card, User> u = c.join("userAccount");
+            Expression<Boolean> hasRequestCardExpr = u.get("hasCardRequestPending");
+            if ("true".equals(searchBean.getHasRequestCard())) {
+                predicates.add(criteriaBuilder.isTrue(hasRequestCardExpr));
+            } else if ("false".equals(searchBean.getHasRequestCard())) {
+                predicates.add(criteriaBuilder.isFalse(hasRequestCardExpr));
+            }
+        }
         orders.add(criteriaBuilder.desc(c.get("dateEtat")));
         orders.add(criteriaBuilder.desc(c.get("id")));
         query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
@@ -615,6 +624,15 @@ public class Card {
         }
         if (searchBean.getNbRejets() != null) {
             predicates.add(criteriaBuilder.equal(c.get("nbRejets"), searchBean.getNbRejets()));
+        }
+        if (searchBean.getHasRequestCard() != null) {
+        	Join<Card, User> u = c.join("userAccount");
+            Expression<Boolean> hasRequestCardExpr = u.get("hasCardRequestPending");
+            if ("true".equals(searchBean.getHasRequestCard())) {
+                predicates.add(criteriaBuilder.isTrue(hasRequestCardExpr));
+            } else if ("false".equals(searchBean.getHasRequestCard())) {
+                predicates.add(criteriaBuilder.isFalse(hasRequestCardExpr));
+            }
         }
         query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
         query.select(criteriaBuilder.count(c));
