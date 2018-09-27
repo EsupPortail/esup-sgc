@@ -29,7 +29,7 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	final static String ENCODING_AC = "UTF-8";
+	final static String ENCODING_AC = "ISO-8859-1";
 	
 	private final static String CSV_FILENAME =  "uniLaSalle-ac.csv";
 	
@@ -72,7 +72,7 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 	}
 	
 	@Transactional
-	@Scheduled(cron="0 17 09 * * *")
+	@Scheduled(cron="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * *")
 	private void export2AcSqueue() throws IOException {
 		synchronized (queueEppns2Update) {
 			if(!queueEppns2Update.isEmpty()) {
@@ -88,7 +88,6 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 	private StringBuffer sgc2csv(List<String> eppn4Update) {
 
 		StringBuffer sBuffer = new StringBuffer();
-		sBuffer.append("nom;prenom;CSN;type population;Leocode;date début validité; date fin validité;uid\r\n");
 		List<Card> cards = cardEtatService.getAllEncodedCards(eppn4Update);
         for(Card card : cards) {
         	if(card.getEtat().equals(Etat.ENABLED) || card.getEtat().equals(Etat.DISABLED) || card.getEtat().equals(Etat.CADUC)) {
