@@ -111,6 +111,16 @@
 									</c:choose>
 								</form>
 							</c:forEach>
+						    <c:if test = "${fn:contains(etatsAvailable, 'REQUEST_CHECKED')}">
+								<spring:url value="/manager/retouche" var="retouche_url" />
+								<form action="${retouche_url}"
+									id="retouche}Form" method="POST">
+									<c:forEach var="cardId" items="${cardIds}">
+										<input type="hidden" name="listeIds" id="listeIds" value="${cardId}"/>
+									</c:forEach>
+									<input type="submit" value="Retoucher" />
+								</form>
+						    </c:if>
 							<sec:authorize access="hasRole('ROLE_MANAGER')">
 								<c:if test="${livraison}">
 	                            	<c:if test="${deliveredFlag}">

@@ -204,8 +204,8 @@ public class ResynchronisationUserService {
 			if((Etat.ENABLED.equals(card.getEtat()) || Etat.DISABLED.equals(card.getEtat()) || Etat.ENCODED.equals(card.getEtat())) && user.getDueDateIncluded().before(new Date())) {
 				cardEtatService.setCardEtat(card, Etat.CADUC, null, null, false, true);
 			}
-			// if card is a new request and is already out_of_date we canceled the request
-			if(Etat.NEW.equals(card.getEtat()) && user.getDueDateIncluded().before(new Date())) {
+			// if card is a new (or rejected) request and is already out_of_date we canceled the request
+			if((Etat.NEW.equals(card.getEtat()) || Etat.REJECTED.equals(card.getEtat())) && user.getDueDateIncluded().before(new Date())) {
 				SimpleDateFormat dateFormatterFr = new SimpleDateFormat("dd/MM/yyyy");
 				cardEtatService.setCardEtat(card, Etat.CANCELED, "La date limite / de fin (" + dateFormatterFr.format(user.getDueDateIncluded()) + ") est dépassée, la demande de carte est annulée.", null, false, true);
 			}

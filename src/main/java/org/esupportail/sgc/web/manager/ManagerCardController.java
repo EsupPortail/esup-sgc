@@ -42,6 +42,9 @@ import org.esupportail.sgc.tools.MapUtils;
 import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -56,6 +59,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/manager")
@@ -317,12 +321,28 @@ public class ManagerCardController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('ROLE_MANAGER')")
+	@RequestMapping(value="/actionAjax", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String>  actionAjaxEtat(@RequestParam Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, Model uiModel) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		Card card = Card.findCard(cardId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        String response = "";
+		card.merge();
+		uiModel.asMap().clear();
+		String etatInitial = card.getEtat().name();
+		cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false);
+		logService.log(card.getId(), ACTION.RETOUCHE_ACTION_IND, RETCODE.SUCCESS, "", eppn,  etatInitial.concat("->").concat(etatFinal.name()));
+		return new ResponseEntity<String>(response, headers, HttpStatus.OK);
+	}
+	
 	public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
 		// Not used : for Spring ROO
 		return null;
 	}
-	
-	
 	
     @RequestMapping(produces = "text/html")
     @Transactional
@@ -558,6 +578,52 @@ public class ManagerCardController {
 		}
 		return "redirect:/manager/" + id;
 	}
+	
+	@PreAuthorize("hasRole('ROLE_MANAGER')")
+	@RequestMapping(value="/updatePhotoAjax", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String>  updatePhotoAjax(@RequestParam("cardId") Long id, @RequestParam("imageData") String imageData, Model uiModel, final RedirectAttributes redirectAttributes){
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		String response = "";
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();	
+		if (imageData.isEmpty()) {
+			log.info("Aucune image disponible");
+			redirectAttributes.addFlashAttribute("messageInfo", "error_leocarte_emptyfile");
+		} else {
+			if(id!=null){
+				Card card = Card.findCard(id);
+				try {
+					String encoding = cardService.getPhotoParams().get("encoding");
+					int contentStartIndex = imageData.indexOf(encoding) + encoding.length();
+					byte[] bytes = Base64.decodeBase64(imageData.substring(contentStartIndex));  
+					Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
+					String contentType = cardService.getPhotoParams().get("contentType");
+					card.getPhotoFile().setContentType(contentType);
+					card.getPhotoFile().setFileSize(fileSize);
+					ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+					log.info("Upload and set file in DB with filesize = " + fileSize);
+					card.getPhotoFile().getBigFile().setBinaryFileStream(inputStream, fileSize);
+					Calendar cal = Calendar.getInstance();
+					Date currentTime = cal.getTime();
+					card.getPhotoFile().setSendTime(currentTime);
+					card.merge();
+					logService.log(card.getId(), ACTION.UPDATEPHOTO, RETCODE.SUCCESS, "", card.getEppn(), null);
+					log.info("Succès de la mise à jour de la photo pour l'utilisateur " +   card.getEppn());
+					redirectAttributes.addFlashAttribute("messageSuccess", SUCCESS_MSG.concat("updatePhoto"));
+					response = imageData;
+					logService.log(card.getId(), ACTION.RETOUCHE_PHOTO, RETCODE.SUCCESS, "", eppn, "");
+					} catch (Exception e) {
+						logService.log(card.getId(), ACTION.UPDATEPHOTO, RETCODE.FAILED, "", card.getEppn(), null);
+						redirectAttributes.addFlashAttribute("messageInfo", ERROR_MSG.concat("updatePhoto"));
+						log.error("Echec lors de la mise à jour de la photo pour l'utilisateur " +   card.getEppn(), e);
+				}
+			}
+		}
+		
+		return new ResponseEntity<String>(response, headers, HttpStatus.OK);
+	}
 
 
 	public List<String> getFilteredAdresses(String tabType, String etat){
@@ -682,5 +748,15 @@ public class ManagerCardController {
 		return "manager/bordereau";
 	}
 	
+	@RequestMapping(value="/retouche", method = RequestMethod.POST)
+	public String getRetouchePage(@RequestParam("listeIds") List<Long> listeIds, Model uiModel) {
+		List<Card> cards = Card.findAllCards(listeIds);
+		uiModel.addAttribute("cardIds",listeIds);
+		uiModel.addAttribute("cards",cards);
+		String joinIds = StringUtils.join(listeIds.toArray(new Long[listeIds.size()]), ",");
+		uiModel.addAttribute("joinIds",joinIds);
+		
+		return "manager/retouche";
+	}
 }
 

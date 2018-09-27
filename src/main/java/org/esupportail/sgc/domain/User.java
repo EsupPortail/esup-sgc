@@ -643,5 +643,18 @@ public class User {
         return q.getResultList();
     }
     
+    public static List<Object> countNbPendingCards(String userType) {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT has_card_request_pending, count(*) as count FROM user_account GROUP BY has_card_request_pending ORDER BY count DESC";
+        if (!userType.isEmpty()) {
+            sql = "SELECT has_card_request_pending, count(*) as count FROM user_account WHERE user_type = :userType GROUP BY has_card_request_pending ORDER BY count DESC";
+        }
+        Query q = em.createNativeQuery(sql);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return q.getResultList();
+    }
+    
 }
 

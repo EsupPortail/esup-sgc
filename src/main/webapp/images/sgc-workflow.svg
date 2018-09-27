@@ -271,11 +271,11 @@
 			<title>Lien dynamique.28</title>
 			<desc>Nouvelle demande</desc>
 			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="14.1732" cy="559.164" width="71.25" height="17.6036"/>
+			<v:textRect cx="13.6498" cy="563.432" width="71.25" height="17.6036"/>
 			<path d="M0 567.67 C-8.58 567.67 -21.65 567.67 -28.08 573.61 C-31.96 577.19 -33.43 582.92 -33.98 588.59 L-33.99 588.95"
 					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-16.5431" y="554.364" width="61.4328" height="9.59985" class="st7"/>
-			<text x="-16.54" y="561.56" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Nouvelle demande</text>		</g>
+			<rect v:rectContext="textBkgnd" x="-17.0665" y="558.632" width="61.4328" height="9.59985" class="st7"/>
+			<text x="-17.07" y="565.83" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Nouvelle demande</text>		</g>
 		<g id="shape41-127" v:mID="41" v:groupContext="shape" transform="translate(500.869,-40.5354)">
 			<title>Étiquette</title>
 			<desc>La transition « Encoder » permettant d’arriver dans l’état « ...</desc>
@@ -447,5 +447,28 @@
 			<rect v:rectContext="textBkgnd" x="-529.557" y="-25.8614" width="82.9677" height="9.59985" transform="rotate(-90)"
 					class="st7"/>
 			<text x="-529.56" y="-18.66" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Marquer comme détruite</text>		</g>
+		<g id="shape86-224" v:mID="86" v:groupContext="shape" v:layerMember="0" transform="translate(261.289,-472.819)">
+			<title>Lien dynamique.86</title>
+			<desc>Annuler</desc>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="91.9649" cy="499.568" width="40" height="17.6036"/>
+			<path d="M0 560.58 C-5.31 560.58 -6.54 560.84 -7.91 560.21 C-13.75 557.5 -22.21 538.55 1.94 523.62 C37.01 501.95 140.83
+						 488.77 219.42 496.06 C292.21 502.81 343.34 527.12 328.84 546.99 C325.07 552.16 316.86 557.03 311.97 559.37
+						 L311.62 559.41" class="st5"/>
+			<rect v:rectContext="textBkgnd" x="79.0431" y="494.768" width="25.8434" height="9.59985" class="st7"/>
+			<text x="79.04" y="501.97" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Annuler</text>		</g>
+		<g id="shape88-231" v:mID="88" v:groupContext="shape" transform="translate(596.947,-479.906)">
+			<title>Étiquette.88</title>
+			<desc>La demande de carte est annulée lorsque la date de fin de dro...</desc>
+			<v:userDefs>
+				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+			</v:userDefs>
+			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
+			<v:textRect cx="47.817" cy="532.787" width="95.64" height="69.7623"/>
+			<path d="M9.56 567.67 L86.07 567.67 A9.56324 9.56324 0 0 1 95.63 558.1 L95.63 507.47 A9.56324 9.56324 0 0 1 86.07 497.91
+						 L9.56 497.91 A9.56324 9.56324 0 0 1 0 507.47 L0 558.1 A9.56324 9.56324 0 0 1 9.56 567.67 Z" class="st1"/>
+			<text x="5.15" y="511.79" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>La demande de carte <tspan
+						x="7.81" dy="1.2em" class="st3">est annulée lorsque </tspan><tspan x="15.04" dy="1.2em" class="st3">la date de fin de </tspan><tspan
+						x="5.63" dy="1.2em" class="st3">droits de l</tspan>’utilisateur <tspan x="20.28" dy="1.2em" class="st3">est dépassée</tspan>.</text>		</g>
 	</g>
 </svg>

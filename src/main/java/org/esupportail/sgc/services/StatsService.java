@@ -154,6 +154,8 @@ public class StatsService {
 	        		put("europeanCardChart",mapField(User.countNbEuropenCards(),2));
 	        	}else if("nbRoles".equals(typeStats)){
 	        		put("nbRoles",mapField(User.countNbRoles(),2));
+	        	}else if("pendingCards".equals(typeStats)){
+	        		put("pendingCards",mapField(User.countNbPendingCards(typeInd), 2));
 	        	}
 	        }
 	    };

@@ -203,6 +203,24 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesEnAttente">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Demandes en cours
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="pendingCards" width="400" height="400">&amp;nbsp;</canvas>
+					<div class="chartjs-tooltip">
+						<table>
+							<!--  -->
+						</table>
+					</div>					
+				</div>
+			</div>
+		</div>		
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="transactionsPaybox">
 			<div class="panel panel-primary">
 				<div class="panel-heading">

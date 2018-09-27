@@ -312,7 +312,7 @@ public class UserInfoService {
 	}
 
 	public void setDefaultValues4NullAttributes(Map<String, String> userInfos, User user) {
-		if(!userInfos.containsKey("schacExpiryDate") || (userInfos.get("schacExpiryDate")).isEmpty()) {
+		if(!userInfos.containsKey("schacExpiryDate") || userInfos.get("schacExpiryDate") == null || (userInfos.get("schacExpiryDate")).isEmpty()) {
 			Date dateFinDroits = appliConfigService.getDefaultDateFinDroits();
 			user.setDueDate(dateFinDroits);
 		} 

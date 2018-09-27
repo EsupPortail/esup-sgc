@@ -507,3 +507,13 @@ span.icon-flipped{
  #searchBeanAdress + .ss-main{
  	min-width: 180px;
  }
+ #retouche #filterSliders{
+ 	display: none;
+ }
+ #retouche #retClear form{
+ 	margin-left: 3px;
+ }
+ #retoucheLeft .form-group, #retoucheLeft  .jumbotron{
+ 	padding-left:10px;
+ 	padding-right:10px;
+ }

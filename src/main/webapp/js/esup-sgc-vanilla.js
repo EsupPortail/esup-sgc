@@ -47,6 +47,35 @@ function createSunEditor(){
    	});	
 }
 
+//Même hauteur pour les éléments sel
+function equalize(sel) {
+  var els = Array.prototype.slice.call(document.querySelectorAll(sel));  
+  var row = [];
+  var max;
+  var top;
+
+  function setHeights() {
+    row.forEach(function(e) {
+      e.style.height = max + 'px';
+    });
+  }
+
+  for (var i=0; i < els.length; i++) {
+    var el = els[i];
+    el.style.height = 'auto';
+    if (el.offsetTop !== top) {
+      // new row detected
+      setHeights();
+      top = el.offsetTop;      
+      max = 0;
+      row = [];
+    }
+    row.push(el);
+    max = Math.max(max, el.offsetHeight);
+  }
+  setHeights(); // last row
+}
+
 function displayFormconfig(val,col,valeur){
 	var checkTrue = "";
 	var checkFalse = "";
@@ -269,6 +298,9 @@ function multiUpdateForm(idArray) {
 			  //Bouton caché!!
 			  var collapseLink = document.getElementById('hiddenBtn');
 			  var myCollapseInit = new Collapse(collapseLink);
+			  collapseLink.addEventListener('click', function(event){
+				   myCollapseInit.show();
+			  }, false);
 			  var forcedForm = document.getElementById("forcedForm");
 			    if(forcedForm != null){
 			    	forcedForm.addEventListener('submit', function(evt) {
@@ -276,7 +308,6 @@ function multiUpdateForm(idArray) {
 			    			alert (messages['alertForcedEtat']);
 			    			evt.preventDefault();
 			    		}else if(document.getElementById("forcedEtatFinal").value == ""){
-			    			console.log("tttt");
 			    			alert (messages['alertForcedEtat']);
 			    			evt.preventDefault();
 			    		}else{
@@ -945,6 +976,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    	getStats("templateCards", "doughnut", anneeUniv, selectedType, 25);
 	    	getStats("europeanCardChart", "pie", anneeUniv, selectedType, 26);
 	    	getStats("nbRoles", "doughnut", anneeUniv, selectedType, 27);
+	    	getStats("pendingCards", "pie", anneeUniv, selectedType, 28);
     	}
     	var anneeUniv = document.getElementById("anneeUniv");
     	
@@ -1439,14 +1471,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			}		
 			
 			//KONVA
-		    var img1 = new Image();
 		    if(document.getElementById('btnColors') != null){
 				document.getElementById('btnColors').addEventListener('click', function() {
-				ezcropPreview.style.display = "none";
 		    	filterSliders.style.display = "block";
 		    	ezcropInfo.style.display = "none";
 		    	container.style.display = "block";
-		    	ezcropPreview.style.display = "none";
 		    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
 		    	if(currentImg.src == ""){
 		          	 alert(messages['fileRequired']);      	 
@@ -1499,6 +1528,99 @@ document.addEventListener('DOMContentLoaded', function() {
 			    	document.querySelectorAll(".ezcrop-image-zoom-input")[0].removeAttribute("disabled");
 			    });
 			} 
+		    
+		   	//retouche par lot
+			var deleteClass = document.querySelectorAll('.photoNail');
+		   	if(deleteClass!=null){
+		   		var imagedata = "";
+			   	Array.from(deleteClass).forEach(function(link) {
+			   		link.addEventListener('click', function(e) {
+			   			var thumbnail = document.querySelectorAll('.thumbnail');
+			   			Array.from(thumbnail).forEach(function(thumb) {
+			   				thumb.style.border =  "none"; 
+			   			});
+			   			this.parentElement.style.border =  "2px solid red"; 
+			   			document.getElementById('cardId').value=  this.id;
+						var url = photorUrl +  this.id;
+						
+						//on réinitialise
+			   			var sliders = document.getElementById('filterSliders');
+						sliders.style.display = "none";
+						ezcropInfo.style.display = "block";
+						cropper.img.src ="";
+						cropper.options.minZoom = 'fit';
+				    	filterSliders.style.display = "none";
+				    	ezcropInfo.style.display = "block";
+				    	ezcropPreview.style.display = "block";
+				    	empty("container"); 
+				        var sliders = document.querySelectorAll('#filterSliders input');
+				        if(sliders != null){
+				    	   	Array.from(sliders).forEach(function(link) {
+				    	   		return link.value = 0;
+				    	   	});
+				    	}
+				        
+						cropper.img.src = url;
+						cropper.previewSize = {width: 150, height: 188};
+				    	cropper.options.exportZoom = photoExportZoom;
+			   		});
+				});
+			   	
+			   	if(typeof updatePhototUrl != "undefined"){
+			   		retouchePhoto.addEventListener('submit', function(e) {	  
+			   			e.preventDefault();
+						var request = new XMLHttpRequest();
+						request.open('POST', updatePhototUrl, true);
+						request.onload = function() {
+						  if (request.status >= 200 && request.status < 400) {
+							  try {
+								  var idCard = document.querySelector('#retouchePhoto #cardId');
+								  document.getElementById(idCard.value).children[0].src = this.response;
+								  document.querySelectorAll('.ezcrop-preview-image')[0].removeAttribute("src");
+								  document.getElementById("cardId").value="";
+								  document.querySelectorAll('.ezcrop-image-data')[0].value="";
+								  empty("container"); 
+							  } catch(e){
+								  console.log(e);
+							  }
+						  }
+						};
+						request.send(new FormData(this));
+			   		});
+				}
+			   	//Update etat dans interface retouche
+			   	var retoucheAction = document.querySelectorAll(".retoucheAction");
+				  if(retoucheAction!=null && retoucheAction.length==0){
+					  document.getElementById("REQUEST_CHECKEDForm").style = "display:none;";
+				  }
+			   	if(typeof actionUrl != "undefined"){
+			   		var retoucheAction = document.querySelectorAll('.retoucheAction');
+			   		Array.from(retoucheAction).forEach(function(link) {
+			   			link.addEventListener('submit', function(e) {	 
+			   				var etatFinal = this[2].value;
+			   				e.preventDefault();
+							var request = new XMLHttpRequest();
+							request.open('POST', actionUrl, true);
+							request.onload = function() {
+							  if (request.status >= 200 && request.status < 400) {
+								  try {
+									  document.getElementById("formActionDiv"+ link[1].value).innerHTML = "<span class='label label-" + etatFinal.toLowerCase()+ "'>" + messages[etatFinal] + "</span>";
+									  document.getElementById("formActionDiv"+ link[1].value).style = "margin-left: 2px";
+									  retoucheAction = document.querySelectorAll(".retoucheAction");
+									  if(retoucheAction!=null && retoucheAction.length==0){
+										  document.getElementById("REQUEST_CHECKEDForm").style = "display:none;";
+									  }
+								  } catch(e){
+									  console.log(e);
+								  }
+							  }
+							};
+							request.send(new FormData(this));
+				   		});
+			   		});
+				}			   	
+		   	}
+		    
 	}
 	//WEBCAM formulaire de demande
 	var webcam = document.getElementById('webCam');
@@ -1887,8 +2009,9 @@ document.addEventListener('DOMContentLoaded', function() {
    			searchEppnForm.submit();
    	    }); 
    	})
-   	
 })
 
-
+window.onload = window.onresize = function() {
+  equalize('.boxes > *');
+};
 

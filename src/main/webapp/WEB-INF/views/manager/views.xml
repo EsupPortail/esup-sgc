@@ -34,6 +34,9 @@
 		<definition extends="manager" name="manager/bordereau">
 		<put-attribute name="body" value="/WEB-INF/views/manager/bordereau.jspx" />
 	</definition>
+	<definition extends="manager" name="manager/retouche">
+		<put-attribute name="body" value="/WEB-INF/views/manager/retouche.jspx" />
+	</definition>
 	<definition extends="print-card" name="manager/print-card">
 		<put-attribute name="body"
 			value="/WEB-INF/views/manager/print-card.jspx" />
