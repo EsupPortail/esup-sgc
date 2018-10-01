@@ -74,6 +74,7 @@ public class LdapValidateService extends ValidateService {
 						for(String ldapValueRef : ldapCardIdsMappingMultiValues.get(ldapattr)) {
 							Object ldapValue = computeLdapValue(card, ldapValueRef);
 							context.addAttributeValue(ldapattr, ldapValue, false);
+							log.debug(String.format("Ldap Add : %s : %s -> %s", card.getEppn(), ldapattr, ldapValue));
 						}
 					} 
 				}
@@ -83,6 +84,7 @@ public class LdapValidateService extends ValidateService {
 						String ldapValueRef = ldapCardIdsMappingValue.get(ldapattr);
 						Object ldapValue = computeLdapValue(card, ldapValueRef);
 						context.setAttributeValue(ldapattr, ldapValue);
+						log.debug(String.format("Ldap Set : %s : %s -> %s", card.getEppn(), ldapattr, ldapValue));
 					} 
 				}
 				try {
@@ -113,6 +115,7 @@ public class LdapValidateService extends ValidateService {
 						for(String ldapValueRef : ldapCardIdsMappingMultiValues.get(ldapattr)) {
 							Object ldapValue = computeLdapValue(card, ldapValueRef);
 							context.removeAttributeValue(ldapattr, ldapValue);
+							log.debug(String.format("Ldap Remove : %s : %s -> %s", card.getEppn(), ldapattr, ldapValue));
 						}
 					} 
 				}
@@ -122,6 +125,7 @@ public class LdapValidateService extends ValidateService {
 						String ldapValueRef = ldapCardIdsMappingValue.get(ldapattr);
 						Object ldapValue = computeLdapValue(card, ldapValueRef);
 						context.removeAttributeValue(ldapattr, ldapValue);
+						log.debug(String.format("Ldap Remove : %s : %s -> %s", card.getEppn(), ldapattr, ldapValue));
 					} 
 				}
 	
@@ -138,6 +142,9 @@ public class LdapValidateService extends ValidateService {
 	
 
 	private Object computeLdapValue(Card card, String ldapValueRef) {
+		
+		log.trace("ldapValue before computing : " + ldapValueRef);
+		
 		Object ldapValue = null;
 		ldapValueRef = ldapValueRef.replaceAll(CSN, card.getCsn());
 		ldapValueRef = ldapValueRef.replaceAll(CSN_RETURN, card.getReverseCsn());
@@ -161,6 +168,8 @@ public class LdapValidateService extends ValidateService {
 			// nettoyage des %xxx% qui resteraient et ne seraient pas informés ... ->  ldapValue
 			ldapValue = ldapValueRef.replaceAll("%.*%", "");
 		}
+		
+		log.trace("ldapValue after computing : " + ldapValue);
 		
 		return ldapValue;
 	}

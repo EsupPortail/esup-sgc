@@ -1,18 +1,23 @@
 package org.esupportail.sgc.web.manager;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -27,6 +32,7 @@ import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.FormService;
+import org.esupportail.sgc.services.PhotoResizeService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.esc.ApiEscrService;
@@ -88,9 +94,12 @@ public class ManagerCardControllerNoHtml {
 	@Resource
 	ApiEscrService apiEscrService;
 	
+	@Resource
+	PhotoResizeService photoResizeService;
+	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional
-	public ResponseEntity writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
+	public ResponseEntity<byte[]> writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
 		Card card = Card.findCard(cardId);
 		PhotoFile photoFile = card.getPhotoFile();
 		Long size = photoFile.getFileSize();
@@ -99,6 +108,20 @@ public class ManagerCardControllerNoHtml {
 		headers.setContentType(MediaType.parseMediaType(contentType));
 		headers.setContentLength(size.intValue());
 		return new ResponseEntity(photoFile.getBigFile().getBinaryFileasBytes(), headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/vignette/{cardId}")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<byte[]> writePhotoVignetteToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
+		Card card = Card.findCard(cardId);
+		PhotoFile photoFile = card.getPhotoFile();
+		byte[] vignetteImgBytes = photoResizeService.resizePhoto(photoFile, 150, 188);
+		String contentType = photoFile.getContentType();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.parseMediaType(contentType));
+		headers.setContentLength(vignetteImgBytes.length);
+		return new ResponseEntity(vignetteImgBytes, headers, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/QRCode")
