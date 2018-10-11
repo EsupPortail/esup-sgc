@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -129,6 +130,78 @@ public class ExportService {
 				}
 				i++;
 			}
+		}
+		return exportList;
+	}
+	
+	public List<ExportBean> getBeanTableStats(Locale locale) throws ParseException{
+		
+		List<Object[]> objs = new ArrayList<>();
+		List<List<Object[]>> statsList = new ArrayList<List<Object[]>>(2);
+		LinkedHashMap<Integer, String> typeCsv =  null;
+		LinkedHashMap<String, String> datesStats =  statsService.getDates();
+		typeCsv = new LinkedHashMap<Integer, String> ();
+		String message = messageSource.getMessage("stats.table.edited.yesterday", null, locale);
+		objs = User.countYesterdayCardsByPopulationCrous(statsService.getDates().get("isMonday"),"encoded_date");
+		typeCsv.put(0, message + datesStats.get("yesterday"));
+		statsList.add(objs); objs = new ArrayList<>();
+		message = messageSource.getMessage("stats.table.edited.month", null, locale);
+		objs = User.countMonthCardsByPopulationCrous(statsService.getDates().get("likeMonth"),"encoded_date");
+		typeCsv.put(1, message + datesStats.get("month"));
+		statsList.add(objs); objs = new ArrayList<>();
+		message = messageSource.getMessage("stats.table.edited.year", null, locale);
+		objs = User.countYearEnabledCardsByPopulationCrous(statsService.getDates().get("year"), "request_date", statsService.getDateFinAnneeUniv(statsService.getDates().get("year")));
+		typeCsv.put(2, message + datesStats.get("formatYear"));
+		statsList.add(objs);
+		message = messageSource.getMessage("stats.table.edited.all", null, locale);
+		 int k = 0;  int j = 2; 
+	    	for(Map.Entry<String, String> entry : statsService.getAnneeUnivs().entrySet()){
+	    		if(k!=0){
+		        	Date dateFin = statsService.getDateFinAnneeUniv(entry.getValue());
+		        	objs = User.countYearEnabledCardsByPopulationCrous(entry.getValue(),"request_date", dateFin);
+		        	typeCsv.put(j+1, message + entry.getKey());
+	    		}
+	    		k++;
+	    	}
+		statsList.add(objs);
+		
+		List<ExportBean> exportList = new ArrayList<>();
+
+		ExportBean exportBean1 = null;
+		int i = 0;
+		for(List<Object[]> object : statsList){
+			int total = 0;						
+			if(object!=null){
+				exportBean1 = new ExportBean();
+				exportBean1.setType(typeCsv.get(i));
+				for(Object[] item : object) {
+					if("ctr".equals(item[0].toString())){
+						exportBean1.setContractuel(item[1].toString());
+					}else if("etd".equals(item[0].toString())){
+						exportBean1.setEtudiant(item[1].toString());
+					}else if("fct".equals(item[0].toString())){
+						exportBean1.setFormationContinue(item[1].toString());
+					}else if("fpa".equals(item[0].toString())){
+						exportBean1.setApprentissage(item[1].toString());
+					}else if("hbg".equals(item[0].toString())){
+						exportBean1.setHeberge(item[1].toString());
+					}else if("psg".equals(item[0].toString())){
+						exportBean1.setPassager(item[1].toString());
+					}else if("prs".equals(item[0].toString())){
+						exportBean1.setPersonnel(item[1].toString());
+					}else if("po".equals(item[0].toString())){
+						exportBean1.setPersonnelOuvrier(item[1].toString());
+					}else if("stg".equals(item[0].toString())){
+						exportBean1.setStagiaire(item[1].toString());
+					}
+					total += Integer.valueOf(item[1].toString());
+				}
+				if(exportBean1!=null){
+					exportBean1.setTotal(total);
+					exportList.add(exportBean1);			
+				}
+			}
+			i++;
 		}
 		return exportList;
 	}

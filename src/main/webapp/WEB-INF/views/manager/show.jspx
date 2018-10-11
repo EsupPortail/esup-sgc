@@ -342,79 +342,89 @@
                                                         <div id="btnBlock">
                                                             <spring:url value="/manager/action/${card.id}" var="etatActionUrl"/>
                                                             <c:forEach items="${card.etatsAvailable}" var="etatAvailable" varStatus="j">
-                                                                <form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
-                                                                    <c:choose>
-                                                                        <c:when test="${not empty card.cardActionMessages[etatAvailable]}">
-                                                                            <button class="btn btn-success btn-block" data-target="#commentEtat${i.index}-${j.index}" data-toggle="modal" type="button">
-                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
-                                                                            </button>
-                                                                            <div class="modal fade" id="commentEtat${i.index}-${j.index}">
-                                                                                <div class="modal-dialog">
-                                                                                    <div class="modal-content">
-                                                                                        <div class="modal-header">
-                                                                                            <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&amp;times;</button>
-                                                                                            <h3 class="modal-title">Commentaire</h3>
-                                                                                        </div>
-                                                                                        <div class="modal-body">
-                                                                                            <div class="form-group">
-                                                                                                <textarea class="form-control" id="comment_${i.index}_${j.index}" name="comment" rows="5">
-                                                                                                    <c:forEach items="${card.cardActionMessages}" var="message" varStatus="loop">
-                                                                                                        <c:if test="${message.key eq  etatAvailable}">
-                                                                                                            <c:forEach items="${message.value}" var="msg" varStatus="loop">
-                                                                                                                <c:if test="${msg.defaut}">${msg.message}
-																												</c:if>
-                                                                                                            </c:forEach>
-                                                                                                        </c:if>
-                                                                                                    </c:forEach>
-                                                                                                </textarea>
-                                                                                            </div>
-                                                                                            <button class="btn btn-success btn-block" id="${etatAvailable}">
-                                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
-                                                                                            </button>
-                                                                                            <h4>Messages prédéfinis</h4>
-                                                                                            <div class="panel-default">
-                                                                                                <div class="panel-heading">
-                                                                                                    <a class="accordion-toggle" data-parent="#accordionfilter" data-toggle="collapse" href="#msgChoice_${i.index}_${j.index}">
-                                                                                                        <span class="glyphicon glyphicon-plus">Choisir</span>
-                                                                                                    </a>
-																							</div>
-                                                                                                <div class="panel-collapse collapse well" id="msgChoice_${i.index}_${j.index}">
-                                                                                                    <ul>
-                                                                                                        <c:forEach items="${card.cardActionMessages}" var="message" varStatus="loop">
-                                                                                                            <c:if test="${message.key eq  etatAvailable}">
-                                                                                                                <c:forEach items="${message.value}" var="msg" varStatus="loop">
-                                                                                                                    <li>
-                                                                                                                        <button class="btn btn-default btn-xs" type="button">
-                                                                                                                            <span id="msg_${i.index}_${j.index}_${loop.index}" aria-hidden="true" class="glyphicon glyphicon-edit"/>
-                                                                                                                        </button>
-                                                                                                                        <span id="span_${i.index}_${j.index}_${loop.index}">${msg.message}</span>
-                                                                                                                    </li>
-                                                                                                                </c:forEach>
-                                                                                                            </c:if>
-                                                                                                        </c:forEach>
-                                                                                                    </ul>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="modal-footer">
-                                                                                            <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </c:when>
-                                                                        <c:when test="${etatAvailable eq 'DESTROYED'}">
-                                                                            <button class="btn btn-danger btn-block" onclick="return confirm('Confirmez la destruction de la carte');" type="submit">
-                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
-                                                                            </button>
-                                                                        </c:when>
-                                                                        <c:otherwise>
-                                                                            <button class="btn btn-success btn-block" type="submit">
-                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
-                                                                            </button>
-                                                                        </c:otherwise>
-                                                                    </c:choose>
-                                                                </form>
+	                                                            <c:choose>
+	                                                                <c:when test="${not empty card.cardActionMessages[etatAvailable]}">
+																		<form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
+		                                                                     <button class="btn btn-success btn-block" data-target="#commentEtat${i.index}-${j.index}" data-toggle="modal" type="button">
+		                                                                         <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+		                                                                     </button>
+		                                                                     <div class="modal fade" id="commentEtat${i.index}-${j.index}">
+		                                                                        <div class="modal-dialog">
+		                                                                            <div class="modal-content">
+		                                                                                <div class="modal-header">
+		                                                                                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&amp;times;</button>
+		                                                                                    <h3 class="modal-title">Commentaire</h3>
+		                                                                                </div>
+		                                                                                <div class="modal-body">
+		                                                                                    <div class="form-group">
+		                                                                                        <textarea class="form-control" id="comment_${i.index}_${j.index}" name="comment" rows="5">
+		                                                                                            <c:forEach items="${card.cardActionMessages}" var="message" varStatus="loop">
+		                                                                                                <c:if test="${message.key eq  etatAvailable}">
+		                                                                                                    <c:forEach items="${message.value}" var="msg" varStatus="loop">
+		                                                                                                        <c:if test="${msg.defaut}">${msg.message}</c:if>
+		                                                                                                    </c:forEach>
+		                                                                                                </c:if>
+		                                                                                            </c:forEach>
+		                                                                                        </textarea>
+		                                                                                    </div>
+		                                                                                    <button class="btn btn-success btn-block" id="${etatAvailable}">
+		                                                                                        <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+		                                                                                    </button>
+		                                                                                    <h4>Messages prédéfinis</h4>
+		                                                                                    <div class="panel-default">
+		                                                                                        <div class="panel-heading">
+		                                                                                            <a class="accordion-toggle" data-parent="#accordionfilter" data-toggle="collapse" href="#msgChoice_${i.index}_${j.index}">
+		                                                                                                <span class="glyphicon glyphicon-plus">Choisir</span>
+		                                                                                            </a>
+																								</div>
+		                                                                                        <div class="panel-collapse collapse well" id="msgChoice_${i.index}_${j.index}">
+		                                                                                            <ul>
+		                                                                                                <c:forEach items="${card.cardActionMessages}" var="message" varStatus="loop">
+		                                                                                                    <c:if test="${message.key eq  etatAvailable}">
+		                                                                                                        <c:forEach items="${message.value}" var="msg" varStatus="loop">
+		                                                                                                            <li>
+		                                                                                                                <button class="btn btn-default btn-xs" type="button">
+		                                                                                                                    <span id="msg_${i.index}_${j.index}_${loop.index}" aria-hidden="true" class="glyphicon glyphicon-edit"/>
+		                                                                                                                </button>
+		                                                                                                                <span id="span_${i.index}_${j.index}_${loop.index}">${msg.message}</span>
+		                                                                                                            </li>
+		                                                                                                        </c:forEach>
+		                                                                                                    </c:if>
+		                                                                                                </c:forEach>
+		                                                                                            </ul>
+		                                                                                        </div>
+		                                                                                    </div>
+		                                                                                </div>
+		                                                                                <div class="modal-footer">
+		                                                                                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+		                                                                                </div>
+		                                                                            </div>
+		                                                                        </div>
+		                                                                    </div>
+	                                                                     </form>
+	                                                                </c:when>
+	                                                                <c:when test="${etatAvailable eq 'DESTROYED'}">
+	                                                                	<form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
+	                                                                     <button class="btn btn-danger btn-block" onclick="return confirm('Confirmez la destruction de la carte');" type="submit">
+	                                                                         <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+	                                                                     </button>
+	                                                                     </form>
+	                                                                </c:when>
+	                                                                <c:when test="${etatAvailable eq 'REQUEST_CHECKED' }">
+	                                                                	<form action="${etatActionUrl}?etatFinal=${etatAvailable}" method="POST">
+	                                                                     <button class="btn btn-success btn-block" type="submit">
+	                                                                         <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+	                                                                     </button>
+	                                                                     </form>
+	                                                                </c:when>                                                                        
+	                                                                <c:otherwise>
+	                                                                	<form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
+	                                                                     <button class="btn btn-success btn-block" type="submit">
+	                                                                         <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+	                                                                     </button>
+	                                                                     </form>
+	                                                                </c:otherwise>
+	                                                            </c:choose>
                                                             </c:forEach>
                                                         </div>
                                                     </sec:authorize>

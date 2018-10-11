@@ -3,7 +3,7 @@
 	<jsp:output omit-xml-declaration="yes" />
 	<spring:url value="/manager?index=first" var="listeUrl"/>
 	<spring:url value="/manager/stats" var="statsPage"/>	
-		<spring:url value="/admin/import/exportCsvFile" var="downloadUrl"/>
+		<spring:url value="/admin/import/tableStats" var="downloadUrl"/>
     <h2>Statistiques - tableaux
 		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
             <span class="glyphicon glyphicon-home"></span>
@@ -11,7 +11,7 @@
         <a class="btn btn-warning pull-right" href="${statsPage}" id="btnStats" title="Statistiques">
     		<span class="glyphicon glyphicon-stats"></span>
     	</a>
-		<a href="${downloadUrl}/tableStats" class="btn btn-primary pull-right" id="statsEdit" title="Télécharger csv" >
+		<a href="${downloadUrl}" class="btn btn-primary pull-right" id="statsEdit" title="Télécharger csv" >
 			<span class="glyphicon glyphicon-save" aria-hidden="true"></span>
 		</a>
     </h2>

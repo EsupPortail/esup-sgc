@@ -111,6 +111,39 @@ public class ImportExportController {
                 beanWriter.close();
             }
 		}
+	}
+	
+	@RequestMapping(value = "/tableStats", method = RequestMethod.GET)
+	public void getCsvTableStats(HttpServletRequest request, HttpServletResponse response, Locale locale) throws UnsupportedEncodingException, IOException {
+		
+		response.setContentType("text/csv");
+		String reportName = "stats.csv";
+		response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+		response.setHeader("Content-disposition", "attachment;filename=" + reportName);
+		
+		final String[] header = exportService.getHeader("tableStats");
+		
+		Writer writer = new OutputStreamWriter(response.getOutputStream(), "UTF8");
+		
+		ICsvBeanWriter beanWriter =  new CsvBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+
+		beanWriter.writeHeader(header);
+		
+		try{
+			List<ExportBean>  objs = exportService.getBeanTableStats(locale);
+			for(ExportBean item : objs) {
+				beanWriter.write(item, header);
+			}
+			beanWriter.flush();
 			
+			writer.close();
+			
+		}catch(Exception e){
+			log.error("interruption de l'export !",e);
+		} finally {
+            if( beanWriter != null ) {
+                beanWriter.close();
+            }
+		}
 	}
 }

@@ -14,11 +14,11 @@
 		var prefsStatsRm = ${prefsRm};
 	</script>
     <h2>Statistiques
-				<select	class="" id="anneeUniv">
-					<c:forEach items="${annees}" var="annee">
-						<option value="${annee.key}">${annee.key}/${annee.key + 1}</option>
-					</c:forEach>
-				</select>
+		<select	class="" id="anneeUniv">
+			<c:forEach items="${annees}" var="annee">
+				<option value="${annee.key}">${annee.key}/${annee.key + 1}</option>
+			</c:forEach>
+		</select>
 		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
             <span class="glyphicon glyphicon-home"></span>
         </a>
@@ -92,24 +92,26 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="europeanCard">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h5>Carte européenne étudiante
-						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-					</h5>
-				</div>
-				<div class="panel-body ">
-					<canvas id="europeanCardChart" width="400" height="400">&amp;nbsp;</canvas>
-					<div class="chartjs-tooltip">
-						<table>
-							<!--  -->
-						</table>
+		<c:if test="${empty selectedType}">
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="europeanCard">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Carte européenne étudiante
+							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="europeanCardChart" width="400" height="400">&amp;nbsp;</canvas>
+						<div class="chartjs-tooltip">
+							<table>
+								<!--  -->
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>		
+		</c:if>		
 		<c:if test="${livraison}">
 			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDeLivraison">
 				<div class="panel panel-primary">
@@ -124,72 +126,76 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="livréesParUtilisateur">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h5>Livrées par l'utilisateur
-							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-						</h5>
-					</div>
-					<div class="panel-body ">
-						<canvas id="userDeliveries" width="400" height="400">&amp;nbsp;</canvas>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nonLivreesParAdresse">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h5>Non livrées par adresse
-							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-							<sec:authorize access="hasRole('ROLE_ADMIN')">
-								<a href="${downloadUrl}/notDelivered" title="${downloadUrl}/notDelivered" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
-								<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
-							</sec:authorize>							
-						</h5>
-					</div>
-					<div class="panel-body ">
-						<canvas id="deliveryByAdress" width="400" height="400">&amp;nbsp;</canvas>
-						<div class="chartjs-tooltip">
-							<table>
-								<!--  -->
-							</table>
+			<c:if test="${empty selectedType}">
+				<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="livréesParUtilisateur">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h5>Livrées par l'utilisateur
+								<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+								<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+							</h5>
+						</div>
+						<div class="panel-body ">
+							<canvas id="userDeliveries" width="400" height="400">&amp;nbsp;</canvas>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editeesNonLivrees">
+				<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nonLivreesParAdresse">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h5>Non livrées par adresse
+								<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+								<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+								<sec:authorize access="hasRole('ROLE_ADMIN')">
+									<a href="${downloadUrl}/notDelivered" title="${downloadUrl}/notDelivered" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
+									<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
+								</sec:authorize>							
+							</h5>
+						</div>
+						<div class="panel-body ">
+							<canvas id="deliveryByAdress" width="400" height="400">&amp;nbsp;</canvas>
+							<div class="chartjs-tooltip">
+								<table>
+									<!--  -->
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editeesNonLivrees">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h5>Editées, non livrées de l'année universitaire
+								<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+								<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+							</h5>
+						</div>
+						<div class="panel-body ">
+							<canvas id="notDelivered" width="400" height="400">&amp;nbsp;</canvas>
+						</div>
+					</div>
+				</div>				
+			</c:if>
+		</c:if>
+		<c:if test="${empty selectedType}">
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editables">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						<h5>Editées, non livrées de l'année universitaire
+						<h5>Cartes editables pour les nouvelles demandes 
 							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+							<sec:authorize access="hasRole('ROLE_ADMIN')">
+								<a href="${downloadUrl}/editable" title="${downloadUrl}/editable" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
+								<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
+							</sec:authorize>
 						</h5>
 					</div>
 					<div class="panel-body ">
-						<canvas id="notDelivered" width="400" height="400">&amp;nbsp;</canvas>
+						<canvas id="editable" width="400" height="400">&amp;nbsp;</canvas>
 					</div>
 				</div>
 			</div>
 		</c:if>
-		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editables">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h5>Cartes editables pour les nouvelles demandes 
-						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-						<sec:authorize access="hasRole('ROLE_ADMIN')">
-							<a href="${downloadUrl}/editable" title="${downloadUrl}/editable" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
-							<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
-						</sec:authorize>
-					</h5>
-				</div>
-				<div class="panel-body ">
-					<canvas id="editable" width="400" height="400">&amp;nbsp;</canvas>
-				</div>
-			</div>
-		</div>
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="periodesDemandeDeCarte">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -220,20 +226,22 @@
 					</div>					
 				</div>
 			</div>
-		</div>		
-		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="transactionsPaybox">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h5>Transactions Paybox
-						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-					</h5>
-				</div>
-				<div class="panel-body ">
-					<canvas id="paybox" width="400" height="400">&amp;nbsp;</canvas>
+		</div>
+		<c:if test="${empty selectedType}">
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="transactionsPaybox">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Transactions Paybox
+							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="paybox" width="400" height="400">&amp;nbsp;</canvas>
+					</div>
 				</div>
 			</div>
-		</div>
+		</c:if>
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="motifsDeDesactivation">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -277,25 +285,27 @@
 					</div>
 				</div>
 			</div>
-		</div>			
-		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="roles">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h5>Distribution des rôles
-						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-					</h5>
-				</div>
-				<div class="panel-body ">
-					<canvas id="nbRoles" width="400" height="400">&amp;nbsp;</canvas>
-					<div class="chartjs-tooltip">
-						<table>
-							<!--  -->
-						</table>
+		</div>
+		<c:if test="${empty selectedType}">			
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="roles">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Distribution des rôles
+							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="nbRoles" width="400" height="400">&amp;nbsp;</canvas>
+						<div class="chartjs-tooltip">
+							<table>
+								<!--  -->
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>	
+		</c:if>	
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesParPersonne">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -332,19 +342,21 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="tarifsCrous">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h5>Tarifs Crous
-						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-					</h5>
-				</div>
-				<div class="panel-body ">
-					<canvas id="tarifsCrousBars" width="400" height="400">&amp;nbsp;</canvas>
+		<c:if test="${empty selectedType}">
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="tarifsCrous">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Tarifs Crous
+							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="tarifsCrousBars" width="400" height="400">&amp;nbsp;</canvas>
+					</div>
 				</div>
 			</div>
-		</div>
+		</c:if>
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="diffusionPhoto">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -399,37 +411,39 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDemandeEtEtat">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h5>Flag 'demande nouvelle carte gratuite'
-						<button class="btn btn-xs btn-primary pull-right remove" title="demandesNonPayantes">
-						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-					</h5>
-				</div>
-				<div class="panel-body ">
-					<canvas id="requestFree" width="400" height="400">&amp;nbsp;</canvas>
-				</div>
-			</div>
-		</div>
-		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="themes">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h5>Thèmes cartes
-						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
-						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
-					</h5>
-				</div>
-				<div class="panel-body ">
-					<canvas id="templateCards" width="400" height="400">&amp;nbsp;</canvas>
-					<div class="chartjs-tooltip">
-						<table>
-							<!--  -->
-						</table>
+		<c:if test="${empty selectedType}">
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDemandeEtEtat">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Flag 'demande nouvelle carte gratuite'
+							<button class="btn btn-xs btn-primary pull-right remove" title="demandesNonPayantes">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="requestFree" width="400" height="400">&amp;nbsp;</canvas>
 					</div>
 				</div>
 			</div>
-		</div>		
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="themes">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Thèmes cartes
+							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="templateCards" width="400" height="400">&amp;nbsp;</canvas>
+						<div class="chartjs-tooltip">
+							<table>
+								<!--  -->
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</c:if>	
 	</div>
 	<jsp:include page="includes/modals.jspx"/>
 </div>

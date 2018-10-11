@@ -1591,7 +1591,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			   	//Update etat dans interface retouche
 			   	var retoucheAction = document.querySelectorAll(".retoucheAction");
 				  if(retoucheAction!=null && retoucheAction.length==0){
-					  document.getElementById("REQUEST_CHECKEDForm").style = "display:none;";
+					  if(document.getElementById("REQUEST_CHECKEDForm")!=null){
+						  document.getElementById("REQUEST_CHECKEDForm").style = "display:none;";
+					  }
 				  }
 			   	if(typeof actionUrl != "undefined"){
 			   		var retoucheAction = document.querySelectorAll('.retoucheAction');

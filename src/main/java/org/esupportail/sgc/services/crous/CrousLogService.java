@@ -60,10 +60,17 @@ public class CrousLogService {
 					errorLogsInDb = CrousErrorLog.findCrousErrorLogsByUserAccount(user).getResultList();
 				}
 				if(!errorLogsInDb.isEmpty()) {
-					crousErrorLog = errorLogsInDb.get(0);
+					// on ne garde qu'une erreur par carte / utilisateur - erreur qu'on met à jour
+					CrousErrorLog crousErrorLogOld = errorLogsInDb.get(0);
+					crousErrorLogOld.setCard(crousErrorLog.getCard());
+					crousErrorLogOld.setUserAccount(crousErrorLog.getUserAccount());
+					crousErrorLogOld.setCode(crousErrorLog.getCode());
+					crousErrorLogOld.setMessage(crousErrorLog.getMessage());
+					crousErrorLogOld.setField(crousErrorLog.getField());
+					crousErrorLog = crousErrorLogOld;
 				} 
 				crousErrorLog.setDate(new Date());	
-				if(!errorLogsInDb.isEmpty()) {
+				if(!errorLogsInDb.isEmpty()) {				
 					crousErrorLog.merge();
 				} else {
 					crousErrorLog.persist();

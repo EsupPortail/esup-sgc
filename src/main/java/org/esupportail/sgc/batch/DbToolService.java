@@ -30,8 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
-	final static String currentEsupSgcVersion = "0.2.v";
+
+	final static String currentEsupSgcVersion = "1.0.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -201,15 +201,13 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				
-	    		esupSgcVersion = "0.2.v";
-			}
-			else {
-				log.warn("\n\n#####\n\t" +
-	    				"Base de données à jour !" +
-	    				"\n#####\n");
+	    		esupSgcVersion = "1.0.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
+			log.warn("\n\n#####\n\t" +
+    				"Base de données à jour !" +
+    				"\n#####\n");
 		} catch(Exception e) {
 			throw new RuntimeException("Erreur durant la mise à jour de la base de données", e);
 		}

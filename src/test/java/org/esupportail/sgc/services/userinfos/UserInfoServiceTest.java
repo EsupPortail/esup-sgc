@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,6 +27,9 @@ public class UserInfoServiceTest {
 	@Resource
 	LdapPersonService ldapPersonService;
 	
+	@Value("${test.userinfo.eppn2test:}") 
+	String eppn2testFromConfig; 
+	
     @Test
     public void testAdditionalsInfo4UserOfEsupSgc() {
     	testAdditionalsInfo(getEppnFromDb());
@@ -34,6 +38,13 @@ public class UserInfoServiceTest {
     @Test
     public void testAdditionalsInfo4UserOfLdap() {
     	testAdditionalsInfo(getEppnFromLdap());
+    }
+    
+    @Test
+    public void testAdditionalsInfo4UserOfTestConfig() {
+    	if(!eppn2testFromConfig.isEmpty()) {
+    		testAdditionalsInfo(eppn2testFromConfig);
+    	}
     }
     
 	protected void testAdditionalsInfo(String eppn2test) {
