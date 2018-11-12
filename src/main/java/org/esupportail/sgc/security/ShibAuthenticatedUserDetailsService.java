@@ -47,8 +47,10 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		Set<SimpleGrantedAuthority> authorities = new HashSet<SimpleGrantedAuthority>();
 		String credentials = (String)token.getCredentials();
 		for(String credential : StringUtils.split(credentials, ";")) {
-			if(mappingGroupesRoles != null && mappingGroupesRoles.containsKey(credential)){ 
-				authorities.add(new SimpleGrantedAuthority(mappingGroupesRoles.get(credential)));
+			if(mappingGroupesRoles != null && mappingGroupesRoles.containsKey(credential)) { 
+				for(String role : mappingGroupesRoles.get(credential).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
+					authorities.add(new SimpleGrantedAuthority(role));
+				}
 			}
 		}
 		for(String roleFromLdap : ldapGroup2UserRoleService.getRoles(token.getName())) {
@@ -72,8 +74,10 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	public List<String> getManagerGroups() {
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
-			if("ROLE_SUPER_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_MANAGER".equals(mappingGroupesRoles.get(group))) {
-				groups.add(group);
+			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
+				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role)) {
+					groups.add(group);
+				}
 			}
 		}		
 		return groups;
@@ -82,8 +86,10 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	public List<String> getConsultManagerGroups() {
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
-			if("ROLE_SUPER_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_CONSULT".equals(mappingGroupesRoles.get(group))) {
-				groups.add(group);
+			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
+				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role) || "ROLE_CONSULT".equals(role)) {
+					groups.add(group);
+				}
 			}
 		}
 		return groups;
@@ -92,8 +98,10 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	public List<String> getVersoGroups() {
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
-			if("ROLE_SUPER_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_MANAGER".equals(mappingGroupesRoles.get(group)) || "ROLE_CONSULT".equals(mappingGroupesRoles.get(group)) || "ROLE_VERSO".equals(mappingGroupesRoles.get(group))) {
-				groups.add(group);
+			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
+				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role) || "ROLE_CONSULT".equals(role) || "ROLE_VERSO".equals(role)) {
+					groups.add(group);
+				}
 			}
 		}
 		return groups;
@@ -102,8 +110,10 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	public List<String> getUpdaterGroups() {
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
-			if("ROLE_UPDATER".equals(mappingGroupesRoles.get(group))) {
-				groups.add(group);
+			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
+				if("ROLE_UPDATER".equals(role)) {
+					groups.add(group);
+				}
 			}
 		}
 		return groups;
@@ -112,8 +122,10 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 	public List<String> getLivreurGroups() {
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
-			if("ROLE_LIVREUR".equals(mappingGroupesRoles.get(group))) {
-				groups.add(group);
+			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
+				if("ROLE_LIVREUR".equals(role)) {
+					groups.add(group);
+				}
 			}
 		}
 		return groups;

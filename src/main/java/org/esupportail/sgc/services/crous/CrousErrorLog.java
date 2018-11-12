@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @RooJavaBean
 @RooDbManaged(automaticallyDelete = true)
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "id", "version", "card", "userAccount", "date" })
-@RooJpaActiveRecord(finders = { "findCrousErrorLogsByUserAccount" })
+@RooJpaActiveRecord(finders = { "findCrousErrorLogsByUserAccount", "findCrousErrorLogsByCard"})
 public class CrousErrorLog {
 
 	@OneToOne
@@ -34,6 +34,8 @@ public class CrousErrorLog {
     String field;
 
     Date date;
+    
+    Boolean blocking;
     
     public Long getCardId() {
     	if(card!=null) {

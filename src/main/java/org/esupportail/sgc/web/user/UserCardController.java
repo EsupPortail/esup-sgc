@@ -139,6 +139,7 @@ public class UserCardController {
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
 		if(userService.isFirstRequest(user)) {
 			Card externalCard = externalCardService.getExternalCard(eppn, request);
+			
 			if(externalCard != null) {
 				return viewExternalCardRequestForm(uiModel, request, externalCard);
 			} else {
@@ -159,6 +160,7 @@ public class UserCardController {
 			log.warn("Exception when retrieving photo from external card", e);
 			externalCardPhoto = importExportCardService.loadNoImgPhoto();
 		}
+		
 		uiModel.addAttribute("externalCardPhoto", java.util.Base64.getEncoder().encodeToString(externalCardPhoto));
 		return "user/external-card-request";
 	}
@@ -170,7 +172,7 @@ public class UserCardController {
 		String eppn = auth.getName();
 		try {
 			Card externalCard = externalCardService.importExternalCard(eppn, request);
-			cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
+			cardEtatService.setCardEtat(externalCard, Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
 			redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "enable");
 		} catch (Exception e) {
 			log.error("problème lors de l'importation de la carte extérieure de " + eppn, e);
@@ -190,7 +192,7 @@ public class UserCardController {
 			id = user.getCards().get(0).getId();
 		}
 		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
-		
+		uiModel.addAttribute("sizeMax", appliConfigService.getFileSizeMax()/1000);
 		uiModel.addAttribute("deviceType", userAgentUtils.getOperatingSystem().getDeviceType());
 		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user));
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());

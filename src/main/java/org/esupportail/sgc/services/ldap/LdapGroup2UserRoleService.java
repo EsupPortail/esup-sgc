@@ -14,7 +14,7 @@ import org.springframework.util.StopWatch;
 
 public class LdapGroup2UserRoleService {
 	
-	private static String MULTIPLE_ROLES_DELIMITER = ";";
+	public static String MULTIPLE_ROLES_DELIMITER = ";";
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	

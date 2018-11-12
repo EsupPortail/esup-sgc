@@ -32,6 +32,7 @@
         <field:input cssClass="form-control" field="etatFinal" id="c_org_esupportail_sgc_domain_CardActionMessage_etatFinal" render="false" z="user-managed"/>
         <field:textarea cssClass="form-control" field="message" id="c_org_esupportail_sgc_domain_CardActionMessage_message" z="user-managed"/>
         <field:checkbox field="auto" id="c_org_esupportail_sgc_domain_CardActionMessage_auto" render="true" z="user-managed"/>
+        <field:input colInput="col-lg-6" colLabel="col-lg-4" field="mailTo" id="c_org_esupportail_sgc_domain_CardActionMessage_mailTo" z="user-managed"/>
         <field:checkbox field="defaut" id="c_org_esupportail_sgc_domain_CardActionMessage_defaut" z="D/6nqYn+OJvVu7AYlwt/NZqnE3o="/>
         <field:input field="etatInitial" id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" render="false" z="user-managed"/>
         <field:select field="userTypes" id="c_org_esupportail_sgc_domain_CardActionMessage_userTypes" items="${userTypes}" multiple="true" path="userTypes" z="user-managed"/>

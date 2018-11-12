@@ -3,7 +3,6 @@ package org.esupportail.sgc.services.crous;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.exceptions.CrousAccountLockException;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ApiCrousService {
@@ -47,6 +43,9 @@ public class ApiCrousService {
     private static String defaultCnousMotifDisable = "HS";
     
     private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    
+	@Resource
+	CrousLogService crousLogService;
     
 	RestTemplate restTemplate;
 	
@@ -130,7 +129,7 @@ public class ApiCrousService {
 	}
 	
 	public CrousSmartCard getCrousSmartCard(String csn) {
-		Card card = Card.findCard(csn);
+		Card card = Card.findCardByCsn(csn);
 		CrousSmartCard crousSmartCard = null;
 		if(enable && card!=null) {
 			if(enable) {
@@ -145,7 +144,7 @@ public class ApiCrousService {
 		return crousSmartCard;
 	}
 	
-	public void postOrUpdateRightHolder(String eppn) {	
+	public boolean postOrUpdateRightHolder(String eppn) {	
 		if(enable) {
 			String url = webUrl + "/rightholders/" + eppn;
 			HttpHeaders headers = this.getAuthHeaders();	
@@ -156,22 +155,26 @@ public class ApiCrousService {
 				RightHolder oldRightHolder = response.getBody();
 				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn);
 				// hack dueDate can't be past in IZLY 
+				if(log.isTraceEnabled()) {
+					log.trace(String.format("newRightHolder.fieldWoDueDateEquals(oldRightHolder) : %s", newRightHolder.fieldWoDueDateEquals(oldRightHolder)));
+					log.trace(String.format("mustUpdateDueDateCrous(oldRightHolder, eppn) : %s", mustUpdateDueDateCrous(oldRightHolder, eppn)));
+				}
 				if(!newRightHolder.fieldWoDueDateEquals(oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
-					updateRightHolder(eppn);
+					return updateRightHolder(eppn);
 				} 
 			} catch(HttpClientErrorException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
-					postRightHolder(eppn);
-					return ;
+					return postRightHolder(eppn);
 				} else {
 					throw clientEx;
 				}
 			}
 		}
+		return true;
 	}
 
 
-	private void postRightHolder(String eppn) {
+	private boolean postRightHolder(String eppn) {
 		String url = webUrl + "/rightholders";
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(eppn);
@@ -181,21 +184,19 @@ public class ApiCrousService {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 		} catch(HttpClientErrorException clientEx) {
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
-				if("Account is closed".equals(getErrorMessage(clientEx.getResponseBodyAsString()))) {
-					log.info("Account " + eppn + " is closed");
-					return;
-				} else {
-					throw new CrousAccountLockException(clientEx.getResponseBodyAsString(), clientEx);
-				}
+				log.warn(eppn + " is locked in crous : " + clientEx.getResponseBodyAsString());
+				crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
+				return false;		
 			} else {
 				throw clientEx;
 			}
 		}
 		log.info(eppn + " sent in CROUS as RightHolder");	
+		return true;
 	}
 
 
-	private void updateRightHolder(String eppn) {
+	private boolean updateRightHolder(String eppn) {
 		String url = webUrl + "/rightholders/" + eppn;
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(eppn);
@@ -204,54 +205,67 @@ public class ApiCrousService {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
 			log.info(eppn + " sent in CROUS as RightHolder");
 		} catch(HttpClientErrorException clientEx) {
-			if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
+			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
+				log.warn(eppn + " is locked in crous : " + clientEx.getResponseBodyAsString());
+				crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
+				return false;
+			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				if("-9".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
 					log.info("Card was already invalidated");
-					return;
+					return false;
 				} else if("-8".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
 					log.info("Card was already invalidated : due date past");
-					return;
+					return false;
 				} else if("-41".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
 					log.info("Client en opposition");
-					return;
+					return false;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
 			} 
 			throw clientEx;
 		}
+		return true;
 	}
 	
 
-	public RightHolder computeEsupSgcRightHolder(String eppn) {
+	public RightHolder computeEsupSgcRightHolder(User user) {
+		RightHolder rightHolder = new RightHolder();
+		rightHolder.setIdentifier(user.getEppn());
+		rightHolder.setFirstName(user.getFirstname());
+		rightHolder.setLastName(user.getName());
+		rightHolder.setEmail(user.getEmail());
+		
+		// dueDate can't be past in IZLY -> max = now + 3 hours
+		Date dueDate = user.getDueDate();
+		Calendar cal = Calendar.getInstance(); // creates calendar
+		cal.setTime(new Date());
+		cal.add(Calendar.HOUR_OF_DAY, 3);
+		Date nowDate =  cal.getTime(); 
+		if(dueDate!=null && dueDate.before(nowDate)) {
+			dueDate = nowDate;
+		} else {
+			dueDate = user.getDueDate();
+		}
+		
+		rightHolder.setDueDate(dueDate);
+		rightHolder.setIdCompanyRate(user.getIdCompagnyRate());
+		rightHolder.setIdRate(user.getIdRate());
+		rightHolder.setBirthDate(user.getBirthday());
+		rightHolder.setIne(user.getSupannCodeINE());
+		return rightHolder;
+	}
+	
+	private RightHolder computeEsupSgcRightHolder(String eppn) {
 		RightHolder rightHolder = null;
 		List<User> users = User.findUsersByEppnEquals(eppn).getResultList();
 		if(!users.isEmpty()) {
 			User user = users.get(0);
-			rightHolder = new RightHolder();
-			rightHolder.setIdentifier(eppn);
-			rightHolder.setFirstName(user.getFirstname());
-			rightHolder.setLastName(user.getName());
-			rightHolder.setEmail(user.getEmail());
-			
-			// dueDate can't be past in IZLY -> max = now + 3 hours
-			Date dueDate = user.getDueDate();
-			Calendar cal = Calendar.getInstance(); // creates calendar
-		    cal.setTime(new Date());
-		    cal.add(Calendar.HOUR_OF_DAY, 3);
-		    Date nowDate =  cal.getTime(); 
-			if(dueDate!=null && dueDate.before(nowDate)) {
-				dueDate = nowDate;
-			} else {
-				dueDate = user.getDueDate();
-			}
-			
-			rightHolder.setDueDate(dueDate);
-			rightHolder.setIdCompanyRate(user.getIdCompagnyRate());
-			rightHolder.setIdRate(user.getIdRate());
-			rightHolder.setBirthDate(user.getBirthday());
-			rightHolder.setIne(user.getSupannCodeINE());
+			rightHolder = computeEsupSgcRightHolder(user);
 		}
 		return rightHolder;
 	}
@@ -273,7 +287,7 @@ public class ApiCrousService {
 	}
 	
 	
-	public void validateSmartCard(Card card) {
+	public boolean validateSmartCard(Card card) {
 		if(enable) {
 			String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();	
@@ -281,20 +295,21 @@ public class ApiCrousService {
 			try {
 				ResponseEntity<CrousSmartCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, CrousSmartCard.class);
 				log.info("GET on " + url + " is OK : " + response.getBody() + " we revalidate this smartCard");
-				revalidateSmartCard(card);
+				return revalidateSmartCard(card);
 			} catch(HttpClientErrorException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					log.info("Card not found in crous - we try to send card " + card.getCsn() + " - " + card.getCrousSmartCard().getIdZdc() + " in CROUS");
 					validateNewSmartCard(card);
-					return ;
+					return false;
 				} else {
 					throw clientEx;
 				}
 			}
 		}
+		return true;
 	}
 	
-	private void validateNewSmartCard(Card card) {
+	private boolean validateNewSmartCard(Card card) {
 		String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard";
 		HttpHeaders headers = this.getAuthHeaders();
 		CrousSmartCard smartCard = card.getCrousSmartCard();
@@ -305,35 +320,54 @@ public class ApiCrousService {
 			log.info("Card with csn " + card.getCsn() + " sent in CROUS as CrousSmartCard");
 		} catch(HttpClientErrorException clientEx) {
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
+				crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
 				log.info("LOCKED : " + clientEx.getResponseBodyAsString());
 				log.info("Card can't be added : IZLY account is locked");
-				return;
+				return false;
+			}
+			if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) && "-31".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+				crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
+				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
+				log.info("Card can't be added : IZLY card is known but righHolder was deleted (rgpd)");
+				return false;
 			}
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+				crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
 				log.info("NOT_FOUND : " + clientEx.getResponseBodyAsString());
 				log.info("Card can't be added : IZLY account should be closed (see logs before)");
-				return;
+				return false;
 			}
 			throw clientEx;
 		}
+		return true;
 	}
 	
 	
-	private void revalidateSmartCard(Card card) {
-		String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
-		HttpHeaders headers = this.getAuthHeaders();
-		headers.add("uid", card.getCsn().toUpperCase());
-		Map<String, String> body = new HashMap<String, String>();
-		body.put("revalidationDate", currentDate4Crous());
-		body.put("cancelDate", "");
-		body.put("reason", "");
-		HttpEntity entity = new HttpEntity(body, headers);
-		log.debug("Try to patch on CROUS SmartCard for " +  card.getEppn() + " : " + body); 
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
-		log.info("Card with csn " + card.getCsn() + " revalidated in CROUS as CrousSmartCard");
+	private boolean revalidateSmartCard(Card card) {
+		try {
+			String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+			HttpHeaders headers = this.getAuthHeaders();
+			headers.add("uid", card.getCsn().toUpperCase());
+			Map<String, String> body = new HashMap<String, String>();
+			body.put("revalidationDate", currentDate4Crous());
+			body.put("cancelDate", "");
+			body.put("reason", "");
+			HttpEntity entity = new HttpEntity(body, headers);
+			log.debug("Try to patch on CROUS SmartCard for " +  card.getEppn() + " : " + body); 
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
+			log.info("Card with csn " + card.getCsn() + " revalidated in CROUS as CrousSmartCard");
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) && "-8".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+				crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
+				log.info("Due date past -8 : izly error code ...");
+				return false;
+			} 
+			throw clientEx;
+		}	
+		return true;
 	}
 
-	public void invalidateSmartCard(Card card) {
+	public boolean invalidateSmartCard(Card card) {
 		if(enable) {
 			try {
 				CrousSmartCard smartCard = CrousSmartCard.findCrousSmartCard(card.getCsn());
@@ -356,19 +390,23 @@ public class ApiCrousService {
 				if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 					log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 					if("-9".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+						crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
 						log.info("Card was already invalidated");
-						return;
+						return false;
 					} else if("-8".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+						crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
 						log.info("Card was already invalidated : due date past");
-						return;
+						return false;
 					} 
 				} else if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+					crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
 					log.info("Card with csn " + card.getCsn() + " not found in CROUS as CrousSmartCard, no need to invalidate it.");
-					return;
+					return false;
 				} 
 				throw clientEx;
 			}
 		}
+		return true;
 	}
 	
 	private String getErrorMessage(String errorsAsJsonString) {

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -214,7 +215,7 @@ public class WsRestEsupNfcController {
 		log.trace("idName : " + idName);
 		log.trace("taglog : " + taglog);
 		String secondaryId = null;
-		Card card = Card.findCard(taglog.csn);
+		Card card = Card.findCardByCsn(taglog.csn);
 		if(card!=null && card.isEnabled()) {
 			User user = User.findUser(card.getEppn());
 			switch (idName) {
@@ -263,9 +264,9 @@ public class WsRestEsupNfcController {
 		
 		Card card = null;
 		try{
-			card = Card.findCard(csn);
+			card = Card.findCardByCsn(csn);
 			if(card==null) {
-				log.warn("card "+ csn + "not found");
+				log.warn("card "+ csn + " not found");
 				return new ResponseEntity<String>("Carte non trouvée", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (Exception e){
@@ -452,6 +453,9 @@ public class WsRestEsupNfcController {
 			card = Card.findCardsByCsn(csn).getSingleResult();
 			String desfireId = cardIdsService.generateCardId(card.getId(), appName);
 			id = cardIdsService.encodeCardId(desfireId, appName);
+		} catch (NoResultException e) {
+			String errorMsg = "can't find card with csn : " + csn;
+			return new ResponseEntity<String>(errorMsg, responseHeaders, HttpStatus.NOT_FOUND);
 		} catch(Exception e){
 			String errorMsg = "error to get card or id with csn : " + csn + " for " + appName;
 			log.error(errorMsg, e);
@@ -471,7 +475,7 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public String getSecondaryId(@RequestParam String csn, @RequestParam(required = false) String service) throws IOException, ParseException {
 		String secondaryId = null;
-		Card card = Card.findCard(csn);
+		Card card = Card.findCardByCsn(csn);
 		if(card!=null && card.isEnabled()) {
 			User user = User.findUser(card.getEppn());
 			if("biblio".equals(service)){
@@ -518,7 +522,7 @@ public class WsRestEsupNfcController {
 			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE})).getResultList();
 			if(cards.size() > 0 ){
 				String csn = qrcodeAndCsn.get("csn");
-				Card cardWithThisCsn = Card.findCard(csn);
+				Card cardWithThisCsn = Card.findCardByCsn(csn);
 				if(cardWithThisCsn != null && !cardWithThisCsn.getId().equals(cards.get(0).getId())) {
 					String errorMsg = "This card (with this csn" + csn + ") is already used in ESUP-SGC : " + cardWithThisCsn;
 					return new ResponseEntity<String>(errorMsg, responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -577,7 +581,7 @@ public class WsRestEsupNfcController {
 			String filename = file.getOriginalFilename();
 			log.info("CrousSmartCardController retrieving file from rest call " + filename);
 			InputStream stream = new  ByteArrayInputStream(file.getBytes());
-			Card card = Card.findCard(csn);
+			Card card = Card.findCardByCsn(csn);
 			crousSmartCardService.consumeCsv(stream, false);
 			cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
 			if(appliConfigService.getEnableAuto()) {
@@ -601,7 +605,7 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public List<String> getVersoText(@RequestParam String csn,  HttpServletRequest request) throws IOException, ParseException {
 		List<String> versoText = Arrays.asList(new String[] {}); 
-		Card card = Card.findCard(csn);
+		Card card = Card.findCardByCsn(csn);
 		if(card!=null) {
 			User user = User.findUser(card.getEppn());
 			versoText = user.getVersoText();

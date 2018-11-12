@@ -528,13 +528,12 @@ function displaySpinner(c,j) {
 };
 
 //affiche stats
-function getStats(id, chartType, dateFin, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth){
-	
+function getStats(id, chartType, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth){
 	var prefId = document.getElementById(id);
 	if((prefsStatsRm!=null && prefsStatsRm !="" && !(prefsStatsRm.indexOf(prefId)>-1)) || (prefsStatsRm==null || prefsStatsRm =="")){
 		displaySpinner(document.querySelector("canvas#" + id), spinner);
 		var request = new XMLHttpRequest();
-		request.open('GET',  statsRootUrl + "/json?type=" + id + "&typeInd=" + selectedType + "&anneeUniv=" + anneeUniv.value, true);
+		request.open('GET',  statsRootUrl + "/json?type=" + id + "&typeInd=" + selectedType, true);
 		request.onload = function(){
 			  if(request.status >= 200 && request.status < 400) {
 			    var data = JSON.parse(this.response);
@@ -951,48 +950,37 @@ document.addEventListener('DOMContentLoaded', function() {
     //stats
     if(typeof (statsRootUrl) != "undefined"){
     	//getStats(id, chartType, dateFin, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth)
-    	function loadStats(anneeUniv, selectedType,monthsArray){
-	    	getStats("cardsByYearEtat", "multiBar", anneeUniv, selectedType, 0);
-	    	getStats("crous", "pie", anneeUniv, selectedType, 1);
-	    	getStats("difPhoto", "pie", anneeUniv, selectedType, 2);
-	    	getStats("cardsByDay", "chartBar", anneeUniv, selectedType, 3);
-	    	getStats("paybox", "multiBar", anneeUniv, selectedType, 4);
-	    	getStats("motifs", "chartBar", anneeUniv, selectedType, 5);
-	    	getStats("dates", "lineChart", anneeUniv, selectedType, 6, null, null, false, null, null, null, true, monthsArray, true);
-	    	getStats("deliveredCardsByDay", "chartBar", anneeUniv, selectedType, 7);
-	    	getStats("encodedCardsByday", "chartBar", anneeUniv, selectedType, 8);
-	    	getStats("nbCards", "doughnut", anneeUniv, selectedType, 9);
-	    	getStats("editable", "chartBar", anneeUniv, selectedType, 10);
-	    	getStats("browsers", "pie", anneeUniv, selectedType, 12);
-	    	getStats("os", "pie", anneeUniv, selectedType, 13);
-	    	getStats("nbRejets", "doughnut", anneeUniv, selectedType, 14);
-	    	getStats("notDelivered", "chartBar", anneeUniv, selectedType, 15);
-	    	getStats("deliveryByAdress", "pie", anneeUniv, selectedType, 19, "legend");
-	    	getStats("userDeliveries", "chartBar", anneeUniv, selectedType, 20);
-	    	getStats("tarifsCrousBars", "multiBar", anneeUniv, selectedType, 21);
-	    	getStats("cardsByMonth", "chartBar", anneeUniv, selectedType, 22, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
-	    	getStats("nbRejetsByMonth", "chartBar", anneeUniv, selectedType, 23);
-	    	getStats("requestFree", "multiBar", anneeUniv, selectedType, 24);
-	    	getStats("templateCards", "doughnut", anneeUniv, selectedType, 25);
-	    	getStats("europeanCardChart", "pie", anneeUniv, selectedType, 26);
-	    	getStats("nbRoles", "doughnut", anneeUniv, selectedType, 27);
-	    	getStats("pendingCards", "pie", anneeUniv, selectedType, 28);
-    	}
-    	var anneeUniv = document.getElementById("anneeUniv");
-    	
-    	new SlimSelect({
-	    	  select: '#anneeUniv',
-	    	  showSearch: false
-	    	})
-    	anneeUniv.addEventListener("change", function(event){
-    		loadStats(anneeUniv, selectedType, monthsArray);
-    	});
-    	loadStats(anneeUniv, selectedType, monthsArray);
+    	getStats("cardsByYearEtat", "multiBar", selectedType, 0);
+    	getStats("crous", "pie", selectedType, 1);
+    	getStats("difPhoto", "pie", selectedType, 2);
+    	getStats("cardsByDay", "chartBar", selectedType, 3);
+    	getStats("paybox", "multiBar", selectedType, 4);
+    	getStats("motifs", "chartBar", selectedType, 5);
+    	getStats("dates", "lineChart", selectedType, 6, null, null, false, null, null, null, true, monthsArray, true);
+    	getStats("deliveredCardsByDay", "chartBar", selectedType, 7);
+    	getStats("encodedCardsByday", "chartBar", selectedType, 8);
+    	getStats("nbCards", "doughnut", selectedType, 9);
+    	getStats("editable", "chartBar", selectedType, 10);
+    	getStats("browsers", "pie", selectedType, 12);
+    	getStats("os", "pie", selectedType, 13);
+    	getStats("nbRejets", "doughnut", selectedType, 14);
+    	getStats("notDelivered", "chartBar", selectedType, 15);
+    	getStats("deliveryByAdress", "pie", selectedType, 19, "legend");
+    	getStats("userDeliveries", "chartBar", selectedType, 20);
+    	getStats("tarifsCrousBars", "multiBar", selectedType, 21);
+    	getStats("cardsByMonth", "chartBar", selectedType, 22, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
+    	getStats("nbRejetsByMonth", "chartBar", selectedType, 23);
+    	getStats("requestFree", "multiBar", selectedType, 24);
+    	getStats("templateCards", "doughnut", selectedType, 25);
+    	getStats("europeanCardChart", "pie", selectedType, 26);
+    	getStats("nbRoles", "doughnut", selectedType, 27);
+    	getStats("pendingCards", "pie", selectedType, 28);
+    	getStats("dueDate", "chartBar", selectedType, 29);
 
        	var downloadBtn = document.querySelectorAll('.downloadBtn');
     	Array.from(downloadBtn).forEach(function(link) {
     		return link.addEventListener('click', function(event) {
-    			this.href = this.title + "/" + anneeUniv.value;
+    			this.href = this.title ;
     	    });
     	});
     }
@@ -1163,8 +1151,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     //Mise en page libre stats
     if (typeof statsRootUrl != "undefined") {
-	    dragula([document.getElementById('statsPanels')]).on('dragend', dragend);
-	    
+    	if(userAgent=="COMPUTER"){
+    		dragula([document.getElementById('statsPanels')]).on('dragend', dragend);
+    	}
 	    function dragend (el) {
 	    	var statsArray =[];
 	    	var statsDrag = document.querySelectorAll('.statsDrag');
@@ -2011,6 +2000,27 @@ document.addEventListener('DOMContentLoaded', function() {
    			searchEppnForm.submit();
    	    }); 
    	})
+   	//Message d'attente lors de la désactivaction/réactivation de carte
+ 	var edActionForm = document.querySelectorAll('.edActionForm');
+   	Array.from(edActionForm).forEach(function(link) {
+   		link.addEventListener('submit', function(evt) {
+	   		//evt.preventDefault();
+	   		this.insertAdjacentHTML('beforeend',"<br /><br /<div class='well'><img src='" + loader_url + "'/><strong id='strongText' class='text-danger'> Veuillez patienter ...</strong></div>");  
+	   		document.getElementById('strongText').style.fontSize = "large"; 
+		});
+   	});
+   	
+   	
+   	// /admin/actionmessages/update.jspx
+    var mailToInput = document.getElementById("mailTo");
+    if(mailToInput != null){
+    	mailToInput.addEventListener('input', function (evt) {
+    		    if(this.value.trim().length>0) {
+    		    	document.getElementById("_auto_id").checked = true;
+    		    }
+    	});
+    }
+   	
 })
 
 window.onload = window.onresize = function() {

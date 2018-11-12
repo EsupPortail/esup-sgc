@@ -6,14 +6,22 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.CrousPatchIdentifier;
+import org.esupportail.sgc.domain.EscrStudent;
+import org.esupportail.sgc.domain.Log;
+import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.crous.CrousPatchIdentifierService;
 import org.esupportail.sgc.services.crous.CrousService;
+import org.esupportail.sgc.services.crous.PatchIdentifier;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +47,9 @@ public class ToolsController {
 	@Resource
 	CrousService crousService;
 	
+	@Resource
+	CrousPatchIdentifierService crousPatchIdentifierService;
+	
 	@ModelAttribute("help")
 	public String getHelp() {
 		return appliConfigService.getHelpAdmin();
@@ -60,6 +71,10 @@ public class ToolsController {
 		return cardEtatService.getValidateServicesNames();
 	}
 	
+	@ModelAttribute("usersWithCrousDisabledInDbCount")
+	public Long countFindUsersWithCrousDisabledInDb() {
+		return User.countFindUsersByCrous(false);
+	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
 	public String index() {
@@ -76,14 +91,46 @@ public class ToolsController {
 		return "redirect:/admin/tools";
 	}
 
-	
+	@Transactional
+	@RequestMapping(value = "/patchEsupSgcEppn", method = RequestMethod.POST, produces = "text/html")
+	public String patchEsupSgcEppn(RedirectAttributes redirectAttrs, @RequestParam String oldEppn, @RequestParam String newEppn) {
+		User user = User.findUser(oldEppn);
+		CrousPatchIdentifier crousPatchIdentifier = new CrousPatchIdentifier();
+		crousPatchIdentifier.setOldId(user.getEppn());
+		crousPatchIdentifier.setMail(user.getEmail());
+		crousPatchIdentifier.setEppnNewId(newEppn);
+		crousPatchIdentifier.persist();
+		crousPatchIdentifierService.patchIdentifier(crousPatchIdentifier);
+		user.setEppn(newEppn);
+		for(Card card : user.getCards()) {
+			card.setEppn(newEppn);
+		}
+		for(PayboxTransactionLog payboxTransactionLog : PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(oldEppn).getResultList()) {
+			payboxTransactionLog.setEppn(newEppn);
+		}
+		for(Log log : Log.findLogsByEppnEquals(oldEppn).getResultList()) {
+			log.setEppn(newEppn);
+		}
+		for(Log log : Log.findLogsByEppnCibleEquals(oldEppn).getResultList()) {
+			log.setEppnCible(newEppn);
+		}
+		for(EscrStudent  escrStudent: EscrStudent.findEscrStudentsByEppnEquals(oldEppn).getResultList()) {
+			escrStudent.setEppn(newEppn);
+		}
+		redirectAttrs.addFlashAttribute("messageSuccess", "success_patchEsupSgcEppn");
+		return "redirect:/admin/tools";
+	}
 	
 	@RequestMapping(value = "/checkCrousDisabledExistingInApiCrous", method = RequestMethod.POST, produces = "text/html")
 	public String checkCrousDisabledExistingInApiCrous(Model uiModel) {
 		List<String> usersCrousDisabledExistingInApiCrous = new ArrayList<String>();
 		for(User user : User.findUsersByCrous(false).getResultList()) {
-			if(crousService.getRightHolder(user.getEppn()) != null) {
-				usersCrousDisabledExistingInApiCrous.add(user.getEppn());
+			try {
+				if(crousService.getRightHolder(user.getEppn()) != null) {
+					usersCrousDisabledExistingInApiCrous.add(user.getEppn());
+				}
+			} catch(CrousAccountForbiddenException e) {
+				log.warn(String.format("Forbidden Exception on crous api getting RightHolder for %s", user.getEppn()), e);
 			}
 		}
 		log.info("Users with crous disabled but existing in api crous : " + usersCrousDisabledExistingInApiCrous);

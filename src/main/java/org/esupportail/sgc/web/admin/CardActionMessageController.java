@@ -2,7 +2,11 @@ package org.esupportail.sgc.web.admin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -10,10 +14,10 @@ import javax.validation.Valid;
 
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
-import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.CardActionMessageService;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.CardActionMessageService;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -77,6 +81,8 @@ public class CardActionMessageController {
         } else {
             uiModel.addAttribute("cardactionmessages", CardActionMessage.findAllCardActionMessages(sortFieldName, sortOrder));
         }
+        uiModel.addAttribute("cardActionsMessagesConflictsList", cardActionMessageService.getCardActionMessagesAutoInConflict());
+        
         return "admin/actionmessages/list";
     }
     

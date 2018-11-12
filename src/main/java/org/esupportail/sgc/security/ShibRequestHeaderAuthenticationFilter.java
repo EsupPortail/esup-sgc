@@ -1,5 +1,8 @@
 package org.esupportail.sgc.security;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 @Transactional
 public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
@@ -39,7 +41,8 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 		this.resynchronisationUserService = resynchronisationUserService;
 	}
 
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) {
+	@Override
+	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException, ServletException {
         super.successfulAuthentication(request, response, authResult);
         String eppn = authResult.getName();
         User user = User.findUser(eppn);

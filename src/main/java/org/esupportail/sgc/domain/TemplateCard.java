@@ -74,7 +74,7 @@ public class TemplateCard {
     }
    
     public static List<Object> countTemplateCardByNameVersion() {
-        String sql = "SELECT CONCAT(name, ' / V', num_version) as nom, count(*) from card,template_card where card.template_card= template_card.id GROUP BY nom";
+        String sql = "SELECT CONCAT(name, ' / V', num_version) as nom, count(*) FROM card,template_card WHERE card.template_card= template_card.id AND etat='ENABLED' GROUP BY nom";
 
         EntityManager em = TemplateCard.entityManager();
         Query q = em.createNativeQuery(sql);

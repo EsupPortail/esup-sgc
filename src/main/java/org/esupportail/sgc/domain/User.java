@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
 import org.esupportail.sgc.security.SgcRoleHierarchy;
+import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.dbre.RooDbManaged;
@@ -62,6 +63,8 @@ public class User {
     
 	@Column
 	private Boolean crous = false;
+	
+	private String crousError;
 	
 	@Column
 	private Boolean europeanStudentCard = false;
@@ -247,7 +250,9 @@ public class User {
 		if (birthday == null) {
 			if (other.birthday != null)
 				{log.trace("birthday <>"); return false;}
-		} else if (!birthday.equals(other.birthday))
+		} 
+		// compare only day (without time) for birthday 
+		else if (DateTimeComparator.getDateOnlyInstance().compare(birthday, other.birthday) != 0)
 			{log.trace("birthday <>"); return false;}
 		if (cnousReferenceStatut != other.cnousReferenceStatut)
 			{log.trace("cnousReferenceStatut <>"); return false;}

@@ -174,7 +174,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 						log.info("Succès de la demande de carte pour l'utilisateur " +  eppn);
 						
 						// TODO : use cardEtatService.setCardEtat !
-						cardEtatService.sendMailInfo(null, Etat.NEW, user, null, false);
+						cardEtatService.sendMailInfo(null, Etat.NEW, user, null);
 						
 						return new ResponseEntity<String>(eppn + " request OK.", responseHeaders, HttpStatus.OK);
 					}

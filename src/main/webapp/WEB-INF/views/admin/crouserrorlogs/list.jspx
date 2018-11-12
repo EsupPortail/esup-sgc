@@ -32,6 +32,7 @@
             <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_message" property="message" z="TI/UJM88A5KMpH+hRkEA3RhxNZI="/>
             <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_field" property="field" z="dAIrbrkDb9fOWTAa/BrBIoUUUdI="/>
             <table:column date="true" dateTimePattern="dd/MM/yy HH:mm" id="c_org_esupportail_sgc_services_crous_CrousErrorLog_date" property="date" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_blocking" property="blocking" sort="true"/>
         </table:table>
     </page:list>
 </div>

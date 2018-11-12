@@ -53,6 +53,33 @@
 		</div>
 	</div>
 	
+	<h2>Modification d'EPPN</h2>
+
+	<div class="row">
+		<div class="col-lg-1">&amp;nbsp;</div>
+		<div class="col-lg-10">
+			<div class="well">
+				Si un de vos utilisateurs a changé d'eduPersonPrincipalName, vous pouvez répercuter cette modification dans esup-sgc ici. Cette modification sera également envoyée dans l'API CROUS au besoin.
+			</div>
+			
+			<spring:url value="/manager/searchEppn" var="searchEppnUrl" />
+		    <script type="text/javascript">
+				var searchEppnUrl = '${searchEppnUrl}';
+			</script>
+			
+			<spring:url value="/admin/tools/patchEsupSgcEppn" var="patchEsupSgcEppnUrl" />
+			<form action="${patchEsupSgcEppnUrl}" class="form-horizontal" method="POST" id="searchEppnForm">
+				<div class="form-group">
+					<label>Ancien eppn : <input name="oldEppn" id="searchEppn"/></label>
+					<label>Nouvel eppn : <input name="newEppn"/></label>
+					<button class="btn btn-danger" type="submit" name="action" onclick="return confirm('Vous confirmez vouloir opérérer cette modification d'eppn ?.');">
+					Modifier l'EPPN</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	
 	<h2>CROUS</h2>
 
 	<div class="row">
@@ -61,7 +88,7 @@
 			<spring:url value="/admin/tools/checkCrousDisabledExistingInApiCrous" var="checkCrousDisabledExistingInApiCrousUrl" />
 			<form action="${checkCrousDisabledExistingInApiCrousUrl}" class="form-horizontal" method="POST">
 				<div class="form-group">
-					<button class="btn btn-danger" type="submit" name="action" value="checkCrousDisabledExistingInApiCrousUrl" onclick="return confirm('Attention, cette vérification va engender un nombre d'appels au CROUS non négligeables.');">Lancer la vérification de la cohérence crous désactivé -> aucun compte dans l'api crous</button>
+					<button class="btn btn-danger" type="submit" name="action" value="checkCrousDisabledExistingInApiCrousUrl" onclick="return confirm('Attention, cette vérification va engender un nombre d\'appels au CROUS non négligeable : ${usersWithCrousDisabledInDbCount} GET sur l\'API CROUS ici.');">Lancer la vérification de la cohérence crous désactivé -> aucun compte dans l'api crous</button>
 				</div>
 			</form>
 			<c:if test="${not empty usersCrousDisabledExistingInApiCrous}">

@@ -184,7 +184,7 @@ public class CardEtatService {
 		
 		card.getUser().setHasCardRequestPending(etatsRequest.contains(card.getEtat()) || this.hasRequestCard(eppn));
 		
-		this.sendMailInfo(etatInitial, card.getEtat(), card.getUser(), mailMessage, actionFromAnAdmin);
+		this.sendMailInfo(etatInitial, card.getEtat(), card.getUser(), mailMessage);
 		
 		return true;
 	}
@@ -281,18 +281,15 @@ public class CardEtatService {
 		return photoEditable;
 	}
 	
-	public void sendMailInfo(Etat etatInitial, Etat etatFinal, User user, String mailMessage, boolean actionFromAnAdmin){
+	public void sendMailInfo(Etat etatInitial, Etat etatFinal, User user, String mailMessage){
 		if(user.getEmail() != null && !user.getEmail().isEmpty()) {
 			if(mailMessage == null || mailMessage.isEmpty()) {
-				for(CardActionMessage msg : CardActionMessage.findCardActionMessagesByEtatFinalAndUserType(etatFinal, user.getUserType())){
-					if(msg.getEtatInitial() == null || msg.getEtatInitial().equals(etatInitial)) {
-						if(actionFromAnAdmin || msg.isAuto()) {
-							if(msg.isAuto()) {
-								mailMessage = msg.getMessage();
-								break;
-							}
-						}
+				List<CardActionMessage> messages = CardActionMessage.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), true);
+				if(messages.size()>0) {
+					if(messages.size()>1) {
+						log.warn(String.format("Multiples messages found for CardActionMessage with auto=true,  etatInitial=%s, etatFinal=%s and user.getUserType()=%s", etatInitial, etatFinal, user.getUserType()));
 					}
+					mailMessage = messages.get(0).getMessage();
 				}
 			}
 			if(mailMessage != null && !mailMessage.trim().isEmpty()) {
@@ -302,6 +299,15 @@ public class CardEtatService {
 				} catch (Exception e) {
 					log.error("Erreur lors de l'envoi du mail pour la carte de :" + user.getEppn(), e);
 				}
+			}
+		}
+		
+		for(CardActionMessage mailToCardActionMessage : CardActionMessage.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), false)) {
+			try {
+				cardService.sendMailCard(appliConfigService.getNoReplyMsg(), mailToCardActionMessage.getMailTo(), appliConfigService.getListePpale(), 
+				appliConfigService.getSubjectAutoCard().concat(" -- ".concat(user.getEppn())), mailToCardActionMessage.getMessage());
+			} catch (Exception e) {
+				log.error(String.format("Erreur lors de l'envoi du mail à pour la carte de %s ", mailToCardActionMessage.getMailTo(), user.getEppn()), e);
 			}
 		}
 	}

@@ -5,10 +5,19 @@ package org.esupportail.sgc.services.crous;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.crous.CrousErrorLog;
 
 privileged aspect CrousErrorLog_Roo_Finder {
+    
+    public static Long CrousErrorLog.countFindCrousErrorLogsByCard(Card card) {
+        if (card == null) throw new IllegalArgumentException("The card argument is required");
+        EntityManager em = CrousErrorLog.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CrousErrorLog AS o WHERE o.card = :card", Long.class);
+        q.setParameter("card", card);
+        return ((Long) q.getSingleResult());
+    }
     
     public static Long CrousErrorLog.countFindCrousErrorLogsByUserAccount(User userAccount) {
         if (userAccount == null) throw new IllegalArgumentException("The userAccount argument is required");
@@ -16,6 +25,29 @@ privileged aspect CrousErrorLog_Roo_Finder {
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CrousErrorLog AS o WHERE o.userAccount = :userAccount", Long.class);
         q.setParameter("userAccount", userAccount);
         return ((Long) q.getSingleResult());
+    }
+    
+    public static TypedQuery<CrousErrorLog> CrousErrorLog.findCrousErrorLogsByCard(Card card) {
+        if (card == null) throw new IllegalArgumentException("The card argument is required");
+        EntityManager em = CrousErrorLog.entityManager();
+        TypedQuery<CrousErrorLog> q = em.createQuery("SELECT o FROM CrousErrorLog AS o WHERE o.card = :card", CrousErrorLog.class);
+        q.setParameter("card", card);
+        return q;
+    }
+    
+    public static TypedQuery<CrousErrorLog> CrousErrorLog.findCrousErrorLogsByCard(Card card, String sortFieldName, String sortOrder) {
+        if (card == null) throw new IllegalArgumentException("The card argument is required");
+        EntityManager em = CrousErrorLog.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CrousErrorLog AS o WHERE o.card = :card");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CrousErrorLog> q = em.createQuery(queryBuilder.toString(), CrousErrorLog.class);
+        q.setParameter("card", card);
+        return q;
     }
     
     public static TypedQuery<CrousErrorLog> CrousErrorLog.findCrousErrorLogsByUserAccount(User userAccount) {

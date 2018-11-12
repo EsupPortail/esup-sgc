@@ -200,7 +200,7 @@ public class ApiEscrService extends ValidateService {
 	}
 
 	public EscrCard getEscrCard(String eppn, String csn) {
-		Card card = Card.findCard(csn);
+		Card card = Card.findCardByCsn(csn);
 		if(card.getEscnUid() == null || card.getEscnUid().isEmpty() || getEuropeanStudentIdentifier(eppn) == null || !enable) {
 			return null;
 		} else {

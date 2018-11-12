@@ -59,14 +59,16 @@ public class EsistCrousService {
 				Document document= builder.parse(esistXmlFile);
 				Element root = document.getDocumentElement();
 	
-				NodeList rneEmployeurRows = root.getElementsByTagName("RneEmployeur").item(0).getChildNodes();
-				final int nbRneEmployeurRows = rneEmployeurRows.getLength();
-				for (int i = 0; i<nbRneEmployeurRows; i++) {
-					if(rneEmployeurRows.item(i).getNodeType() == Node.ELEMENT_NODE) {
-						Element row = (Element) rneEmployeurRows.item(i);
-						String rne = row.getElementsByTagName("rne").item(0).getTextContent();
-						String employeur = row.getElementsByTagName("employeur").item(0).getTextContent();
-						employeursRne.put(employeur, rne);
+				if(root.getElementsByTagName("RneEmployeur").getLength()>0) {
+					NodeList rneEmployeurRows = root.getElementsByTagName("RneEmployeur").item(0).getChildNodes();
+					final int nbRneEmployeurRows = rneEmployeurRows.getLength();
+					for (int i = 0; i<nbRneEmployeurRows; i++) {
+						if(rneEmployeurRows.item(i).getNodeType() == Node.ELEMENT_NODE) {
+							Element row = (Element) rneEmployeurRows.item(i);
+							String rne = row.getElementsByTagName("rne").item(0).getTextContent();
+							String employeur = row.getElementsByTagName("employeur").item(0).getTextContent();
+							employeursRne.put(employeur, rne);
+						}
 					}
 				}
 	
@@ -75,18 +77,25 @@ public class EsistCrousService {
 				for (int i = 0; i<nbRulesRows; i++) {
 					if(rulesRows.item(i).getNodeType() == Node.ELEMENT_NODE) {
 						Element row = (Element) rulesRows.item(i);
-						String codeemployeur = row.getElementsByTagName("codeemployeur").item(0).getTextContent();
-						String referencestatut = row.getElementsByTagName("referencestatut").item(0).getTextContent();
-						String indicemin = row.getElementsByTagName("indicemin").item(0).getTextContent();
-						String indicemax = row.getElementsByTagName("indicemax").item(0).getTextContent();
+						CrousRule rule = new CrousRule();
+						if(row.getElementsByTagName("codeemployeur").getLength()>0) {
+							String codeemployeur = row.getElementsByTagName("codeemployeur").item(0).getTextContent();
+							rule.setRne(employeursRne.get(codeemployeur));
+						}
+						if(row.getElementsByTagName("referencestatut").getLength()>0) {
+							String referencestatut = row.getElementsByTagName("referencestatut").item(0).getTextContent();
+							rule.setReferenceStatus(referencestatut);
+						}
+						if(row.getElementsByTagName("indicemin").getLength()>0) {
+							String indicemin = row.getElementsByTagName("indicemin").item(0).getTextContent();
+							rule.setIndiceMin(Long.valueOf(indicemin));
+						}
+						if(row.getElementsByTagName("indicemax").getLength()>0) {
+							String indicemax = row.getElementsByTagName("indicemax").item(0).getTextContent();
+							rule.setIndiceMax(Long.valueOf(indicemax));
+						}
 						String codesociete = row.getElementsByTagName("codesociete").item(0).getTextContent();
 						String codetarif = row.getElementsByTagName("codetarif").item(0).getTextContent();
-		
-						CrousRule rule = new CrousRule();
-						rule.setRne(employeursRne.get(codeemployeur));
-						rule.setReferenceStatus(referencestatut);
-						rule.setIndiceMax(Long.valueOf(indicemax));
-						rule.setIndiceMin(Long.valueOf(indicemin));
 						rule.setCodeSociete(Long.valueOf(codesociete));
 						rule.setCodeTarif(Long.valueOf(codetarif));
 						rules.add(rule);
@@ -108,8 +117,10 @@ public class EsistCrousService {
 		String referenceStatut = user.getCnousReferenceStatut().name();
 		String rneEtablissement = user.getRneEtablissement();
 		for(CrousRule rule : rules) {
-			if(referenceStatut.equalsIgnoreCase(rule.getReferenceStatus()) && rneEtablissement.equalsIgnoreCase(rule.getRne()) && 
-					indice >= rule.getIndiceMin() && indice <= rule.getIndiceMax()) {
+			if((rule.getReferenceStatus() == null || referenceStatut.equalsIgnoreCase(rule.getReferenceStatus())) &&
+					(rule.getRne() == null || rneEtablissement.equalsIgnoreCase(rule.getRne())) && 
+					(rule.getIndiceMin() == null || indice >= rule.getIndiceMin()) && 
+					(rule.getIndiceMax() == null || indice <= rule.getIndiceMax())) {
 				matchRule = rule;
 				break;
 			}

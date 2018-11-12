@@ -130,7 +130,7 @@
 													<input type="hidden" name="listeIds" id="listeIds" value="${cardId}"/>
 												</c:forEach>       
 	                                        	<button class="btn btn-primary btn-block" type="submit" onclick="return confirm('Confirmez la livraison');">
-	                                         	Noter comme livré
+	                                         	Noter comme livrée
 	                                         </button>
 	                                    </form>
 	                                 </c:if>

@@ -5,6 +5,10 @@ xmlns:c="http://java.sun.com/jsp/jstl/core"  version="2.0">
   <jsp:output omit-xml-declaration="yes"/>
   <spring:url value="/user" var="infoUrl"/>
   <spring:url value="/user/disable" var="cardDisableUrl"/>
+  <spring:url value="/resources/images/loader.gif" var="loader_url" />
+	<script type="text/javascript">
+		var loader_url = '${loader_url}';
+	</script>
   <util:panel id="title" title="${title}">
 	<h2>Désactivation de votre carte
     	<a href="${infoUrl}" type="button" class="btn btn-primary pull-right" title="Informations carte"> 
@@ -32,7 +36,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core"  version="2.0">
 	</div>
 	
 	<div class="well">
-		<form action="${cardDisableUrl}" method="post" id="cardDisableForm">
+		<form action="${cardDisableUrl}" method="post" id="cardDisableForm" class="edActionForm">
 			<c:forEach items="${motifsList}" var="motif" varStatus="i">
 	 			<div class="radio">
 				  <label>

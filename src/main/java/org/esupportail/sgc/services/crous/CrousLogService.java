@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +33,16 @@ public class CrousLogService {
 	// @Transactional(propagation=Propagation.REQUIRES_NEW) -> seams to no work well - too complex
 	// -> we use @Async here - that's the same but more easy
 	@Async
+	@Transactional
+	public void logErrorCrousAsync(String eppn, String csn, String errorBodyAsJson) {
+		logErrorCrous(eppn, csn, errorBodyAsJson, true);
+	}
+	
 	public void logErrorCrous(String eppn, String csn, String errorBodyAsJson) {
+		logErrorCrous(eppn, csn, errorBodyAsJson, false);
+	}
+		
+	private void logErrorCrous(String eppn, String csn, String errorBodyAsJson, Boolean blocking) {	
 		try {
 			
 			log.info("Try to Log Error Crous in Database : " + eppn + " - " + csn + " - " + errorBodyAsJson);
@@ -46,18 +56,24 @@ public class CrousLogService {
 				
 				List<CrousErrorLog> errorLogsInDb = new ArrayList<CrousErrorLog>(); 
 				if(csn != null && !csn.isEmpty()) {
-					card = Card.findCard(csn);
+					card = Card.findCardByCsn(csn);
 					crousErrorLog.setCard(card);
 					user = card.getUserAccount();
+					card.setCrousError(crousErrorLog.getMessage());
 				} else 	if(eppn != null && !eppn.isEmpty()) {
 					user = User.findUser(eppn);
 					crousErrorLog.setUserAccount(user);
+					user.setCrousError(crousErrorLog.getMessage());
 				} else {
 					log.warn("No CSN and no EPPN ??!");
 				}
 				if(user != null) {
 					crousErrorLog.setUserAccount(user);
 					errorLogsInDb = CrousErrorLog.findCrousErrorLogsByUserAccount(user).getResultList();
+				}
+				if(card != null) {
+					crousErrorLog.setUserAccount(user);
+					errorLogsInDb = CrousErrorLog.findCrousErrorLogsByCard(card).getResultList();
 				}
 				if(!errorLogsInDb.isEmpty()) {
 					// on ne garde qu'une erreur par carte / utilisateur - erreur qu'on met à jour
@@ -70,9 +86,8 @@ public class CrousLogService {
 					crousErrorLog = crousErrorLogOld;
 				} 
 				crousErrorLog.setDate(new Date());	
-				if(!errorLogsInDb.isEmpty()) {				
-					crousErrorLog.merge();
-				} else {
+				crousErrorLog.setBlocking(blocking);
+				if(errorLogsInDb.isEmpty()) {				
 					crousErrorLog.persist();
 				}
 			} else {

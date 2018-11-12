@@ -74,7 +74,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<CardActionMessage, String> ApplicationConversionServiceFactoryBean.getCardActionMessageToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.CardActionMessage, java.lang.String>() {
             public String convert(CardActionMessage cardActionMessage) {
-                return new StringBuilder().append(cardActionMessage.getEtatInitial()).append(' ').append(cardActionMessage.getEtatFinal()).append(' ').append(cardActionMessage.getMessage()).toString();
+                return new StringBuilder().append(cardActionMessage.getEtatInitial()).append(' ').append(cardActionMessage.getEtatFinal()).append(' ').append(cardActionMessage.getMessage()).append(' ').append(cardActionMessage.getMailTo()).toString();
             }
         };
     }

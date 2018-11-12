@@ -36,6 +36,14 @@ privileged aspect User_Roo_JavaBean {
         this.crous = crous;
     }
     
+    public String User.getCrousError() {
+        return this.crousError;
+    }
+    
+    public void User.setCrousError(String crousError) {
+        this.crousError = crousError;
+    }
+    
     public Boolean User.getEuropeanStudentCard() {
         return this.europeanStudentCard;
     }

@@ -58,4 +58,12 @@ privileged aspect CrousErrorLog_Roo_JavaBean {
         this.date = date;
     }
     
+    public Boolean CrousErrorLog.getBlocking() {
+        return this.blocking;
+    }
+    
+    public void CrousErrorLog.setBlocking(Boolean blocking) {
+        this.blocking = blocking;
+    }
+    
 }

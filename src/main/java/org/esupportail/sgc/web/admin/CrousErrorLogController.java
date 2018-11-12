@@ -14,6 +14,7 @@ import org.esupportail.sgc.services.crous.CrousErrorLog;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.PatchIdentifier;
 import org.esupportail.sgc.services.crous.RightHolder;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,9 @@ public class CrousErrorLogController {
 	@Resource
 	AppliConfigService appliConfigService;
 	
+	@Resource
+	private UserInfoService userInfoService;
+	
 	@ModelAttribute("help")
 	public String getHelp() {
 		return appliConfigService.getHelpAdmin();
@@ -69,15 +73,11 @@ public class CrousErrorLogController {
     		size = sizeInSession != null ? (Integer)sizeInSession : 10;
     		page = 1;
     	}
-    	if (page != null || size != null) {
-            int sizeNo = size == null ? 10 : size.intValue();
-            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findCrousErrorLogEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) CrousErrorLog.countCrousErrorLogs() / sizeNo;
-            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
-        } else {
-            uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findAllCrousErrorLogs(sortFieldName, sortOrder));
-        }
+        int sizeNo = size == null ? 10 : size.intValue();
+        final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+        uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findCrousErrorLogEntries(firstResult, sizeNo, sortFieldName, sortOrder));
+        float nrOfPages = (float) CrousErrorLog.countCrousErrorLogs() / sizeNo;
+        uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         return "admin/crouserrorlogs/list";
     }
     
@@ -93,7 +93,7 @@ public class CrousErrorLogController {
         } catch(CrousAccountForbiddenException ex) {
 			uiModel.addAttribute("crousEppnRightHolderException", ex.getMessage());
         }
-        RightHolder esupSgcRightHolder =  apiCrousService.computeEsupSgcRightHolder(crousErrorLog.getUserEppn());
+        RightHolder esupSgcRightHolder = computeEsupSgcRightHolderWithSynchronizedInfos(crousErrorLog.getUserEppn());
         uiModel.addAttribute("esupSgcRightHolder", esupSgcRightHolder);
         try {
         	RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail());
@@ -104,6 +104,16 @@ public class CrousErrorLogController {
 
         return "admin/crouserrorlogs/show";
     }
+
+	protected RightHolder computeEsupSgcRightHolderWithSynchronizedInfos(String eppn) {
+		User user = User.findUser(eppn);
+        User dummyUser = new User();
+		dummyUser.setEppn(user.getEppn());
+		dummyUser.setCrous(user.getCrous());
+        userInfoService.setAdditionalsInfo(dummyUser, null);
+        RightHolder esupSgcRightHolder =  apiCrousService.computeEsupSgcRightHolder(dummyUser);
+		return esupSgcRightHolder;
+	}
 
     
     @RequestMapping(value = "/{id}/patchIdentifier", produces = "text/html", method = RequestMethod.POST)

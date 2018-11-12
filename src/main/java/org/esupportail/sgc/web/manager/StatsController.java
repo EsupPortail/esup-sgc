@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import eu.bitwalker.useragentutils.UserAgent;
 import flexjson.JSONSerializer;
 
 
@@ -76,7 +78,7 @@ public class StatsController {
 	}  
 	
 	@RequestMapping
-	public String index(HttpServletRequest httpServletRequest, Model uiModel, @RequestParam(value = "type", required = false) String type) {
+	public String index(HttpServletRequest httpServletRequest, Model uiModel, @RequestParam(value = "type", required = false) String type, @RequestHeader("User-Agent") String userAgent) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		
@@ -108,7 +110,9 @@ public class StatsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
 		uiModel.addAttribute("prefs",jsonStats);
+		uiModel.addAttribute("userAgent", userAgentUtils.getOperatingSystem().getDeviceType());
 		uiModel.addAttribute("prefsRm",jsonStatsRm);
 		uiModel.addAttribute("prefsRmList",prefsStatsRm);
 		uiModel.addAttribute("annees",statsService.getAnneeUnivs());
@@ -125,11 +129,11 @@ public class StatsController {
 	
 	@RequestMapping(value="json", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody 
-	public String getStats( @RequestParam(value="typeInd")  String typeInd, @RequestParam(value="type") String type, @RequestParam(value="anneeUniv") String anneeUniv) {
+	public String getStats( @RequestParam(value="typeInd")  String typeInd, @RequestParam(value="type") String type) {
 		String flexJsonString = "Aucune statistique à récupérer";
 		try {
 			JSONSerializer serializer = new JSONSerializer();
-			flexJsonString = serializer.deepSerialize(statsService.getStats(typeInd, type, anneeUniv));
+			flexJsonString = serializer.deepSerialize(statsService.getStats(typeInd, type));
 			
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les statistiques " + type , e);

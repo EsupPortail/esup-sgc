@@ -3,9 +3,9 @@
              xmlns:beans="http://www.springframework.org/schema/beans" 
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
              xmlns:util="http://www.springframework.org/schema/util"
-             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-             					 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
-                                 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+             					 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                                 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
     
     <!-- HTTP security configurations -->
     <http disable-url-rewriting="true" use-expressions="true" entry-point-ref="http403EntryPoint">
@@ -30,6 +30,7 @@
 		<custom-filter ref="concurrencyFilter" position="CONCURRENT_SESSION_FILTER" />
 		<logout logout-success-url="/" />
 		<expression-handler ref="sgcWebSecurityExpressionHandler"/>
+                <csrf disabled="true"/>
     </http>
 
     <beans:bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
@@ -78,10 +79,11 @@
 	</beans:bean>
 
 	<beans:bean id="switchUserProcessingFilter"
-		class="org.springframework.security.web.authentication.switchuser.SwitchUserFilter">
+		    class="org.springframework.security.web.authentication.switchuser.SwitchUserFilter">
+		<beans:property name="usernameParameter" value="j_username"/>            
 		<beans:property name="userDetailsService" ref="databaseUserDetailsService" />
 		<beans:property name="switchUserUrl" value="/j_spring_security_switch_user" />
-		<beans:property name="exitUserUrl" value="/j_spring_security_exit_user" />
+		<beans:property name="exitUserUrl" value="/j_spring_security_logout" />
 		<beans:property name="targetUrl" value="/" />
 	</beans:bean>
 	

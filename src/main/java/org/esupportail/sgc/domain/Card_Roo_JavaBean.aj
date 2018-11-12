@@ -326,4 +326,12 @@ privileged aspect Card_Roo_JavaBean {
         this.templateCard = templateCard;
     }
     
+    public String Card.getCrousError() {
+        return this.crousError;
+    }
+    
+    public void Card.setCrousError(String crousError) {
+        this.crousError = crousError;
+    }
+    
 }

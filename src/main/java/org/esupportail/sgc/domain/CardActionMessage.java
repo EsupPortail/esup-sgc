@@ -45,23 +45,22 @@ public class CardActionMessage {
     @Column
     private boolean defaut;
     
+    @Column(columnDefinition="TEXT")
+    private String mailTo;
+    
     @Column
     @ElementCollection(targetClass=String.class)
     private Set<String> userTypes = new HashSet<String>();
+    
+    public static List<CardActionMessage> findAllCardActionMessagesAutoWithMailToEmptyOrNull() {
+        return entityManager().createQuery("SELECT o FROM CardActionMessage o WHERE auto = true and (o.mailTo IS NULL or o.mailTo = '')", CardActionMessage.class).getResultList();
+    }
 
-    public static List<CardActionMessage> findCardActionMessagesByEtatFinalAndUserType(Etat etatFinal, String userType) {
-        if (etatFinal == null || userType == null) {
+
+    public static List<CardActionMessage> findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(Boolean auto, Etat etatInitial, Etat etatFinal, String userType, Boolean mailEmptyOrNull) {
+    	if (etatFinal == null || userType == null) {
         	return new ArrayList<CardActionMessage>();
         }
-        EntityManager em = CardActionMessage.entityManager();
-        TypedQuery<CardActionMessage> q = em.createQuery("SELECT o FROM CardActionMessage AS o WHERE o.etatFinal = :etatFinal and :userType MEMBER OF o.userTypes", CardActionMessage.class);
-        q.setParameter("etatFinal", etatFinal);
-        q.setParameter("userType", userType);
-        return q.getResultList();
-    }
-    
-    public static TypedQuery<CardActionMessage> findCardActionMessagesByEtatInitialAndEtatFinalAndUserType(Etat etatInitial, Etat etatFinal, String userType) {
-    	if(userType == null) throw new IllegalArgumentException("The userType can't ben null");
         EntityManager em = CardActionMessage.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<CardActionMessage> query = criteriaBuilder.createQuery(CardActionMessage.class);
@@ -75,17 +74,27 @@ public class CardActionMessage {
         	orPredicates.add(criteriaBuilder.equal(c.get("etatInitial"), etatInitial));
             predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
         }
-        if (etatFinal != null) {
-        	predicates.add(criteriaBuilder.equal(c.get("etatFinal"), etatFinal));
+        if(auto != null) {
+        	predicates.add(criteriaBuilder.equal(c.get("auto"), auto));
+        }
+        predicates.add(criteriaBuilder.equal(c.get("etatFinal"), etatFinal));       
+        predicates.add(criteriaBuilder.isMember(userType, c.get("userTypes")));
+        
+        if(mailEmptyOrNull) {
+	        List<Predicate> orPredicates = new ArrayList<Predicate>();
+	    	orPredicates.add(criteriaBuilder.isNull(c.get("mailTo")));
+	    	orPredicates.add(criteriaBuilder.equal(c.get("mailTo"), ""));
+	        predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
+        } else {
+	        predicates.add(criteriaBuilder.notEqual(c.get("mailTo"), ""));
+	    	predicates.add(criteriaBuilder.isNotNull(c.get("mailTo")));
         }
         
-        predicates.add(criteriaBuilder.isMember(userType, c.get("userTypes")));
-        		
         orders.add(criteriaBuilder.desc(c.get("id")));
         query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
         query.orderBy(orders);
         query.select(c);
-        return em.createQuery(query);
+        return em.createQuery(query).getResultList();
     }
     
 }

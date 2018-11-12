@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 
 import javax.annotation.Resource;
 
@@ -59,23 +58,28 @@ public class CrousPatchIdentifierService {
 	public synchronized void patchIdentifiers() {
 		inWorking = true;
 		for(CrousPatchIdentifier crousPatchIdentifier : CrousPatchIdentifier.findCrousPatchIdentifiersByPatchSuccessNotEquals(true).getResultList()) {
-			try {
-				log.info("appel du crous patchIdentifier : " + crousPatchIdentifier);
-				PatchIdentifier patchIdentifier = new PatchIdentifier();
-				patchIdentifier.setCurrentIdentifier(crousPatchIdentifier.getOldId());
-				patchIdentifier.setNewIdentifier(crousPatchIdentifier.getEppnNewId());
-				patchIdentifier.setEmail(crousPatchIdentifier.getMail());
-				crousService.patchIdentifier(patchIdentifier);
-				crousPatchIdentifier.setPatchSuccess(true);
-				crousPatchIdentifier.merge();
-				log.info("crous patchIdentifier " + crousPatchIdentifier + " ok");
-			} catch(Exception e) {
-				crousPatchIdentifier.setPatchSuccess(false);
-				crousPatchIdentifier.merge();
-				log.warn("Error patchIdentifier : " + crousPatchIdentifier + " - " + e.getMessage());
-			}
+			patchIdentifier(crousPatchIdentifier);
 		}	
 		inWorking = false;
+	}
+
+
+	public void patchIdentifier(CrousPatchIdentifier crousPatchIdentifier) {
+		try {
+			log.info("appel du crous patchIdentifier : " + crousPatchIdentifier);
+			PatchIdentifier patchIdentifier = new PatchIdentifier();
+			patchIdentifier.setCurrentIdentifier(crousPatchIdentifier.getOldId());
+			patchIdentifier.setNewIdentifier(crousPatchIdentifier.getEppnNewId());
+			patchIdentifier.setEmail(crousPatchIdentifier.getMail());
+			crousService.patchIdentifier(patchIdentifier);
+			crousPatchIdentifier.setPatchSuccess(true);
+			crousPatchIdentifier.merge();
+			log.info("crous patchIdentifier " + crousPatchIdentifier + " ok");
+		} catch(Exception e) {
+			crousPatchIdentifier.setPatchSuccess(false);
+			crousPatchIdentifier.merge();
+			log.warn("Error patchIdentifier : " + crousPatchIdentifier + " - " + e.getMessage());
+		}
 	}
 }
 

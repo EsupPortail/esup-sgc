@@ -96,14 +96,12 @@ public class StatsService {
     }
     
     @SuppressWarnings("serial")
-	public  LinkedHashMap<String,Object> getStats(String typeInd, String typeStats, String anneeUniv) throws ParseException {
+	public  LinkedHashMap<String,Object> getStats(String typeInd, String typeStats) throws ParseException {
 			
 		LinkedHashMap<String, Object> results = new LinkedHashMap<String, Object>() {
 			   
 			   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			   LinkedHashMap<String,String>  anneeUnivs = getAnneeUnivs();
-			   Date date = formatter.parse(anneeUnivs.get(anneeUniv));
-			   Date dateFin = getDateFinAnneeUniv(anneeUniv);
 	        {
 	        	if("cardsByYearEtat".equals(typeStats)){
 	        		put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), 3));
@@ -132,18 +130,18 @@ public class StatsService {
 	        	}else if("os".equals(typeStats)){
 	        		put("os",mapField(Card.countOsStats(typeInd), 2));
 	        	}else if("nbRejets".equals(typeStats)){
-	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd, date, dateFin), 2));
+	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd), 2));
 	        	}else if("notDelivered".equals(typeStats)){
-	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(date, dateFin, mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), 2));
+	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), 2));
 	        	}else if("deliveryByAdress".equals(typeStats)){
-	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress(date, dateFin).getResultList(),2));
+	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress().getResultList(),2));
 	        	}else if("userDeliveries".equals(typeStats)){
 	        		put("userDeliveries",mapField(Log.countUserDeliveries(),2));
 	        	}else if("tarifsCrousBars".equals(typeStats)){
 	        		put("tarifsCrousBars",mapField(User.countTarifCrousByType(),3));
 	        	}else if("cardsByMonth".equals(typeStats)){
-	        		put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd, date, dateFin), 2));
-	        		put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd, date, dateFin), 2));
+	        		put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd), 2));
+	        		put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd), 2));
 	        	}else if("nbRejetsByMonth".equals(typeStats)){
 	        		put("nbRejetsByMonth",mapField(Card.countNbRejetsByMonth(typeInd), 2));
 	        	}else if("requestFree".equals(typeStats)){
@@ -156,6 +154,8 @@ public class StatsService {
 	        		put("nbRoles",mapField(User.countNbRoles(),2));
 	        	}else if("pendingCards".equals(typeStats)){
 	        		put("pendingCards",mapField(User.countNbPendingCards(typeInd), 2));
+	        	}else if("dueDate".equals(typeStats)){
+	        		put("dueDate",mapField(Card.countNbRejetsByMonth(typeInd), 2));
 	        	}
 	        }
 	    };

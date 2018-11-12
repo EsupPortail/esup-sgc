@@ -49,6 +49,14 @@ privileged aspect CardActionMessage_Roo_JavaBean {
         this.defaut = defaut;
     }
     
+    public String CardActionMessage.getMailTo() {
+        return this.mailTo;
+    }
+    
+    public void CardActionMessage.setMailTo(String mailTo) {
+        this.mailTo = mailTo;
+    }
+    
     public Set<String> CardActionMessage.getUserTypes() {
         return this.userTypes;
     }

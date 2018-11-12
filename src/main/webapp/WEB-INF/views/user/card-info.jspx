@@ -9,8 +9,11 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
   <spring:url value="/user/card-request-form" var="renewalUrl"/>
   <spring:url value="/user/card-payment" var="PaymentUrl"/>
   <spring:url value="/user/forcedFreeRenewal" var="forcedFreeRenewalUrl"/>
+  <spring:url value="/resources/images/loader.gif" var="loader_url" />
+	<script type="text/javascript">
+		var loader_url = '${loader_url}';
+	</script>
   <util:panel id="title" title="${title}">
-
 	<h2>Informations Carte</h2>
  	<c:if test="${not empty message}">
 		<div class="alert alert-danger">
@@ -198,7 +201,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 															var="deliverUrl" />
 													<form action="${deliverUrl}" method="POST">
 														<button class="btn btn-warning" type="submit">
-															Noter comme livré</button>
+															Noter comme livrée</button>
 													</form>
 													</p>
 												</div>
@@ -255,8 +258,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
                                                              <c:set value="specimenCarte${i.index}" var="cssId"/>
                                                              <c:set value="${fn:replace(currentTemplate.cssStyle, 'specimenCarte', cssId)}" var="css"/>
                                                              <c:set value="${fn:replace(currentTemplate.cssMobileStyle, 'specimenCarte', cssId)}" var="cssMobileStyle"/>
-                                                             <spring:url value="/user/templatePhoto/" var="photoLocalPrefix"/>
-                                                             <spring:url value="${photoLocalPrefix}masque/${currentTemplate.id}" var="masqueUrl"/>
+                                                             <spring:url value="/user/templatePhoto/masque/${currentTemplate.id}" var="masqueUrl"/>
                                                              <style>
 															@media screen {
 																#${cssId} {
@@ -287,12 +289,12 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
                                                                      <p id="recto5">${card.user.recto5}</p>
                                                                      <p id="recto6">${card.user.recto6}</p>
                                                                      <p id="recto7">${card.user.recto7}</p>
-                                                                     <spring:url value="${photoLocalPrefix}/qrCode/${currentTemplate.id}" var="QRCodeUrl"/>
+                                                                     <spring:url value="/user/templatePhoto/qrCode/${currentTemplate.id}" var="QRCodeUrl"/>
                                                                      <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
                                                                  </div>
                                                                  <div id="right">
                                                                      <spring:url value="/user/photo/${card.id}" var="photoUrl"/>
-                                                                     <spring:url value="${photoLocalPrefix}logo/${currentTemplate.id}" var="logoUrl"/>
+                                                                     <spring:url value="/user/templatePhoto/logo/${currentTemplate.id}" var="logoUrl"/>
                                                                      <img id="photo" src="${photoUrl}"/>
                                                                      <img id="logo-ur" src="${logoUrl}"/>
                                                                  </div>
@@ -315,6 +317,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 												<dd>${card.commentaire}</dd>
 											</c:if>
 											<c:if test="${not card.external}">
+
 												<c:if test="${card.etat eq 'ENABLED'}">
 													<dt>
 														<form action="${disableUrl}" method="post">
@@ -325,7 +328,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 												</c:if>
 												<c:if test="${card.etat eq 'DISABLED'}">
 													<dt>
-														<form action="${enableUrl}" method="post">
+														<form action="${enableUrl}" method="post" id="enableForm" class="edActionForm">
 															<input type="hidden" value="${card.id}" name="id" />
 															<input type="submit" class="btn btn-danger" value="Réactiver" onclick="return confirm('Confirmez la réactivation');"/>
 														</form>

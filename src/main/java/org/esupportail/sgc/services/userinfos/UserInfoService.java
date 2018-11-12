@@ -21,7 +21,7 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.User.CnousReferenceStatut;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.ac.AccessControlService;
-import org.esupportail.sgc.services.crous.AuthApiCrousService;
+import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.EsistCrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
@@ -55,7 +55,7 @@ public class UserInfoService {
 	EsistCrousService esistCrousService;
 	
 	@Resource
-	AuthApiCrousService authApiCrousService;
+	CrousService crousService;
 
 	@Resource
 	DateUtils dateUtils;
@@ -264,7 +264,7 @@ public class UserInfoService {
 			// hack crous ~cnrs : idCompanyRate en 7999 -> idRate final/vrai vient en fait du crous 
 			if(Long.valueOf(7999).equals(user.getIdCompagnyRate())) {
 				try {
-					RightHolder rightHolder = authApiCrousService.getRightHolder(user.getEppn());
+					RightHolder rightHolder = crousService.getRightHolder(user.getEppn());
 					if(rightHolder == null) {
 						log.debug("rightHolder on crous is null for "  + user.getEppn());
 					} else {
