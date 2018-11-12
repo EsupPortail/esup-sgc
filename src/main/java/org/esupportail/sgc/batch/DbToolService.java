@@ -31,7 +31,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.0.x";
+	final static String currentEsupSgcVersion = "1.1.x";
 		
 	@Resource
 	DataSource dataSource;
