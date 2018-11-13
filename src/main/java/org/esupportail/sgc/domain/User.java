@@ -34,6 +34,7 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @RooJavaBean
@@ -76,6 +77,7 @@ public class User {
 	
 	private String firstname;
 	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
 	private Date birthday;
 	
 	private String institute;
@@ -92,6 +94,7 @@ public class User {
 	
 	private Long indice = Long.valueOf(0);
 	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
 	private Date dueDate;
 	
 	private Long idCompagnyRate;
@@ -176,6 +179,16 @@ public class User {
 		}
 		return false;
 	}
+	
+	public Card getEnabledCard() {
+		for(Card card : cards) {
+			if(card.isEnabled()) {
+				return card;
+			}
+		}
+		return null;
+	}
+	
 
 	public Set<String> getReachableRoles() {
 		return SgcRoleHierarchy.getReachableRoles(this.getRoles());

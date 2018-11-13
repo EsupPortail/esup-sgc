@@ -40,6 +40,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @RooJavaBean
 @RooToString
@@ -104,6 +105,7 @@ public class Card {
 
     @Column
     @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date dateEtat = new Date();
 
     @Column(columnDefinition = "TEXT")
