@@ -2,7 +2,7 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
 	<jsp:output omit-xml-declaration="yes" />
 	<spring:url value="/manager?index=first" var="listeUrl"/>
-	<spring:url value="/manager/photo" var="photoPrefixUrl"/>
+	<spring:url value="/manager/photo/" var="photoPrefixUrl"/>
 	<spring:url value="/manager/updatePhotoAjax" var="updatePhototUrl"/>
 	<spring:url value="/manager/actionAjax/" var="actionPrefixUrl"/>
 	<spring:url value="/manager/multiUpdate/" var="multiUpdateUrl"/>
@@ -23,7 +23,7 @@
 				<div class="col-lg-2 col-md-2 col-sm-3 col-xs-4">
 					<div class="boxes">
 						<div class="thumbnail">
-							<a href="#" id="${card.id}" class="photoNail"><img src="${photoPrefixUrl}/${card.id}" width="150"
+							<a href="#" id="${card.id}" class="photoNail"><img src="${photoPrefixUrl}${card.id}" width="150"
 								height="188"  /></a>
 							<div class="caption">
 								<p><strong>${card.userAccount.firstname} ${card.userAccount.name}</strong></p>
