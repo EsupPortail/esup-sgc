@@ -2,7 +2,7 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
 	<jsp:output omit-xml-declaration="yes" />
 	<spring:url value="/manager?index=first" var="listeUrl"/>
-	<spring:url value="/manager/photo/" var="photoPrefixUrl"/>
+	<spring:url value="/manager/photo" var="photoPrefixUrl"/>
 	<spring:url value="/manager/updatePhotoAjax" var="updatePhototUrl"/>
 	<spring:url value="/manager/actionAjax/" var="actionPrefixUrl"/>
 	<spring:url value="/manager/multiUpdate/" var="multiUpdateUrl"/>
