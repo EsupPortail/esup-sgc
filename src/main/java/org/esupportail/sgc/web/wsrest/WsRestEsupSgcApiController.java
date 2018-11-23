@@ -20,6 +20,8 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.cardid.CardIdsService;
+import org.esupportail.sgc.services.crous.CrousService;
+import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -38,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,6 +85,9 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	
 	@Resource
 	ExternalCardService externalCardService;
+	
+	@Resource
+	CrousService crousService;
 	
 	
 	/**
@@ -249,6 +255,21 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 		String jsonUsers = mapper.writer(filters).writeValueAsString(users);
 		return new ResponseEntity<String>(jsonUsers, HttpStatus.OK);
 	}
+	
+	
+	/**
+	 * Example to use it :
+	 * curl 'https://esup-sgc.univ-ville.fr/wsrest/api/getCrousRightHolder?eppnOrEmail=toto@univ-ville.fr'
+	 */
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value="/getCrousRightHolder", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public RightHolder get(@RequestParam String eppnOrEmail) {
+		return crousService.getRightHolder(eppnOrEmail);
+	}
+	
+	
 }
+
 
 
