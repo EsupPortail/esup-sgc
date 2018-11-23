@@ -249,6 +249,11 @@ public class UserInfoService {
 			} else if("requestFree".equalsIgnoreCase(key)) {
 				Boolean requestFree = "true".equalsIgnoreCase(userInfos.get(key));
 				user.setRequestFree(requestFree);
+			} else if("academicLevel".equalsIgnoreCase(key)) {
+				String academicLevel = userInfos.get("academicLevel");
+				if(academicLevel != null && !academicLevel.isEmpty()) {
+					user.setAcademicLevel(Long.valueOf(academicLevel));
+				}
 			} 
 
 		}

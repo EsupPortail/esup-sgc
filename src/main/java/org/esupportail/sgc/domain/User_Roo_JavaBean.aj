@@ -396,4 +396,12 @@ privileged aspect User_Roo_JavaBean {
         this.hasCardRequestPending = hasCardRequestPending;
     }
     
+    public Long User.getAcademicLevel() {
+        return this.academicLevel;
+    }
+    
+    public void User.setAcademicLevel(Long academicLevel) {
+        this.academicLevel = academicLevel;
+    }
+    
 }

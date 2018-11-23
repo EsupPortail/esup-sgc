@@ -111,8 +111,8 @@
 								<spring-form:select path="searchBean.freeField['${status.index}']" cssClass="freeSelect"  data-width="fit"  data-dropup-auto="false" data-live-search="true"  id="fields${status.index}">
 									<spring-form:option value="" data-placeholder="true"></spring-form:option>
 									<c:forEach items="${freeFields}" var="field">
-										<spring-form:option value="${field}">
-											${field}
+										<spring-form:option value="${field.key}">
+											${field.value}
 										</spring-form:option>
 									</c:forEach>
 								</spring-form:select>
@@ -165,11 +165,13 @@
 									value="${searchBean.nbRejets ne null ? searchBean.nbRejets : ''}" />
 								<input type="hidden" id="flagAdresse" name="flagAdresse"
 									value="${searchBean.flagAdresse ne null ? searchBean.flagAdresse : ''}" />
+								<input type="hidden" id="searchText" name="searchText"
+									value="${searchBean.searchText ne null ? searchBean.searchText : ''}" />	
 								<hr />
 								<c:forEach items="${csvFiltres}" var="filtre" varStatus="status">
 									<div class="checkbox">
 										<label> <input type="checkbox" id="fields_${filtre}" class="caseField" 
-											name="fields" value="userAccount.${filtre}" checked="checked" /><strong>${filtre}</strong>
+											name="fields" value="${filtre}" checked="checked" /><strong>${filtre}</strong>
 										</label>
 									</div>
 									<c:set var="index" value="${status.index}" />

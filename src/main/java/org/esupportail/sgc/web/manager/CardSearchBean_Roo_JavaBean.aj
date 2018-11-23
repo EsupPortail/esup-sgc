@@ -4,6 +4,8 @@
 package org.esupportail.sgc.web.manager;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.SortedMap;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.FlagAdresse;
 import org.esupportail.sgc.domain.TemplateCard;
@@ -99,11 +101,11 @@ privileged aspect CardSearchBean_Roo_JavaBean {
         this.freeField = freeField;
     }
     
-    public HashMap<Integer, String[]> CardSearchBean.getFreeFieldValue() {
+    public SortedMap<Integer, List<String>> CardSearchBean.getFreeFieldValue() {
         return this.freeFieldValue;
     }
     
-    public void CardSearchBean.setFreeFieldValue(HashMap<Integer, String[]> freeFieldValue) {
+    public void CardSearchBean.setFreeFieldValue(SortedMap<Integer, List<String>> freeFieldValue) {
         this.freeFieldValue = freeFieldValue;
     }
     

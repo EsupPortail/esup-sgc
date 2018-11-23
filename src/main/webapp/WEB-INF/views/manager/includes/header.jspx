@@ -52,6 +52,8 @@
 					</c:forEach>
 				</c:if>	
 			</c:forEach>
+			<input type="hidden" id="searchText" name="searchText"
+				value="${searchBean.searchText ne null ? searchBean.searchText : ''}" />
 			<button type="button" title="Export CSV" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields"><span class="glyphicon glyphicon-save" aria-hidden="true"></span></button>&amp;nbsp
 			<button type="submit" title="bordereau envoi" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
 			</p>

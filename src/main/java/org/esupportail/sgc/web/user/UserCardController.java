@@ -32,6 +32,8 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.UserService;
+import org.esupportail.sgc.services.crous.CrousService;
+import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.paybox.PayBoxForm;
 import org.esupportail.sgc.services.paybox.PayBoxService;
@@ -128,6 +130,12 @@ public class UserCardController {
 	
 	@Resource
 	TemplateCardService templateCardService;
+	
+	@Resource
+	CrousService crousService;
+	
+	@Resource
+	ApiEscrService apiEscrService;
 	
 	@RequestMapping
 	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) throws UnsupportedEncodingException {
@@ -465,6 +473,10 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		User user = User.findUser(eppn);
+		Card enabledCard = user.getEnabledCard();
+		if(enabledCard != null) {
+			crousService.validate(enabledCard);
+		}
 		user.setCrous(true);
 		user.merge();
 		logService.log(user.getCards().get(0).getId(), ACTION.ENABLECROUS, RETCODE.SUCCESS, "", eppn, null);
@@ -477,6 +489,10 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		User user = User.findUser(eppn);
+		Card enabledCard = user.getEnabledCard();
+		if(enabledCard != null) {
+			apiEscrService.validate(enabledCard);
+		}
 		user.setEuropeanStudentCard(true);
 		user.merge();
 		logService.log(user.getCards().get(0).getId(), ACTION.ENABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);

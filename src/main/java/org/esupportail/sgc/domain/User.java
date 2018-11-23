@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @RooJavaBean
 @RooToString(excludeFields={"cards"})
 @RooDbManaged(automaticallyDelete = true)
-@RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous" })
+@RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous", "findUsersByEuropeanStudentCard" })
 @JsonFilter("userFilter")
 public class User {
 	
@@ -52,6 +52,8 @@ public class User {
 	public static enum CnousReferenceStatut {
 		psg, etd, prs, hbg, fct, fpa, stg;
 	};
+	
+	public final static List<String> BOOLEAN_FIELDS = Arrays.asList(new String[] {"crous", "europeanStudentCard", "difPhoto", "editable", "requestFree", "hasCardRequestPending"});
 
 	@JsonInclude
     @Column(unique=true)
@@ -166,6 +168,8 @@ public class User {
 	
 	@Column
 	private Boolean hasCardRequestPending = false;
+	
+	private Long academicLevel;
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();
@@ -463,6 +467,11 @@ public class User {
 				{log.trace("blockUserMsg <>"); return false;}
 		} else if (!blockUserMsg.equals(other.blockUserMsg))
 			{log.trace("blockUserMsg <>"); return false;}
+		if (academicLevel == null) {
+			if (other.academicLevel != null)
+				{log.trace("academicLevel <>"); return false;}
+		} else if (!academicLevel.equals(other.academicLevel))
+			{log.trace("academicLevel <>"); return false;}
 		return true;
 	}
 
@@ -622,7 +631,7 @@ public class User {
 	}
     
 	public static List<String> getDistinctFreeField(String field) {
-		EntityManager em = Card.entityManager();
+		EntityManager em = User.entityManager();
 		// FormService.getField1List uses its preventing sql injection
 		String req = "SELECT DISTINCT CAST(" + field + " AS VARCHAR) FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
 		Query q = em.createNativeQuery(req);

@@ -1,6 +1,8 @@
 package org.esupportail.sgc.web.manager;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.SortedMap;
 
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.FlagAdresse;
@@ -32,7 +34,7 @@ public class CardSearchBean {
 	
 	HashMap<Integer, String> freeField;
 	
-	HashMap<Integer, String[]> freeFieldValue;
+	SortedMap<Integer, List<String>> freeFieldValue;
 	
 	String hasRequestCard;
 	

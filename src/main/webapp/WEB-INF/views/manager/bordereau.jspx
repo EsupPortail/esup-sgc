@@ -10,28 +10,36 @@
 			<span class="glyphicon glyphicon-print"></span>
 		</a>            
     </h2>
-	<table class="table table-bordered">
-	  <thead>
-	  	<tr><th>#</th>
-	  	<c:if test="${displayPhoto}"><th>Photo</th></c:if>
-	  	<th>N° Etu/Pers</th><th>Nom</th><th>Prénom</th><th>INE / --</th></tr>
-	  </thead>
-	  <tbody>
-		  <c:set var="lastAdress" value="none" />
-		  <c:set var="lastCcount" value="0" />
-		  <c:forEach items="${cards}" var="card" varStatus="status">
-		  	<c:if test="${card.userAccount.address ne lastAdress}">
-		  		<tr class="info"><td colspan="6">${card.userAccount.address}</td></tr>
-		  		<c:set var="lastCcount" value="0" />
-		  	</c:if>
-		  	<c:set var="lastCcount" value="${lastCcount+1}" />
-		  	<c:if test="${card.userAccount.address eq lastAdress}">
-		  	</c:if>
-			<tr><td>${lastCcount}</td>
-			<c:if test="${displayPhoto}"><td><img src="${photoUrl}/${card.id}" width="60" height="75"/></td></c:if>
-			<td>${card.userAccount.supannEmpId}${card.userAccount.supannEtuId}</td><td>${card.userAccount.name}</td><td>${card.userAccount.firstname}</td><td><c:out value="${not empty card.userAccount.supannCodeINE ? card.userAccount.supannCodeINE: '--'}"/></td></tr>
-			<c:set var="lastAdress" value="${card.userAccount.address}" />
-		  </c:forEach>
-	  </tbody>
-	</table>
+    <c:choose>
+    	<c:when test="${msgbordereau}">
+    		<div class="alert alert-danger"><spring:message code="manager.msg.bordereau"/></div>
+    	</c:when>
+    	<c:otherwise>
+			<table class="table table-bordered">
+			  <thead>
+			  	<tr><th>#</th>
+			  	<c:if test="${displayPhoto}"><th>Photo</th></c:if>
+			  	<th>N° Etu/Pers</th><th>Nom</th><th>Prénom</th><th>INE / --</th></tr>
+			  </thead>
+			  <tbody>
+				  <c:set var="lastAdress" value="none" />
+				  <c:set var="lastCcount" value="0" />
+				  <c:forEach items="${cards}" var="card" varStatus="status">
+				  	<c:if test="${card.userAccount.address ne lastAdress}">
+				  		<tr class="info"><td colspan="6">${card.userAccount.address}</td></tr>
+				  		<c:set var="lastCcount" value="0" />
+				  	</c:if>
+				  	<c:set var="lastCcount" value="${lastCcount+1}" />
+				  	<c:if test="${card.userAccount.address eq lastAdress}">
+				  	</c:if>
+					<tr><td>${lastCcount}</td>
+					<c:if test="${displayPhoto}"><td><img src="${photoUrl}/${card.id}" width="60" height="75"/></td></c:if>
+					<td>${card.userAccount.supannEmpId}${card.userAccount.supannEtuId}</td><td>${card.userAccount.name}</td><td>${card.userAccount.firstname}</td><td><c:out value="${not empty card.userAccount.supannCodeINE ? card.userAccount.supannCodeINE: '--'}"/></td></tr>
+					<c:set var="lastAdress" value="${card.userAccount.address}" />
+				  </c:forEach>
+			  </tbody>
+			</table> 	
+    	</c:otherwise>
+    </c:choose>   
+
 </div>

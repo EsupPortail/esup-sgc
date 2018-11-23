@@ -104,7 +104,7 @@ public class ImportExportService {
 		for(String field : fields){
 			message = messageSource.getMessage("card.csv.".concat(field), null, Locale.ROOT);
 			if("card.csv.".concat(field).equals(message)){
-				message = field.replace("userAccount.", "");
+				message = field.replace("userAccount.", "").replace("card.", "");
 			}
 			fieldsProperties.add(message);
 		}
@@ -118,7 +118,12 @@ public class ImportExportService {
 		CsvDozerBeanWriter beanWriter = null;
 		
 		Writer writer = null;
-		final String[] FIELD_MAPPING =(String[]) fields.toArray(new String[0]);
+		String[] FIELD_MAPPING = new String[fields.size()];
+		int i = 0;
+		for(String field : fields) {
+			FIELD_MAPPING[i] = field.replaceFirst("card.", "");
+			i++;
+		}
 		
 		try{
 			writer = new OutputStreamWriter(outputStream, "UTF8");

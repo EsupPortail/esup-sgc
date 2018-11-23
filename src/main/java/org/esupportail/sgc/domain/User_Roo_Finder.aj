@@ -25,6 +25,14 @@ privileged aspect User_Roo_Finder {
         return ((Long) q.getSingleResult());
     }
     
+    public static Long User.countFindUsersByEuropeanStudentCard(Boolean europeanStudentCard) {
+        if (europeanStudentCard == null) throw new IllegalArgumentException("The europeanStudentCard argument is required");
+        EntityManager em = User.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM User AS o WHERE o.europeanStudentCard = :europeanStudentCard", Long.class);
+        q.setParameter("europeanStudentCard", europeanStudentCard);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<User> User.findUsersByCrous(Boolean crous) {
         if (crous == null) throw new IllegalArgumentException("The crous argument is required");
         EntityManager em = User.entityManager();
@@ -68,6 +76,29 @@ privileged aspect User_Roo_Finder {
         }
         TypedQuery<User> q = em.createQuery(queryBuilder.toString(), User.class);
         q.setParameter("eppn", eppn);
+        return q;
+    }
+    
+    public static TypedQuery<User> User.findUsersByEuropeanStudentCard(Boolean europeanStudentCard) {
+        if (europeanStudentCard == null) throw new IllegalArgumentException("The europeanStudentCard argument is required");
+        EntityManager em = User.entityManager();
+        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o WHERE o.europeanStudentCard = :europeanStudentCard", User.class);
+        q.setParameter("europeanStudentCard", europeanStudentCard);
+        return q;
+    }
+    
+    public static TypedQuery<User> User.findUsersByEuropeanStudentCard(Boolean europeanStudentCard, String sortFieldName, String sortOrder) {
+        if (europeanStudentCard == null) throw new IllegalArgumentException("The europeanStudentCard argument is required");
+        EntityManager em = User.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM User AS o WHERE o.europeanStudentCard = :europeanStudentCard");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<User> q = em.createQuery(queryBuilder.toString(), User.class);
+        q.setParameter("europeanStudentCard", europeanStudentCard);
         return q;
     }
     

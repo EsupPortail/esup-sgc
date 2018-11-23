@@ -120,6 +120,8 @@
                                 <dd>${user.supannEtuId}</dd>
                                 <dt>supannCodeINE</dt>
                                 <dd>${user.supannCodeINE}</dd>
+                                <dt>academicLevel</dt>
+                                <dd>${user.academicLevel}</dd>
                                 <dt>supannEntiteAffectationPrincipale</dt>
                                 <dd>${user.supannEntiteAffectationPrincipale}</dd>
                                 <dt>secondaryId</dt>

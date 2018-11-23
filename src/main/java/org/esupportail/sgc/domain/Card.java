@@ -316,6 +316,14 @@ public class Card {
         return ((Long) q.getSingleResult());
     }
     
+    public static Long countfindCardsByEtatEppnEqualsAndEtatEquals(String etatEppn, Etat etat) {
+        EntityManager em = Card.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.etatEppn = :etatEppn AND o.etat = :etat", Long.class);
+        q.setParameter("etatEppn", etatEppn);
+        q.setParameter("etat", etat);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static Long countfindCardsByEppnEqualsAndEtatNotIn(String eppn, List<Etat> etats) {
         EntityManager em = Card.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.eppn = :eppn AND o.etat NOT IN (:etats)", Long.class);
@@ -435,14 +443,12 @@ public class Card {
     }
     
 	public static String snakeToCamel(String snake){
-		
-		String CamelString = "";
-		CamelString = WordUtils.capitalize(snake, "_".toCharArray()).replace("_", "");
-        char ch[] = CamelString.toCharArray();
+		String camelString = "";
+		camelString = WordUtils.capitalize(snake, "_".toCharArray()).replace("_", "");
+        char ch[] = camelString.toCharArray();
         ch[0] = Character.toLowerCase(ch[0]);
-        CamelString = new String(ch);
-       
-        return CamelString;
+        camelString = new String(ch);     
+        return camelString;
 	}
 
     public static TypedQuery<Card> findCards(CardSearchBean searchBean, String eppn, String sortFieldName, String sortOrder) {
@@ -450,7 +456,7 @@ public class Card {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Card> query = criteriaBuilder.createQuery(Card.class);
         Root<Card> c = query.from(Card.class);
-        final List<Predicate> predicates = new ArrayList<Predicate>();
+        
         final List<Order> orders = new ArrayList<Order>();
         if ("DESC".equalsIgnoreCase(sortOrder)) {
             if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
@@ -469,40 +475,96 @@ public class Card {
                 }
             }
         } else {
-            if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            if(fieldNames4OrderClauseFilter.contains(sortFieldName)) {
                 orders.add(criteriaBuilder.asc(c.get(sortFieldName)));
             } else {
-                if ("nbCards".equals(sortFieldName)) {
+                if("nbCards".equals(sortFieldName)) {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.asc(u.get("nbCards")));
-                } else if ("displayName".equals(sortFieldName)) {
+                } else if("displayName".equals(sortFieldName)) {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.asc(u.get("name")));
                     orders.add(criteriaBuilder.asc(u.get("firstname")));
-                }else if ("address".equals(sortFieldName)) {
+                } else if("address".equals(sortFieldName)) {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.asc(u.get("address")));
                 }
             }
         }
-        if (!searchBean.getType().isEmpty()) {
+ 
+        if (!searchBean.getSearchText().isEmpty()) {
+        	String searchString = computeSearchString(searchBean.getSearchText());
+            Expression<Double> fullTestSearchRanking = getFullTestSearchRanking(criteriaBuilder, searchString);
+            orders.add(criteriaBuilder.desc(fullTestSearchRanking));
+        }
+        orders.add(criteriaBuilder.desc(c.get("dateEtat")));
+        orders.add(criteriaBuilder.desc(c.get("id")));
+        
+        final List<Predicate> predicates = getPredicates4CardSearchBean(searchBean, eppn, criteriaBuilder, c);
+        
+        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+        query.orderBy(orders);
+        query.select(c);
+        return em.createQuery(query);
+    }
+    
+
+    public static long countFindCards(CardSearchBean searchBean, String eppn) {
+        EntityManager em = Card.entityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
+        Root<Card> c = query.from(Card.class);
+        
+        final List<Predicate> predicates = getPredicates4CardSearchBean(searchBean, eppn, criteriaBuilder, c);
+
+        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+        query.select(criteriaBuilder.count(c));
+        return em.createQuery(query).getSingleResult();
+    }
+
+	protected static List<Predicate> getPredicates4CardSearchBean(CardSearchBean searchBean, String eppn,
+			CriteriaBuilder criteriaBuilder, Root<Card> c) {
+		
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		
+		if (!searchBean.getType().isEmpty()) {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("userType").in(searchBean.getType()));
         }
         if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
         	if(!searchBean.getFreeField().values().isEmpty() && !searchBean.getFreeFieldValue().isEmpty()){
 	            Join<Card, User> u = c.join("userAccount");
-	            for(Map.Entry<Integer, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
-	            	List<Predicate> orPredicates = new ArrayList<Predicate>();
-	            	if(entry.getValue().length>0){
+	            for(Map.Entry<Integer, List<String>> entry : searchBean.getFreeFieldValue().entrySet()){
+	            	if(!entry.getValue().isEmpty()){
+		            	List<Predicate> orPredicates = new ArrayList<Predicate>();
 	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
-	            		for(int i=0; i < entry.getValue().length; i++){
-		            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty()){
-		            			orPredicates.add(criteriaBuilder.equal(u.get(camelString), entry.getValue()[i]));
+	            		for(String v : entry.getValue()){
+		            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty() && v!=null){
+		            			if(camelString.startsWith("card.")) {
+		            				if(camelString.equals("card.templateCard")) {
+		            					Join<Card, TemplateCard> tc = c.join("templateCard");
+		            					TemplateCard templateCard = TemplateCard.findTemplateCard(Long.valueOf(v));
+		            					orPredicates.add(criteriaBuilder.equal(tc, templateCard));
+		            				} else {
+		            					orPredicates.add(criteriaBuilder.equal(c.get(camelString.substring("card.".length())), v));
+		            				}
+		            			} else if(camelString.startsWith("userAccount.")) {
+		            				if(User.BOOLEAN_FIELDS.contains(camelString.substring("userAccount.".length()))) {
+		            					if("true".equalsIgnoreCase(v)) {
+		            						orPredicates.add(criteriaBuilder.isTrue(u.get(camelString.substring("userAccount.".length()))));
+		            					} else {
+		            						orPredicates.add(criteriaBuilder.isFalse(u.get(camelString.substring("userAccount.".length()))));
+		            					}
+		            				} else {
+		            					orPredicates.add(criteriaBuilder.equal(u.get(camelString.substring("userAccount.".length())), v));
+		            				}
+		            			} else {
+		            				orPredicates.add(criteriaBuilder.equal(u.get(camelString), v));
+		            			}
 		            		}
 	            		}
+	            		predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
 	            	}
-	            	predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
 	    		}
         	}
         }
@@ -526,9 +588,7 @@ public class Card {
         if (!searchBean.getSearchText().isEmpty()) {
             String searchString = computeSearchString(searchBean.getSearchText());
             Expression<Boolean> fullTestSearchExpression = getFullTestSearchExpression(criteriaBuilder, searchString);
-            Expression<Double> fullTestSearchRanking = getFullTestSearchRanking(criteriaBuilder, searchString);
             predicates.add(criteriaBuilder.isTrue(fullTestSearchExpression));
-            orders.add(criteriaBuilder.desc(fullTestSearchRanking));
         }
         if (searchBean.getOwnOrFreeCard() != null && searchBean.getOwnOrFreeCard()) {
             predicates.add(criteriaBuilder.or(criteriaBuilder.equal(c.get("etatEppn"), eppn), criteriaBuilder.isNull(c.get("etatEppn")), criteriaBuilder.equal(c.get("etatEppn"), "")));
@@ -558,89 +618,10 @@ public class Card {
                 predicates.add(criteriaBuilder.isFalse(hasRequestCardExpr));
             }
         }
-        orders.add(criteriaBuilder.desc(c.get("dateEtat")));
-        orders.add(criteriaBuilder.desc(c.get("id")));
-        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
-        query.orderBy(orders);
-        query.select(c);
-        return em.createQuery(query);
-    }
+        
+        return predicates;
+	}
 
-    public static long countFindCards(CardSearchBean searchBean, String eppn) {
-        EntityManager em = Card.entityManager();
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
-        Root<Card> c = query.from(Card.class);
-        final List<Predicate> predicates = new ArrayList<Predicate>();
-        if (!searchBean.getType().isEmpty()) {
-            Join<Card, User> u = c.join("userAccount");
-            predicates.add(u.get("userType").in(searchBean.getType()));
-        }
-        if (searchBean.getFreeField() != null && searchBean.getFreeFieldValue()!= null) {
-        	if(!searchBean.getFreeField().values().isEmpty() && !searchBean.getFreeFieldValue().isEmpty()){
-	            Join<Card, User> u = c.join("userAccount");
-	            for(Map.Entry<Integer, String[]> entry : searchBean.getFreeFieldValue().entrySet()){
-	            	List<Predicate> orPredicates = new ArrayList<Predicate>();
-	            	if(entry.getValue().length>0){
-	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
-	            		for(int i=0; i < entry.getValue().length; i++){
-		            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty()){
-		            			orPredicates.add(criteriaBuilder.equal(u.get(camelString), entry.getValue()[i]));
-		            		}
-	            		}
-	            	}
-	            	 predicates.add(criteriaBuilder.or(orPredicates.toArray(new Predicate[] {})));
-	    		}
-        	}
-        }
-        if (searchBean.getAddress()!=null && !searchBean.getAddress().isEmpty()) {
-            Join<Card, User> u = c.join("userAccount");
-            predicates.add(u.get("address").in(searchBean.getAddress()));
-        }
-        if (searchBean.getLastTemplateCardPrinted() != null) {
-        	Join<Card, User> u = c.join("userAccount");
-            predicates.add(u.get("lastCardTemplatePrinted").in(searchBean.getLastTemplateCardPrinted()));
-        }
-        if (searchBean.getEtat() != null) {
-            predicates.add(criteriaBuilder.equal(c.get("etat"), searchBean.getEtat()));
-        }
-        if (searchBean.getSearchText() != null && !searchBean.getSearchText().isEmpty()) {
-            String searchString = computeSearchString(searchBean.getSearchText());
-            Expression<Boolean> fullTestSearchExpression = getFullTestSearchExpression(criteriaBuilder, searchString);
-            predicates.add(criteriaBuilder.isTrue(fullTestSearchExpression));
-        }
-        if (searchBean.getOwnOrFreeCard() != null && searchBean.getOwnOrFreeCard()) {
-            predicates.add(criteriaBuilder.or(criteriaBuilder.equal(c.get("etatEppn"), eppn), criteriaBuilder.isNull(c.get("etatEppn")), criteriaBuilder.equal(c.get("etatEppn"), "")));
-        }
-        if (searchBean.getEditable() != null) {
-            Join<Card, User> u = c.join("userAccount");
-            Expression<Boolean> editableExpr = u.get("editable");
-            if ("true".equals(searchBean.getEditable())) {
-                predicates.add(criteriaBuilder.isTrue(editableExpr));
-            } else if ("false".equals(searchBean.getEditable())) {
-                predicates.add(criteriaBuilder.isFalse(editableExpr));
-            }
-        }
-        if (searchBean.getNbCards() != null) {
-            Join<Card, User> u = c.join("userAccount");
-            predicates.add(criteriaBuilder.equal(u.get("nbCards"), searchBean.getNbCards()));
-        }
-        if (searchBean.getNbRejets() != null) {
-            predicates.add(criteriaBuilder.equal(c.get("nbRejets"), searchBean.getNbRejets()));
-        }
-        if (searchBean.getHasRequestCard() != null) {
-        	Join<Card, User> u = c.join("userAccount");
-            Expression<Boolean> hasRequestCardExpr = u.get("hasCardRequestPending");
-            if ("true".equals(searchBean.getHasRequestCard())) {
-                predicates.add(criteriaBuilder.isTrue(hasRequestCardExpr));
-            } else if ("false".equals(searchBean.getHasRequestCard())) {
-                predicates.add(criteriaBuilder.isFalse(hasRequestCardExpr));
-            }
-        }
-        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
-        query.select(criteriaBuilder.count(c));
-        return em.createQuery(query).getSingleResult();
-    }
 
     private static String computeSearchString(String searchString) {
         List<String> searchStrings = Arrays.asList(StringUtils.split(searchString, " "));
@@ -939,10 +920,10 @@ public class Card {
         return q.getResultList();
     }
     
-    public static List<Object> countDueDatesByFate(String userType) {
-        String sql = "SELECT to_char(due_date, 'MM-YYYY') tochar, count(*) FROM card WHERE etat IN ('NEW','REJECTED','RENEW') GROUP BY tochar  ORDER BY to_date(to_char(due_date, 'MM-YYYY'), 'MM-YYYY')";
+    public static List<Object> countDueDatesByDate(String userType) {
+        String sql = "SELECT to_char(user_account.due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account=user_account.id AND etat IN ('NEW','REJECTED','RENEWED') GROUP BY tochar ORDER BY to_date(to_char(user_account.due_date, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
-            sql = "SELECT to_char(due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND etat IN ('NEW','REJECTED','RENEW')' AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(due_date, 'MM-YYYY'), 'MM-YYYY')";
+            sql = "SELECT to_char(user_account.due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND etat IN ('NEW','REJECTED','RENEW')' AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(user_account.due_date, 'MM-YYYY'), 'MM-YYYY')";
         }
         EntityManager em = Card.entityManager();
 
@@ -952,6 +933,15 @@ public class Card {
         }        
 
         return q.getResultList();
+    }
+
+    public static List<String> getDistinctFreeField(String field) {
+    	EntityManager em = Card.entityManager();
+    	// FormService.getField1List uses its preventing sql injection
+    	String req = "SELECT DISTINCT CAST(" + field + " AS VARCHAR) FROM card WHERE " + field  + " IS NOT NULL ORDER BY " + field;
+    	Query q = em.createNativeQuery(req);
+    	List<String> distinctResults = q.getResultList();
+    	return distinctResults;
     }
 
 }

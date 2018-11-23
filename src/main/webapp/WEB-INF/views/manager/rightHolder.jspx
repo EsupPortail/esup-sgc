@@ -27,6 +27,8 @@
 		<dd>${rightHolder.idRate}</dd>
 		<dt>ine</dt>
 		<dd>${rightHolder.ine}</dd>		
+		<dt>rneOrgCode</dt>
+		<dd>${rightHolder.rneOrgCode}</dd>		
 	</dl>
 	
 </div>

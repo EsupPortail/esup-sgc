@@ -308,13 +308,24 @@
 	
 	<bean id="formService" class="org.esupportail.sgc.services.FormService">
             <property name="nbFields" value="3"/>
-		<property name="fieldsList">
-             <list>
-                 <value>verso1</value>
-                 <value>verso2</value>
-                 <value>supann_entite_affectation_principale</value>
-              </list>
-         </property>
+	    <property name="fieldsList">
+                <map>
+                    <entry key="user_account.verso1" value="Verso1"/>
+                    <entry key="user_account.verso2" value="Verso2"/>
+                    <entry key="user_account.supann_entite_affectation_principale" value="Affectation principale"/>
+                    <entry key="user_account.id_compagny_rate" value="Société Crous"/>
+                    <entry key="user_account.id_rate" value="Tarif Crous"/>
+                    <entry key="card.template_card" value="Thème"/>
+                    <entry key="user_account.user_type" value="Type"/>
+                    <entry key="user_account.block_user_msg" value="Message bloquant"/>
+                    <entry key="user_account.academic_level" value="Niveau Académique"/>
+                    <entry key="user_account.institute" value="Etablissement"/>
+                    <entry key="user_account.european_student_card" value="ESCR"/>
+                    <entry key="user_account.crous" value="CROUS"/>
+                    <entry key="user_account.crous_error" value="Erreur crous"/>
+                    <entry key="card.crous_error" value="Erreur crous (carte)"/>
+                </map>
+            </property>
 	</bean>
 	
 </beans>

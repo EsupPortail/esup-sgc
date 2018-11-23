@@ -28,6 +28,8 @@ public class EscrStudent {
 	Date expiryDate;
 	
 	String name;
+	
+	Long academicLevel;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
 	public Date getExpiryDate() {

@@ -37,6 +37,8 @@ public class RightHolder {
 	Date birthDate;
 	
 	String ine;
+	
+	String rneOrgCode;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
 	public Date getDueDate() {
@@ -98,12 +100,16 @@ public class RightHolder {
 				{log.trace("ine <>"); return false;}
 		} else if (!ine.equals(other.ine))
 			{log.trace("ine <>"); return false;}
+		if (rneOrgCode == null) {
+			if (other.rneOrgCode != null)
+				{log.trace("rneOrgCode <>"); return false;}
+		} else if (!rneOrgCode.equals(other.rneOrgCode))
+			{log.trace("rneOrgCode <>"); return false;}
 		return true;
 	}
 	
 
 	/**** optional part ****/
-	
 	
 	/*
 	String rneOrgCode;

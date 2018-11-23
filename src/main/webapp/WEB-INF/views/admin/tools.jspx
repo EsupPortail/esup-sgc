@@ -103,5 +103,25 @@
 		</div>
 	</div>
 	
+	
+	<h2>ESCR</h2>
+
+	<div class="row">
+		<div class="col-lg-1">&amp;nbsp;</div>
+		<div class="col-lg-10">
+			<spring:url value="/admin/tools/forceSendEscrApiCrous" var="forceSendEscrApiCrousUrl" />
+			<form action="${forceSendEscrApiCrousUrl}" class="form-horizontal" method="POST">
+				<div class="form-group">
+					<button class="btn btn-danger" type="submit" name="action" value="forceSendEscrApiCrousUrl" onclick="return confirm('Cette action va tenter de valider au niveau de l\'ESCR les cartes actives des utilisateurs ayant demandés cette option mais qui n\'ont pas été notés par esup-sgc comme étant valides côté ESCR.');">Lancer le renvoi dans l'API ESCR des comptes/cartes activées avec l'option ESCR de demandée</button>
+				</div>
+			</form>
+		</div>
+		<c:if test="${not empty forceSendEscrApiCrousResult}">
+			<div class="well aler alert-danger" >
+				${forceSendEscrApiCrousResult}
+			</div>
+		</c:if>
+	</div>
 
 </div>
+

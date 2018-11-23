@@ -14,7 +14,7 @@ privileged aspect EscrStudent_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager EscrStudent.entityManager;
     
-    public static final List<String> EscrStudent.fieldNames4OrderClauseFilter = java.util.Arrays.asList("eppn", "europeanStudentIdentifier", "picInstitutionCode", "emailAddress", "expiryDate", "name");
+    public static final List<String> EscrStudent.fieldNames4OrderClauseFilter = java.util.Arrays.asList("eppn", "europeanStudentIdentifier", "picInstitutionCode", "emailAddress", "expiryDate", "name", "academicLevel");
     
     public static final EntityManager EscrStudent.entityManager() {
         EntityManager em = new EscrStudent().entityManager;

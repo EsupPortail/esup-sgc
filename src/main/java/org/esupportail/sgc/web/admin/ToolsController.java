@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousPatchIdentifier;
+import org.esupportail.sgc.domain.EscrCard;
 import org.esupportail.sgc.domain.EscrStudent;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
@@ -16,7 +17,7 @@ import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.crous.CrousPatchIdentifierService;
 import org.esupportail.sgc.services.crous.CrousService;
-import org.esupportail.sgc.services.crous.PatchIdentifier;
+import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,9 @@ public class ToolsController {
 	
 	@Resource
 	CrousPatchIdentifierService crousPatchIdentifierService;
+	
+	@Resource
+	ApiEscrService apiEscrService;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
@@ -136,6 +140,26 @@ public class ToolsController {
 		log.info("Users with crous disabled but existing in api crous : " + usersCrousDisabledExistingInApiCrous);
 		uiModel.addAttribute("usersCrousDisabledExistingInApiCrous", usersCrousDisabledExistingInApiCrous);
 		return "admin/tools";
+	}
+	
+	
+	@RequestMapping(value = "/forceSendEscrApiCrous", method = RequestMethod.POST, produces = "text/html")
+	public String forceSendEscrApiCrous(Model uiModel) {
+		log.info("forceSendEscrApiCrous called");
+		int nbCardSendedInEscr = 0;
+		for(User user : User.findUsersByEuropeanStudentCard(true).getResultList()) {
+			try {
+				if(apiEscrService.validateESCenableCard(user.getEppn())) {
+					nbCardSendedInEscr++;
+				}		
+			} catch(Exception e) {
+				log.warn(String.format("Exception on forceSendEscrApiCrous for %s", user.getEppn()), e);
+			}	
+		}
+		String infoMsg = String.format("%s cartes envoyées dans l'API ESCR", nbCardSendedInEscr);
+		uiModel.addAttribute("forceSendEscrApiCrousResult", infoMsg);
+		log.info(infoMsg);
+		return "redirect:/admin/tools";
 	}
 	
 }

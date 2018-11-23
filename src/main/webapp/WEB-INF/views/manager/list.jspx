@@ -24,6 +24,10 @@
 	        </a>   
         </sec:authorize>   
     </h2>
+    <c:if test="${cardsInprintCount > 0}">
+    	<spring:url value="/manager?etat=IN_PRINT&amp;ownOrFreeCard=true" var="cardInprintUrl"/>
+    	<div class="alert alert-danger">Attention, vous avez <a href="${cardInprintUrl}">${cardsInprintCount} cartes en cours d'impression</a>, ne les oubliez pas !</div>
+    </c:if>
     <jsp:include page="includes/megamenu.jspx"/>
     <jsp:include page="includes/header.jspx"/>
     <c:set value="false" var="displayCheckbox"/>

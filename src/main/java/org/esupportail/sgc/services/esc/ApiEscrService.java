@@ -2,8 +2,6 @@ package org.esupportail.sgc.services.esc;
 
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.EscrCard;
 import org.esupportail.sgc.domain.EscrStudent;
@@ -17,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -169,10 +168,13 @@ public class ApiEscrService extends ValidateService {
 		if(!picInstitutionCode.equals(escrStudent.getPicInstitutionCode()) || 
 				!user.getEmail().equals(escrStudent.getEmailAddress()) || 
 				!user.getDueDate().equals(escrStudent.getExpiryDate()) ||
-				!user.getDisplayName().equals(escrStudent.getName())) {
+				!user.getDisplayName().equals(escrStudent.getName()) ||
+				user.getAcademicLevel() == null && escrStudent.getAcademicLevel() != null ||
+				user.getAcademicLevel() != null && !user.getAcademicLevel().equals(escrStudent.getAcademicLevel())) {
 			escrStudent.setEmailAddress(user.getEmail());
 			escrStudent.setExpiryDate(user.getDueDate());
 			escrStudent.setName(user.getDisplayName());
+			escrStudent.setAcademicLevel(user.getAcademicLevel());
 			String url = webUrl + "/students/" + escrStudent.getEuropeanStudentIdentifier();
 			HttpHeaders headers = this.getJsonHeaders();
 			HttpEntity entity = new HttpEntity(escrStudent, headers);
@@ -195,6 +197,7 @@ public class ApiEscrService extends ValidateService {
 		escrStudent.setEmailAddress(user.getEmail());
 		escrStudent.setExpiryDate(user.getDueDate());
 		escrStudent.setName(user.getDisplayName());
+		escrStudent.setAcademicLevel(user.getAcademicLevel());
 		return escrStudent;
 		
 	}
@@ -291,6 +294,19 @@ public class ApiEscrService extends ValidateService {
 		}
 		return countryCode + "-" + picInstitutionCode + "-" + supannCodeINE;
 	}
-	
+
+	@Transactional
+	public boolean validateESCenableCard(String eppn) {
+		User user = User.findUser(eppn);
+		Card enabledCard = user.getEnabledCard();			
+		if(enabledCard != null && enabledCard.getEscnUid() != null && !enabledCard.getEscnUid().isEmpty()) {
+			if(EscrStudent.findEscrStudentsByEppnEquals(user.getEppn()).getResultList().isEmpty() || EscrCard.findEscrCardsByCardUidEquals(enabledCard.getCsn()).getResultList().isEmpty()) {
+				this.validate(enabledCard);
+				log.info(String.format("Validation on API ESCR for %s with card %s OK", user.getEppn(), enabledCard.getCsn()));
+				return true;
+			}
+		}
+		return false;
+	}
 	
 }

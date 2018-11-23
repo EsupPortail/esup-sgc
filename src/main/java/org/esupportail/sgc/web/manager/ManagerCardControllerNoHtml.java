@@ -1,12 +1,6 @@
 package org.esupportail.sgc.web.manager;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -17,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -39,7 +32,6 @@ import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
-import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -87,9 +79,6 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	LdapPersonService ldapPersonService;
-	
-	@Resource
-	MemoryMapStringEncodingUtils urlEncodingUtils;
 	
 	@Resource
 	ApiEscrService apiEscrService;
@@ -190,7 +179,7 @@ public class ManagerCardControllerNoHtml {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<Card> eppnList = new ArrayList<Card>();
 		if(!searchString.trim().isEmpty()) {
-			eppnList = Card.findCardsByEppnLike(searchString, "eppn", "ASC").getResultList();
+			eppnList = Card.findCardsByEppnLike(searchString, "eppn", "ASC").setMaxResults(100).getResultList();
 			// hack : we keep only one card for one eppn
 			Map<String, Card> cardsMap = eppnList.stream()
 					.collect(
@@ -214,7 +203,7 @@ public class ManagerCardControllerNoHtml {
 		Map<String, String> adressesMap = new HashMap<String, String>();
 		try {
 			List<String> adresses = userInfoService.getListAdresses(tabType, etat);
-			adressesMap = urlEncodingUtils.getMapWithEncodedString(adresses);
+			adressesMap = formService.getMapWithUrlEncodedString(adresses);
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les données", e);
 		}
@@ -302,9 +291,8 @@ public class ManagerCardControllerNoHtml {
 		String flexJsonString = "{}";
 		try {
 			if(!field.isEmpty()){
-				List<String> results = formService.getField1List(field);
 				JSONSerializer serializer = new JSONSerializer();
-				resultsMap = urlEncodingUtils.getMapWithEncodedString(results);
+				resultsMap = formService.getFieldsValuesMap(field);
 				flexJsonString = serializer.serialize(MapUtils.sortByValue(resultsMap, true));
 			}
 		} catch (Exception e) {

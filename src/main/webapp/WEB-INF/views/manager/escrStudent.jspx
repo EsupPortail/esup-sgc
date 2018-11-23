@@ -19,7 +19,9 @@
 		<dt>expiryDate</dt>
 		<dd>${escrStudent.expiryDate}</dd>	
 		<dt>name</dt>
-		<dd>${escrStudent.name}</dd>		
+		<dd>${escrStudent.name}</dd>	
+		<dt>academicLevel</dt>
+		<dd>${escrStudent.academicLevel}</dd>		
 </dl>
 	
 

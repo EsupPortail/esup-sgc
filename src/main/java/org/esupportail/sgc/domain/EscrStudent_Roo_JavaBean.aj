@@ -52,4 +52,12 @@ privileged aspect EscrStudent_Roo_JavaBean {
         this.name = name;
     }
     
+    public Long EscrStudent.getAcademicLevel() {
+        return this.academicLevel;
+    }
+    
+    public void EscrStudent.setAcademicLevel(Long academicLevel) {
+        this.academicLevel = academicLevel;
+    }
+    
 }

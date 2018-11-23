@@ -72,4 +72,12 @@ privileged aspect RightHolder_Roo_JavaBean {
         this.ine = ine;
     }
     
+    public String RightHolder.getRneOrgCode() {
+        return this.rneOrgCode;
+    }
+    
+    public void RightHolder.setRneOrgCode(String rneOrgCode) {
+        this.rneOrgCode = rneOrgCode;
+    }
+    
 }

@@ -1,14 +1,19 @@
 package org.esupportail.sgc.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 
 public class FormService {
 	
-	private List<String> fieldsList = new ArrayList<String>();
+	private Map<String, String> idsMap = new HashMap<String, String>();
+	
+	private Map<String, String> fieldsList = new HashMap<String, String>();
 	
 	private int nbFields = 3;
 	
@@ -18,38 +23,73 @@ public class FormService {
 	public void setNbFields(int nbFields) {
 		this.nbFields = nbFields;
 	}
-	public List<String> getFieldsList() {
+	public Map<String, String> getFieldsList() {
 		return fieldsList;
 	}
-	public void setFieldsList(List<String> fieldsList) {
+	public void setFieldsList(Map<String, String> fieldsList) {
 		this.fieldsList = fieldsList;
 	}
 	
-	public ArrayList<String> getFieldList() {
-		
-		ArrayList<String> fields = new ArrayList<>();
-		fields = (ArrayList<String>) fieldsList;
-		
-		return fields;
+	public String encodeUrlString(String string2encode) {
+		if(string2encode==null)
+			return "";
+		String encPath = String.valueOf(string2encode.hashCode());
+		if(!idsMap.containsKey(encPath)) {
+			idsMap.put(encPath, string2encode);
+		}
+		return encPath;
 	}
 	
-	public ArrayList<String> getFieldList2() {
-		ArrayList<String> fields = new ArrayList<>();
-		ArrayList<String> camelFields = new ArrayList<>();
-		fields = (ArrayList<String>) fieldsList;
-		for(String item : fields){
+	public String decodeUrlString(String string2decode) {
+		if(string2decode == null || "".equals(string2decode)) {
+			return "";
+		}
+		String path = idsMap.get(string2decode);
+		return path;
+	}
+	
+	public List<String> getFieldsListAsCamel() {
+		List<String> camelFields = new ArrayList<>();
+		for(String item : fieldsList.keySet()){
 			camelFields.add(Card.snakeToCamel(item));
 		}
 		return camelFields;
 	}
-
-	public List<String> getField1List(String field) {
-		List<String> fields = new ArrayList<String>();
+	
+	public Map<String, String> getFieldsValuesMap(String field) {
+		Map<String, String> mapWithEncodedString = new HashMap<String, String>(); 
 		// prevent sql injection here
-		if(fieldsList.contains(field)) {
-			fields = User.getDistinctFreeField(field);
-			fields.remove("");
+		if(fieldsList.keySet().contains(field)) {
+			if(field.equals("card.template_card")) {
+				for(TemplateCard tc : TemplateCard.findAllTemplateCards()) {
+					mapWithEncodedString.put(encodeUrlString(tc.getId().toString()), tc.toString());
+				}
+			} else {
+				List<String> fields = new ArrayList<String>();
+				if(field.startsWith("card.")) {
+					fields = Card.getDistinctFreeField(field.substring("card.".length()));
+				} else if(field.startsWith("user_account.")) {
+					fields = User.getDistinctFreeField(field.substring("user_account.".length()));
+				} else {
+					fields = User.getDistinctFreeField(field);
+				}
+				fields.remove("");
+				for(String s : fields) {
+					mapWithEncodedString.put(encodeUrlString(s), s);
+				}
+			}
 		}
-		return fields;
+		return mapWithEncodedString;
 	}
+
+	public Map<String, String> getMapWithUrlEncodedString(List<String> strings) {
+		Map<String, String> mapWithEncodedString = new HashMap<String, String>(); 
+		for(String s : strings) {
+			mapWithEncodedString.put(encodeUrlString(s), s);
+		}
+		return mapWithEncodedString;
+	}
+
 }
+
+

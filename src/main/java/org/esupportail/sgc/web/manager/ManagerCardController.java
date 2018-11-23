@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +41,6 @@ import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
-import org.esupportail.sgc.tools.MemoryMapStringEncodingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -116,9 +117,6 @@ public class ManagerCardController {
 	@Resource
 	FormService formService;
 	
-	@Resource
-	MemoryMapStringEncodingUtils urlEncodingUtils;
-	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "manager";
@@ -153,7 +151,7 @@ public class ManagerCardController {
 	
 	@ModelAttribute("csvFiltres")
 	public List<String> getCsvFiltres() {
-		return formService.getFieldList2();
+		return formService.getFieldsListAsCamel();
 	}
 	
 	@ModelAttribute("validateServicesNames")
@@ -353,6 +351,10 @@ public class ManagerCardController {
 		
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
+		
+		Long cardsInprintCount = Card.countfindCardsByEtatEppnEqualsAndEtatEquals(eppn, Etat.IN_PRINT);
+		uiModel.addAttribute("cardsInprintCount", cardsInprintCount);
+		
     	int sizeNo = -1;
     	int firstResult = -1;  	   	
     	if(size == null || size > 1000 || size == 0) {
@@ -370,7 +372,7 @@ public class ManagerCardController {
     			}
     		}
     	}
-    	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
+    	searchBean.setAddress(formService.decodeUrlString(searchBean.getAddress()));
     	if(index !=null && "first".equals(index)){
 	    	searchBean.setEditable(preferencesService.getPrefValue(eppn, "EDITABLE"));
 	    	searchBean.setOwnOrFreeCard(Boolean.valueOf(preferencesService.getPrefValue(eppn, "OWNORFREECARD")));
@@ -380,29 +382,26 @@ public class ManagerCardController {
     	}
     	
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
-    		HashMap<Integer, String[]> noEmptyFreeFieldValue = new HashMap<Integer, String[]>(searchBean.getFreeFieldValue());
+    		SortedMap<Integer, List<String>> noEmptyFreeFieldValue = new TreeMap<Integer, List<String>>(searchBean.getFreeFieldValue());
     		noEmptyFreeFieldValue.values().removeAll(Collections.singleton(""));
     		uiModel.addAttribute("collapse", noEmptyFreeFieldValue.size() > 0 ? "in" : "");
     		List<String> allFreeFieldValueList = new ArrayList<String>();    	
     		for(int j=0; j < Collections.max(searchBean.getFreeFieldValue().keySet())+1; j++) {
-    			String[] value = searchBean.getFreeFieldValue().get(j);
-    			List<String> freeFieldValueList = new ArrayList<String>();
-    			if(value!=null) {
-	    			for(int i=0; i<value.length; i++){
-	    				freeFieldValueList.add(value[i]);
-	    			}
+    			List<String> freeFieldValueList = searchBean.getFreeFieldValue().get(j);
+    			if(freeFieldValueList == null) {
+    				freeFieldValueList = new ArrayList<String>();
     			}
     			String freeFieldValueJoinString = StringUtils.join(freeFieldValueList.toArray(), ",");
     			allFreeFieldValueList.add(freeFieldValueJoinString);
     		}
     		String allFreeFieldValueJoinString = StringUtils.join(allFreeFieldValueList, ";");
     		uiModel.addAttribute("fieldsValue", allFreeFieldValueJoinString);
-    		HashMap<Integer, String[]> freeFieldValueDecoded = new HashMap<Integer, String[]>() ; 	
-    		HashMap<String, String[]> fieldsValueEncoded = new HashMap<String, String[]>() ; 
-    		for (Map.Entry<Integer, String[]> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
-    			String[] entryValuesDecoded = new String[freeFieldEncoded.getValue().length];
-    			for(int i=0; i<freeFieldEncoded.getValue().length; i++){
-    				entryValuesDecoded[i] = urlEncodingUtils.decodeString(freeFieldEncoded.getValue()[i]);
+    		SortedMap<Integer, List<String>> freeFieldValueDecoded = new TreeMap<Integer, List<String>>() ; 	
+    		HashMap<String, List<String>> fieldsValueEncoded = new HashMap<String, List<String>>() ; 
+    		for (Map.Entry<Integer, List<String>> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
+    			List<String> entryValuesDecoded = new ArrayList<String>();
+    			for(String value : freeFieldEncoded.getValue()){
+    				entryValuesDecoded.add(formService.decodeUrlString(value));
     			}
     			freeFieldValueDecoded.put(freeFieldEncoded.getKey(), entryValuesDecoded);
     			fieldsValueEncoded.put(freeFieldEncoded.getKey().toString(), freeFieldEncoded.getValue());
@@ -431,7 +430,7 @@ public class ManagerCardController {
     	uiModel.addAttribute("cards", cards);
     	uiModel.addAttribute("countCards",  countCards);
     	uiModel.addAttribute("selectedType",  searchBean.getType());
-    	uiModel.addAttribute("freeFields",  formService.getFieldList());
+    	uiModel.addAttribute("freeFields",  formService.getFieldsList());
     	uiModel.addAttribute("nbFields", new String[formService.getNbFields()]);
     	uiModel.addAttribute("size",  size);
     	List<String> addresses = null;
@@ -440,9 +439,9 @@ public class ManagerCardController {
     	}else{
     		addresses = userInfoService.getListAdresses(searchBean.getType(), null);
     	}
-    	Map<String, String> addressesMap = urlEncodingUtils.getMapWithEncodedString(addresses);
+    	Map<String, String> addressesMap = formService.getMapWithUrlEncodedString(addresses);
     	uiModel.addAttribute("addresses", MapUtils.sortByValue(addressesMap, false));
-    	searchBean.setAddress(urlEncodingUtils.encodeString(searchBean.getAddress()));
+    	searchBean.setAddress(formService.encodeUrlString(searchBean.getAddress()));
 		uiModel.addAttribute("eppn", eppn);
     	addDateTimeFormatPatterns(uiModel);
     	
@@ -643,35 +642,32 @@ public class ManagerCardController {
     	if(searchBean.getLastTemplateCardPrinted()!=null && searchBean.getLastTemplateCardPrinted().getId()==null) {
     		searchBean.setLastTemplateCardPrinted(null);
     	}
-    	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
+    	searchBean.setAddress(formService.decodeUrlString(searchBean.getAddress()));
     	
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
-    		HashMap<Integer, String[]> noEmptyFreeFieldValue = new HashMap<Integer, String[]>(searchBean.getFreeFieldValue());
-    		HashMap<String, String[]> fieldsValueEncoded = new HashMap<String, String[]>() ;
+    		SortedMap<Integer, List<String>> noEmptyFreeFieldValue = new TreeMap<Integer, List<String>>(searchBean.getFreeFieldValue());
+    		SortedMap<String, List<String>> fieldsValueEncoded = new TreeMap<String, List<String>>() ;
     		noEmptyFreeFieldValue.values().removeAll(Collections.singleton(""));
     		List<String> allFreeFieldValueList = new ArrayList<String>();    	
     		for(int j=0; j < Collections.max(searchBean.getFreeFieldValue().keySet())+1; j++) {
-    			String[] value = searchBean.getFreeFieldValue().get(j);
-    			List<String> freeFieldValueList = new ArrayList<String>();
-    			if(value!=null) {
-	    			for(int i=0; i<value.length; i++){
-	    				freeFieldValueList.add(value[i]);
-	    			}
-    			}
+    			List<String> freeFieldValueList = searchBean.getFreeFieldValue().get(j);
     			String freeFieldValueJoinString = StringUtils.join(freeFieldValueList.toArray(), ",");
     			allFreeFieldValueList.add(freeFieldValueJoinString);
     		}
     		String allFreeFieldValueJoinString = StringUtils.join(allFreeFieldValueList, ";");
-    		HashMap<Integer, String[]> freeFieldValueDecoded = new HashMap<Integer, String[]>() ; 		
-    		for (Map.Entry<Integer, String[]> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
-    			String[] entryValuesDecoded = new String[freeFieldEncoded.getValue().length];
-    			for(int i=0; i<freeFieldEncoded.getValue().length; i++){
-    				entryValuesDecoded[i] = urlEncodingUtils.decodeString(freeFieldEncoded.getValue()[i]);
+    		uiModel.addAttribute("fieldsValue", allFreeFieldValueJoinString);
+    		SortedMap<Integer, List<String>> freeFieldValueDecoded = new TreeMap<Integer, List<String>>() ; 		
+    		for (Map.Entry<Integer, List<String>> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
+    			List<String> entryValuesDecoded = new ArrayList<String>();
+    			for(String value : freeFieldEncoded.getValue()){
+    				entryValuesDecoded.add(formService.decodeUrlString(value));
     			}
     			freeFieldValueDecoded.put(freeFieldEncoded.getKey(), entryValuesDecoded);
     			fieldsValueEncoded.put(freeFieldEncoded.getKey().toString(), freeFieldEncoded.getValue());
     		}
+    		// fieldsValueEncoded pour IHM : numéro du champ -> valeurs url encodés
     		uiModel.addAttribute("fieldsValueEncoded", fieldsValueEncoded);
+    		// freeFieldValue dans searchBean doit correspondre aux valeurs en base : valeurs non url encodées
     		searchBean.setFreeFieldValue(freeFieldValueDecoded);	
     	}
     	
@@ -708,42 +704,31 @@ public class ManagerCardController {
     	if(searchBean.getLastTemplateCardPrinted()!=null && searchBean.getLastTemplateCardPrinted().getId()==null) {
     		searchBean.setLastTemplateCardPrinted(null);
     	}
-    	searchBean.setAddress(urlEncodingUtils.decodeString(searchBean.getAddress()));
+    	searchBean.setAddress(formService.decodeUrlString(searchBean.getAddress()));
     	
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
-    		HashMap<Integer, String[]> noEmptyFreeFieldValue = new HashMap<Integer, String[]>(searchBean.getFreeFieldValue());
-    		HashMap<String, String[]> fieldsValueEncoded = new HashMap<String, String[]>() ;
-    		noEmptyFreeFieldValue.values().removeAll(Collections.singleton(""));
-    		List<String> allFreeFieldValueList = new ArrayList<String>();    	
-    		for(int j=0; j < Collections.max(searchBean.getFreeFieldValue().keySet())+1; j++) {
-    			String[] value = searchBean.getFreeFieldValue().get(j);
-    			List<String> freeFieldValueList = new ArrayList<String>();
-    			if(value!=null) {
-	    			for(int i=0; i<value.length; i++){
-	    				freeFieldValueList.add(value[i]);
-	    			}
-    			}
-    			String freeFieldValueJoinString = StringUtils.join(freeFieldValueList.toArray(), ",");
-    			allFreeFieldValueList.add(freeFieldValueJoinString);
-    		}
-    		HashMap<Integer, String[]> freeFieldValueDecoded = new HashMap<Integer, String[]>() ; 		
-    		for (Map.Entry<Integer, String[]> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
-    			String[] entryValuesDecoded = new String[freeFieldEncoded.getValue().length];
-    			for(int i=0; i<freeFieldEncoded.getValue().length; i++){
-    				entryValuesDecoded[i] = urlEncodingUtils.decodeString(freeFieldEncoded.getValue()[i]);
+    		SortedMap<Integer, List<String>> freeFieldValueDecoded = new TreeMap<Integer, List<String>>() ; 		
+    		for (Map.Entry<Integer, List<String>> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
+    			List<String> entryValuesDecoded = new ArrayList<String>();
+    			for(String s: freeFieldEncoded.getValue()){
+    				entryValuesDecoded.add(formService.decodeUrlString(s));
     			}
     			freeFieldValueDecoded.put(freeFieldEncoded.getKey(), entryValuesDecoded);
-    			fieldsValueEncoded.put(freeFieldEncoded.getKey().toString(), freeFieldEncoded.getValue());
     		}
     		searchBean.setFreeFieldValue(freeFieldValueDecoded);	
     	}
     	
-    	
-		List<Card> cards = Card.findCards(searchBean, eppn, "address", "ASC").getResultList();
+    	Long nbCards = Card.countFindCards(searchBean, eppn);
+    	boolean msgbordereau = false;
+    	if(nbCards < 500){
+    		List<Card> cards = Card.findCards(searchBean, eppn, "address", "ASC").getResultList();
+    		uiModel.addAttribute("cards", cards);
+    		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());
+    	}else{
+    		msgbordereau = true;
+    	}
+    	uiModel.addAttribute("msgbordereau", msgbordereau);
 		
-		
-		uiModel.addAttribute("cards", cards);
-		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());
 		
 		return "manager/bordereau";
 	}
