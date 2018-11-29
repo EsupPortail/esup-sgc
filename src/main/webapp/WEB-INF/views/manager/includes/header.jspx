@@ -60,16 +60,9 @@
 		</form>
 	
 	<ul class="nav nav-tabs" role="tablist" id="tabTypes">
-		<sec:authorize access="hasRole('ROLE_SUPER_MANAGER')">
-	    	<li role="presentation" class="${empty selectedType ? 'active' : 'sleep' }"><a href="#${type}"  role="tab" data-toggle="tab"><spring:message code="manager.type.All" htmlEscape="false" /></a></li>
-		</sec:authorize>
-	    <c:if test="${not empty types}">
-	    	<c:forEach items="${types}" var="type">
-	    		<sec:authorize access="hasRole('ROLE_MANAGER_${type}') or hasRole('ROLE_SUPER_MANAGER')">
-	    			<li role="presentation" class="${selectedType eq type ? 'active' : 'sleep' }"><a href="#${type}" role="tab"><spring:message code="manager.type.${type}" htmlEscape="false" /></a></li>
-	    		</sec:authorize>
-	    	</c:forEach>
-	    </c:if>
+	    <c:forEach items="${types}" var="type">
+	    	<li role="presentation" class="${selectedType eq type ? 'active' : 'sleep' }"><a href="#${type}" role="tab"><spring:message code="manager.type.${type}" htmlEscape="false" /></a></li>
+	    </c:forEach>
   	</ul>
   	</div>
 </div>

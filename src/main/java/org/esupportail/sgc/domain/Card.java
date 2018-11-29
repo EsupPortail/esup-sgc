@@ -527,7 +527,7 @@ public class Card {
 		
 		List<Predicate> predicates = new ArrayList<Predicate>();
 		
-		if (!searchBean.getType().isEmpty()) {
+		if (searchBean.getType()!=null && !searchBean.getType().isEmpty() && !"All".equals(searchBean.getType())) {
             Join<Card, User> u = c.join("userAccount");
             predicates.add(u.get("userType").in(searchBean.getType()));
         }
@@ -720,6 +720,14 @@ public class Card {
     public static List<String> findDistinctEtats() {
         EntityManager em = Card.entityManager();
         Query q = em.createNativeQuery("SELECT DISTINCT etat FROM Card");
+        return q.getResultList();
+    }
+    
+    public static List<String> findDistinctUserTypes(List<Long> cardIds) {
+    	if(cardIds == null || cardIds.isEmpty()) return new ArrayList<String>();
+        EntityManager em = Card.entityManager();
+        TypedQuery q = em.createQuery("SELECT DISTINCT(u.userType) FROM User AS u WHERE u.eppn IN (SELECT c.eppn FROM Card as c WHERE c.id IN (:cardIds))", String.class);
+        q.setParameter("cardIds", cardIds);
         return q.getResultList();
     }
 

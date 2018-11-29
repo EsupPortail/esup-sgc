@@ -5,10 +5,12 @@
 	xmlns:p="http://www.springframework.org/schema/p" 
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:sec="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd                 
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd                 
 	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
                 
     <!-- The controllers are autodetected POJOs labeled with the @Controller annotation. -->
     <context:component-scan base-package="org.esupportail.sgc" use-default-filters="false">
@@ -81,6 +83,11 @@
     </property>
   </bean>
 <bean class="org.esupportail.sgc.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
+
+ <!-- enable support for Expression-based annotations in Spring Security -->
+ <sec:global-method-security pre-post-annotations="enabled">
+    <sec:expression-handler ref="expressionHandler" />
+ </sec:global-method-security>
 
     <mvc:interceptors>
         <bean class="org.esupportail.sgc.web.ConfigInterceptor" autowire="constructor" />

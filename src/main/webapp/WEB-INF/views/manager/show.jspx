@@ -60,6 +60,8 @@
                                 <dd>${user.email}</dd>
                                 <dt>Adresse : </dt>
                                 <dd>${user.address}</dd>
+                                <dt>Adresse Externe : </dt>
+                                <dd>${user.externalAddress}</dd>
                                 <dt>Demande de nouvelle carte gratuite : </dt>
                                 <dd>
                                     ${user.requestFree ? 'oui' : 'non'}
@@ -158,11 +160,17 @@
                                 <dd>${user.verso6}</dd>
                                 <dt>verso7</dt>
                                 <dd>${user.verso7}</dd>
+                                <dt>freeField1</dt>
+                                <dd>${user.freeField1}</dd>
+                                <dt>freeField2</dt>
+                                <dd>${user.freeField2}</dd>
+                                <dt>freeField3</dt>
+                                <dd>${user.freeField3}</dd>
                             </dl>
-                            <sec:authorize access="hasRole('ROLE_MANAGER')">
+                            <c:if test="${managePermission}">
                                 <spring:url value="/manager/${currentCard.id}/resync-user/${user.eppn}" var="resynchUrl"/>
                                 <a class="btn btn-danger" href="${resynchUrl}">Resynchronisation</a>
-                            </sec:authorize>
+                            </c:if>
                         </div>
                     </div>
                     <div class="col-lg-8">
@@ -198,7 +206,7 @@
                                                 <spring:url value="/manager/updatePhoto" var="updatePhototUrl"/>
                                                 <div class="col-lg-2">
                                                     <img class="img-thumbnail center" src="${photoUrl}"/>
-                                                    <sec:authorize access="hasRole('ROLE_MANAGER')">
+                                                    <c:if test="${managePermission}">
                                                         <c:if test="${card.isPhotoEditable}">
                                                             <button class="btn btn-default btn-block" data-target="#retouche" data-toggle="modal" id="btnRetouche" type="button">
 	                                                        Retoucher
@@ -264,7 +272,7 @@
                                                                 </div>
                                                             </div>
                                                         </c:if>
-                                                    </sec:authorize>
+                                                    </c:if>
                                                     <button class="preview btn btn-warning btn-block" data-target="#previewCarte${i.index}" data-toggle="modal" type="button">
 														Prévisualiser</button>
                                                     <div class="modal fade" id="previewCarte${i.index}">
@@ -336,7 +344,7 @@
 									                </button>
                                                     </form>
                                                     /sec:authorize-->
-                                                    <sec:authorize access="hasRole('ROLE_LIVREUR')">
+                                                    <sec:authorize access="hasRole('ROLE_LIVREUR') or hasRole('ROLE_MANAGER')">
                                                         <c:if test="${livraison and (card.etat eq 'ENABLED' or card.etat eq 'ENCODED') and empty card.deliveredDate}">
                                                             <spring:url value="/manager/deliver/${card.id}" var="deliverUrl"/>
                                                             <form action="${deliverUrl}" method="POST">
@@ -346,7 +354,7 @@
                                                             </form>
                                                         </c:if>
                                                     </sec:authorize>
-                                                    <sec:authorize access="hasRole('ROLE_MANAGER')">
+                                                    <c:if test="${managePermission}">
                                                         <div id="btnBlock">
                                                             <spring:url value="/manager/action/${card.id}" var="etatActionUrl"/>
                                                             <c:forEach items="${card.etatsAvailable}" var="etatAvailable" varStatus="j">
@@ -435,7 +443,7 @@
                                                                 </c:choose>
                                                             </c:forEach>
                                                         </div>
-                                                    </sec:authorize>
+                                                    </c:if>
                                                 </div>
                                                 <dl class="dl-horizontal col-lg-5">
                                                     <h4>Recto/verso</h4>

@@ -147,6 +147,14 @@ public class User {
 	
 	private String address = "";
 	
+	private String externalAddress = "";
+	
+	private String freeField1 = "";
+	
+	private String freeField2 = "";
+	
+	private String freeField3 = "";
+	
 	private Long nbCards = new Long(0);
 	
 	private String userType;

@@ -30,10 +30,7 @@
     </c:if>
     <jsp:include page="includes/megamenu.jspx"/>
     <jsp:include page="includes/header.jspx"/>
-    <c:set value="false" var="displayCheckbox"/>
-    <sec:authorize access="hasRole('ROLE_MANAGER')">
-        <c:set value="true" var="displayCheckbox"/>
-    </sec:authorize>
+    <c:set value="${managePermission}" var="displayCheckbox"/>
     <page:list id="pl_org_esupportail_sgc_domain_Card" items="${cards}" z="BJPyWcDg3O3cxcyUVzdb93Qn9gQ=">
         <table:table checkbox="${displayCheckbox}" create="false" data="${cards}" delete="false" id="l_org_esupportail_sgc_domain_Card" path="/manager" update="false" z="user-managed">
             <table:column cssClass="hidden" id="c_org_esupportail_sgc_domain_Card_id" label="id" property="id" z="user-managed"/>

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -26,6 +27,7 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
 import org.esupportail.sgc.services.CardEtatService;
@@ -49,7 +51,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +118,9 @@ public class ManagerCardController {
 	
 	@Resource
 	FormService formService;
+	
+	@Resource
+	PermissionService permissionService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -184,7 +189,10 @@ public class ManagerCardController {
 
     @RequestMapping(value = "/{id}", produces = "text/html")
     @Transactional
+    @PreAuthorize("hasPermission(#id, 'consult')")
     public String show(@PathVariable("id") Long id, Model uiModel) {
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
         addDateTimeFormatPatterns(uiModel);
         Card card =  Card.findCard(id);
         User user = User.findUser(card.getEppn());
@@ -197,11 +205,11 @@ public class ManagerCardController {
         }
         uiModel.addAttribute("user", user);
         uiModel.addAttribute("currentCard", card);
-        
+        uiModel.addAttribute("managePermission",  permissionService.hasManagePermission(roles, user.getUserType()));
         return "manager/show";
     }
     
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#cardId, 'manage')")
     @RequestMapping(value = "{cardId}/resync-user/{eppn:.+}", produces = "text/html")
     @Transactional
     public String resyncUser(@PathVariable String eppn, @PathVariable String cardId, Model uiModel) {
@@ -210,14 +218,8 @@ public class ManagerCardController {
         uiModel.asMap().clear();
         return "redirect:/manager/" + cardId;
     }
-
-	@RequestMapping(produces = "text/html", params="print")
-	public String printCards(Model uiModel) {
-		uiModel.addAttribute("cards", Card.findAllCards());
-		return "manager/print-card";
-	}
 	
-	@PreAuthorize("hasRole('ROLE_LIVREUR')")
+	@PreAuthorize("hasPermission(#cardId, 'manage') or hasRole('ROLE_LIVREUR')")
 	@RequestMapping(value="/deliver/{cardId}", method=RequestMethod.POST)
 	@Transactional
 	public String deliver(@PathVariable("cardId") Long cardId,Model uiModel) {
@@ -233,7 +235,7 @@ public class ManagerCardController {
 		return "redirect:/manager/" + card.getId();
 	}
 	
-    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_LIVREUR')")
+    @PreAuthorize("hasPermission(#listeIds, 'manage') or hasRole('ROLE_LIVREUR')")
 	@RequestMapping(value="/multiDelivery", method=RequestMethod.POST)
 	@Transactional
 	public String multiDelivery(@RequestParam List<Long> listeIds, Model uiModel) {
@@ -258,7 +260,7 @@ public class ManagerCardController {
 		return "redirect:/manager/";
 	}
 
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#cardId, 'manage')")
 	@RequestMapping(value="/replayValidationOrInvalidation/{cardId}", method=RequestMethod.POST)
 	@Transactional
 	public String replayValidationOrInvalidation(@PathVariable("cardId") Long cardId, @RequestParam(required=false, defaultValue="") List<String> validateServicesNames, @RequestParam(required=false, defaultValue="false") Boolean resynchro, Model uiModel) {
@@ -268,7 +270,7 @@ public class ManagerCardController {
 		return "redirect:/manager/" + card.getId();
 	}
 	
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#listeIds, 'manage')")
 	@RequestMapping(value="/multiReplayValidationOrInvalidation", method=RequestMethod.POST)
 	@Transactional
 	public String multiReplayValidationOrInvalidation(@RequestParam List<Long> listeIds,  @RequestParam(required=false, defaultValue="") List<String> validateServicesNames, @RequestParam(required=false, defaultValue="false") Boolean resynchro,
@@ -288,7 +290,7 @@ public class ManagerCardController {
 		return "redirect:/manager/";
 	}
 	
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#cardId, 'manage')")
 	@RequestMapping(value="/action/{cardId}", method=RequestMethod.POST)
 	@Transactional
 	public String actionEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, Model uiModel) {
@@ -319,7 +321,7 @@ public class ManagerCardController {
 		}
 	}
 	
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#cardId, 'manage')")
 	@RequestMapping(value="/actionAjax", method=RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String>  actionAjaxEtat(@RequestParam Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, Model uiModel) {
@@ -342,6 +344,20 @@ public class ManagerCardController {
 		return null;
 	}
 	
+	/* 
+	 * Permet de diriger par défaut le manager sur l'onglet le plus 'intéressant'
+	 */
+	@RequestMapping(produces = "text/html", params={"index=first"})
+	@Transactional
+	public String defaultSearch(Model uiModel, HttpServletRequest request) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
+		CardSearchBean searchBean = new CardSearchBean();
+		searchBean.setType(permissionService.getDefaultTypeTab(roles));
+		return search(searchBean, null, null, null, null, null, uiModel, request);
+	}
+	
+	
     @RequestMapping(produces = "text/html")
     @Transactional
     public String search(@Valid CardSearchBean searchBean, 
@@ -351,6 +367,7 @@ public class ManagerCardController {
 		
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
+		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		
 		Long cardsInprintCount = Card.countfindCardsByEtatEppnEqualsAndEtatEquals(eppn, Etat.IN_PRINT);
 		uiModel.addAttribute("cardsInprintCount", cardsInprintCount);
@@ -362,15 +379,8 @@ public class ManagerCardController {
     		size = sizeInSession != null ? (Integer)sizeInSession : 10;
     		page = 1;
     	}
-    	if(searchBean.getType() == null) {
-    		searchBean.setType("");
-    		// Hack - ROLE_MANAGER_${userType} -> force userType
-    		for(String userType : userInfoService.getListExistingType()) {
-    			if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGER_" + userType))) {
-    				searchBean.setType(userType);
-    				break;
-    			}
-    		}
+    	if(!permissionService.getTypesTabs(roles).contains(searchBean.getType())) {
+    		searchBean.setType(permissionService.getDefaultTypeTab(roles));
     	}
     	searchBean.setAddress(formService.decodeUrlString(searchBean.getAddress()));
     	if(index !=null && "first".equals(index)){
@@ -418,7 +428,7 @@ public class ManagerCardController {
     	List<Card> cards = Card.findCards(searchBean, eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
         float nrOfPages = (float) countCards / sizeNo;
         
-    	uiModel.addAttribute("types", userInfoService.getListExistingType());
+    	uiModel.addAttribute("types", permissionService.getTypesTabs(roles));
     	uiModel.addAttribute("etats", cardEtatService.getDistinctEtats());
     	uiModel.addAttribute("lastTemplateCardsPrinted", userInfoService.getDistinctLastTemplateCardsPrinted());
     	List<BigInteger> nbCards = User.getDistinctNbCards();
@@ -429,6 +439,7 @@ public class ManagerCardController {
     	uiModel.addAttribute("searchBean", searchBean);
     	uiModel.addAttribute("cards", cards);
     	uiModel.addAttribute("countCards",  countCards);
+    	uiModel.addAttribute("managePermission",  permissionService.hasManagePermission(roles, searchBean.getType()));
     	uiModel.addAttribute("selectedType",  searchBean.getType());
     	uiModel.addAttribute("freeFields",  formService.getFieldsList());
     	uiModel.addAttribute("nbFields", new String[formService.getNbFields()]);
@@ -448,7 +459,7 @@ public class ManagerCardController {
     	return "manager/list";
     }
 
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#listeIds, 'manage')")
     @RequestMapping("/multiUpdate")
     // No @Transactional here so that exception catching on ManagerController.multiUpdate works well
     public String multiUpdate(@RequestParam(value="comment", defaultValue= "") String comment, 
@@ -520,6 +531,7 @@ public class ManagerCardController {
     	return "redirect:/manager?index=first" ;
     }   
 	
+    @PreAuthorize("hasPermission(#cardIds, 'manage')")
 	@RequestMapping(value="/getMultiUpdateForm")
 	@Transactional
 	public String getMultiUpdateForm(@RequestParam List<Long> cardIds, Model uiModel) {
@@ -539,7 +551,7 @@ public class ManagerCardController {
 		return "manager/multiUpdateForm";
 	}
 	
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#id, 'manage')")
 	@RequestMapping(value="/updatePhoto", method = RequestMethod.POST)
 	@Transactional
 	public String cardRequest(@RequestParam("cardId") Long id, @RequestParam("imageData") String imageData, Model uiModel, final RedirectAttributes redirectAttributes){
@@ -578,7 +590,7 @@ public class ManagerCardController {
 		return "redirect:/manager/" + id;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasPermission(#id, 'manage')")
 	@RequestMapping(value="/updatePhotoAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String>  updatePhotoAjax(@RequestParam("cardId") Long id, @RequestParam("imageData") String imageData, Model uiModel, final RedirectAttributes redirectAttributes){
@@ -733,6 +745,7 @@ public class ManagerCardController {
 		return "manager/bordereau";
 	}
 	
+	@PreAuthorize("hasPermission(#listeIds, 'manage')")
 	@RequestMapping(value="/retouche", method = RequestMethod.POST)
 	public String getRetouchePage(@RequestParam("listeIds") List<Long> listeIds, Model uiModel) {
 		List<Card> cards = Card.findAllCards(listeIds);

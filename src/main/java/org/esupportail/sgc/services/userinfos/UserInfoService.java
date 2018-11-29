@@ -160,6 +160,9 @@ public class UserInfoService {
 			} else if("address".equalsIgnoreCase(key)) {
 				String address  = userInfos.get(key);
 				user.setAddress(address);
+			} else if("externalAddress".equalsIgnoreCase(key)) {
+				String externalAddress  = userInfos.get(key);
+				user.setExternalAddress(externalAddress);
 			} else if("recto1".equalsIgnoreCase(key)) {
 				String recto1  = userInfos.get(key);
 				user.setRecto1(recto1);
@@ -202,6 +205,15 @@ public class UserInfoService {
 			} else if("verso7".equalsIgnoreCase(key)) {
 				String verso7  = userInfos.get(key);
 				user.setVerso7(verso7);
+			} else if("freeField1".equalsIgnoreCase(key)) {
+				String freeField1  = userInfos.get(key);
+				user.setFreeField1(freeField1);
+			} else if("freeField2".equalsIgnoreCase(key)) {
+				String freeField2  = userInfos.get(key);
+				user.setFreeField2(freeField2);
+			} else if("freeField3".equalsIgnoreCase(key)) {
+				String freeField3  = userInfos.get(key);
+				user.setFreeField3(freeField3);
 			} else if("userType".equalsIgnoreCase(key)) {
 				String userType  = userInfos.get(key);
 				user.setUserType(userType);

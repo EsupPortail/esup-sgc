@@ -20,7 +20,7 @@
 						<input value="EXT" type="radio" name="flagAdresse" id="radio4" />
 								Domicile</label> 	
 					</div>
-					<pre>${adresseExterne}</pre>
+					<pre>${user.externalAddress}</pre>
 				</div>
 			</c:if>
 			<c:if test="${user.userType eq 'I'or user.userType eq 'E'}">

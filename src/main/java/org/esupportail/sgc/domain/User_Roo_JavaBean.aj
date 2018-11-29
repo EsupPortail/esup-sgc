@@ -332,6 +332,38 @@ privileged aspect User_Roo_JavaBean {
         this.address = address;
     }
     
+    public String User.getExternalAddress() {
+        return this.externalAddress;
+    }
+    
+    public void User.setExternalAddress(String externalAddress) {
+        this.externalAddress = externalAddress;
+    }
+    
+    public String User.getFreeField1() {
+        return this.freeField1;
+    }
+    
+    public void User.setFreeField1(String freeField1) {
+        this.freeField1 = freeField1;
+    }
+    
+    public String User.getFreeField2() {
+        return this.freeField2;
+    }
+    
+    public void User.setFreeField2(String freeField2) {
+        this.freeField2 = freeField2;
+    }
+    
+    public String User.getFreeField3() {
+        return this.freeField3;
+    }
+    
+    public void User.setFreeField3(String freeField3) {
+        this.freeField3 = freeField3;
+    }
+    
     public Long User.getNbCards() {
         return this.nbCards;
     }

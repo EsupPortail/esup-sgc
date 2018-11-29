@@ -20,7 +20,7 @@ public class CardSearchBean {
 	
 	FlagAdresse flagAdresse;
 
-	String type;
+	String type = "All";
 	
 	String editable;
 	

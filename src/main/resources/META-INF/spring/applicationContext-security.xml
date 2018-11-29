@@ -34,6 +34,12 @@
     </http>
 
     <beans:bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+
+    <beans:bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+        <beans:property name="permissionEvaluator">
+            <beans:bean class="org.esupportail.sgc.security.SgcPermissionEvaluator"/>
+        </beans:property>
+    </beans:bean>
     
     <beans:bean id="shibFilter" class="org.esupportail.sgc.security.ShibRequestHeaderAuthenticationFilter">
 		<beans:property name="principalRequestHeader" value="REMOTE_USER"/>
