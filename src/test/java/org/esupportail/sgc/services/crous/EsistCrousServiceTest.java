@@ -28,30 +28,36 @@ public class EsistCrousServiceTest {
     @Test
     public void testComputeIdCompagnyRateAndIdRate4UserOfEsupSgc() {
     	String eppn = esupSgcTestUtilsService.getEppnFromDb();
-    	User user = User.findUser(eppn);
-    	if(user != null) {
-	    	List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
-			log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
+    	if(eppn != null) {
+	    	User user = User.findUser(eppn);
+	    	if(user != null) {
+		    	List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
+				log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
+	    	}
     	}
     }
     
     @Test
     public void testComputeIdCompagnyRateAndIdRate4UserOfLdap() {
     	String eppn = esupSgcTestUtilsService.getEppnFromLdap();
-    	User user = User.findUser(eppn);
-    	if(user != null) {
-	    	List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
-			log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
+    	if(eppn != null) {
+	    	User user = User.findUser(eppn);
+	    	if(user != null) {
+		    	List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
+				log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
+	    	}
     	}
     }
     
     @Test
     public void testComputeIdCompagnyRateAndIdRate4UserOfTestConfig() {
     	String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-    	User user = User.findUser(eppn);
-    	if(user != null) {
-	    	List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
-			log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
+    	if(eppn != null) {
+	    	User user = User.findUser(eppn);
+	    	if(user != null) {
+		    	List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
+				log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
+	    	}
     	}
     }
 	
