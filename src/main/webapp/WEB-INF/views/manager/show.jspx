@@ -312,13 +312,13 @@
 																    </style>
                                                                     <div id="${cssId}">
                                                                         <div id="left">
-                                                                            <p id="recto1">${card.user.recto1}</p>
-                                                                            <p id="recto2">${card.user.recto2}</p>
-                                                                            <p id="recto3">${card.user.recto3}</p>
-                                                                            <p id="recto4">${card.user.recto4}</p>
-                                                                            <p id="recto5">${card.user.recto5}</p>
-                                                                            <p id="recto6">${card.user.recto6}</p>
-                                                                            <p id="recto7">${card.user.recto7}</p>
+                                                                            <p id="recto1">${card.printed ? card.recto1Printed : card.user.recto1}</p>
+                                                                            <p id="recto2">${card.printed ? card.recto2Printed : card.user.recto2}</p>
+                                                                            <p id="recto3">${card.printed ? card.recto3Printed : card.user.recto3}</p>
+                                                                            <p id="recto4">${card.printed ? card.recto4Printed : card.user.recto4}</p>
+                                                                            <p id="recto5">${card.printed ? card.recto5Printed : card.user.recto5}</p>
+                                                                            <p id="recto6">${card.printed ? card.recto6Printed : card.user.recto6}</p>
+                                                                            <p id="recto7">${card.printed ? card.recto7Printed : card.user.recto7}</p>
                                                                             <spring:url value="/manager/QRCode?cardId=${card.id}" var="QRCodeUrl"/>
                                                                             <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
                                                                         </div>

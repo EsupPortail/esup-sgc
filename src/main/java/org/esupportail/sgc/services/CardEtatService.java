@@ -37,6 +37,8 @@ public class CardEtatService {
 
 	public final static List<Etat> etatsEncoded = Arrays.asList(new Etat[] {Etat.ENCODED, Etat.ENABLED, Etat.DISABLED, Etat.CADUC});
 	
+	public final static List<Etat> etatsPrinted = Arrays.asList(new Etat[] {Etat.PRINTED, Etat.ENCODED, Etat.ENABLED, Etat.DISABLED, Etat.CADUC});
+	
 	public final static List<Etat> etatsEnableable = Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}); 
 	
 	private final static List<Etat> etatsRequest = Arrays.asList(new Etat[] {Etat.NEW, Etat.RENEWED, Etat.REQUEST_CHECKED, Etat.REJECTED, Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.ENCODED});
@@ -316,23 +318,27 @@ public class CardEtatService {
 	@Async("synchroExecutor")
 	public void replayValidationOrInvalidation(Long cardId, List<String> validateServicesNames, Boolean resynchro) {
 		Card card = Card.findCard(cardId);
-		if(Etat.ENABLED.equals(card.getEtat())) {
-			if(resynchro) {
-				resynchronisationUserService.synchronizeUserInfo(card.getEppn());
-			}
-			for(ValidateService validateService : validateServices) {
-				if(validateServicesNames.contains(validateService.getBeanName())) {
-					validateService.validate(card);
+		// synchronized on eppn to avoid parallel modifications on ldap (and avoid to add /remove ldap_value %secondary_id%)
+		String lockKey = "CardEtatService.replayValidationOrInvalidation-" + card.getEppn();
+		synchronized (lockKey.intern()) {
+			if(Etat.ENABLED.equals(card.getEtat())) {
+				if(resynchro) {
+					resynchronisationUserService.synchronizeUserInfo(card.getEppn());
 				}
-			}	
-		}		
-		if(Etat.DISABLED.equals(card.getEtat()) || Etat.CADUC.equals(card.getEtat())) {
-			if(resynchro) {
-				resynchronisationUserService.synchronizeUserInfo(card.getEppn());
-			}
-			for(ValidateService validateService : validateServices) {
-				if(validateServicesNames.contains(validateService.getBeanName())) {
-					validateService.invalidate(card);
+				for(ValidateService validateService : validateServices) {
+					if(validateServicesNames.contains(validateService.getBeanName())) {
+						validateService.validate(card);
+					}
+				}	
+			}		
+			if(Etat.DISABLED.equals(card.getEtat()) || Etat.CADUC.equals(card.getEtat())) {
+				if(resynchro) {
+					resynchronisationUserService.synchronizeUserInfo(card.getEppn());
+				}
+				for(ValidateService validateService : validateServices) {
+					if(validateServicesNames.contains(validateService.getBeanName())) {
+						validateService.invalidate(card);
+					}
 				}
 			}
 		}

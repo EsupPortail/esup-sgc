@@ -282,13 +282,13 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 													    </style>
                                                              <div id="${cssId}">
                                                                  <div id="left">
-                                                                     <p id="recto1">${card.user.recto1}</p>
-                                                                     <p id="recto2">${card.user.recto2}</p>
-                                                                     <p id="recto3">${card.user.recto3}</p>
-                                                                     <p id="recto4">${card.user.recto4}</p>
-                                                                     <p id="recto5">${card.user.recto5}</p>
-                                                                     <p id="recto6">${card.user.recto6}</p>
-                                                                     <p id="recto7">${card.user.recto7}</p>
+                                                                     <p id="recto1">${card.recto1Printed}</p>
+                                                                     <p id="recto2">${card.recto2Printed}</p>
+                                                                     <p id="recto3">${card.recto3Printed}</p>
+                                                                     <p id="recto4">${card.recto4Printed}</p>
+                                                                     <p id="recto5">${card.recto5Printed}</p>
+                                                                     <p id="recto6">${card.recto6Printed}</p>
+                                                                     <p id="recto7">${card.recto7Printed}</p>
                                                                      <spring:url value="/user/templatePhoto/qrCode/${currentTemplate.id}" var="QRCodeUrl"/>
                                                                      <img alt="qrcode" id="qrcode" src="${QRCodeUrl}"/>
                                                                  </div>

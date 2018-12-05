@@ -420,6 +420,10 @@ public class Card {
     public boolean isEnabled() {
         return etat.equals(Etat.ENABLED);
     }
+    
+    public boolean isPrinted() {
+        return CardEtatService.etatsPrinted.contains(etat);
+    }
 
     public CrousSmartCard getCrousSmartCard() {
         if (this.getCsn() != null && !this.getCsn().isEmpty()) {
@@ -877,9 +881,12 @@ public class Card {
         return !Long.valueOf(0).equals(((Long) q.getSingleResult()));
     }
 
+	/**
+	 * Hack : ids are sorted so that ENABLED card are at end of the list 
+	 */
 	public static List<BigInteger> findAllCardIds() {
         EntityManager em = Card.entityManager();
-        String sql = "SELECT id FROM card";
+        String sql = "SELECT id FROM card order by (case etat when 'ENABLED' then 2 else 1 end)";
         Query q = em.createNativeQuery(sql);
         return q.getResultList();
 	}

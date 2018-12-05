@@ -88,6 +88,8 @@ public class ToolsController {
 	
 	@RequestMapping(value = "/replayAllActivationDesactivation", method = RequestMethod.POST, produces = "text/html")
 	public String replayAllActivationDesactivation(RedirectAttributes redirectAttrs, @RequestParam(required=false, defaultValue="") List<String> validateServicesNames, @RequestParam(required=false, defaultValue="false") Boolean resynchro) {
+		// Card.findAllCardIds() return ids with specific orders : enable at last -  replayValidationOrInvalidation is synchronized on eppn 
+		// with thatn, we avoid parallel modifications on ldap (and avoid to add /remove ldap_value %secondary_id% that is same for multiples cards of one user !)
 		for(BigInteger cardId : Card.findAllCardIds()) {
 			cardEtatService.replayValidationOrInvalidation(cardId.longValue(), validateServicesNames, resynchro);
 		}
