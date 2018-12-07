@@ -349,12 +349,14 @@ public class ManagerCardController {
 	 */
 	@RequestMapping(produces = "text/html", params={"index=first"})
 	@Transactional
-	public String defaultSearch(Model uiModel, HttpServletRequest request) {
+	public String defaultSearch(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 
+    		@RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, 
+    		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		CardSearchBean searchBean = new CardSearchBean();
 		searchBean.setType(permissionService.getDefaultTypeTab(roles));
-		return search(searchBean, null, null, null, null, null, uiModel, request);
+		return search(searchBean, page, size, sortFieldName, sortOrder, index, uiModel, request);
 	}
 	
 	
