@@ -23,7 +23,13 @@ import javax.persistence.OrderBy;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
+import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.security.SgcRoleHierarchy;
 import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
@@ -235,27 +241,24 @@ public class User {
 		return q.getResultList();
 	}
 	
-	public static List<String> findDistinctAddresses(String userType, String etat) {
+	public static List<String> findDistinctAddresses(String userType, Etat etat) {
 		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery("SELECT distinct(address) FROM user_account WHERE address <> '' order by address");
-		if(etat==null || etat.isEmpty()){
-			if(userType != null && !userType.isEmpty()) {
-				 q = em.createNativeQuery("SELECT distinct(address) FROM user_account WHERE address <> '' and user_type = (:userType) order by address");
-				 q.setParameter("userType", userType);
-			}
-		}else{
-			String sql = "SELECT DISTINCT address FROM user_account, card WHERE user_account.id= card.user_account AND address <> '' AND etat=:etat";
-			if(userType != null && !userType.isEmpty()) {
-				sql+= " AND user_type = (:userType)";
-			}
-			sql+= " ORDER BY address";
-			q = em.createNativeQuery(sql);
-			q.setParameter("etat", etat);
-			if(userType != null && !userType.isEmpty()) {
-				 q.setParameter("userType", userType);
-			}
-		}
-		return q.getResultList();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<String> query = criteriaBuilder.createQuery(String.class);
+        Root<Card> c = query.from(Card.class);
+        Join<Card, User> u = c.join("userAccount");
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        predicates.add(criteriaBuilder.notEqual(u.get("address"), ""));
+        if(etat!=null) {
+        	predicates.add(criteriaBuilder.equal(c.get("etat"), etat));
+        }
+        if(userType != null && !userType.isEmpty() && !"All".equals(userType)) {
+        	predicates.add(criteriaBuilder.equal(u.get("userType"), userType));
+        }
+        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+        query.orderBy(criteriaBuilder.asc(u.get("address")));
+        query.select(u.get("address")).distinct(true);
+        return em.createQuery(query).getResultList();
 	}
 	
 

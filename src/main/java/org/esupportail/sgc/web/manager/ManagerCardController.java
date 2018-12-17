@@ -448,7 +448,7 @@ public class ManagerCardController {
     	uiModel.addAttribute("size",  size);
     	List<String> addresses = null;
     	if(searchBean.getEtat()!=null){
-    		addresses = getFilteredAdresses(searchBean.getType(),searchBean.getEtat().name());
+    		addresses = getFilteredAdresses(searchBean.getType(), searchBean.getEtat());
     	}else{
     		addresses = userInfoService.getListAdresses(searchBean.getType(), null);
     	}
@@ -639,7 +639,7 @@ public class ManagerCardController {
 	}
 
 
-	public List<String> getFilteredAdresses(String tabType, String etat){
+	public List<String> getFilteredAdresses(String tabType, Etat etat){
 		List<String> adresses = userInfoService.getListAdresses(tabType, etat);	
 		return adresses;
 	}

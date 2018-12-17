@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.EscrCard;
 import org.esupportail.sgc.domain.EscrStudent;
@@ -202,7 +203,7 @@ public class ManagerCardControllerNoHtml {
 	public Map<String, String> filtrerAdresse(@RequestParam(value="etat") String etat, @RequestParam(value="tabType") String tabType) {
 		Map<String, String> adressesMap = new HashMap<String, String>();
 		try {
-			List<String> adresses = userInfoService.getListAdresses(tabType, etat);
+			List<String> adresses = userInfoService.getListAdresses(tabType, etat.isEmpty() ? null : Etat.valueOf(etat));
 			adressesMap = formService.getMapWithUrlEncodedString(adresses);
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les données", e);

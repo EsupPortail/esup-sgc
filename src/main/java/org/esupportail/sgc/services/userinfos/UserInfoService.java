@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.User.CnousReferenceStatut;
@@ -392,7 +393,7 @@ public class UserInfoService {
 		return listTypes;	
 	}
 	
-	public List<String> getListAdresses(String userType, String etat) {
+	public List<String> getListAdresses(String userType, Etat etat) {
 		
 		List<String> adresses = User.findDistinctAddresses(userType, etat);
 		return adresses;
