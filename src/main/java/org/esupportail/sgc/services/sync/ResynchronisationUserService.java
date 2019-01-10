@@ -73,116 +73,114 @@ public class ResynchronisationUserService {
 		dummyUser.setRequestFree(user.isRequestFree());
 		dummyUser.setDifPhoto(user.getDifPhoto());
 		boolean syncUserInfoServiceFlag = userInfoService.setAdditionalsInfo(dummyUser, null);
+		boolean accessControlMustUpdate = false;
 		
 		if(!syncUserInfoServiceFlag) {
 			log.debug("Flag synchronize false for " + eppn + " -> no synchronize");
-			return false;
 		} else {
 		
-		if(log.isTraceEnabled()) {		
-			log.trace("Flag synchronize true for " + eppn);
-			log.trace("'user' computed from userInfoServices : " + dummyUser);
-		}
-
-		boolean accessControlMustUpdate = false;
-
-		// si plus de csn sur une carte externe -> carte à invalider - sauf si elle va être caduque ...
-		if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
-			for (Card card : user.getCards()) {
-				if (card.getExternal() && card.isEnabled() && dummyUser.getDueDate().after(new Date())) {
-					cardEtatService.setCardEtat(card, Etat.DISABLED, null, null, false, true);
+			if(log.isTraceEnabled()) {		
+				log.trace("Flag synchronize true for " + eppn);
+				log.trace("'user' computed from userInfoServices : " + dummyUser);
+			}
+	
+			// si plus de csn sur une carte externe -> carte à invalider - sauf si elle va être caduque ...
+			if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
+				for (Card card : user.getCards()) {
+					if (card.getExternal() && card.isEnabled() && dummyUser.getDueDate().after(new Date())) {
+						cardEtatService.setCardEtat(card, Etat.DISABLED, null, null, false, true);
+						accessControlMustUpdate = true;
+					}
+				}
+			} else {
+				Card externalCard = null;
+				Boolean haveExternalCard = false;
+				for (Card card : user.getCards()) {
+					if (card.getExternal()) {
+						haveExternalCard = true;
+						if (card.getCsn() == null) {
+							card.setCsn(dummyUser.getExternalCard().getCsn());
+							externalCard = card;
+						} else if (card.getCsn().equals(dummyUser.getExternalCard().getCsn())) {
+							externalCard = card;
+						}
+					}
+				}
+				// externalCard has changed CSN !
+				if (haveExternalCard && externalCard == null) {
+					externalCard = externalCardService.initExternalCard(user);
+					cardEtatService.setCardEtat(externalCard, Etat.DISABLED, null, null, false, true);
 					accessControlMustUpdate = true;
 				}
-			}
-		} else {
-			Card externalCard = null;
-			Boolean haveExternalCard = false;
-			for (Card card : user.getCards()) {
-				if (card.getExternal()) {
-					haveExternalCard = true;
-					if (card.getCsn() == null) {
-						card.setCsn(dummyUser.getExternalCard().getCsn());
-						externalCard = card;
-					} else if (card.getCsn().equals(dummyUser.getExternalCard().getCsn())) {
-						externalCard = card;
-					}
-				}
-			}
-			// externalCard has changed CSN !
-			if (haveExternalCard && externalCard == null) {
-				externalCard = externalCardService.initExternalCard(user);
-				cardEtatService.setCardEtat(externalCard, Etat.DISABLED, null, null, false, true);
-				accessControlMustUpdate = true;
-			}
-			if (externalCard != null) {
-				if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
-					cardEtatService.setCardEtat(dummyUser.getExternalCard(), Etat.CADUC, null, null, false, true);
-				} else {
-					externalCard.setCsn(dummyUser.getExternalCard().getCsn());
-					externalCard.setDesfireIds(dummyUser.getExternalCard().getDesfireIds());
-					PhotoFile photo = dummyUser.getExternalCard().getPhotoFile();
-					if(photo.getBigFile().getBinaryFile() != null) {
-						externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
-						externalCard.getPhotoFile().setFileSize(photo.getFileSize());
-						externalCard.getPhotoFile().setContentType(photo.getContentType());
+				if (externalCard != null) {
+					if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
+						cardEtatService.setCardEtat(dummyUser.getExternalCard(), Etat.CADUC, null, null, false, true);
 					} else {
-						externalCard.getPhotoFile().getBigFile().setBinaryFile(importExportCardService.loadNoImgPhoto());
-						externalCard.getPhotoFile().setFileSize(Long.valueOf(Integer.valueOf(importExportCardService.loadNoImgPhoto().length)));
-						externalCard.getPhotoFile().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
+						externalCard.setCsn(dummyUser.getExternalCard().getCsn());
+						externalCard.setDesfireIds(dummyUser.getExternalCard().getDesfireIds());
+						PhotoFile photo = dummyUser.getExternalCard().getPhotoFile();
+						if(photo.getBigFile().getBinaryFile() != null) {
+							externalCard.getPhotoFile().getBigFile().setBinaryFile(photo.getBigFile().getBinaryFile());
+							externalCard.getPhotoFile().setFileSize(photo.getFileSize());
+							externalCard.getPhotoFile().setContentType(photo.getContentType());
+						} else {
+							externalCard.getPhotoFile().getBigFile().setBinaryFile(importExportCardService.loadNoImgPhoto());
+							externalCard.getPhotoFile().setFileSize(Long.valueOf(Integer.valueOf(importExportCardService.loadNoImgPhoto().length)));
+							externalCard.getPhotoFile().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
+						}
+						userInfoService.setPrintedInfo(externalCard);
+						if (Etat.DISABLED.equals(externalCard.getEtat()) || Etat.CADUC.equals(externalCard.getEtat())) {
+							cardEtatService.setCardEtat(externalCard, Etat.ENABLED, null, null, false, true);
+						}
 					}
-					userInfoService.setPrintedInfo(externalCard);
-					if (Etat.DISABLED.equals(externalCard.getEtat()) || Etat.CADUC.equals(externalCard.getEtat())) {
-						cardEtatService.setCardEtat(externalCard, Etat.ENABLED, null, null, false, true);
-					}
-				}
-			}
-		}
-		
-		if(!dummyUser.fieldsEquals(user) && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
-			if(dummyUser.getDueDate() == null && user.getDueDate().after(new Date())) {
-				// TODO : avec shib, quelle dueDate ??
-				log.warn(user.getEppn() + " has no more dueDate from sql/shib/ldap userInfoService (no more entry) "
-						+ "and its recording duedate is at the moment after today -> we should force the dueDate to be today ... ?!");
-				//user.setDueDate(new Date());
-			}
-			
-			// if user is caduc and have only cards caduc we don't synchronize
-			if(dummyUser.getDueDateIncluded() != null && dummyUser.getDueDateIncluded().before(new Date()) || dummyUser.getDueDateIncluded() == null && user.getDueDateIncluded() != null && user.getDueDateIncluded().before(new Date())) {
-				boolean haveOnlyCaducCards = true; 
-				for(Card card : user.getCards()) {
-					if(!Etat.CADUC.equals(card.getEtat())) {
-						haveOnlyCaducCards = false;
-					}
-				}
-				if(haveOnlyCaducCards) {
-					log.trace(eppn + " is already caduc - no need to synchronize");
-					return false;
-				} else {
-					log.debug(eppn + " is caduc - but he has cards that are not caduc - need to synchronize");
 				}
 			}
 			
-			log.info("Synchronize of user " + eppn + " is needed.");
-			userInfoService.setAdditionalsInfo(user, null);
-			user.merge();
-			// we synchronize users with crous only if user had enable crous and had an email and had cards - same for europeanStudentCard
-			if(user.getEmail() != null && !user.getEmail().isEmpty() && Card.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}))>0) {
-				if(user.getCrous()) {
-					crousService.postOrUpdateRightHolder(user.getEppn());
+			if(!dummyUser.fieldsEquals(user) && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
+				if(dummyUser.getDueDate() == null && user.getDueDate().after(new Date())) {
+					// TODO : avec shib, quelle dueDate ??
+					log.warn(user.getEppn() + " has no more dueDate from sql/shib/ldap userInfoService (no more entry) "
+							+ "and its recording duedate is at the moment after today -> we should force the dueDate to be today ... ?!");
+					//user.setDueDate(new Date());
 				}
-				if(user.getEuropeanStudentCard()) {
-					apiEscrService.postOrUpdateEscrStudent(user.getEppn());
+				
+				// if user is caduc and have only cards caduc, canceled or destroyed we don't synchronize
+				if(dummyUser.getDueDateIncluded() != null && dummyUser.getDueDateIncluded().before(new Date()) || dummyUser.getDueDateIncluded() == null && user.getDueDateIncluded() != null && user.getDueDateIncluded().before(new Date())) {
+					boolean haveOnlyCaducOrCanceledOrDestroyedCards = true; 
+					for(Card card : user.getCards()) {
+						if(!Etat.CADUC.equals(card.getEtat()) && !Etat.CANCELED.equals(card.getEtat()) && !Etat.DESTROYED.equals(card.getEtat())) {
+							haveOnlyCaducOrCanceledOrDestroyedCards = false;
+						}
+					}
+					if(haveOnlyCaducOrCanceledOrDestroyedCards) {
+						log.trace(eppn + " is already caduc - no need to synchronize");
+						return false;
+					} else {
+						log.debug(eppn + " is caduc - but he has cards that are not caduc/canceled/destroyed - need to synchronize");
+					}
 				}
+				
+				log.info("Synchronize of user " + eppn + " is needed.");
+				userInfoService.setAdditionalsInfo(user, null);
+				user.merge();
+				// we synchronize users with crous only if user had enable crous and had an email and had cards - same for europeanStudentCard
+				if(user.getEmail() != null && !user.getEmail().isEmpty() && Card.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}))>0) {
+					if(user.getCrous()) {
+						crousService.postOrUpdateRightHolder(user.getEppn());
+					}
+					if(user.getEuropeanStudentCard()) {
+						apiEscrService.postOrUpdateEscrStudent(user.getEppn());
+					}
+				}
+				if(log.isTraceEnabled()) {
+					log.trace("user is now : " + user);
+				}
+				log.debug("Synchronize of user " + eppn + " was needed : done.");
+				updated = true;
+			} else {
+				log.debug("Synchronize of user " + eppn + " was not needed.");
 			}
-			if(log.isTraceEnabled()) {
-				log.trace("user is now : " + user);
-			}
-			log.debug("Synchronize of user " + eppn + " was needed : done.");
-			updated = true;
-		} else {
-			log.debug("Synchronize of user " + eppn + " was not needed.");
 		}
-		
 		
 		for(Card card : user.getCards()) {
 			// resync of cards : dueDate of user = max due_date
@@ -213,8 +211,9 @@ public class ResynchronisationUserService {
 		if(accessControlMustUpdate && accessControlService!=null) {
 			accessControlService.sync(eppn);
 		}
+		
 		return updated;
-		}
+		
 	}
 
 }

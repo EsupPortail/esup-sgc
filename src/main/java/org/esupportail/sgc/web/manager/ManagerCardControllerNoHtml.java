@@ -143,23 +143,22 @@ public class ManagerCardControllerNoHtml {
 				
 				BitMatrix matrix = new QRCodeWriter().encode(value, BarcodeFormat.QR_CODE, 100, 100, hints); 
 				
-				if("SVG".equalsIgnoreCase(appliConfigService.getQrcodeFormat())) {
-						
-					return new ResponseEntity<String>(cardService.getQrCodeSvg(value), headers, HttpStatus.OK);	
-					
-				} else {
-					
+				if("SVG".equalsIgnoreCase(appliConfigService.getQrcodeFormat())) {					
+					return new ResponseEntity<String>(cardService.getQrCodeSvg(value), headers, HttpStatus.OK);					
+				} else {				
 					headers.add("Content-Type", "image/png");
 					MatrixToImageWriter.writeToStream(matrix, "PNG", response.getOutputStream());
+					return null;
 				}
-			}else{
-				if(photoFile != null){
+			} else {
+				if(photoFile != null) {
 					Long size = photoFile.getFileSize();
 					String contentType = photoFile.getContentType();
 					response.setContentType(contentType);
 					response.setContentLength(size.intValue());
 					IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
-					log.debug("code-barres is used for this card " + cardId);
+					log.trace("code-barres is used for this card " + cardId);
+					return null;
 				}
 			}
 

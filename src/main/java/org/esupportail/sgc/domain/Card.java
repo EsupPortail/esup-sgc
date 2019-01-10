@@ -628,7 +628,7 @@ public class Card {
 
 
     private static String computeSearchString(String searchString) {
-        List<String> searchStrings = Arrays.asList(StringUtils.split(searchString, " "));
+        List<String> searchStrings = Arrays.asList(StringUtils.splitByWholeSeparator(searchString, null));
         List<String> searchStringsExpr = new ArrayList<String>();
         for (String s : searchStrings) {
             searchStringsExpr.add(s + ":*");
@@ -813,7 +813,8 @@ public class Card {
     }
 
     /**
-     * @return Date + 30H00 - so that 31/08/2017 is 01/09/2017 - 06H00
+     * @deprecated - use directly getDueDate() : DUE_DATE_INCLUDED_DELAY = 0 now
+     * @return Date + DUE_DATE_INCLUDED_DELAY
      */
     public Date getDueDateIncluded() {
         Date dueDateIncluded = null;
@@ -821,7 +822,7 @@ public class Card {
         if (dueDate != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(dueDate);
-            cal.add(Calendar.HOUR, +30);
+            cal.add(Calendar.HOUR, User.DUE_DATE_INCLUDED_DELAY);
             dueDateIncluded = cal.getTime();
         }
         return dueDateIncluded;

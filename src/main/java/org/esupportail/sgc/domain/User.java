@@ -53,7 +53,7 @@ public class User {
 	private final static Logger log = LoggerFactory.getLogger(User.class);
 
 	// @see getDueDateIncluded()
-	public final static int DUE_DATE_INCLUDED_DELAY = +30;
+	public final static int DUE_DATE_INCLUDED_DELAY = +0;
 	
 	public static enum CnousReferenceStatut {
 		psg, etd, prs, hbg, fct, fpa, stg;
@@ -600,7 +600,8 @@ public class User {
 	}
 
     /**
-     * @return Date + 30H00 - so that 31/08/2017 is 01/09/2017 - 06H00
+     * @deprecated - use directly getDueDate() : DUE_DATE_INCLUDED_DELAY = 0 now
+     * @return Date + DUE_DATE_INCLUDED_DELAY
      */
     public Date getDueDateIncluded() {
         Date dueDateIncluded = null;
