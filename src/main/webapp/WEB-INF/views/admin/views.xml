@@ -17,7 +17,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
---><!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+--><!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
 <tiles-definitions>
     <definition extends="default" name="admin">
         <put-attribute name="body" value="/WEB-INF/views/admin/index.jspx"/>
