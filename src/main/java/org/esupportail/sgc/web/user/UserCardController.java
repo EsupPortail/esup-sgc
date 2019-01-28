@@ -16,6 +16,7 @@ import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.PayBoxForm;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
@@ -35,7 +36,6 @@ import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
-import org.esupportail.sgc.services.paybox.PayBoxForm;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;

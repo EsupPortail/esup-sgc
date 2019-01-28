@@ -21,7 +21,8 @@ public class AppliConfigService {
 		USER_MSG_REJECTED_CARD, USER_MSG_ENABLED_CARD, USER_MSG_ENABLED_PERS_CARD, ANNEE_UNIV, USER_MSG_FORM_REJECTED, USER_FORM_RULES, USER_FREE_FORCED_RENEWAL, 
 		USER_TIP_MSG, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, ENABLE_CROUS, 
 		ENABLE_EUROPEAN_CARD, DISPLAY_FORM_EUROPEAN_CARD, PAGE_FOOTER, EXT_USER_EPPN_REGEXP, RETENTION_LOGS_DB_DAYS, P2S_EXPORT_CSV_FILE_NAME, P2S_EXPORT_CSV_NB_LINES_PER_FILE,
-		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS, PHOTO_SIZE_MAX, PHOTO_BORDEREAU
+		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS, PHOTO_SIZE_MAX, PHOTO_BORDEREAU, 
+		PAIEMENT_ALERT_MAILTO, PAIEMENT_ALERT_MAILBODY
 	}
 	
 
@@ -307,10 +308,21 @@ public class AppliConfigService {
 	public Boolean getPhotoBordereau() {
 		return AppliConfig.countFindAppliConfigsByKeyLike(AppliConfigKey.PHOTO_BORDEREAU.name())==0 ? false : Boolean.valueOf(getAppliConfigByKey(AppliConfigKey.PHOTO_BORDEREAU).getValue());
 	}
+	
+	public String getPaiementAlertMailto() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.PAIEMENT_ALERT_MAILTO);
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
+	
+	public String getPaiementAlertMailbody() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.PAIEMENT_ALERT_MAILBODY);
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
 
-	private AppliConfig getAppliConfigByKey(AppliConfigKey appliConfigKey) {
+	protected AppliConfig getAppliConfigByKey(AppliConfigKey appliConfigKey) {
 		return AppliConfig.findAppliConfigByKey(appliConfigKey.name());
 	}
+	
 }
 
 

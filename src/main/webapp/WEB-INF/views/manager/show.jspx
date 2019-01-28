@@ -24,8 +24,8 @@
                 <div class="panel-heading">
                     <h5>
                     ${user.eppn}
-                    <spring:url value="/j_spring_security_switch_user" var="su_url"/>
-                        <sec:authorize access="hasRole('ROLE_ADMIN')">
+                        <sec:authorize access="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')">
+                        	<spring:url value="/j_spring_security_switch_user" var="su_url"/>
                             <form action="${su_url}" class="form-horizontal" method="POST" style="display:inline">
                                 <input name="j_username" type="hidden" value="${user.eppn}"/>
                                 <button class="btn btn-danger" type="submit">SU</button>

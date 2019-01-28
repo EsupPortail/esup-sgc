@@ -53,14 +53,26 @@
 					     <spring:url value="/manager/clientjws" var="clientJwsUrl"/>
 			    		 <li class="menuTools">
 			    		 	<a href="${clientJwsUrl}">
-			    		 		<span class="glyphicon glyphicon-qrcode"><!--  --></span>
-			    		 		Encodeur
+			    		 		<span style="opacity: 0.5;" class="glyphicon glyphicon-qrcode"><!--  --></span>
+			    		 		Encodeur (Ancienne version)
 		    		 		</a>
 			    		 </li>
 			    		 <li class="menuTools">
 			    		 	<a href="${clientJwsUrl}/r2d2">
+				    		 	<span style="opacity: 0.5;background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
+				    		 	Encodeur - robot ZXP3 (Ancienne version)
+			    		 	</a>
+			    		 </li>
+			    		 <li class="menuTools">
+			    		 	<a href="/esupsgcclient-shib.jar">
+			    		 		<span class="glyphicon glyphicon-qrcode"><!--  --></span>
+			    		 		Nouvel encodeur
+		    		 		</a>
+			    		 </li>
+			    		 <li class="menuTools">
+			    		 	<a href="/esupsgcclient-r2d2-shib.jar">
 				    		 	<span style="background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
-				    		 	Encodeur - robot ZXP3
+				    		 	Nouvel encodeur - robot ZXP3
 			    		 	</a>
 			    		 </li>
 					 </sec:authorize>

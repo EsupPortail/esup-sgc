@@ -31,7 +31,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.1.x";
+	final static String currentEsupSgcVersion = "1.2.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -202,6 +202,19 @@ public class DbToolService {
 				connection.close();
 				
 	    		esupSgcVersion = "1.0.x";
+			}
+			if("1.1.x".equals(esupSgcVersion) || "1.0.x".equals(esupSgcVersion)) {
+				
+				String sqlUpdate = "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'PAIEMENT_ALERT_MAILTO', '', 'Adresse mail à laquelle sont adressés les mails alertant d''un paiement paybox', 'TEXT');";
+				sqlUpdate += "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'PAIEMENT_ALERT_MAILBODY', '', 'Contenu du mail alertant un paiement paybox', 'TEXT');";
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+	    		esupSgcVersion = "1.2.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
