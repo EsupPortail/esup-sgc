@@ -45,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @RooJavaBean
 @RooToString
 @RooDbManaged(automaticallyDelete = true)
-@RooJpaActiveRecord(versionField = "", table = "Card", finders = { "findCardsByEppnEquals", "findCardsByEppnAndEtatEquals", "findCardsByEppnLike", "findCardsByEtatEqualsAndDateDemandeLessThan", "findCardsByDesfireId", "findCardsByCsn", "findCardsByEppnAndEtatNotEquals" })
+@RooJpaActiveRecord(versionField = "", table = "Card", finders = { "findCardsByEppnEquals", "findCardsByEppnAndEtatEquals", "findCardsByEppnLike", "findCardsByEtatEqualsAndDateDemandeLessThan", "findCardsByDesfireId", "findCardsByCsn", "findCardsByEppnAndEtatNotEquals",  "findCardsByEtatAndDateEtatLessThan" })
 @JsonFilter("cardFilter")
 public class Card {
 

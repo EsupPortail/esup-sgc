@@ -134,14 +134,6 @@ privileged aspect Card_Roo_JavaBean {
         this.requestDate = requestDate;
     }
     
-    public Date Card.getDateEtat() {
-        return this.dateEtat;
-    }
-    
-    public void Card.setDateEtat(Date dateEtat) {
-        this.dateEtat = dateEtat;
-    }
-    
     public String Card.getCommentaire() {
         return this.commentaire;
     }
@@ -332,6 +324,14 @@ privileged aspect Card_Roo_JavaBean {
     
     public void Card.setCrousError(String crousError) {
         this.crousError = crousError;
+    }
+    
+    public Date Card.getDateEtat() {
+        return this.dateEtat;
+    }
+    
+    public void Card.setDateEtat(Date dateEtat) {
+        this.dateEtat = dateEtat;
     }
     
 }

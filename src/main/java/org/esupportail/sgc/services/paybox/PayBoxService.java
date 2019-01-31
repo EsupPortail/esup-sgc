@@ -129,6 +129,8 @@ public class PayBoxService {
         payBoxForm.setForwardRefuseUrl(annulerUrl);
         String hMac = hashService.getHMac(payBoxForm.getParamsAsString());
         payBoxForm.setHmac(hMac);
+        payBoxForm.setEppn(eppn);
+        payBoxForm.setRequestDate(new Date());
         payBoxForm.persist();
         return payBoxForm;
     }

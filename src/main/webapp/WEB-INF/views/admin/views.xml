@@ -34,4 +34,7 @@
     <definition extends="default" name="admin/tools">
         <put-attribute name="body" value="/WEB-INF/views/admin/tools.jspx"/>
     </definition>
+    <definition extends="default" name="admin/purge">
+        <put-attribute name="body" value="/WEB-INF/views/admin/purge.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -234,6 +234,20 @@ public class User {
 		return q.getResultList();
 	}
 	
+	
+	public static TypedQuery<User> findUsersWithNoCards() {
+		EntityManager em = User.entityManager();
+		TypedQuery<User> q = em.createQuery("SELECT o FROM User o where o.cards IS EMPTY", User.class);
+		return q;
+	}
+	
+	public static long countFindUsersWithNoCards() {
+		EntityManager em = User.entityManager();
+		TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM User o where o.cards IS EMPTY", Long.class);
+		return q.getSingleResult();
+	}
+	
+	
 	public static List<String> findAllEppnsWithRole(String roleName) {
 		EntityManager em = User.entityManager();
 		Query q = em.createNativeQuery("select eppn from user_account u, roles r where r.role=:roleName and u.id=r.user_account");

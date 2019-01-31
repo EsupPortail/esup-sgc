@@ -1,6 +1,9 @@
 package org.esupportail.sgc.services.ldap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,12 +74,27 @@ public class LdapGroup2UserRoleService {
 		long membersRemoved = 0;
 		StopWatch stopWatch = new StopWatch();
 		Set<String> allEppnUsers = new HashSet<String>(User.findAllEppns());
+		Map<String, List<String>> groups4RoleMap = new HashMap<String, List<String>>();
+		
 		for(String groupName : mappingGroupesRoles.keySet()) {
 			for(String role : mappingGroupesRoles.get(groupName).split(MULTIPLE_ROLES_DELIMITER)) {
+				if(!groups4RoleMap.containsKey(role)) {
+					groups4RoleMap.put(role, new ArrayList<String>());
+				}
+				groups4RoleMap.get(role).add(groupName);
+			}
+		}
+		
+		for(String role : groups4RoleMap.keySet()) {
+			
 				stopWatch.start("sync " + role);
 				
 				Set<String> eppnUsersWithRole = new HashSet<String>(User.findAllEppnsWithRole(role));
-				Set<String> ldapGroupMembers = new HashSet<String>(groupService.getMembers(groupName));
+				
+				Set<String> ldapGroupMembers = new HashSet<String>();
+				for(String groupName : groups4RoleMap.get(role)) {
+					ldapGroupMembers.addAll(new HashSet<String>(groupService.getMembers(groupName)));
+				}
 				
 				stopWatch.stop();
 				stopWatch.start("copy " + role);
@@ -106,7 +124,7 @@ public class LdapGroup2UserRoleService {
 					}
 				}
 				stopWatch.stop();
-			}
+				
 		}
 		log.debug("Total execution time to sync ldap groups on DB " + stopWatch.getTotalTimeMillis()/1000.0 + "sec");
 		log.trace(stopWatch.prettyPrint());
