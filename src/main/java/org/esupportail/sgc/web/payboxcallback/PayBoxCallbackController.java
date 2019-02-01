@@ -35,7 +35,7 @@ public class PayBoxCallbackController {
     public ResponseEntity<java.lang.String> index(@RequestParam String montant, @RequestParam String reference, @RequestParam(required = false) String auto, @RequestParam String erreur, @RequestParam String idtrans, @RequestParam String signature, HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         String queryString = request.getQueryString();
-        String eppn = payBoxService.getEppn(idtrans);
+        String eppn = payBoxService.getEppn(reference);
         if (payBoxService.payboxCallback(montant, reference, auto, erreur, idtrans, signature, queryString, ip)) {
         	logService.log(null, ACTION.PAYMENT, RETCODE.SUCCESS, "", eppn, null);
         } else {

@@ -222,7 +222,7 @@ public class PayBoxService {
         txLog.setIdtrans(idtrans);
         txLog.setSignature(signature);
         txLog.setTransactionDate(new Date());
-        String eppn = getEppn(idtrans);
+        String eppn = getEppn(reference);
         txLog.setEppn(eppn);
         if (this.checkPayboxSignature(queryString, signature)) {
                 if ("00000".equals(erreur)) {
@@ -252,9 +252,9 @@ public class PayBoxService {
         return false;
     }
 
-    public String getEppn(String idtrans) {
+    public String getEppn(String reference) {
     	String eppn = null;
-    	List<PayBoxForm> payBoxForms =  PayBoxForm.findPayBoxFormsByCommandeEquals(idtrans).getResultList();
+    	List<PayBoxForm> payBoxForms =  PayBoxForm.findPayBoxFormsByCommandeEquals(reference).getResultList();
     	if(!payBoxForms.isEmpty()) {
     		eppn= payBoxForms.get(0).getEppn();
     	}
