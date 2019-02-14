@@ -25,6 +25,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.security.PermissionService;
@@ -206,6 +207,8 @@ public class ManagerCardController {
         uiModel.addAttribute("user", user);
         uiModel.addAttribute("currentCard", card);
         uiModel.addAttribute("managePermission",  permissionService.hasManagePermission(roles, user.getUserType()));
+        uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
+        uiModel.addAttribute("hasRequestCard", cardEtatService.hasRequestCard(user.getEppn()));
         return "manager/show";
     }
     
@@ -293,7 +296,7 @@ public class ManagerCardController {
     @PreAuthorize("hasPermission(#cardId, 'manage')")
 	@RequestMapping(value="/action/{cardId}", method=RequestMethod.POST)
 	@Transactional
-	public String actionEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, Model uiModel) {
+	public String actionEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, @RequestParam(value="motif", required=false) MotifDisable motifDisable, Model uiModel) {
 		Card card = Card.findCard(cardId);
 		card.merge();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -316,6 +319,9 @@ public class ManagerCardController {
 				}
 			} else {
 				cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false);
+				if(Etat.DISABLED.equals(etatFinal) && motifDisable != null) {
+					card.setMotifDisable(motifDisable);
+				}
 				return "redirect:/manager/" + card.getId();
 			}		
 		}
@@ -644,11 +650,16 @@ public class ManagerCardController {
 		return adresses;
 	}
 
+	
 	@PreAuthorize("hasRole('ROLE_MANAGER')")
 	@RequestMapping(value="/csvSearch", method = RequestMethod.GET)
-	public void getCsvFromSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, Model uiModel, @RequestParam(value="fields",required=false) List<String> fields, HttpServletResponse response) throws IOException {
+	public void getCsvSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, @RequestParam(value="fields",required=false) List<String> fields, HttpServletResponse response) throws IOException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();	
+		getCsvFromSearch(searchBean, fields, eppn, response);
+	}
+	
+	public void getCsvFromSearch(CardSearchBean searchBean, List<String> fields, String eppn, HttpServletResponse response) throws IOException {
 		response.setContentType("text/csv");
 		String reportName = "cards.csv";
 		response.setHeader("Set-Cookie", "fileDownload=true; path=/");
@@ -659,17 +670,6 @@ public class ManagerCardController {
     	searchBean.setAddress(formService.decodeUrlString(searchBean.getAddress()));
     	
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
-    		SortedMap<Integer, List<String>> noEmptyFreeFieldValue = new TreeMap<Integer, List<String>>(searchBean.getFreeFieldValue());
-    		SortedMap<String, List<String>> fieldsValueEncoded = new TreeMap<String, List<String>>() ;
-    		noEmptyFreeFieldValue.values().removeAll(Collections.singleton(""));
-    		List<String> allFreeFieldValueList = new ArrayList<String>();    	
-    		for(int j=0; j < Collections.max(searchBean.getFreeFieldValue().keySet())+1; j++) {
-    			List<String> freeFieldValueList = searchBean.getFreeFieldValue().get(j);
-    			String freeFieldValueJoinString = StringUtils.join(freeFieldValueList.toArray(), ",");
-    			allFreeFieldValueList.add(freeFieldValueJoinString);
-    		}
-    		String allFreeFieldValueJoinString = StringUtils.join(allFreeFieldValueList, ";");
-    		uiModel.addAttribute("fieldsValue", allFreeFieldValueJoinString);
     		SortedMap<Integer, List<String>> freeFieldValueDecoded = new TreeMap<Integer, List<String>>() ; 		
     		for (Map.Entry<Integer, List<String>> freeFieldEncoded : searchBean.getFreeFieldValue().entrySet()) {
     			List<String> entryValuesDecoded = new ArrayList<String>();
@@ -677,15 +677,11 @@ public class ManagerCardController {
     				entryValuesDecoded.add(formService.decodeUrlString(value));
     			}
     			freeFieldValueDecoded.put(freeFieldEncoded.getKey(), entryValuesDecoded);
-    			fieldsValueEncoded.put(freeFieldEncoded.getKey().toString(), freeFieldEncoded.getValue());
     		}
-    		// fieldsValueEncoded pour IHM : numéro du champ -> valeurs url encodés
-    		uiModel.addAttribute("fieldsValueEncoded", fieldsValueEncoded);
     		// freeFieldValue dans searchBean doit correspondre aux valeurs en base : valeurs non url encodées
     		searchBean.setFreeFieldValue(freeFieldValueDecoded);	
     	}
-    	
-    	
+
 		importExportService.exportCsv2OutputStream(searchBean, eppn, fields, response.getOutputStream());
 	}
 	

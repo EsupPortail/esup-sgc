@@ -83,21 +83,32 @@
 			    	<td>
 						<c:choose>
 							<c:when test="${not empty user.cards}">
-								<a href="${rootManagerUrl}${user.cards[0].id}" class="btn btn-warning">Voir la fiche</a>
+								<c:choose>
+									<c:when test="${user.viewRight}">
+										<a href="${rootManagerUrl}${user.cards[0].id}" class="btn btn-warning">Voir la fiche</a>
+									</c:when>
+									<c:otherwise>
+										<span class="btn btn-warning disabled">Voir la fiche</span>
+									</c:otherwise>
+								</c:choose>
 							</c:when>
 							<c:otherwise>
 								<c:choose>
 									<c:when test="${empty user.externalCard.csn}">
-										<form class="form-horizontal" action="${ldapUserFormUrl}" method="POST" id="ldapUserFormUrl">
-											<input type="hidden" value="${user.eppn}" name="eppn" />
-											<button type="submit" class="btn btn-primary">Faire une demande</button>
-										</form>
+										<c:if test="${user.newCardRight}">
+											<form class="form-horizontal" action="${ldapUserFormUrl}" method="POST" id="ldapUserFormUrl">
+												<input type="hidden" value="${user.eppn}" name="eppn" />
+												<button type="submit" class="btn btn-primary">Faire une demande</button>
+											</form>
+										</c:if>
 									</c:when>
 									<c:otherwise>
-										<form class="form-horizontal" action="${ldapUserExtFormUrl}" method="POST" id="ldapUserExtFormUrl">
-											<input type="hidden" value="${user.eppn}" name="eppn" />
-											<button type="submit" class="btn btn-danger">Importer la carte extérieure</button>
-										</form>
+										<c:if test="${user.importExtCardRight}">
+											<form class="form-horizontal" action="${ldapUserExtFormUrl}" method="POST" id="ldapUserExtFormUrl">
+												<input type="hidden" value="${user.eppn}" name="eppn" />
+												<button type="submit" class="btn btn-danger">Importer la carte extérieure</button>
+											</form>
+										</c:if>
 									</c:otherwise>
 								</c:choose>
 							</c:otherwise>

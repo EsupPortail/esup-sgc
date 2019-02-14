@@ -10,15 +10,17 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.crous.CrousErrorLog;
+import org.esupportail.sgc.services.PurgeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/admin/purge")
@@ -30,6 +32,9 @@ public class PurgeController {
 	@Resource
 	AppliConfigService appliConfigService;
 	
+	@Resource
+	PurgeService purgeService;
+	
 	@ModelAttribute("help")
 	public String getHelp() {
 		return appliConfigService.getHelpAdmin();
@@ -37,7 +42,7 @@ public class PurgeController {
 
 	@ModelAttribute("active")
 	public String getActiveMenu() {
-		return "tools";
+		return "purge";
 	}  
 	
 	@ModelAttribute("footer")
@@ -61,23 +66,25 @@ public class PurgeController {
 	
 	
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
-	public String index() {
+	public String index(Model uiModel) {
+		uiModel.addAttribute("userWithNoCardsNb", User.countFindUsersWithNoCards());
 		return "admin/purge";
 	}
+
+	@RequestMapping(value="/count")
+	@ResponseBody
+	public Long card2purgeCount(@DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat) {
+		return Card.countFindCardsByEtatAndDateEtatLessThan(etat, date);
+	}
 	
-	// @Transactional - pas de transactionnal pour purger chaque carte dans sa propre transaction
+	// @Transactional - pas de transactionnal ici -> purge de chaque carte dans sa propre transaction
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
 	public synchronized String purge(RedirectAttributes redirectAttrs, @DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat) {
 		long nbCardsRemoved = 0;
 		log.info(Card.countFindCardsByEtatAndDateEtatLessThan(etat, date) + " cartes vont être supprimées/purgées");
 		for(Card card : Card.findCardsByEtatAndDateEtatLessThan(etat, date).getResultList()) {
 			try {
-				if(CrousErrorLog.countFindCrousErrorLogsByCard(card)>0) {
-					for(CrousErrorLog crousErrorLog : CrousErrorLog.findCrousErrorLogsByCard(card).getResultList()) {
-						crousErrorLog.remove();
-					}
-				}
-				card.remove();
+				purgeService.purge(card);
 				nbCardsRemoved++;
 			} catch(Exception e) {
 				log.error("Erreur durant la suppression de carte : " + card.getId(), e);
@@ -88,19 +95,14 @@ public class PurgeController {
 		return "redirect:/admin/purge";
 	}
 	
-	// @Transactional - pas de transactionnal pour purger chaque utilisateur dans sa propre transaction
+	// @Transactional - pas de transactionnal ici -> purge de chaque utilisateur dans sa propre transaction
 	@RequestMapping(params = "users", method = RequestMethod.POST, produces = "text/html")
 	public synchronized String purgeUsers(RedirectAttributes redirectAttrs) {
 		long nbUsersRemoved = 0;
 		log.info(User.countFindUsersWithNoCards() + " utilisateurs vont être supprimés/purgés");
 		for(User user : User.findUsersWithNoCards().getResultList()) {
 			try {
-				if(CrousErrorLog.countFindCrousErrorLogsByUserAccount(user)>0) {
-					for(CrousErrorLog crousErrorLog : CrousErrorLog.findCrousErrorLogsByUserAccount(user).getResultList()) {
-						crousErrorLog.remove();
-					}
-				}
-				user.remove();
+				purgeService.purge(user);
 				nbUsersRemoved++;
 			} catch(Exception e) {
 				log.error("Erreur durant la suppression de l'utilisateur : " + user.getId(), e);
@@ -110,7 +112,7 @@ public class PurgeController {
 		redirectAttrs.addFlashAttribute("messageSuccess", nbUsersRemoved + " utilisateurs purgés (supprimés)");
 		return "redirect:/admin/purge";
 	}
-	
+
 	
 }
 

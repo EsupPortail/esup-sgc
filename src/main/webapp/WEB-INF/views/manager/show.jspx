@@ -170,7 +170,19 @@
                             <c:if test="${managePermission}">
                                 <spring:url value="/manager/${currentCard.id}/resync-user/${user.eppn}" var="resynchUrl"/>
                                 <a class="btn btn-danger" href="${resynchUrl}">Resynchronisation</a>
-                            </c:if>
+                            	
+                            	 <c:if test="${not hasRequestCard}">
+									<hr/>
+                            	 	<c:if test="${not user.requestFree}">
+                            	 		<div class="alert alert-warning">La demande d'une nouvelle carte requiert normalement ici un paiement !</div>
+                            	 	</c:if>
+		                            <spring:url value="/manager/ldapUserForm" var="ldapUserFormUrl" />
+					                <form class="form-horizontal" action="${ldapUserFormUrl}" method="POST" id="ldapUserFormUrl">
+									  <input type="hidden" value="${user.eppn}" name="eppn" />
+									  <button type="submit" class="btn ${user.requestFree ? 'btn-primary' : 'btn-warning'}">Faire une demande</button>
+									</form>
+								 </c:if>
+							</c:if>
                         </div>
                     </div>
                     <div class="col-lg-8">
@@ -372,6 +384,23 @@
                                                                                             <h3 class="modal-title">Commentaire</h3>
                                                                                         </div>
                                                                                         <div class="modal-body">
+                                                                                          <c:if test="${'DISABLED' eq etatAvailable}">
+	                                                                                          <div class="form-group">
+	                                                                                          	<div class="radio">
+																									  <label>
+																										<input type="radio" name="motif" value="" checked="checked"/>
+																									  </label>
+																								</div>
+		                                                                                        <c:forEach items="${motifsList}" var="motif">
+																						 			<div class="radio">
+																									  <label>
+																										<input type="radio" name="motif" value="${motif}"/>
+																									    <spring:message code="user.motif.${motif}" htmlEscape="false" />
+																									  </label>
+																									</div>	
+																								</c:forEach>
+																								</div>
+																							</c:if>
                                                                                             <div class="form-group">
                                                                                                 <textarea class="form-control" id="comment_${i.index}_${j.index}" name="comment" rows="5">
                                                                                                     <c:forEach items="${card.cardActionMessages}" var="message" varStatus="loop">
@@ -444,7 +473,7 @@
                                                             </c:forEach>
                                                         </div>
                                                     </c:if>
-                                                </div>
+	                                            </div>
                                                 <dl class="dl-horizontal col-lg-5">
                                                     <h4>Recto/verso</h4>
                                                     <dt>recto1</dt>
@@ -523,7 +552,11 @@
                                                     <dt>Paybox : </dt>
                                                     <dd>${card.payCmdNum}</dd>
                                                     <dt>Motif : </dt>
-                                                    <dd>${card.motifDisable}</dd>
+                                                    <dd>
+                                                      <c:if test="${not empty card.motifDisable}">
+                                                     	<spring:message code="user.motif.${card.motifDisable}" htmlEscape="false" />
+                                                      </c:if>	
+                                                    </dd>
                                                     <h4>Modification</h4>
                                                     <dt>Etat Eppn : </dt>
                                                     <dd>${card.etatEppn}</dd>
@@ -672,3 +705,4 @@
         <field:display field="crousError" id="s_org_esupportail_sgc_domain_Card_crousError" object="${card}" z="+MWfdO9pvB8B+SeZCQWFY1I8i/g="/>
     </page:show>
 </div>
+

@@ -1355,7 +1355,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	
-		if(typeof lastId != "undefined" && lastId != "-1" && isRejected.length ==0 && fromLdap=='false'){
+		if(typeof lastId != "undefined" && lastId != "-1" && isRejected.length ==0){
 			cropper.img.src = lastPhotoUrl;
 		}
 	

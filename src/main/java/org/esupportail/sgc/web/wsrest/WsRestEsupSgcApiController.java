@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.esupportail.sgc.domain.Card;
@@ -25,6 +26,7 @@ import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,6 +217,30 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	
 	/**
 	 * Example to use it :
+	 * curl 'https://esup-sgc.univ-ville.fr/wsrest/api/replayValidationOrInvalidation?eppn=toto@univ-ville.fr&validateServicesNames=ldapValidateService&validateServicesNames=accessControlService&resynchro=true'
+	 */
+	@Transactional
+	@RequestMapping(value="/replayValidationOrInvalidation", method = RequestMethod.GET)
+	public ResponseEntity<String> replayValidationOrInvalidation(@RequestParam String eppn, @RequestParam List<String> validateServicesNames, @RequestParam(required=false, defaultValue="false") Boolean resynchro) {	
+		long nbCardsOk  = 0;
+		long nbCardsKo  = 0;
+		User user = User.findUser(eppn);
+		for(Card card : user.getCards()) {
+			try {
+				cardEtatService.replayValidationOrInvalidation(card.getId(), validateServicesNames, resynchro);
+				nbCardsOk++;
+			} catch (Exception e) {
+				log.warn(String.format("La carte %s n'a pas été validée/invalidée", card) , e);
+				nbCardsKo++;
+			}
+		}
+		String msg = String.format("%d cartes bien revalidées/invalidées (et %d cartes on posé problème, cf logs) sur les services %s pour %s", nbCardsOk, nbCardsKo, validateServicesNames, eppn);
+		log.info(msg);
+		return new ResponseEntity<String>(msg, HttpStatus.OK);	}
+	
+	
+	/**
+	 * Example to use it :
 	 * curl -X POST https://esup-sgc.univ-ville.fr/wsrest/api/externalCardEnable?eppn=toto@univ-ville.fr&crous=true&difPhoto=true
 	 */
 	@RequestMapping(value="/externalCardEnable", method = RequestMethod.POST)
@@ -266,6 +292,15 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@RequestMapping(value="/getCrousRightHolder", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public RightHolder get(@RequestParam String eppnOrEmail) {
 		return crousService.getRightHolder(eppnOrEmail);
+	}
+	
+	/**
+	 * Example to use it :
+	 * curl 'https://esup-sgc.univ-ville.fr/wsrest/api/csvSearch?etat=ENABLED&fields=eppn'
+	 */
+	@RequestMapping(value="/csvSearch", method = RequestMethod.GET)
+	public void getCsvFromSearch(@Valid  CardSearchBean searchBean, @RequestParam List<String> fields, HttpServletResponse response) throws IOException {
+		managerCardController.getCsvFromSearch(searchBean, fields, null, response);
 	}
 	
 	

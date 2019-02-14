@@ -23,25 +23,27 @@
 	>
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
 	<jsp:output omit-xml-declaration="yes" />
+	<spring:url value="/admin/purge" var="purge_url" />    
+	    
 	    
     <h2>Purge des cartes</h2>
 
 	<div class="row">
 		<div class="col-lg-1">&amp;nbsp;</div>
 		<div class="col-lg-10">
-			<spring:url value="/admin/purge" var="purge_url" />
 			<form action="${purge_url}" class="form-horizontal" method="POST">
 				<div class="well">
 				Supprimer toutes les 
-					<select name="etat">
+					<select name="etat" id="etatPurge">
 					 	<c:forEach items="${etatsPurgeable}" var="etat">
 					  		<option value="${etat}"><spring:message code="card.step.${etat}"/></option>
 					  	</c:forEach>
 				    </select>		
 				    <hr/>
-				    Depuis le <fmt:formatDate pattern="yyyy-MM-dd" value="${datePurge}" var="datePurgeStr"/>
-				    <input type="date" name="date" value="${datePurgeStr}"/>		
+				    Avant le <fmt:formatDate pattern="yyyy-MM-dd" value="${datePurge}" var="datePurgeStr"/>
+				    <input type="date" name="date" value="${datePurgeStr}"  id="datePurge"/>		
 				</div>
+				<strong id="card2purgeNb"><!--  --></strong>
 				<hr />
 				<div class="form-group">
 					<button class="btn btn-danger" type="submit" name="action" value="purger" onclick="return confirm('Attention les cartes ainsi purgées seront supprimées de la base de données et ne pourront plus être réactivées.')">Purger/Supprimer les cartes correspondantes de la base de données.</button>
@@ -55,14 +57,36 @@
 	<div class="row">
 		<div class="col-lg-1">&amp;nbsp;</div>
 		<div class="col-lg-10">
-			<spring:url value="/admin/purge?users" var="purge_url" />
-			<form action="${purge_url}" class="form-horizontal" method="POST">
+			<strong>${userWithNoCardsNb} utilisateurs en base sans cartes associées.</strong>
+			<spring:url value="/admin/purge?users" var="purge_users_url" />
+			<form action="${purge_users_url}" class="form-horizontal" method="POST">
 				<div class="form-group">
 					<button class="btn btn-danger" type="submit" name="action" value="purger" onclick="return confirm('Merci de confirmer.')">Supprimer tous les utilisateurs de la base qui n'ont pas/plus de cartes .</button>
 				</div>
 			</form>
 		</div>
 	</div>
+	
+	<script type="text/javascript">
+		let purgeUrl = '${purge_url}/count';
+		let updateUserCardsNb = function () {
+			let etatPurge = document.getElementById("etatPurge").value;
+			let datePurge = document.getElementById("datePurge").value;
+			let request = new XMLHttpRequest();		
+			request.open('GET', purgeUrl + "?etat=" + etatPurge + "&amp;date=" + datePurge, true);
+            request.onload = function() {
+              if (request.status == 200) {
+                    let nbCards = this.response;
+                    card2purgeNbBlock = document.getElementById("card2purgeNb");
+                    card2purgeNbBlock.innerHTML = nbCards + " carte(s) à purger";
+              }
+            };
+            request.send();
+        }
+		document.getElementById("etatPurge").addEventListener("change", updateUserCardsNb);
+		document.getElementById("datePurge").addEventListener("change", updateUserCardsNb);
+		updateUserCardsNb();
+	</script>
 	
 </div>
 

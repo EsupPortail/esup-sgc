@@ -436,4 +436,28 @@ privileged aspect User_Roo_JavaBean {
         this.academicLevel = academicLevel;
     }
     
+    public Boolean User.getImportExtCardRight() {
+        return this.importExtCardRight;
+    }
+    
+    public void User.setImportExtCardRight(Boolean importExtCardRight) {
+        this.importExtCardRight = importExtCardRight;
+    }
+    
+    public Boolean User.getNewCardRight() {
+        return this.newCardRight;
+    }
+    
+    public void User.setNewCardRight(Boolean newCardRight) {
+        this.newCardRight = newCardRight;
+    }
+    
+    public Boolean User.getViewRight() {
+        return this.viewRight;
+    }
+    
+    public void User.setViewRight(Boolean viewRight) {
+        this.viewRight = viewRight;
+    }
+    
 }

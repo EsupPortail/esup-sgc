@@ -21,14 +21,20 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 public class SgcPermissionEvaluator implements PermissionEvaluator {
 
+	@Resource 
+	UserInfoService userInfoService;
+	
 	@Override
 	public boolean hasPermission(Authentication auth, Object targetDomainObject, Object permission) {
 		
@@ -46,6 +52,15 @@ public class SgcPermissionEvaluator implements PermissionEvaluator {
 		
 		if("consult".equals(permissionKey) && roles.contains("ROLE_CONSULT")) {
 			return true;
+		}
+		
+		if("manage-user".equals(permissionKey)) {
+			String eppnUser =(String)targetDomainObject;
+			User user = new User();
+			user.setEppn(eppnUser);
+			userInfoService.setAdditionalsInfo(user, null);
+			String managerRole = String.format("ROLE_MANAGER_%s", user.getUserType());
+			return roles.contains(managerRole);
 		}
 
         if(!(targetDomainObject instanceof List || targetDomainObject instanceof Long)) {

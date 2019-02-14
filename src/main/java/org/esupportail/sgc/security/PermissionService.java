@@ -68,7 +68,7 @@ public class PermissionService {
 		return false;
 	}
 
-	public Object hasConsultPermission(Set<String> roles, String userType) {
+	public Boolean hasConsultPermission(Set<String> roles, String userType) {
 		if(roles.contains("ROLE_CONSULT") || roles.contains("ROLE_CONSULT_" + userType)) {
 			return true;
 		}

@@ -37,7 +37,7 @@ public class DateUtils {
 			log.trace("parsing of date : " + dateString);
 			try {
 				date = dateFormatterSchacOfBirth.parse(dateString);
-			} catch (ParseException e) {
+			} catch (ParseException | NumberFormatException e) {
 				log.error("parsing of date " + dateString + " failed");
 			}
 		}

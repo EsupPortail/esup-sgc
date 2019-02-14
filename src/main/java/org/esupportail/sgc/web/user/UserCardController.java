@@ -210,7 +210,7 @@ public class UserCardController {
 		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, false);
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
-		uiModel.addAttribute("fromLdap", false);
+		uiModel.addAttribute("requestUserIsManager", false);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
 		return "user/card-request";
 	}
@@ -242,7 +242,7 @@ public class UserCardController {
 	
 	@RequestMapping(value="/card-disable")
 	public String viewDisableCardForm(@RequestParam("id") Long id, Model uiModel, HttpServletRequest request) {
-		uiModel.addAttribute("motifsList", getMotifsList());
+		uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
 		uiModel.addAttribute("id", id);
 		return "user/card-disable";
 	}
@@ -323,7 +323,7 @@ public class UserCardController {
 
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, @RequestParam(value="fromLdap") boolean fromLdap,
+	public String cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, @RequestParam boolean requestUserIsManager,
 			@RequestHeader("User-Agent") String userAgent, HttpServletRequest request, final RedirectAttributes redirectAttributes) throws IOException {	
 		if (bindingResult.hasErrors()) {
 				log.warn(bindingResult.getAllErrors().toString());
@@ -336,7 +336,7 @@ public class UserCardController {
 		
 		User user = User.findUser(eppn);
 		
-		if(card.getEppn() != null && userService.isEsupManager(user)){
+		if(card.getEppn() != null && userService.isEsupManager(user) && requestUserIsManager){
 			eppn = card.getEppn();
 			redirect = "redirect:/manager?index=first";
 		}
@@ -348,12 +348,12 @@ public class UserCardController {
 		
 		synchronized (eppn.intern()) {
 			
-			// check rights  sur Sring est global - à éviter - TODO ?
+			// check rights  sur String est global - à éviter - TODO ?
 			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn) || userService.isEsupManager(user)) {
 			
 				if(!cardEtatService.hasNewCard(eppn)) {
 					
-					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, fromLdap);
+					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, requestUserIsManager);
 					
 					if(emptyPhoto) {
 						redirectAttributes.addFlashAttribute("messageInfo", WARNING_MSG + "leocarte_emptyfile");
@@ -366,15 +366,6 @@ public class UserCardController {
 			}
 		}
 		return redirect;
-	}
-	
-	public List<String> getMotifsList(){
-		List<String>  motifsList = new ArrayList<String>();
-		 for (MotifDisable motif : MotifDisable.values()) { 
-			 motifsList.add(motif.name());
-		 }
-		return motifsList;
-		
 	}
 	
 	@RequestMapping(value="/photo")

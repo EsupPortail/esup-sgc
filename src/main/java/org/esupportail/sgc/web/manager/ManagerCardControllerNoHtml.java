@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -39,6 +40,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -309,6 +313,8 @@ public class ManagerCardControllerNoHtml {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<PersonLdap> ldapList = new ArrayList<PersonLdap>();
 		if(!searchString.trim().isEmpty()) {
+	    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    	Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 			ldapList = ldapPersonService.searchByCommonName(searchString, ldapTemplateName);
 		}
 		return ldapList;

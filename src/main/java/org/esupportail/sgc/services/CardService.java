@@ -265,7 +265,7 @@ public class CardService {
 	}
 	
 	@Transactional
-	public boolean requestNewCard(Card card, String userAgent, String eppn, HttpServletRequest request, boolean fromLdap){
+	public boolean requestNewCard(Card card, String userAgent, String eppn, HttpServletRequest request, boolean requestUserIsManager){
 
 		boolean emptyPhoto = false;
 		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
@@ -339,8 +339,8 @@ public class CardService {
 			log.info(messageLog);
 
 			cardEtatService.setCardEtat(card, Etat.NEW, messageLog, null, false, false);
-			if(fromLdap){
-				logService.log(card.getId(), ACTION.REQUEST_FROM_LDAP, RETCODE.SUCCESS, "", user.getEppn(), null);
+			if(requestUserIsManager){
+				logService.log(card.getId(), ACTION.REQUEST_MANAGER, RETCODE.SUCCESS, "", user.getEppn(), null);
 			}
 		}
 

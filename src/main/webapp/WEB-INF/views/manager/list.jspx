@@ -18,7 +18,7 @@
         <button class="btn btn-info navbar-btn navbar-right hidden-lg hidden-md" data-target="#searchCollapse" data-toggle="collapse" type="button">
             <span class="glyphicon glyphicon-search"/>
         </button>
-        <sec:authorize access="hasRole('ROLE_SUPER_MANAGER')">
+        <sec:authorize access="hasRole('ROLE_MANAGER')">
 		    <a class="btn btn-info navbar-btn navbar-right" href="${ldapUrl}" id="btnLdap" title="Recherche Ldap">
 	            <span class="glyphicon glyphicon-search"/>
 	        </a>   

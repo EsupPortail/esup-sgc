@@ -184,6 +184,15 @@ public class User {
 	private Boolean hasCardRequestPending = false;
 	
 	private Long academicLevel;
+	
+	@Transient
+	private Boolean importExtCardRight = true;
+	
+	@Transient
+	private Boolean newCardRight = true;
+	
+	@Transient
+	private Boolean viewRight = true;
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();

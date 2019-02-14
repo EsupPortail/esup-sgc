@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
+import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.tools.DateUtils;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class UserService {
 	
 	@Resource
 	DateUtils dateUtils;
+	
+	@Resource
+	PermissionService permissionService;
 
 	public boolean isFirstRequest(User user){
 		return Card.countfindCardsByEppnEqualsAndEtatNotIn(user.getEppn(), Arrays.asList(new Etat[] {Etat.CANCELED})) == 0;
@@ -71,12 +76,12 @@ public class UserService {
 		return displayRenewalForm;
 	}
 
-	public boolean displayForm(User user, boolean isFromLdap){
+	public boolean displayForm(User user, boolean requestUserIsManager){
 		boolean displayForm = displayRenewalForm(user);
 		if(isFirstRequest(user)){
-			displayForm = ((isEsupSgcUser(user) && !isOutOfDueDate(user)) || isFromLdap) ;
+			displayForm = ((isEsupSgcUser(user) && !isOutOfDueDate(user))) ;
 		} 
-		return displayForm;
+		return displayForm || requestUserIsManager;
 	}
 	
 	private boolean hasRequestCard(User user){
@@ -155,7 +160,7 @@ public class UserService {
 		
 	}
 	
-	public Map<String,Boolean> displayFormParts(User user, boolean isFromLdap){
+	public Map<String,Boolean> displayFormParts(User user, boolean requestUserIsManager){
 		
 		Map<String,Boolean> displayFormParts = new HashMap<String, Boolean>();
 		
@@ -165,7 +170,7 @@ public class UserService {
 		displayFormParts.put("displayRules", cardService.displayFormRules(user.getUserType()));
 		displayFormParts.put("displayAdresse", cardService.displayFormAdresse(user.getUserType()));		
 		displayFormParts.put("isFirstRequest", this.isFirstRequest(user));
-		displayFormParts.put("displayForm",  this.displayForm(user, isFromLdap));
+		displayFormParts.put("displayForm",  this.displayForm(user, requestUserIsManager));
 		displayFormParts.put("displayRenewalForm",  this.displayRenewalForm(user));
 		displayFormParts.put("isFreeRenewal",  this.isFreeRenewal(user));
 		displayFormParts.put("isPaidRenewal",  this.isPaidRenewal(user));
@@ -195,7 +200,7 @@ public class UserService {
 					user.setSupannEntiteAffectationPrincipale(item.getSupannEntiteAffectationPrincipale());
 					user.setUserType(item.getEduPersonPrimaryAffiliation());
 				    user.setBirthday(dateUtils.parseSchacDateOfBirth(item.getSchacDateOfBirth()));
-				}		
+				}
 				users.add(user);
 			}
 		}

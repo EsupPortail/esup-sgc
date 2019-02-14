@@ -5,13 +5,15 @@
 		<spring:url value="/user" var="cardRequestUrl" />
 		<spring:url value="/user/photo/${id}" var="rejectedPhotoUrl" />
 		<spring:url value="/user/photo/${lastId}" var="lastPhotoUrl" />
+		<c:if test="${requestUserIsManager}">
+			<spring:url value="/manager/photo/${lastId}" var="lastPhotoUrl" />
+		</c:if>
 		<script type="text/javascript">
 			var isRejected = '${isRejected}';
 			var rejectedPhotoUrl = '${rejectedPhotoUrl}';
 			var lastId = '${lastId}';
 			var lastPhotoUrl = '${lastPhotoUrl}';
 			var isISmartPhone = '${isISmartPhone}';
-			var fromLdap ='${fromLdap}';
 			var photoSizeMax ='${photoSizeMax}';
 		</script>
 	
@@ -63,12 +65,12 @@
 					<input type ="hidden" value="${id}" name="id" />
 				</c:if>
 				
-				<c:if test="${fromLdap}">
+				<c:if test="${requestUserIsManager}">
 					<input type ="hidden" value="${eppn}" name="eppn" />
 				</c:if>
 		
 				<jsp:include page="includes/form_submit.jspx"/>
-				<input type="hidden" name="fromLdap" value="${fromLdap}" />	
+				<input type="hidden" name="requestUserIsManager" value="${requestUserIsManager}" />	
 			</form>
 		  </c:when>
 		  <c:otherwise>

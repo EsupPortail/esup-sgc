@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.SgcRuntimeException;
+import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
 import org.esupportail.sgc.services.CardEtatService;
@@ -21,6 +24,9 @@ import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -58,6 +64,9 @@ public class ManagerLdapSearchController {
 	@Resource
 	CardEtatService cardEtatService;
 	
+	@Resource
+	PermissionService permissionService;
+	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "manager";
@@ -74,15 +83,20 @@ public class ManagerLdapSearchController {
 	}
 	
 	@RequestMapping(value="/ldapSearch")
-	@PreAuthorize("hasRole('ROLE_SUPER_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_MANAGER')")
 	public String ldapSearch(Model uiModel, @RequestParam(value="searchString", required=false) String searchString, @RequestParam(required=false) String ldapTemplateName, @RequestHeader("User-Agent") String userAgent) {
 		
 		List<User> users = new ArrayList<User>();
 		if(searchString!=null && !searchString.trim().isEmpty()) {
+	    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    	Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 			users = userService.getSgcLdapMix(searchString, ldapTemplateName);	
 			Collections.sort(users, (u1, u2) -> u1.getEppn().compareTo(u2.getEppn()));
 			for(User user : users) {
 				userInfoService.setAdditionalsInfo(user, null);
+				user.setViewRight(permissionService.hasConsultPermission(roles, user.getUserType()) || permissionService.hasManagePermission(roles, user.getUserType()));
+			    user.setImportExtCardRight(permissionService.hasManagePermission(roles, user.getUserType()));
+			    user.setNewCardRight(permissionService.hasManagePermission(roles, user.getUserType()));
 			}
 		}
 		uiModel.addAttribute("ldapList", users);
@@ -95,21 +109,14 @@ public class ManagerLdapSearchController {
 	}
 	
 	@RequestMapping(value="/ldapUserForm", method=RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_SUPER_MANAGER')")
+	@PreAuthorize("hasPermission(#eppn, 'manage-user')")
 	public String ldapUserForm(@RequestParam(value="eppn") String eppn, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
 		
-		User dummyUser = User.findUser(eppn);
-		Long nbCards = Long.valueOf("0");
-		if(dummyUser != null){
-			nbCards = dummyUser.getNbCards();
-		}	
-		boolean isFromLdap = true;
-		
-		if(nbCards > 0){
-			isFromLdap = false;
+		User user = User.findUser(eppn);
+		if(user == null) {
+			user = new User();
+			user.setEppn(eppn);
 		}
-		User user = new User();
-		user.setEppn(eppn);
 		userInfoService.setAdditionalsInfo(user, null);
 		uiModel.addAttribute("user", user);
 
@@ -120,12 +127,18 @@ public class ManagerLdapSearchController {
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(user));
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
-		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, isFromLdap);
+		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, true);
 		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
-		uiModel.addAttribute("fromLdap", isFromLdap);
+		uiModel.addAttribute("requestUserIsManager", true);
 		uiModel.addAttribute("eppn", eppn);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
+		
+		Long id = Long.valueOf("-1");
+		if(!user.getCards().isEmpty()){
+			id = user.getCards().get(0).getId();
+		}
+		uiModel.addAttribute("lastId", id);
 		
 		return "user/card-request";
 

@@ -60,7 +60,18 @@ public class Card {
     };
 
     public static enum MotifDisable {
-        LOST, THEFT, OUT_OF_ORDER
+    	
+        LOST, THEFT, OUT_OF_ORDER;
+        
+    	public static List<String> getMotifsList(){
+    		List<String>  motifsList = new ArrayList<String>();
+    		 for (MotifDisable motif : MotifDisable.values()) { 
+    			 motifsList.add(motif.name());
+    		 }
+    		return motifsList;
+    		
+    	}
+        
     };
 
     @Column
