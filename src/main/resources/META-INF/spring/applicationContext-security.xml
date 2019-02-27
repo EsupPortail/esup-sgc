@@ -21,7 +21,7 @@
 		<intercept-url pattern="/wsrest/nfc/getSecondaryId" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/**" access="hasIpAddress('127.0.0.1')" /> <!-- Esup-Nfc-Tag IP Address -->
 		<intercept-url pattern="/wsrest/photo/**" access="${accessRestrictionWSRestPhoto}" />
-		<intercept-url pattern="/wsrest/api/**" access="${accessRestrictionWSRestApi}"/>
+		<intercept-url pattern="/wsrest/**" access="${accessRestrictionWSRestApi}"/>
 		<intercept-url pattern="/**" access="permitAll" />
 		<access-denied-handler error-page="/denied" />
 		<session-management session-authentication-strategy-ref="sas" />
