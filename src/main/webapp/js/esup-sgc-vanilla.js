@@ -528,7 +528,7 @@ function displaySpinner(c,j) {
 };
 
 //affiche stats
-function getStats(id, chartType, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth){
+function getStats(id, chartType, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth, datalabels){
 	var prefId = document.getElementById(id);
 	if((prefsStatsRm!=null && prefsStatsRm !="" && !(prefsStatsRm.indexOf(prefId)>-1)) || (prefsStatsRm==null || prefsStatsRm =="")){
 		displaySpinner(document.querySelector("canvas#" + id), spinner);
@@ -546,9 +546,9 @@ function getStats(id, chartType, selectedType, spinner, option, transTooltip, fo
 					chartBar(data[id], label1, id, transTooltip, formatDate, data[data2], label2);
 				}else if(chartType == "pie"){
 					// chartPieorDoughnut(data, id, type, option)
-					chartPieorDoughnut(data[id], id, chartType, option);
+					chartPieorDoughnut(data[id], id, chartType, option, datalabels);
 				}else if(chartType == "doughnut"){
-					chartPieorDoughnut(data[id], id, chartType, option);
+					chartPieorDoughnut(data[id], id, chartType, option, datalabels);
 				}else if(chartType == "lineChart"){
 					lineChart(data[id], id, fill, arrayDates, byMonth, formatDate);
 				}
@@ -584,7 +584,10 @@ function multiChartStackBar(allData, id, start, transTooltip,formatDate){
 	        	dataSets.push({
 	        		label: key,
 	        		data: values,
-	        		backgroundColor: generateStackColors[k]
+	        		backgroundColor: generateStackColors[k],
+	    			datalabels: {
+	    				display: false
+	    			}
 	        	});
 	        	k++;
 	    	};
@@ -645,8 +648,11 @@ function multiChartStackBar(allData, id, start, transTooltip,formatDate){
 	}	
 }
 
-function chartPieorDoughnut(data, id, type, option){
+function chartPieorDoughnut(data, id, type, option, datalabels){
     if(document.getElementById(id) != null){
+    	if (typeof datalabels == "undefined") {
+    		datalabels=false;
+    	}
     	var legend = true;
 		if(option=="legend"){
 		 legend = false;
@@ -662,7 +668,11 @@ function chartPieorDoughnut(data, id, type, option){
     	dataSets.push({
     		data: values,
     		backgroundColor:  generateStackColors,
-    		hoverBackgroundColor: generateColors
+    		hoverBackgroundColor: generateColors,
+			datalabels: {
+				anchor: 'end',
+				display: datalabels
+			}
     	});
     	var doughnutDataArray={
 			   labels: doughnutLabels,
@@ -677,6 +687,27 @@ function chartPieorDoughnut(data, id, type, option){
     			legend: {
     				display: legend
     			},
+    			plugins: {
+					datalabels: {
+						backgroundColor: function(context) {
+							return context.dataset.backgroundColor;
+						},
+						borderColor: 'white',
+						borderRadius: 25,
+						borderWidth: 2,
+						color: 'white',
+						display: function(context) {
+							var dataset = context.dataset;
+							var count = dataset.data.length;
+							var value = dataset.data[context.dataIndex];
+							return value > count * 1.5;
+						},
+						font: {
+							weight: 'bold'
+						},
+						formatter: Math.round
+					}
+				},
     			tooltips: {
     				enabled: false,
     				custom: function chartcustomtooltip(tooltip) {
@@ -778,7 +809,10 @@ function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
     			backgroundColor: generateColors[3],
 	            borderColor: generateBorderColors[3],
 	            borderWidth: 1,
-	            data : listValeurs
+	            data : listValeurs,
+    			datalabels: {
+    				display: false
+    			}
     	}];
     	if(data2 !=null){
     		var listValeurs2 = [];
@@ -790,7 +824,10 @@ function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
     			backgroundColor: generateColors[4],
 	            borderColor: generateBorderColors[4],
 	            borderWidth: 1,
-    			data : listValeurs2
+    			data : listValeurs2,
+    			datalabels: {
+    				display: false
+    			}
     	})
     	}
         var  barChartData = {
@@ -872,7 +909,10 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
 		         pointBackgroundColor: generateColors[a],
 	             data: inlineValeurs,
 	             spanGaps: true,
-	             fill : fill
+	             fill : fill,
+	    			datalabels: {
+	    				display: false
+	    			}
             });a++;inlineValeurs = [];
         };
 		var dateLabels = dates;
@@ -976,6 +1016,7 @@ document.addEventListener('DOMContentLoaded', function() {
     	getStats("nbRoles", "doughnut", selectedType, 27);
     	getStats("pendingCards", "pie", selectedType, 28);
     	getStats("dueDate", "chartBar", selectedType, 29);
+    	getStats("cardsByEtat", "pie", selectedType, 30, null, null, false, null, null, null, false, monthsArray,false, true);
 
        	var downloadBtn = document.querySelectorAll('.downloadBtn');
     	Array.from(downloadBtn).forEach(function(link) {

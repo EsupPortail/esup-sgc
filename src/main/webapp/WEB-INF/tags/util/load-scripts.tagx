@@ -26,6 +26,7 @@
 	<spring:url value="/resources/js/webcam.min.js" var="webcam_url" />
 	<spring:url value="/resources/js/slimselect.min.js" var="slimselect_js_url" />
 	<spring:url value="/resources/js/equalDiv.js" var="equalDiv_js_url" />
+	<spring:url value="/resources/js/chartjs-plugin-datalabels.min.js" var="chartjs_labels_url" />
 	<spring:url value="/resources/js/esup-sgc-vanilla.js" var="esupSgcVanilla_js_url" />
 	<spring:url value="/resources/images/favicon.png" var="favicon" />
 	
@@ -60,6 +61,7 @@
 	<script src="${webcam_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${slimselect_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${equalDiv_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${chartjs_labels_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esupSgcVanilla_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	
 	

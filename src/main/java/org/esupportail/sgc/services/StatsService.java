@@ -156,6 +156,8 @@ public class StatsService {
 	        		put("pendingCards",mapField(User.countNbPendingCards(typeInd), 2));
 	        	}else if("dueDate".equals(typeStats)){
 	        		put("dueDate",mapField(Card.countDueDatesByDate(typeInd), 2));
+	        	}else if("cardsByEtat".equals(typeStats)){
+	        		put("cardsByEtat",mapField(Card.countNbCardsByEtat(typeInd), 2));
 	        	}
 	        }
 	    };

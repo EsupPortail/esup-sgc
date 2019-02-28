@@ -683,6 +683,19 @@ public class Card {
         }
         return q.getResultList();
     }
+    
+    public static List<Object> countNbCardsByEtat(String userType) {
+        EntityManager em = Card.entityManager();
+        String sql = "SELECT etat, count(*) as count FROM card GROUP BY etat ORDER BY count DESC ";
+        if (!userType.isEmpty()) {
+            sql = "SELECT etat, count(*) as count FROM card, user_account WHERE card.user_account= user_account.id " + "AND user_type =:userType GROUP BY etat ORDER BY count DESC";
+        }
+        Query q = em.createNativeQuery(sql);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return q.getResultList();
+    }
 
     public static List<Card> findAllCards(List<Long> cardIds) {
         EntityManager em = Card.entityManager();
