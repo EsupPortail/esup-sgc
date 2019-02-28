@@ -963,7 +963,7 @@ public class Card {
     public static List<Object> countDueDatesByDate(String userType) {
         String sql = "SELECT to_char(user_account.due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account=user_account.id AND etat IN ('NEW','REJECTED','RENEWED') GROUP BY tochar ORDER BY to_date(to_char(user_account.due_date, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
-            sql = "SELECT to_char(user_account.due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND etat IN ('NEW','REJECTED','RENEW')' AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(user_account.due_date, 'MM-YYYY'), 'MM-YYYY')";
+            sql = "SELECT to_char(user_account.due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id AND etat IN ('NEW','REJECTED','RENEW') AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(user_account.due_date, 'MM-YYYY'), 'MM-YYYY')";
         }
         EntityManager em = Card.entityManager();
 
