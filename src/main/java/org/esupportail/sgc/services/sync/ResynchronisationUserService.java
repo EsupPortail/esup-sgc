@@ -88,6 +88,7 @@ public class ResynchronisationUserService {
 			if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
 				for (Card card : user.getCards()) {
 					if (card.getExternal() && card.isEnabled() && dummyUser.getDueDate().after(new Date())) {
+						userInfoService.setAdditionalsInfo(user, null);
 						cardEtatService.setCardEtat(card, Etat.DISABLED, null, null, false, true);
 						accessControlMustUpdate = true;
 					}
@@ -109,11 +110,13 @@ public class ResynchronisationUserService {
 				// externalCard has changed CSN !
 				if (haveExternalCard && externalCard == null) {
 					externalCard = externalCardService.initExternalCard(user);
+					userInfoService.setAdditionalsInfo(user, null);
 					cardEtatService.setCardEtat(externalCard, Etat.DISABLED, null, null, false, true);
 					accessControlMustUpdate = true;
 				}
 				if (externalCard != null) {
 					if (dummyUser.getExternalCard().getCsn() == null || dummyUser.getExternalCard().getCsn().isEmpty()) {
+						userInfoService.setAdditionalsInfo(user, null);
 						cardEtatService.setCardEtat(dummyUser.getExternalCard(), Etat.CADUC, null, null, false, true);
 					} else {
 						externalCard.setCsn(dummyUser.getExternalCard().getCsn());
@@ -130,6 +133,7 @@ public class ResynchronisationUserService {
 						}
 						userInfoService.setPrintedInfo(externalCard);
 						if (Etat.DISABLED.equals(externalCard.getEtat()) || Etat.CADUC.equals(externalCard.getEtat())) {
+							userInfoService.setAdditionalsInfo(user, null);
 							cardEtatService.setCardEtat(externalCard, Etat.ENABLED, null, null, false, true);
 						}
 					}
