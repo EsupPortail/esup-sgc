@@ -4,15 +4,15 @@
 		xmlns:spring="http://www.springframework.org/tags" id="requestDiv">
 		<spring:url value="/user" var="cardRequestUrl" />
 		<spring:url value="/user/photo/${id}" var="rejectedPhotoUrl" />
-		<spring:url value="/user/photo/${lastId}" var="lastPhotoUrl" />
+		<spring:url value="/user/photo" var="defaultPhotoUrl" />
 		<c:if test="${requestUserIsManager}">
 			<spring:url value="/manager/photo/${lastId}" var="lastPhotoUrl" />
 		</c:if>
 		<script type="text/javascript">
 			var isRejected = '${isRejected}';
 			var rejectedPhotoUrl = '${rejectedPhotoUrl}';
-			var lastId = '${lastId}';
-			var lastPhotoUrl = '${lastPhotoUrl}';
+			var defaultPhotoUrl = '${defaultPhotoUrl}';
+			var defaultPhotoMd5 = '${defaultPhotoMd5}';
 			var isISmartPhone = '${isISmartPhone}';
 			var photoSizeMax ='${photoSizeMax}';
 		</script>

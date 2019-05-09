@@ -100,30 +100,32 @@ public class ToolsController {
 	@Transactional
 	@RequestMapping(value = "/patchEsupSgcEppn", method = RequestMethod.POST, produces = "text/html")
 	public String patchEsupSgcEppn(RedirectAttributes redirectAttrs, @RequestParam String oldEppn, @RequestParam String newEppn) {
-		User user = User.findUser(oldEppn);
-		CrousPatchIdentifier crousPatchIdentifier = new CrousPatchIdentifier();
-		crousPatchIdentifier.setOldId(user.getEppn());
-		crousPatchIdentifier.setMail(user.getEmail());
-		crousPatchIdentifier.setEppnNewId(newEppn);
-		crousPatchIdentifier.persist();
-		crousPatchIdentifierService.patchIdentifier(crousPatchIdentifier);
-		user.setEppn(newEppn);
-		for(Card card : user.getCards()) {
-			card.setEppn(newEppn);
+		if(!oldEppn.isEmpty() && !newEppn.isEmpty()) {
+			User user = User.findUser(oldEppn);
+			CrousPatchIdentifier crousPatchIdentifier = new CrousPatchIdentifier();
+			crousPatchIdentifier.setOldId(user.getEppn());
+			crousPatchIdentifier.setMail(user.getEmail());
+			crousPatchIdentifier.setEppnNewId(newEppn);
+			crousPatchIdentifier.persist();
+			crousPatchIdentifierService.patchIdentifier(crousPatchIdentifier);
+			user.setEppn(newEppn);
+			for(Card card : user.getCards()) {
+				card.setEppn(newEppn);
+			}
+			for(PayboxTransactionLog payboxTransactionLog : PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(oldEppn).getResultList()) {
+				payboxTransactionLog.setEppn(newEppn);
+			}
+			for(Log log : Log.findLogsByEppnEquals(oldEppn).getResultList()) {
+				log.setEppn(newEppn);
+			}
+			for(Log log : Log.findLogsByEppnCibleEquals(oldEppn).getResultList()) {
+				log.setEppnCible(newEppn);
+			}
+			for(EscrStudent  escrStudent: EscrStudent.findEscrStudentsByEppnEquals(oldEppn).getResultList()) {
+				escrStudent.setEppn(newEppn);
+			}
+			redirectAttrs.addFlashAttribute("messageSuccess", "success_patchEsupSgcEppn");
 		}
-		for(PayboxTransactionLog payboxTransactionLog : PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(oldEppn).getResultList()) {
-			payboxTransactionLog.setEppn(newEppn);
-		}
-		for(Log log : Log.findLogsByEppnEquals(oldEppn).getResultList()) {
-			log.setEppn(newEppn);
-		}
-		for(Log log : Log.findLogsByEppnCibleEquals(oldEppn).getResultList()) {
-			log.setEppnCible(newEppn);
-		}
-		for(EscrStudent  escrStudent: EscrStudent.findEscrStudentsByEppnEquals(oldEppn).getResultList()) {
-			escrStudent.setEppn(newEppn);
-		}
-		redirectAttrs.addFlashAttribute("messageSuccess", "success_patchEsupSgcEppn");
 		return "redirect:/admin/tools";
 	}
 	
@@ -132,7 +134,7 @@ public class ToolsController {
 		List<String> usersCrousDisabledExistingInApiCrous = new ArrayList<String>();
 		for(User user : User.findUsersByCrous(false).getResultList()) {
 			try {
-				if(crousService.getRightHolder(user.getEppn()) != null) {
+				if(crousService.getRightHolder(user) != null) {
 					usersCrousDisabledExistingInApiCrous.add(user.getEppn());
 				}
 			} catch(CrousAccountForbiddenException e) {

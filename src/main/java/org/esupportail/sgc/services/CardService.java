@@ -292,9 +292,8 @@ public class CardService {
 			card.getPhotoFile().setFilename(filename);
 			card.getPhotoFile().setContentType(contentType);
 			card.getPhotoFile().setFileSize(fileSize);
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 			log.info("Upload and set file in DB with filesize = " + fileSize);
-			card.getPhotoFile().getBigFile().setBinaryFileStream(inputStream, fileSize);
+			card.getPhotoFile().getBigFile().setBinaryFile(bytes);
 			Calendar cal = Calendar.getInstance();
 			Date currentTime = cal.getTime();
 			card.getPhotoFile().setSendTime(currentTime);

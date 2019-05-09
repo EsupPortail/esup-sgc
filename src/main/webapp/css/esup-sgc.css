@@ -135,6 +135,10 @@ legend.scheduler-border {
 #cardShow .img-thumbnail, #cardShow .btn-block{
 	margin-bottom: 15px;
 }
+#cardShow h3 .img-thumbnail {
+	margin-bottom: 0px;
+	margin-top: -30px;
+}
 .navbar-right-custom {
 margin-top: -35px;
 margin-right: 10px!important;

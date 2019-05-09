@@ -16,6 +16,8 @@ import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
+import org.esupportail.sgc.services.AppliConfigService;
+import org.hibernate.jpa.boot.scan.spi.PackageInfoArchiveEntryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -47,6 +49,9 @@ public class ApiCrousService {
 	@Resource
 	CrousLogService crousLogService;
     
+	@Resource
+	AppliConfigService appliConfigService;
+	
 	RestTemplate restTemplate;
 	
 	String webUrl;
@@ -117,9 +122,9 @@ public class ApiCrousService {
 	}
 	
 	
-	public RightHolder getRightHolder(String eppnOrEmail) {		
+	public RightHolder getRightHolder(String identifier) {		
 		if(enable) {
-			String url = webUrl + "/rightholders/" + eppnOrEmail;
+			String url = webUrl + "/rightholders/" + identifier;
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);		
@@ -133,7 +138,8 @@ public class ApiCrousService {
 		CrousSmartCard crousSmartCard = null;
 		if(enable && card!=null) {
 			if(enable) {
-				String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+				User user = User.findUser(card.getEppn());
+				String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 				HttpHeaders headers = this.getAuthHeaders();	
 				HttpEntity entity = new HttpEntity(headers);		
 				ResponseEntity<CrousSmartCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, CrousSmartCard.class);
@@ -143,15 +149,20 @@ public class ApiCrousService {
 		} 
 		return crousSmartCard;
 	}
+
 	
 	public boolean postOrUpdateRightHolder(String eppn) {	
 		if(enable) {
-			String url = webUrl + "/rightholders/" + eppn;
+			User user = User.findUser(eppn);
+			if(user.getCrousIdentifier() == null || user.getCrousIdentifier().isEmpty()) {
+				return postRightHolder(eppn);
+			}
+			String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			try {
 				ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);
-				log.info("Getting RightHolder for " + eppn +" : " + response.toString());
+				log.info("Getting RightHolder for " + user.getCrousIdentifier() + " : " + response.toString());
 				RightHolder oldRightHolder = response.getBody();
 				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn);
 				// hack dueDate can't be past in IZLY 
@@ -160,6 +171,18 @@ public class ApiCrousService {
 					log.trace(String.format("mustUpdateDueDateCrous(oldRightHolder, eppn) : %s", mustUpdateDueDateCrous(oldRightHolder, eppn)));
 				}
 				if(!newRightHolder.fieldWoDueDateEquals(oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
+					if(!newRightHolder.getIdentifier().equals(oldRightHolder.getIdentifier())) {
+						PatchIdentifier patchIdentifier = new PatchIdentifier();
+						patchIdentifier.setCurrentIdentifier(oldRightHolder.getIdentifier());
+						patchIdentifier.setEmail(oldRightHolder.getEmail());
+						patchIdentifier.setNewIdentifier(newRightHolder.getIdentifier());		
+						try {
+							this.patchIdentifier(patchIdentifier);
+						} catch(HttpClientErrorException clientEx) {
+							log.warn("patchIdentifier on " + eppn + " falied : " + clientEx.getResponseBodyAsString());
+							crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());	
+						} 
+					}
 					return updateRightHolder(eppn);
 				} 
 			} catch(HttpClientErrorException clientEx) {
@@ -182,6 +205,8 @@ public class ApiCrousService {
 		log.debug("Try to post to CROUS RightHolder : " + rightHolder); 
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+			User user = User.findUser(eppn);
+			user.setCrousIdentifier(rightHolder.getIdentifier());
 		} catch(HttpClientErrorException clientEx) {
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 				log.warn(eppn + " is locked in crous : " + clientEx.getResponseBodyAsString());
@@ -197,7 +222,8 @@ public class ApiCrousService {
 
 
 	private boolean updateRightHolder(String eppn) {
-		String url = webUrl + "/rightholders/" + eppn;
+		User user = User.findUser(eppn);
+		String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(eppn);
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
@@ -235,7 +261,13 @@ public class ApiCrousService {
 
 	public RightHolder computeEsupSgcRightHolder(User user) {
 		RightHolder rightHolder = new RightHolder();
-		rightHolder.setIdentifier(user.getEppn());
+		if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
+			rightHolder.setIdentifier(user.getCrousIdentifier());
+		} else if(appliConfigService.getCrousIneAsIdentifier() && user.getSupannCodeINE() != null && !user.getSupannCodeINE().isEmpty()) {
+			rightHolder.setIdentifier(user.getSupannCodeINE());
+		} else {
+			rightHolder.setIdentifier(user.getEppn());
+		}
 		rightHolder.setFirstName(user.getFirstname());
 		rightHolder.setLastName(user.getName());
 		rightHolder.setEmail(user.getEmail());
@@ -263,9 +295,8 @@ public class ApiCrousService {
 	
 	private RightHolder computeEsupSgcRightHolder(String eppn) {
 		RightHolder rightHolder = null;
-		List<User> users = User.findUsersByEppnEquals(eppn).getResultList();
-		if(!users.isEmpty()) {
-			User user = users.get(0);
+		User user = User.findUser(eppn);
+		if(user != null) {
 			rightHolder = computeEsupSgcRightHolder(user);
 		}
 		return rightHolder;
@@ -273,9 +304,8 @@ public class ApiCrousService {
 	
 	private boolean mustUpdateDueDateCrous(RightHolder oldRightHolder, String eppn) {
 		// dueDate can't be past in IZLY -> hack ...
-		List<User> users = User.findUsersByEppnEquals(eppn).getResultList();
-		if(!users.isEmpty()) {
-			User user = users.get(0);			
+		User user = User.findUser(eppn);
+		if(user != null) {		
 			Date now = new Date();
 			Date duedateCrous = oldRightHolder.getDueDate();
 			Date realDueDate = user.getDueDate();
@@ -290,7 +320,8 @@ public class ApiCrousService {
 	
 	public boolean validateSmartCard(Card card) {
 		if(enable) {
-			String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+			User user = User.findUser(card.getEppn());
+			String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			try {
@@ -311,7 +342,8 @@ public class ApiCrousService {
 	}
 	
 	private boolean validateNewSmartCard(Card card) {
-		String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard";
+		User user = User.findUser(card.getEppn());
+		String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard";
 		HttpHeaders headers = this.getAuthHeaders();
 		CrousSmartCard smartCard = card.getCrousSmartCard();
 		HttpEntity entity = new HttpEntity(smartCard, headers);
@@ -346,7 +378,8 @@ public class ApiCrousService {
 	
 	private boolean revalidateSmartCard(Card card) {
 		try {
-			String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+			User user = User.findUser(card.getEppn());
+			String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();
 			headers.add("uid", card.getCsn().toUpperCase());
 			Map<String, String> body = new HashMap<String, String>();
@@ -371,8 +404,9 @@ public class ApiCrousService {
 	public boolean invalidateSmartCard(Card card) {
 		if(enable) {
 			try {
+				User user = User.findUser(card.getEppn());
 				CrousSmartCard smartCard = CrousSmartCard.findCrousSmartCard(card.getCsn());
-				String url = webUrl + "/rightholders/" + card.getEppn() + "/smartcard/" + smartCard.getIdZdc();
+				String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + smartCard.getIdZdc();
 				HttpHeaders headers = this.getAuthHeaders();
 				headers.add("uid", card.getCsn().toUpperCase());
 				Map<String, String> body = new HashMap<String, String>();
@@ -445,7 +479,13 @@ public class ApiCrousService {
 			String url = webUrl + "/rightholders/" + patchIdentifier.getCurrentIdentifier();
 			HttpHeaders headers = this.getAuthHeaders();
 			HttpEntity entity = new HttpEntity(patchIdentifier, headers);
-			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);		
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);	
+			List<User> users = User.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
+			if(!users.isEmpty()) {
+				User user = users.get(0);
+				user.setCrousIdentifier(patchIdentifier.getNewIdentifier());
+				user.merge();
+			}
 			log.info("patchIdentifier : " + patchIdentifier + " OK : " + response.getBody());
 		}
 	}

@@ -8,10 +8,12 @@ import java.io.InputStreamReader;
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.CrousPatchIdentifier;
+import org.esupportail.sgc.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CrousPatchIdentifierService {
@@ -63,7 +65,6 @@ public class CrousPatchIdentifierService {
 		inWorking = false;
 	}
 
-
 	public void patchIdentifier(CrousPatchIdentifier crousPatchIdentifier) {
 		try {
 			log.info("appel du crous patchIdentifier : " + crousPatchIdentifier);
@@ -80,6 +81,32 @@ public class CrousPatchIdentifierService {
 			crousPatchIdentifier.merge();
 			log.warn("Error patchIdentifier : " + crousPatchIdentifier + " - " + e.getMessage());
 		}
+	}
+
+
+    @Transactional
+	public synchronized void deletePatchIdentifiants() {
+		inWorking = true;
+		CrousPatchIdentifier.removeAll();
+		inWorking = false;
+	}
+
+
+	@Async
+	public synchronized void generatePatchIdentifiersIne() {
+		inWorking = true;
+		for(User user : User.findUsers4PatchIdentifiersIne()) {
+			try {
+				CrousPatchIdentifier patchIdentifier = new CrousPatchIdentifier();
+				patchIdentifier.setOldId(user.getCrousIdentifier());
+				patchIdentifier.setEppnNewId(user.getSupannCodeINE());
+				patchIdentifier.setMail(user.getEmail());
+				patchIdentifier.persist();
+			} catch(Exception e) {
+				log.error("Error trying generating Patch Identifier with Ine for " + user.getEppn() + " : " + e.getMessage(), e);
+			}
+		}
+		inWorking = false;
 	}
 }
 

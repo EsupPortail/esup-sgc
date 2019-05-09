@@ -136,9 +136,16 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 					card.setRequestOs(systeme);
 					cardIdsService.generateQrcode4Card(card);
 			
-					if (card.getPhotoFile().getFile().isEmpty()) {
-						log.info("Aucune photo pour lda demande de " + eppn);
-						return new ResponseEntity<String>("Aucune photo pour lda demande de " + eppn, responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
+					if (card.getPhotoFile().getFile() == null || card.getPhotoFile().getFile().isEmpty()) {
+						if(user.getDefaultPhoto() != null && user.getDefaultPhoto().getBigFile().getMd5()!=null) {
+							card.getPhotoFile().setFilename(user.getDefaultPhoto().getFilename());
+							card.getPhotoFile().setContentType(user.getDefaultPhoto().getContentType());
+							card.getPhotoFile().setFileSize(user.getDefaultPhoto().getFileSize());
+							card.getPhotoFile().getBigFile().setBinaryFile(user.getDefaultPhoto().getBigFile().getBinaryFile());
+						} else {						
+							log.info("Aucune photo pour la demande de " + eppn);
+							return new ResponseEntity<String>("Aucune photo pour lda demande de " + eppn, responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
+						}
 					} else {
 						String filename = card.getPhotoFile().getFile().getOriginalFilename();
 						Long fileSize = card.getPhotoFile().getFile().getSize();
@@ -148,44 +155,44 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 						card.getPhotoFile().setFileSize(fileSize);
 						log.info("Upload and set file in DB with filesize = " + fileSize);
 						card.getPhotoFile().getBigFile().setBinaryFile(card.getPhotoFile().getFile().getBytes());
-						Calendar cal = Calendar.getInstance();
-						Date currentTime = cal.getTime();
-						card.getPhotoFile().setSendTime(currentTime);
-						card.setUserAccount(user);
-						
-						if(card.getId() !=null){
-							card.setNbRejets(Card.findCard(card.getId()).getNbRejets());
-							card.merge();
-						} else {
-							card.setNbRejets(Long.valueOf(0));
-							card.persist();
-						}
-						
-						card.setDueDate(user.getDueDate());
-						
-						if(card.getEuropeanTransient()!=null && card.getEuropeanTransient()) {
-							user.setEuropeanStudentCard(true);
-						}
-						
-						if(card.getCrousTransient()!=null && card.getCrousTransient()) {
-							user.setCrous(true);
-							userInfoService.setAdditionalsInfo(user, request);
-						}
-						user.setDifPhoto(card.getDifPhotoTransient());
-						String reference = cardService.getPaymentWithoutCard(eppn);
-						if(!reference.isEmpty()){
-							card.setPayCmdNum(reference);
-						}
-						user.merge();
-						card.merge();
-						logService.log(card.getId(), ACTION.DEMANDE, RETCODE.SUCCESS, "", eppn, request.getRemoteAddr());
-						log.info("Succès de la demande de carte pour l'utilisateur " +  eppn);
-						
-						// TODO : use cardEtatService.setCardEtat !
-						cardEtatService.sendMailInfo(null, Etat.NEW, user, null);
-						
-						return new ResponseEntity<String>(eppn + " request OK.", responseHeaders, HttpStatus.OK);
 					}
+					Calendar cal = Calendar.getInstance();
+					Date currentTime = cal.getTime();
+					card.getPhotoFile().setSendTime(currentTime);
+					card.setUserAccount(user);
+					
+					if(card.getId() !=null){
+						card.setNbRejets(Card.findCard(card.getId()).getNbRejets());
+						card.merge();
+					} else {
+						card.setNbRejets(Long.valueOf(0));
+						card.persist();
+					}
+					
+					card.setDueDate(user.getDueDate());
+					
+					if(card.getEuropeanTransient()!=null && card.getEuropeanTransient()) {
+						user.setEuropeanStudentCard(true);
+					}
+					
+					if(card.getCrousTransient()!=null && card.getCrousTransient()) {
+						user.setCrous(true);
+						userInfoService.setAdditionalsInfo(user, request);
+					}
+					user.setDifPhoto(card.getDifPhotoTransient());
+					String reference = cardService.getPaymentWithoutCard(eppn);
+					if(!reference.isEmpty()){
+						card.setPayCmdNum(reference);
+					}
+					user.merge();
+					card.merge();
+					logService.log(card.getId(), ACTION.DEMANDE, RETCODE.SUCCESS, "", eppn, request.getRemoteAddr());
+					log.info("Succès de la demande de carte pour l'utilisateur " +  eppn);
+					
+					// TODO : use cardEtatService.setCardEtat !
+					cardEtatService.sendMailInfo(null, Etat.NEW, user, null);
+					
+					return new ResponseEntity<String>(eppn + " request OK.", responseHeaders, HttpStatus.OK);
 				}
 			} else {
 				return new ResponseEntity<String>(eppn + " tried to request card but he has no rights to do it.", responseHeaders, HttpStatus.FORBIDDEN);
@@ -293,7 +300,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	public RightHolder get(@RequestParam String eppnOrEmail) {
 		return crousService.getRightHolder(eppnOrEmail);
 	}
-	
+
 	/**
 	 * Example to use it :
 	 * curl 'https://esup-sgc.univ-ville.fr/wsrest/api/csvSearch?etat=ENABLED&fields=eppn'

@@ -22,6 +22,7 @@
 		<intercept-url pattern="/wsrest/nfc/**" access="hasIpAddress('127.0.0.1')" /> <!-- Esup-Nfc-Tag IP Address -->
 		<intercept-url pattern="/wsrest/photo/**" access="${accessRestrictionWSRestPhoto}" />
 		<intercept-url pattern="/wsrest/**" access="${accessRestrictionWSRestApi}"/>
+                <intercept-url pattern="/wsescr/**" access="${accessRestrictionWSescr}"/>
 		<intercept-url pattern="/**" access="permitAll" />
 		<access-denied-handler error-page="/denied" />
 		<session-management session-authentication-strategy-ref="sas" />
@@ -97,7 +98,7 @@
 	</beans:bean>
 
 
-	<beans:bean id="sgcWebSecurityExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
+	<beans:bean id="sgcWebSecurityExpressionHandler" class="org.esupportail.sgc.security.SgcWebSecurityExpressionHandler">
 	    <beans:property name="roleHierarchy" ref="sgcRoleHierarchy"/>
 	</beans:bean>
 	

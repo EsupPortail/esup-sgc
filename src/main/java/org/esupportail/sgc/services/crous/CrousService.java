@@ -1,5 +1,7 @@
 package org.esupportail.sgc.services.crous;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
@@ -81,10 +83,21 @@ public class CrousService extends ValidateService {
 			}
 		}
 	}
+	
+	public RightHolder getRightHolder(User user) {
+		RightHolder rightHolder = null;
+		if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
+			rightHolder = this.getRightHolder(user.getCrousIdentifier());
+		}
+		if(rightHolder == null && !user.getEppn().equals(user.getCrousIdentifier())) {
+			rightHolder = this.getRightHolder(user.getEppn());
+		}
+		return rightHolder;
+	}
 
-	public RightHolder getRightHolder(String eppnOrEmail) {
+	public RightHolder getRightHolder(String identifier) {
 		try {
-			return authApiCrousService.getRightHolder(eppnOrEmail);
+			return authApiCrousService.getRightHolder(identifier);
 		} catch(HttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				return null;
@@ -93,7 +106,7 @@ public class CrousService extends ValidateService {
 			}
 			// no crouslogError in db for a getRightHolder
 			// crousLogService.logErrorCrous(eppnOrEmail, null, clientEx.getResponseBodyAsString());
-			log.warn("Exception calling api crous - crousService.getRightHolder " + eppnOrEmail + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
+			log.warn("Exception calling api crous - crousService.getRightHolder " + identifier + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
 			throw clientEx;
 		}
 	}
@@ -132,7 +145,10 @@ public class CrousService extends ValidateService {
 		try {
 			authApiCrousService.patchIdentifier(patchIdentifier);
 		} catch(HttpClientErrorException clientEx) {
-			crousLogService.logErrorCrousAsync(patchIdentifier.getNewIdentifier(), null, clientEx.getResponseBodyAsString());
+			List<User> users = User.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
+			if(!users.isEmpty()) {
+				crousLogService.logErrorCrousAsync(users.get(0).getEppn(), null, clientEx.getResponseBodyAsString());
+			}
 			log.warn("Exception calling api crous status code : " + clientEx.getStatusCode() + " - crousService.patchIdentifier " + patchIdentifier + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
 			throw clientEx;
 		}	

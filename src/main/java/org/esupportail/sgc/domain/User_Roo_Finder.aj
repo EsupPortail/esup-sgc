@@ -17,6 +17,14 @@ privileged aspect User_Roo_Finder {
         return ((Long) q.getSingleResult());
     }
     
+    public static Long User.countFindUsersByCrousIdentifier(String crousIdentifier) {
+        if (crousIdentifier == null || crousIdentifier.length() == 0) throw new IllegalArgumentException("The crousIdentifier argument is required");
+        EntityManager em = User.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM User AS o WHERE o.crousIdentifier = :crousIdentifier", Long.class);
+        q.setParameter("crousIdentifier", crousIdentifier);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static Long User.countFindUsersByEppnEquals(String eppn) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         EntityManager em = User.entityManager();
@@ -53,6 +61,29 @@ privileged aspect User_Roo_Finder {
         }
         TypedQuery<User> q = em.createQuery(queryBuilder.toString(), User.class);
         q.setParameter("crous", crous);
+        return q;
+    }
+    
+    public static TypedQuery<User> User.findUsersByCrousIdentifier(String crousIdentifier) {
+        if (crousIdentifier == null || crousIdentifier.length() == 0) throw new IllegalArgumentException("The crousIdentifier argument is required");
+        EntityManager em = User.entityManager();
+        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o WHERE o.crousIdentifier = :crousIdentifier", User.class);
+        q.setParameter("crousIdentifier", crousIdentifier);
+        return q;
+    }
+    
+    public static TypedQuery<User> User.findUsersByCrousIdentifier(String crousIdentifier, String sortFieldName, String sortOrder) {
+        if (crousIdentifier == null || crousIdentifier.length() == 0) throw new IllegalArgumentException("The crousIdentifier argument is required");
+        EntityManager em = User.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM User AS o WHERE o.crousIdentifier = :crousIdentifier");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<User> q = em.createQuery(queryBuilder.toString(), User.class);
+        q.setParameter("crousIdentifier", crousIdentifier);
         return q;
     }
     

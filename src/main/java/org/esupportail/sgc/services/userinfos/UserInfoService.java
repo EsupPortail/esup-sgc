@@ -1,9 +1,11 @@
 package org.esupportail.sgc.services.userinfos;
 
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
@@ -267,6 +270,17 @@ public class UserInfoService {
 				if(academicLevel != null && !academicLevel.isEmpty()) {
 					user.setAcademicLevel(Long.valueOf(academicLevel));
 				}
+			} else if("jpegPhoto".equalsIgnoreCase(key)) {
+				if(userInfos.get(key) != null && !userInfos.get(key).isEmpty()) {
+					byte[] bytes = org.apache.commons.codec.binary.Base64.decodeBase64(userInfos.get(key));
+					if(user.getDefaultPhoto() == null) {
+						user.setDefaultPhoto(new PhotoFile());
+						user.getDefaultPhoto().persist();
+					}
+					user.getDefaultPhoto().getBigFile().setBinaryFile(bytes);
+					user.getDefaultPhoto().setFileSize((long)bytes.length);
+					user.getDefaultPhoto().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
+				}
 			} 
 
 		}
@@ -282,7 +296,7 @@ public class UserInfoService {
 			// hack crous ~cnrs : idCompanyRate en 7999 -> idRate final/vrai vient en fait du crous 
 			if(Long.valueOf(7999).equals(user.getIdCompagnyRate())) {
 				try {
-					RightHolder rightHolder = crousService.getRightHolder(user.getEppn());
+					RightHolder rightHolder = crousService.getRightHolder(user);
 					if(rightHolder == null) {
 						log.debug("rightHolder on crous is null for "  + user.getEppn());
 					} else {

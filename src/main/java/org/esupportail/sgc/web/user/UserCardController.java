@@ -195,16 +195,21 @@ public class UserCardController {
 		String eppn = auth.getName();
 		User user = User.findUser(eppn);
 		uiModel.addAttribute("user", user);
-		Long id = Long.valueOf("-1");
-		if(!user.getCards().isEmpty()){
-			id = user.getCards().get(0).getId();
+		
+		String defaultPhotoMd5 = null;
+		Card lastCard = cardService.findLastCardByEppnEquals(eppn);
+		if(lastCard !=null){
+			defaultPhotoMd5 = lastCard.getPhotoFile().getBigFile().getMd5();
+		} else if(user.getDefaultPhoto() != null && user.getDefaultPhoto().getBigFile().getMd5() != null) {
+			defaultPhotoMd5 = user.getDefaultPhoto().getBigFile().getMd5();
 		}
+		
 		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
 		uiModel.addAttribute("sizeMax", appliConfigService.getFileSizeMax()/1000);
 		uiModel.addAttribute("deviceType", userAgentUtils.getOperatingSystem().getDeviceType());
 		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user));
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
-		uiModel.addAttribute("lastId", id);
+		uiModel.addAttribute("defaultPhotoMd5", defaultPhotoMd5);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(user));
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
 		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, false);
@@ -292,27 +297,7 @@ public class UserCardController {
 	public String viewCardInfo(Locale locale, Model uiModel, HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		Card lastCard =  Card.findCardsByEppnEquals(eppn,"requestDate","DESC").getResultList().get(0);
-		User user = User.findUser(eppn);
-		
-		/*DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
-		String formattedDate = df.format(lastCard.getDateEtat());
-		
-		
-		String messageCode = "user.card-info.defaultMessage";	
-		if(Etat.REJECTED.equals(lastCard.getEtat())) {
-			messageCode = "user.card-info.rejectedMessage";	
-		} else if(Etat.ENABLED.equals(lastCard.getEtat())) {
-			messageCode = "user.card-info.sentMessage";	
-		} else if(Etat.DISABLED.equals(lastCard.getEtat())) {
-			messageCode = "user.card-info.disabledMessage";	
-		}else{
-			messageCode = "user.card-info.newMessage";	
-		}
-		String message = messageSource.getMessage(messageCode, new String[] {formattedDate}, locale);
-		uiModel.addAttribute("message", message);
-		uiModel.addAttribute("comment", lastCard.getCommentaire());
-		*/
+		User user = User.findUser(eppn);		
 		uiModel.addAttribute("steps", cardEtatService.getTrackingSteps());
 		uiModel.addAttribute("user", user);
 		uiModel.addAttribute("payboxList", PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
@@ -371,9 +356,15 @@ public class UserCardController {
 	@RequestMapping(value="/photo")
 	public void getPhoto(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
 		String eppn = SecurityContextHolder.getContext().getAuthentication().getName();
+		PhotoFile photoFile = null;
 		Card lastCard = cardService.findLastCardByEppnEquals(eppn);
+		User user = User.findUser(eppn);
 		if(lastCard !=null){
-			PhotoFile photoFile = lastCard.getPhotoFile();
+			photoFile = lastCard.getPhotoFile();
+		} else if(user.getDefaultPhoto() != null && user.getDefaultPhoto().getBigFile().getMd5() != null) {
+			photoFile = user.getDefaultPhoto();
+		}
+		if(photoFile != null) {
 			Long size = photoFile.getFileSize();
 			String contentType = photoFile.getContentType();
 			response.setContentType(contentType);
@@ -381,6 +372,7 @@ public class UserCardController {
 			IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
 		}
 	}
+	
 	
 	@RequestMapping(value="/photo/{cardId}")
 	public void getPhoto(@PathVariable Long cardId, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {

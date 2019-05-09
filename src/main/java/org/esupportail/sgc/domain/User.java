@@ -1,5 +1,7 @@
 package org.esupportail.sgc.domain;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -19,6 +21,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Query;
 import javax.persistence.Transient;
@@ -46,7 +49,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @RooJavaBean
 @RooToString(excludeFields={"cards"})
 @RooDbManaged(automaticallyDelete = true)
-@RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous", "findUsersByEuropeanStudentCard" })
+@RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous", "findUsersByEuropeanStudentCard", "findUsersByCrousIdentifier"})
 @JsonFilter("userFilter")
 public class User {
 	
@@ -74,6 +77,8 @@ public class User {
 	private Boolean crous = false;
 	
 	private String crousError;
+	
+	private String crousIdentifier;
 	
 	@Column
 	private Boolean europeanStudentCard = false;
@@ -193,6 +198,9 @@ public class User {
 	
 	@Transient
 	private Boolean viewRight = true;
+	
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private PhotoFile defaultPhoto = new PhotoFile();
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();
@@ -506,11 +514,15 @@ public class User {
 				{log.trace("academicLevel <>"); return false;}
 		} else if (!academicLevel.equals(other.academicLevel))
 			{log.trace("academicLevel <>"); return false;}
+		if (this.getDefaultPhoto() == null || this.getDefaultPhoto().getBigFile() == null || this.getDefaultPhoto().getBigFile().getMd5() == null) {
+			if (!(other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || other.getDefaultPhoto().getBigFile().getMd5() == null))
+				{log.trace("defaultPhoto <>"); return false;}
+		} else if (other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || !this.getDefaultPhoto().getBigFile().getMd5().equals(other.getDefaultPhoto().getBigFile().getMd5()))
+			{log.trace("defaultPhoto <>"); return false;}
 		return true;
 	}
 
-	/***Stats****/
-	
+
     public static List<Object> countNbCrous(String userType) {
         EntityManager em = User.entityManager();
         String sql = "SELECT crous, count(*) as count FROM user_account GROUP BY crous ORDER BY count DESC";
@@ -715,6 +727,27 @@ public class User {
         if (!userType.isEmpty()) {
             q.setParameter("userType", userType);
         }
+        return q.getResultList();
+    }
+    
+    public static TypedQuery<User> findUsersByEppnOrEmailEquals(String eppnOrEmail) {
+        if (eppnOrEmail == null || eppnOrEmail.length() == 0) throw new IllegalArgumentException("The eppnOrEmail argument is required");
+        EntityManager em = User.entityManager();
+        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o WHERE o.eppn = :eppnOrEmail or o.email = :eppnOrEmail", User.class);
+        q.setParameter("eppnOrEmail", eppnOrEmail);
+        return q;
+    }
+    
+    public static List<User> findUsers4PatchIdentifiersIne() {
+        EntityManager em = User.entityManager();
+        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o WHERE "
+        		+ "o.crous = true "
+        		+ "and o.supannCodeINE is not empty "
+        		+ "and o.supannCodeINE <> '' "
+        		+ "and o.crousIdentifier is not empty "
+        		+ "and o.crousIdentifier <> '' "
+        		+ "and o.supannCodeINE <> o.crousIdentifier "
+        		+ "and o.dueDate > current_date()", User.class);
         return q.getResultList();
     }
     

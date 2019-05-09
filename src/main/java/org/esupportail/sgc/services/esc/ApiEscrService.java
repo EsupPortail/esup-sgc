@@ -264,8 +264,16 @@ public class ApiEscrService extends ValidateService {
 			HttpHeaders headers = this.getJsonHeaders();			
 			HttpEntity entity = new HttpEntity(null, headers);
 			log.debug("Try to delete card : " + escrCard); 
-			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
-			log.info(card.getCsn() + " deleted in ESCR -> " + response.getBody());
+			try {
+				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+				log.info(card.getCsn() + " deleted in ESCR -> " + response.getBody());
+			} catch(HttpClientErrorException clientEx) {
+				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+					log.warn("No need to delete " + card.getCsn() + " in ESCR because not found in ESCR");
+				} else {
+					throw clientEx;
+				}
+			}			
 		}
 	}
 

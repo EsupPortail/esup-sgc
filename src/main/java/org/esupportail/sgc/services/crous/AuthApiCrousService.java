@@ -19,15 +19,15 @@ public class AuthApiCrousService {
 	@Resource
 	ApiCrousService apiCrousService;
 
-	public RightHolder getRightHolder(String eppnOrEmail) {		
+	public RightHolder getRightHolder(String identifier) {		
 		try {
-			return apiCrousService.getRightHolder(eppnOrEmail);
+			return apiCrousService.getRightHolder(identifier);
 		} catch(HttpClientErrorException clientEx) {
 			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
 				log.info("Auth Token of Crous API should be renew, we call an authentication");
 				apiCrousService.authenticate();
 				try {
-					return apiCrousService.getRightHolder(eppnOrEmail);
+					return apiCrousService.getRightHolder(identifier);
 				} catch(HttpClientErrorException clientEx2) {
 					throw clientEx2;
 				}

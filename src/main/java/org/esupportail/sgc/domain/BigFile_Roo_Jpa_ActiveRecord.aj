@@ -14,7 +14,7 @@ privileged aspect BigFile_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager BigFile.entityManager;
     
-    public static final List<String> BigFile.fieldNames4OrderClauseFilter = java.util.Arrays.asList("binaryFile");
+    public static final List<String> BigFile.fieldNames4OrderClauseFilter = java.util.Arrays.asList("log", "binaryFile", "md5");
     
     public static final EntityManager BigFile.entityManager() {
         EntityManager em = new BigFile().entityManager;

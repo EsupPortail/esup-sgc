@@ -957,10 +957,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		 var searchEppnForm =  document.getElementById("searchEppnForm");
 		 if(searchEppn != null){
 			 searchEppnAutocomplete("searchEppn", searchEppnUrl, "eppn", "");
-			
+			/*
 			 searchEppn.addEventListener("awesomplete-selectcomplete", function(){
 				 searchEppnForm.submit();
 			 });
+			 */
 		 }
 		 var searchEppnTemp = document.getElementById("searchEppnTemp");
 		 if(searchEppnTemp != null){
@@ -1396,8 +1397,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	
-		if(typeof lastId != "undefined" && lastId != "-1" && isRejected.length ==0){
-			cropper.img.src = lastPhotoUrl;
+		if(typeof defaultPhotoMd5 != "undefined" && isRejected.length ==0){
+			cropper.img.src = defaultPhotoUrl;
 		}
 	
 		

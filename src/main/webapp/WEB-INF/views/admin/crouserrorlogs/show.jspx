@@ -127,7 +127,7 @@
             </c:choose>
         </div>
     </div>
-    <c:if test="${empty crousEppnRightHolder and not empty crousEmailRightHolder and crousEmailRightHolder.identifier ne crouserrorlog.userEppn}">
+    <c:if test="${empty crousEppnRightHolder and not empty crousEmailRightHolder and crousEmailRightHolder.identifier ne esupSgcRightHolder.identifier}">
         <div class="row well danger">
             <h3>Modification/Migration de l'identifiant ...</h3>
             <p>Au niveau du CROUS, l'identifiant derrière le mail de l'utilisateur ne correspond pas à son eppn et aucun utilisateur n'a pour identifiant cet eppn</p>
@@ -145,7 +145,7 @@
                 </div>
                 <div class="form-group">
                     <label class="col-md-3">newIdentifier</label>
-                    <input class="col-lg-6" name="newIdentifier" type="text" value="${crouserrorlog.userEppn}"/>
+                    <input class="col-lg-6" name="newIdentifier" type="text" value="${esupSgcRightHolder.identifier}"/>
                 </div>
                 <div class="col-md-offset-3 col-md-9">
                     <input class="btn btn-danger" id="proceed" onclick="return confirm('Êtes-vous sûr de précéder à cette modification d'identifiants ?');" type="submit" value="Valider"/>

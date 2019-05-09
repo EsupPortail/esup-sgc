@@ -16,4 +16,12 @@ privileged aspect BigFile_Roo_JavaBean {
         this.binaryFile = binaryFile;
     }
     
+    public String BigFile.getMd5() {
+        return this.md5;
+    }
+    
+    public void BigFile.setMd5(String md5) {
+        this.md5 = md5;
+    }
+    
 }

@@ -2,12 +2,14 @@ package org.esupportail.sgc.domain;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.UniqueConstraint;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 @RooJavaBean
 @RooToString
@@ -56,5 +58,12 @@ public class CrousPatchIdentifier {
         q.setParameter("patchSuccess", patchSuccess);
         return q;
     }
+    
+    public static void removeAll() {
+    	EntityManager em = CrousPatchIdentifier.entityManager();
+    	Query q = em.createQuery("DELETE FROM CrousPatchIdentifier");
+    	q.executeUpdate();
+    }
 
 }
+

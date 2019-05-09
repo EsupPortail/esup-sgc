@@ -215,7 +215,7 @@ public class ManagerCardController {
     @PreAuthorize("hasPermission(#cardId, 'manage')")
     @RequestMapping(value = "{cardId}/resync-user/{eppn:.+}", produces = "text/html")
     @Transactional
-    public String resyncUser(@PathVariable String eppn, @PathVariable String cardId, Model uiModel) {
+    public String resyncUser(@PathVariable String eppn, @PathVariable Long cardId, Model uiModel) {
         User user = User.findUser(eppn);
         resynchronisationUserService.synchronizeUserInfo(user.getEppn());
         uiModel.asMap().clear();
@@ -621,9 +621,8 @@ public class ManagerCardController {
 					String contentType = cardService.getPhotoParams().get("contentType");
 					card.getPhotoFile().setContentType(contentType);
 					card.getPhotoFile().setFileSize(fileSize);
-					ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 					log.info("Upload and set file in DB with filesize = " + fileSize);
-					card.getPhotoFile().getBigFile().setBinaryFileStream(inputStream, fileSize);
+					card.getPhotoFile().getBigFile().setBinaryFile(bytes);
 					Calendar cal = Calendar.getInstance();
 					Date currentTime = cal.getTime();
 					card.getPhotoFile().setSendTime(currentTime);

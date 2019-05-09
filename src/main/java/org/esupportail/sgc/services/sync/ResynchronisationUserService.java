@@ -188,7 +188,7 @@ public class ResynchronisationUserService {
 		
 		for(Card card : user.getCards()) {
 			// resync of cards : dueDate of user = max due_date
-			if(card.getDueDate()==null || card.getDueDate().after(user.getDueDate()) || card.isEnabled() && !user.getDueDate().equals(card.getDueDate())) {
+			if(card.getDueDate()==null || card.getDueDate().after(user.getDueDate()) || (card.isEnabled() || CardEtatService.etatsRequest.contains(card.getEtat())) && !user.getDueDate().equals(card.getDueDate())) {
 				card.setDueDate(user.getDueDate());
 				card.merge();
 				accessControlMustUpdate = true;

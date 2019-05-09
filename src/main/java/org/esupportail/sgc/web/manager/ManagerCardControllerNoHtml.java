@@ -22,6 +22,7 @@ import org.esupportail.sgc.domain.EscrCard;
 import org.esupportail.sgc.domain.EscrStudent;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
+import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
@@ -96,6 +97,19 @@ public class ManagerCardControllerNoHtml {
 	public ResponseEntity<byte[]> writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
 		Card card = Card.findCard(cardId);
 		PhotoFile photoFile = card.getPhotoFile();
+		Long size = photoFile.getFileSize();
+		String contentType = photoFile.getContentType();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.parseMediaType(contentType));
+		headers.setContentLength(size.intValue());
+		return new ResponseEntity(photoFile.getBigFile().getBinaryFileasBytes(), headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/{userId}/photo")
+	@Transactional
+	public ResponseEntity<byte[]> writeUserPhotoToResponse(@PathVariable Long userId, HttpServletResponse response) throws IOException, SQLException {
+		User user = User.findUser(userId);
+		PhotoFile photoFile = user.getDefaultPhoto();
 		Long size = photoFile.getFileSize();
 		String contentType = photoFile.getContentType();
 		HttpHeaders headers = new HttpHeaders();
@@ -219,14 +233,14 @@ public class ManagerCardControllerNoHtml {
 	@ResponseBody 
 	@Transactional
     public RightHolder getCrousRightHolder(@RequestParam String eppn) {
-		return crousService.getRightHolder(eppn);
+		return crousService.getRightHolder(User.findUser(eppn));
 	}
 	
 	@RequestMapping(value="/getCrousRightHolderHtmlPart")
 	@Transactional
     public String getCrousRightHolderHtmlPart(@RequestParam String eppn, Model uiModel) {
 		try {
-			RightHolder rightHolder = crousService.getRightHolder(eppn);
+			RightHolder rightHolder = crousService.getRightHolder(User.findUser(eppn));
 			uiModel.addAttribute("rightHolder", rightHolder);
 			return "manager/rightHolder";
 		} catch(CrousAccountForbiddenException ex) {

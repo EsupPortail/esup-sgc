@@ -41,7 +41,7 @@ public class CardEtatService {
 	
 	public final static List<Etat> etatsEnableable = Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}); 
 	
-	private final static List<Etat> etatsRequest = Arrays.asList(new Etat[] {Etat.NEW, Etat.RENEWED, Etat.REQUEST_CHECKED, Etat.REJECTED, Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.ENCODED});
+	public final static List<Etat> etatsRequest = Arrays.asList(new Etat[] {Etat.NEW, Etat.RENEWED, Etat.REQUEST_CHECKED, Etat.REJECTED, Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.ENCODED});
 	
 	private final static List<Etat> etatsPhotoEditable = Arrays.asList(new Etat[] {Etat.NEW, Etat.RENEWED, Etat.REQUEST_CHECKED, Etat.IN_PRINT}); 
 	
@@ -161,6 +161,7 @@ public class CardEtatService {
 		if(Etat.ENABLED.equals(etat)) {
 			card.setEnnabledDate(new Date());
 			card.setMotifDisable(null);
+			card.setDueDate(card.getUser().getDueDate());
 			for(ValidateService validateService : validateServices) {
 				if(!card.getExternal() || validateService.getUse4ExternalCard()) {
 					validateService.validate(card);

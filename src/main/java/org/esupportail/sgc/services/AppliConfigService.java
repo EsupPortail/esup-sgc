@@ -22,7 +22,7 @@ public class AppliConfigService {
 		USER_TIP_MSG, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, ENABLE_CROUS, 
 		ENABLE_EUROPEAN_CARD, DISPLAY_FORM_EUROPEAN_CARD, PAGE_FOOTER, EXT_USER_EPPN_REGEXP, RETENTION_LOGS_DB_DAYS, P2S_EXPORT_CSV_FILE_NAME, P2S_EXPORT_CSV_NB_LINES_PER_FILE,
 		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS, PHOTO_SIZE_MAX, PHOTO_BORDEREAU, 
-		PAIEMENT_ALERT_MAILTO, PAIEMENT_ALERT_MAILBODY
+		PAIEMENT_ALERT_MAILTO, PAIEMENT_ALERT_MAILBODY, CROUS_INE_AS_IDENTIFIER
 	}
 	
 
@@ -317,6 +317,11 @@ public class AppliConfigService {
 	public String getPaiementAlertMailbody() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.PAIEMENT_ALERT_MAILBODY);
 		return appliConfig==null ? "" : appliConfig.getValue();
+	}
+	
+	public Boolean getCrousIneAsIdentifier() {
+		AppliConfig crousIneAsIdentifier = getAppliConfigByKey(AppliConfigKey.CROUS_INE_AS_IDENTIFIER);
+		return crousIneAsIdentifier!=null && "true".equalsIgnoreCase(crousIneAsIdentifier.getValue());
 	}
 
 	protected AppliConfig getAppliConfigByKey(AppliConfigKey appliConfigKey) {

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 
@@ -42,6 +43,14 @@ privileged aspect User_Roo_JavaBean {
     
     public void User.setCrousError(String crousError) {
         this.crousError = crousError;
+    }
+    
+    public String User.getCrousIdentifier() {
+        return this.crousIdentifier;
+    }
+    
+    public void User.setCrousIdentifier(String crousIdentifier) {
+        this.crousIdentifier = crousIdentifier;
     }
     
     public Boolean User.getEuropeanStudentCard() {
@@ -458,6 +467,14 @@ privileged aspect User_Roo_JavaBean {
     
     public void User.setViewRight(Boolean viewRight) {
         this.viewRight = viewRight;
+    }
+    
+    public PhotoFile User.getDefaultPhoto() {
+        return this.defaultPhoto;
+    }
+    
+    public void User.setDefaultPhoto(PhotoFile defaultPhoto) {
+        this.defaultPhoto = defaultPhoto;
     }
     
 }

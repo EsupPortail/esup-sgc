@@ -39,8 +39,14 @@
                 </div>
                 <div class="panel-body ">
                     <div class="col-lg-4">
-                        <div class="well">
-                            <h3>Infos Perso</h3>
+                        <div class="well">                        	
+                            <h3>
+                            	Infos Perso
+                            	<c:if test="${not empty user.defaultPhoto and not empty user.defaultPhoto.bigFile.md5}">
+	                        	  <spring:url value="/manager/${user.id}/photo" var="defaultphotoUrl"/>
+	                           	  <img class="col-lg-2 col-md-2 col-xs-3 pull-right img-thumbnail center" src="${defaultphotoUrl}"/>
+	                        	</c:if>
+                            </h3>
                             <dl class="dl-horizontal displayWs">
                                 <dt>Prénom : </dt>
                                 <dd>${user.firstname}</dd>
@@ -73,6 +79,10 @@
                                 <dt class="fieldWs">Crous : </dt>
                                 <dd class="fieldWs">
                                     ${user.crous ? 'oui' : 'non'}
+                                </dd>
+                                <dt class="fieldWs">Identifiant Crous : </dt>
+                                <dd class="fieldWs">
+                                    ${user.crousIdentifier}
                                 </dd>
                                 <c:if test="${not empty user.crousError}">
 	                                <dt class="fieldWs"><span class="badge alert-danger">!</span> Erreur Crous :</dt>

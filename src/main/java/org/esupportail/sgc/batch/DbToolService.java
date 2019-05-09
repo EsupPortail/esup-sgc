@@ -31,7 +31,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.2.x";
+	final static String currentEsupSgcVersion = "1.3.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -215,6 +215,24 @@ public class DbToolService {
 				connection.close();
 				
 	    		esupSgcVersion = "1.2.x";
+			}
+			if("1.2.x".equals(esupSgcVersion)) {
+				
+				String sqlUpdate = "alter table user_account disable trigger tsvectorupdateuser;";
+				
+				sqlUpdate += "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'CROUS_INE_AS_IDENTIFIER', 'false', 'Si true, l''INE / supannCodeINE est utilisé comme identifiant crous/izly quand celui-ci est renseigné, si false ou si le supannCodeINE n''est pas renseigné on utilise l''EPPN.', 'BOOLEAN');";
+				
+				sqlUpdate += "UPDATE user_account set crous_identifier=eppn where crous;";
+				
+				sqlUpdate += "alter table user_account enable trigger tsvectorupdateuser;";
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+	    		esupSgcVersion = "1.3.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

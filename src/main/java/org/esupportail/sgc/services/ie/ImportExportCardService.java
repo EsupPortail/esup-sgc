@@ -33,6 +33,8 @@ public class ImportExportCardService {
 	static DateFormat importDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 	static final String DEFAULT_PHOTO = "media/nophoto.png";
+	
+	static final String DEFAULT_ESCR_PHOTO = "media/photo_esc.png";
 
 	static final public String DEFAULT_PHOTO_MIME_TYPE = "image/jpg";
 
@@ -147,6 +149,19 @@ public class ImportExportCardService {
 	public static byte[] loadNoImgPhoto() {
 		if(noImgPhoto == null) {
 			String image= DEFAULT_PHOTO;
+			ClassPathResource noImg = new ClassPathResource(image);
+			try {
+				noImgPhoto = IOUtils.toByteArray(noImg.getInputStream());
+			} catch (IOException e) {
+				log.warn("IOException reading image", e);
+			}
+		}
+		return noImgPhoto;
+	}
+	
+	public static byte[] loadNoImgEscrPhoto() {
+		if(noImgPhoto == null) {
+			String image= DEFAULT_ESCR_PHOTO;
 			ClassPathResource noImg = new ClassPathResource(image);
 			try {
 				noImgPhoto = IOUtils.toByteArray(noImg.getInputStream());

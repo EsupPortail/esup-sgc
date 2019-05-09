@@ -57,6 +57,11 @@ public class CrousPatchIdentifierController {
 		return appliConfigService.pageFooter();
 	}  
 	
+	@ModelAttribute("crousIneAsIdentifier")
+	public Boolean getCrousIneAsIdentifier() {
+		return appliConfigService.getCrousIneAsIdentifier();
+	} 
+	
 	@RequestMapping(value = "/addCsvFile", method = RequestMethod.POST, produces = "text/html")
 	public String addCrousCsvFile(MultipartFile file, Model uiModel) throws IOException, ParseException {
 		
@@ -74,6 +79,20 @@ public class CrousPatchIdentifierController {
 	@RequestMapping(value = "/patchIdentifiers", method = RequestMethod.POST, produces = "text/html")
 	public String patchIdentifiers(Model uiModel) {
 		crousPatchIdentifierService.patchIdentifiers();
+		uiModel.asMap().clear();
+		return "redirect:/admin/crouspatchids?page=1&size=10";
+	}
+	
+	@RequestMapping(value = "/deletePatchIdentifiants", method = RequestMethod.POST, produces = "text/html")
+	public String deletePatchIdentifiants(Model uiModel)  {
+		crousPatchIdentifierService.deletePatchIdentifiants();	
+		uiModel.asMap().clear();
+		return "redirect:/admin/crouspatchids?page=1&size=10";
+	}
+	
+	@RequestMapping(value = "/generatePatchIdentifiersIne", method = RequestMethod.POST, produces = "text/html")
+	public String generatePatchIdentifiersIne(Model uiModel)  {
+		crousPatchIdentifierService.generatePatchIdentifiersIne();	
 		uiModel.asMap().clear();
 		return "redirect:/admin/crouspatchids?page=1&size=10";
 	}
