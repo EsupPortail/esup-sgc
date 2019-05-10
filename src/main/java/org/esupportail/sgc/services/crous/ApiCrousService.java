@@ -154,21 +154,27 @@ public class ApiCrousService {
 	public boolean postOrUpdateRightHolder(String eppn) {	
 		if(enable) {
 			User user = User.findUser(eppn);
-			if(user.getCrousIdentifier() == null || user.getCrousIdentifier().isEmpty()) {
-				return postRightHolder(eppn);
+			String crousIdentifier = user.getCrousIdentifier();
+			if(crousIdentifier == null || crousIdentifier.isEmpty()) {
+				// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore
+				crousIdentifier = this.computeEsupSgcRightHolder(eppn).getIdentifier();
 			}
-			String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
+			String url = webUrl + "/rightholders/" + crousIdentifier;
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			try {
 				ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);
-				log.info("Getting RightHolder for " + user.getCrousIdentifier() + " : " + response.toString());
+				log.info("Getting RightHolder for " + crousIdentifier + " : " + response.toString());
 				RightHolder oldRightHolder = response.getBody();
 				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn);
 				// hack dueDate can't be past in IZLY 
 				if(log.isTraceEnabled()) {
 					log.trace(String.format("newRightHolder.fieldWoDueDateEquals(oldRightHolder) : %s", newRightHolder.fieldWoDueDateEquals(oldRightHolder)));
 					log.trace(String.format("mustUpdateDueDateCrous(oldRightHolder, eppn) : %s", mustUpdateDueDateCrous(oldRightHolder, eppn)));
+				}
+				if(!crousIdentifier.equals(user.getCrousIdentifier())) {
+					// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore - bis
+					user.setCrousIdentifier(crousIdentifier);
 				}
 				if(!newRightHolder.fieldWoDueDateEquals(oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
 					if(!newRightHolder.getIdentifier().equals(oldRightHolder.getIdentifier())) {
