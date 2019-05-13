@@ -158,14 +158,10 @@ public class ApiCrousService {
 			if(crousIdentifier == null || crousIdentifier.isEmpty()) {
 				// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore
 				crousIdentifier = this.computeEsupSgcRightHolder(eppn).getIdentifier();
-			}
-			String url = webUrl + "/rightholders/" + crousIdentifier;
-			HttpHeaders headers = this.getAuthHeaders();	
-			HttpEntity entity = new HttpEntity(headers);		
+			}		
 			try {
-				ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);
-				log.info("Getting RightHolder for " + crousIdentifier + " : " + response.toString());
-				RightHolder oldRightHolder = response.getBody();
+				RightHolder oldRightHolder = getRightHolder(crousIdentifier);
+				log.info("Getting RightHolder for " + crousIdentifier + " : " + oldRightHolder.toString());
 				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn);
 				// hack dueDate can't be past in IZLY 
 				if(log.isTraceEnabled()) {
@@ -267,10 +263,10 @@ public class ApiCrousService {
 
 	public RightHolder computeEsupSgcRightHolder(User user) {
 		RightHolder rightHolder = new RightHolder();
-		if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
-			rightHolder.setIdentifier(user.getCrousIdentifier());
-		} else if(appliConfigService.getCrousIneAsIdentifier() && user.getSupannCodeINE() != null && !user.getSupannCodeINE().isEmpty()) {
+		if(appliConfigService.getCrousIneAsIdentifier() && user.getSupannCodeINE() != null && !user.getSupannCodeINE().isEmpty()) {
 			rightHolder.setIdentifier(user.getSupannCodeINE());
+		} else if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
+			rightHolder.setIdentifier(user.getCrousIdentifier());
 		} else {
 			rightHolder.setIdentifier(user.getEppn());
 		}
