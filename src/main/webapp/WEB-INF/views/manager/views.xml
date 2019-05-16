@@ -41,7 +41,10 @@
 		<put-attribute name="body"
 			value="/WEB-INF/views/manager/print-card.jspx" />
 	</definition>
-	
+	<definition extends="default" name="manager/su">
+        <put-attribute name="body" value="/WEB-INF/views/manager/su.jspx"/>
+    </definition>
+    
 	<definition name="manager/esup-sgc-jnlp" template="/WEB-INF/views/manager/esup-sgc-jnlp.jspx" />
 	
 	<definition name="manager/esup-sgc-jnlp-r2d2" template="/WEB-INF/views/manager/esup-sgc-jnlp-r2d2.jspx"/>
