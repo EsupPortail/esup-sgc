@@ -102,12 +102,14 @@ public class ToolsController {
 	public String patchEsupSgcEppn(RedirectAttributes redirectAttrs, @RequestParam String oldEppn, @RequestParam String newEppn) {
 		if(!oldEppn.isEmpty() && !newEppn.isEmpty()) {
 			User user = User.findUser(oldEppn);
-			CrousPatchIdentifier crousPatchIdentifier = new CrousPatchIdentifier();
-			crousPatchIdentifier.setOldId(user.getEppn());
-			crousPatchIdentifier.setMail(user.getEmail());
-			crousPatchIdentifier.setEppnNewId(newEppn);
-			crousPatchIdentifier.persist();
-			crousPatchIdentifierService.patchIdentifier(crousPatchIdentifier);
+			if(user.getEppn().equals(user.getCrousIdentifier())) {
+				CrousPatchIdentifier crousPatchIdentifier = new CrousPatchIdentifier();
+				crousPatchIdentifier.setOldId(user.getEppn());
+				crousPatchIdentifier.setMail(user.getEmail());
+				crousPatchIdentifier.setEppnNewId(newEppn);
+				crousPatchIdentifier.persist();
+				crousPatchIdentifierService.patchIdentifier(crousPatchIdentifier);
+			}
 			user.setEppn(newEppn);
 			for(Card card : user.getCards()) {
 				card.setEppn(newEppn);
