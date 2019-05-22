@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.UserService;
@@ -60,6 +60,9 @@ public class ManagerLdapSearchController {
 	
 	@Resource
 	ExternalCardService externalCardService;
+	
+	@Resource
+	CardService cardService;
 	
 	@Resource
 	CardEtatService cardEtatService;
@@ -119,12 +122,21 @@ public class ManagerLdapSearchController {
 		}
 		userInfoService.setAdditionalsInfo(user, null);
 		uiModel.addAttribute("user", user);
+		
+		String defaultPhotoMd5 = null;
+		Card lastCard = cardService.findLastCardByEppnEquals(eppn);
+		if(lastCard !=null){
+			defaultPhotoMd5 = lastCard.getPhotoFile().getBigFile().getMd5();
+		} else if(user.getDefaultPhoto() != null && user.getDefaultPhoto().getBigFile().getMd5() != null) {
+			defaultPhotoMd5 = user.getDefaultPhoto().getBigFile().getMd5();
+		}
 
 		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
 		
 		uiModel.addAttribute("deviceType", userAgentUtils.getOperatingSystem().getDeviceType());
 		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user));
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
+		uiModel.addAttribute("defaultPhotoMd5", defaultPhotoMd5);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(user));
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
 		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, true);
@@ -133,12 +145,6 @@ public class ManagerLdapSearchController {
 		uiModel.addAttribute("requestUserIsManager", true);
 		uiModel.addAttribute("eppn", eppn);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
-		
-		Long id = Long.valueOf("-1");
-		if(!user.getCards().isEmpty()){
-			id = user.getCards().get(0).getId();
-		}
-		uiModel.addAttribute("lastId", id);
 		
 		return "user/card-request";
 

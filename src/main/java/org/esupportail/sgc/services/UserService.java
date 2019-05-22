@@ -95,7 +95,7 @@ public class UserService {
 	}
 	
 	public boolean isEsupManager(User user) {
-		return user.getReachableRoles().contains("ROLE_SUPER_MANAGER");
+		return user.getReachableRoles().contains("ROLE_MANAGER");
 	}
 
 	public Boolean canPaidRenewal(User user) {

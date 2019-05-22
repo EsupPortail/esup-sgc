@@ -562,7 +562,7 @@ public class ManagerCardController {
     @PreAuthorize("hasPermission(#id, 'manage')")
 	@RequestMapping(value="/updatePhoto", method = RequestMethod.POST)
 	@Transactional
-	public String cardRequest(@RequestParam("cardId") Long id, @RequestParam("imageData") String imageData, Model uiModel, final RedirectAttributes redirectAttributes){
+	public String updatePhoto(@RequestParam("cardId") Long id, @RequestParam("imageData") String imageData, Model uiModel, final RedirectAttributes redirectAttributes){
 		
 		if (imageData.isEmpty()) {
 			log.info("Aucune image disponible");

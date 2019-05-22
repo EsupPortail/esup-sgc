@@ -198,7 +198,7 @@ public class UserCardController {
 		
 		String defaultPhotoMd5 = null;
 		Card lastCard = cardService.findLastCardByEppnEquals(eppn);
-		if(lastCard !=null){
+		if(lastCard !=null) {
 			defaultPhotoMd5 = lastCard.getPhotoFile().getBigFile().getMd5();
 		} else if(user.getDefaultPhoto() != null && user.getDefaultPhoto().getBigFile().getMd5() != null) {
 			defaultPhotoMd5 = user.getDefaultPhoto().getBigFile().getMd5();
