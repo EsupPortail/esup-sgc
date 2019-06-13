@@ -263,10 +263,10 @@ public class ApiCrousService {
 
 	public RightHolder computeEsupSgcRightHolder(User user) {
 		RightHolder rightHolder = new RightHolder();
-		if(appliConfigService.getCrousIneAsIdentifier() && user.getSupannCodeINE() != null && !user.getSupannCodeINE().isEmpty()) {
-			rightHolder.setIdentifier(user.getSupannCodeINE());
-		} else if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
+		if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
 			rightHolder.setIdentifier(user.getCrousIdentifier());
+		} else if(appliConfigService.getCrousIneAsIdentifier() && user.getSupannCodeINE() != null && !user.getSupannCodeINE().isEmpty()) {
+			rightHolder.setIdentifier(user.getSupannCodeINE());
 		} else {
 			rightHolder.setIdentifier(user.getEppn());
 		}

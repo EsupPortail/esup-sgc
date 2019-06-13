@@ -75,7 +75,7 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
 			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
-				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role)) {
+				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role) || role.startsWith("ROLE_MANAGER_")) {
 					groups.add(group);
 				}
 			}
@@ -87,7 +87,7 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
 			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
-				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role) || "ROLE_CONSULT".equals(role)) {
+				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role) || "ROLE_CONSULT".equals(role) || role.startsWith("ROLE_MANAGER_") || role.startsWith("ROLE_CONSULT_")) {
 					groups.add(group);
 				}
 			}
@@ -99,7 +99,7 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 		List<String> groups = new ArrayList<String>();
 		for(String group : mappingGroupesRoles.keySet()) {
 			for(String role : mappingGroupesRoles.get(group).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
-				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role) || "ROLE_CONSULT".equals(role) || "ROLE_VERSO".equals(role)) {
+				if("ROLE_SUPER_MANAGER".equals(role) || "ROLE_MANAGER".equals(role) || "ROLE_CONSULT".equals(role) || "ROLE_VERSO".equals(role) || role.startsWith("ROLE_MANAGER_") || role.startsWith("ROLE_CONSULT_")) {
 					groups.add(group);
 				}
 			}
