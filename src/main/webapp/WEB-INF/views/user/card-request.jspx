@@ -6,7 +6,7 @@
 		<spring:url value="/user/photo/${id}" var="rejectedPhotoUrl" />
 		<spring:url value="/user/photo" var="defaultPhotoUrl" />
 		<c:if test="${requestUserIsManager}">
-			<spring:url value="/manager/photo/${lastId}" var="lastPhotoUrl" />
+			<spring:url value="/manager/${user.id}/photo" var="defaultPhotoUrl" />
 		</c:if>
 		<script type="text/javascript">
 			var isRejected = '${isRejected}';
