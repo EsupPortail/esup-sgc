@@ -111,7 +111,7 @@ public class CrousErrorLogController {
 		dummyUser.setEppn(user.getEppn());
 		dummyUser.setCrous(user.getCrous());
         userInfoService.setAdditionalsInfo(dummyUser, null);
-        RightHolder esupSgcRightHolder =  apiCrousService.computeEsupSgcRightHolder(dummyUser);
+        RightHolder esupSgcRightHolder =  apiCrousService.computeEsupSgcRightHolder(dummyUser, true);
 		return esupSgcRightHolder;
 	}
 

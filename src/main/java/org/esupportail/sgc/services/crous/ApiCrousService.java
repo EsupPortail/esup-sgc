@@ -157,12 +157,12 @@ public class ApiCrousService {
 			String crousIdentifier = user.getCrousIdentifier();
 			if(crousIdentifier == null || crousIdentifier.isEmpty()) {
 				// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore
-				crousIdentifier = this.computeEsupSgcRightHolder(eppn).getIdentifier();
+				crousIdentifier = this.computeEsupSgcRightHolder(eppn, true).getIdentifier();
 			}		
 			try {
 				RightHolder oldRightHolder = getRightHolder(crousIdentifier);
 				log.info("Getting RightHolder for " + crousIdentifier + " : " + oldRightHolder.toString());
-				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn);
+				RightHolder newRightHolder = this.computeEsupSgcRightHolder(eppn, true);
 				// hack dueDate can't be past in IZLY 
 				if(log.isTraceEnabled()) {
 					log.trace(String.format("newRightHolder.fieldWoDueDateEquals(oldRightHolder) : %s", newRightHolder.fieldWoDueDateEquals(oldRightHolder)));
@@ -202,7 +202,7 @@ public class ApiCrousService {
 	private boolean postRightHolder(String eppn) {
 		String url = webUrl + "/rightholders";
 		HttpHeaders headers = this.getAuthHeaders();			
-		RightHolder rightHolder = this.computeEsupSgcRightHolder(eppn);
+		RightHolder rightHolder = this.computeEsupSgcRightHolder(eppn, false);
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		log.debug("Try to post to CROUS RightHolder : " + rightHolder); 
 		try {
@@ -227,7 +227,7 @@ public class ApiCrousService {
 		User user = User.findUser(eppn);
 		String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
-		RightHolder rightHolder = this.computeEsupSgcRightHolder(eppn);
+		RightHolder rightHolder = this.computeEsupSgcRightHolder(eppn, false);
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
@@ -261,12 +261,14 @@ public class ApiCrousService {
 	}
 	
 
-	public RightHolder computeEsupSgcRightHolder(User user) {
+	public RightHolder computeEsupSgcRightHolder(User user, Boolean ineAsCrousIdentifierIfPossible) {
 		RightHolder rightHolder = new RightHolder();
-		if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
+		if(!ineAsCrousIdentifierIfPossible && user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
 			rightHolder.setIdentifier(user.getCrousIdentifier());
 		} else if(appliConfigService.getCrousIneAsIdentifier() && user.getSupannCodeINE() != null && !user.getSupannCodeINE().isEmpty()) {
 			rightHolder.setIdentifier(user.getSupannCodeINE());
+		} else if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
+			rightHolder.setIdentifier(user.getCrousIdentifier());
 		} else {
 			rightHolder.setIdentifier(user.getEppn());
 		}
@@ -295,11 +297,11 @@ public class ApiCrousService {
 		return rightHolder;
 	}
 	
-	private RightHolder computeEsupSgcRightHolder(String eppn) {
+	private RightHolder computeEsupSgcRightHolder(String eppn, Boolean ineAsCrousIdentifierIfPossible) {
 		RightHolder rightHolder = null;
 		User user = User.findUser(eppn);
 		if(user != null) {
-			rightHolder = computeEsupSgcRightHolder(user);
+			rightHolder = computeEsupSgcRightHolder(user, ineAsCrousIdentifierIfPossible);
 		}
 		return rightHolder;
 	}
