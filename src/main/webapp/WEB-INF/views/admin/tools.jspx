@@ -85,6 +85,13 @@
 	<div class="row">
 		<div class="col-lg-1">&amp;nbsp;</div>
 		<div class="col-lg-10">
+			<spring:url value="/admin/tools/forcePostOrUpdateRightHolderCrous" var="forcePostOrUpdateRightHolderCrousUrl" />
+			<form action="${forcePostOrUpdateRightHolderCrousUrl}" class="form-horizontal" method="POST">
+				<div class="form-group well">
+					<p>Forcer la vérification et envoi / mise à jour des comptes CROUS référencés dans le SGC comme ayant le crous d'activé et possédant au moins une carte active : ${usersWithCrousCount} compte(s) répond(ent) à ce critère.</p>
+					<button class="btn btn-danger" type="submit" name="action" value="forcePostOrUpdateRightHolderCrousUrl" onclick="return confirm('Attention, cette action va engender un nombre d\'appels au CROUS non négligeable : ${usersWithCrousCount} GET voir PUT et POST au besoin sur l\'API CROUS ici.');">Forcer la mise à jour (update/put) des comptes CROUS (RightHolder) dans l'API CROUS.</button>
+				</div>
+			</form>
 			<spring:url value="/admin/tools/checkCrousDisabledExistingInApiCrous" var="checkCrousDisabledExistingInApiCrousUrl" />
 			<form action="${checkCrousDisabledExistingInApiCrousUrl}" class="form-horizontal" method="POST">
 				<div class="form-group">

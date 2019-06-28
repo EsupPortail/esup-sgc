@@ -222,7 +222,6 @@ public class ApiCrousService {
 		return true;
 	}
 
-
 	private boolean updateRightHolder(String eppn) {
 		User user = User.findUser(eppn);
 		String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
@@ -316,12 +315,19 @@ public class ApiCrousService {
 			if(duedateCrous!=null && realDueDate.before(now) && duedateCrous.before(now)) {
 				return false;
 			}
-			return !realDueDate.equals(duedateCrous);
+			return !equalsWithInterval(realDueDate, duedateCrous);
 		}
 		return false;
 	}
 	
 	
+	/**
+	 * True si les dates sont égales à 5 minutes près.
+	 */
+	private boolean equalsWithInterval(Date realDueDate, Date duedateCrous) {
+		return Math.abs(realDueDate.getTime() - duedateCrous.getTime()) < 1000*60*5;
+	}
+
 	public boolean validateSmartCard(Card card) {
 		if(enable) {
 			User user = User.findUser(card.getEppn());

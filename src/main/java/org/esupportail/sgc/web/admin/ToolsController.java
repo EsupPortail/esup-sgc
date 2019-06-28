@@ -80,6 +80,12 @@ public class ToolsController {
 		return User.countFindUsersByCrous(false);
 	}
 	
+	@ModelAttribute("usersWithCrousCount")
+	public Long countFindUsersWithCrousCount() {
+		return User.countFindUsersWithCrousAndWithCardEnabled();
+	}
+	
+	
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
 	public String index() {
 		return "admin/tools";
@@ -167,5 +173,24 @@ public class ToolsController {
 		log.info(infoMsg);
 		return "redirect:/admin/tools";
 	}
+	
+	@RequestMapping(value = "/forcePostOrUpdateRightHolderCrous", method = RequestMethod.POST, produces = "text/html")
+	public String forcePostOrUpdateRightHolderCrous(Model uiModel) {
+		log.info("forcePostOrUpdateRightHolderCrous called");
+		int nbRightHolderPutinCrous = 0;
+		for(User user : User.findUsersWithCrousAndWithCardEnabled()) {
+			try {
+				if(crousService.postOrUpdateRightHolder(user.getEppn())) {
+					nbRightHolderPutinCrous++;
+				}		
+			} catch(Exception e) {
+				log.warn(String.format("Exception on forcePostOrUpdateRightHolderCrous for %s", user.getEppn()), e);
+			}	
+		}
+		String infoMsg = String.format("%s rightHolder vérifiés et envoyés / mis à jour dans l'API CROUS", nbRightHolderPutinCrous);
+		log.info(infoMsg);
+		return "redirect:/admin/tools";
+	}
+	
 	
 }

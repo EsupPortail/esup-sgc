@@ -76,6 +76,7 @@ public class AuthApiCrousService {
 			}
 		}
 	}
+	
 
 	public boolean validateSmartCard(Card card) {
 		try {

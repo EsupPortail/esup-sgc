@@ -68,12 +68,12 @@ public class RightHolder {
 		if (email == null) {
 			if (other.email != null)
 				{log.trace("email <>"); return false;}
-		} else if (!email.equals(other.email))
+		} else if (!email.equalsIgnoreCase(other.email))
 			{log.trace("email <>"); return false;}
 		if (firstName == null) {
 			if (other.firstName != null)
 				{log.trace("firstName <>"); return false;}
-		} else if (!firstName.equals(other.firstName))
+		} else if (!firstName.equalsIgnoreCase(other.firstName))
 			{log.trace("firstName <>"); return false;}
 		if (idCompanyRate == null) {
 			if (other.idCompanyRate != null)
@@ -88,22 +88,22 @@ public class RightHolder {
 		if (identifier == null) {
 			if (other.identifier != null)
 				{log.trace("identifier <>"); return false;}
-		} else if (!identifier.equals(other.identifier))
+		} else if (!identifier.equalsIgnoreCase(other.identifier))
 			{log.trace("identifier <>"); return false;}
 		if (lastName == null) {
 			if (other.lastName != null)
 				{log.trace("lastName <>"); return false;}
-		} else if (!lastName.equals(other.lastName))
+		} else if (!lastName.equalsIgnoreCase(other.lastName))
 			{log.trace("lastName <>"); return false;}
 		if (ine == null) {
 			if (other.ine != null)
 				{log.trace("ine <>"); return false;}
-		} else if (!ine.equals(other.ine))
+		} else if (!ine.equalsIgnoreCase(other.ine))
 			{log.trace("ine <>"); return false;}
 		if (rneOrgCode == null) {
 			if (other.rneOrgCode != null)
 				{log.trace("rneOrgCode <>"); return false;}
-		} else if (!rneOrgCode.equals(other.rneOrgCode))
+		} else if (!rneOrgCode.equalsIgnoreCase(other.rneOrgCode))
 			{log.trace("rneOrgCode <>"); return false;}
 		return true;
 	}

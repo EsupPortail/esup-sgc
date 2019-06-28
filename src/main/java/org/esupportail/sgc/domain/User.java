@@ -750,6 +750,25 @@ public class User {
         		+ "and o.dueDate > current_date()", User.class);
         return q.getResultList();
     }
+
+	public static Long countFindUsersWithCrousAndWithCardEnabled() {
+        EntityManager em = User.entityManager();
+        TypedQuery<Long> q = em.createQuery("SELECT count(o) FROM User AS o, Card AS c WHERE "
+        		+ "o.crous = true "
+        		+ "and c.userAccount = o "
+        		+ "and c.etat = 'ENABLED'", Long.class);
+        return q.getSingleResult();
+	}
+	
+
+	public static List<User> findUsersWithCrousAndWithCardEnabled() {
+        EntityManager em = User.entityManager();
+        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o, Card AS c WHERE "
+        		+ "o.crous = true "
+        		+ "and c.userAccount = o "
+        		+ "and c.etat = 'ENABLED'", User.class);
+        return q.getResultList();
+	}
     
 }
 
