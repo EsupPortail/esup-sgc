@@ -35,6 +35,8 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 	
 	private boolean isRunning = false;
 	
+	private String eppnFilter = ".*";
+	
 	@Resource
 	AccessService pcPassVfsAccessService;
 	
@@ -46,6 +48,14 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 
 	private Set<String> queueEppns2Update = new HashSet<String>();
 	
+
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
 
 	public void sync(List<String> eppns) throws IOException {
 		synchronized (queueEppns2Update) {

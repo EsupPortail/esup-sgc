@@ -29,6 +29,8 @@ public class CsvExportTilService implements Export2AccessControlService {
 	
 	final static Date DATE_MAX = new Date(2037-1900, 11, 31);
 	
+	private String eppnFilter = ".*";
+	
 	@Resource
 	CardEtatService cardEtatService;
 	
@@ -38,6 +40,14 @@ public class CsvExportTilService implements Export2AccessControlService {
 	@Resource
 	AppliConfigService appliConfigService;
 	
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.esupportail.sgc.services.ac.Export2AccessControlService#sync(java.util.List)
 	 */

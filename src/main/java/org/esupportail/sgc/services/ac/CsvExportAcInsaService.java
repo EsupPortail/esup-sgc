@@ -29,6 +29,8 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	
 	private final static String CSV_FILENAME =  "insa-ac-from-esup-sgc.csv";
 	
+	private String eppnFilter = ".*";
+	
 	@Resource
 	CardEtatService cardEtatService;
 	
@@ -38,6 +40,14 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	@Resource
 	AppliConfigService appliConfigService;
 	
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.esupportail.sgc.services.ac.Export2AccessControlService#sync(java.util.List)
 	 */

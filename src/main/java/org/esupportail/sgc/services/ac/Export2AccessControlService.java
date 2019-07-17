@@ -8,5 +8,7 @@ public interface Export2AccessControlService {
 	void sync(List<String> eppns) throws IOException;
 
 	void sync(String eppn) throws IOException;
-
+	
+	String getEppnFilter();
+		
 }

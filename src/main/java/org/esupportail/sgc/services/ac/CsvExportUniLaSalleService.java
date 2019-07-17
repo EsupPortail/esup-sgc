@@ -35,6 +35,8 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 	
 	private boolean isRunning = false;
 	
+	private String eppnFilter = ".*";
+	
 	@Resource
 	AccessService uniLaSalleVfsAccessService;
 	
@@ -46,6 +48,14 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 
 	private Set<String> queueEppns2Update = new HashSet<String>();
 	
+
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
 
 	public void sync(List<String> eppns) throws IOException {
 		synchronized (queueEppns2Update) {

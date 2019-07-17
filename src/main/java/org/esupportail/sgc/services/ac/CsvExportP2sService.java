@@ -35,6 +35,8 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 	
 	private boolean isRunning = false;
 	
+	private String eppnFilter = ".*";
+	
 	@Resource
 	AccessService p2sVfsAccessService;
 	
@@ -46,6 +48,14 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 
 	private Set<String> queueEppns2Update = new HashSet<String>();
 	
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
+
 	public void sync() throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(null).toString(), ENCODING_P2S);
 		String filename = appliConfigService.getP2sExportcsvFilename();

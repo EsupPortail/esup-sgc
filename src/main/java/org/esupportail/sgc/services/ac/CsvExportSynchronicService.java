@@ -32,6 +32,8 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	
 	public final static List<String> genericCartesLibelles = Arrays.asList(new String[] {"Exterieur", "Service"});
 	
+	private String eppnFilter = ".*";
+	
 	@Resource
 	CardEtatService cardEtatService;
 	
@@ -41,6 +43,14 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	@Resource
 	AppliConfigService appliConfigService;
 	
+	public String getEppnFilter() {
+		return eppnFilter;
+	}
+
+	public void setEppnFilter(String eppnFilter) {
+		this.eppnFilter = eppnFilter;
+	}
+
 	/* Méthode en 1 seul fichier */
 	public void sync(List<String> eppns) throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_P2S);

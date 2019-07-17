@@ -1,6 +1,7 @@
 package org.esupportail.sgc.services.ac;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.esupportail.sgc.domain.Card;
@@ -20,20 +21,28 @@ public class AccessControlService extends ValidateService {
 	
 	public void sync(List<String> eppns) {
 		for(Export2AccessControlService acService: acServices) {
+			List<String> matchEppns = new ArrayList<String>();
+			for(String eppn: eppns) {
+				if(eppn.matches(acService.getEppnFilter())) {
+					matchEppns.add(eppn);
+				}
+			}
 			try {
-				acService.sync(eppns);
+				acService.sync(matchEppns);
 			} catch (IOException e) {
-				log.error("IOException during synchronization of " + eppns + " on " + acService, e);
+				log.error("IOException during synchronization of " + matchEppns + " on " + acService, e);
 			}
 		}
 	}
 
 	public void sync(String eppn) {
 		for(Export2AccessControlService acService: acServices) {
-			try {
-				acService.sync(eppn);
-			} catch (IOException e) {
-				log.error("IOException during synchronization of " + eppn + " on " + acService, e);
+			if(eppn.matches(acService.getEppnFilter())) {
+				try {
+					acService.sync(eppn);
+				} catch (IOException e) {
+					log.error("IOException during synchronization of " + eppn + " on " + acService, e);
+				}
 			}
 		}
 	}
