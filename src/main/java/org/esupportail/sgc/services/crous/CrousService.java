@@ -26,7 +26,7 @@ public class CrousService extends ValidateService {
 	CrousLogService crousLogService;
 	
 	@Override
-	public void validate(Card card) {
+	public void validateInternal(Card card) {
 		User user = User.findUser(card.getEppn());
 		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			if(this.postOrUpdateRightHolder(card.getEppn())) {
@@ -49,7 +49,7 @@ public class CrousService extends ValidateService {
 	}
 
 	@Override
-	public void invalidate(Card card) {
+	public void invalidateInternal(Card card) {
 		User user = User.findUser(card.getEppn());
 		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			Boolean postOrUpdateRightHolderOk4invalication = false;

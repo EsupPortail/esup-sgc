@@ -163,17 +163,13 @@ public class CardEtatService {
 			card.setMotifDisable(null);
 			card.setDueDate(card.getUser().getDueDate());
 			for(ValidateService validateService : validateServices) {
-				if(!card.getExternal() || validateService.getUse4ExternalCard()) {
-					validateService.validate(card);
-				}
+				validateService.validate(card);
 			}	
 		}
 		
 		if(Etat.DISABLED.equals(etat) || Etat.CADUC.equals(etat)) {
 			for(ValidateService validateService : validateServices) {
-				if(!card.getExternal() || validateService.getUse4ExternalCard()) {
-					validateService.invalidate(card);
-				}
+				validateService.invalidate(card);
 			}
 		}
 		

@@ -39,12 +39,12 @@ public class AccessControlService extends ValidateService {
 	}
 
 	@Override
-	public void validate(Card card) {
+	public void validateInternal(Card card) {
 		sync(card.getEppn());
 	}
 
 	@Override
-	public void invalidate(Card card) {
+	public void invalidateInternal(Card card) {
 		sync(card.getEppn());
 	}
 	

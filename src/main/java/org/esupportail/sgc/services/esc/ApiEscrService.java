@@ -66,7 +66,7 @@ public class ApiEscrService extends ValidateService {
 	}
 
 	@Override
-	public void validate(Card card) {
+	public void validateInternal(Card card) {
 		User user = User.findUser(card.getEppn());
 		if(user.getEuropeanStudentCard() && enable) {
 			try {
@@ -82,7 +82,7 @@ public class ApiEscrService extends ValidateService {
 	}
 
 	@Override
-	public void invalidate(Card card) {
+	public void invalidateInternal(Card card) {
 		User user = User.findUser(card.getEppn());
 		if(user.getEuropeanStudentCard() && enable) {
 			try {

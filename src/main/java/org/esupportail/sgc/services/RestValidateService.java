@@ -30,12 +30,12 @@ public class RestValidateService extends ValidateService {
 	}
 
 	@Override
-	public void validate(Card card) {
+	public void validateInternal(Card card) {
 		callGetOnUrl(validateRestUrl, card);
 	}
 
 	@Override
-	public void invalidate(Card card) {
+	public void invalidateInternal(Card card) {
 		callGetOnUrl(invalidateRestUrl, card);
 	}
 

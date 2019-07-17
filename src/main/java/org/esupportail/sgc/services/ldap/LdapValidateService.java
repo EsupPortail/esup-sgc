@@ -63,7 +63,7 @@ public class LdapValidateService extends ValidateService {
 	}
 
 	@Override
-	public void validate(Card card) {
+	public void validateInternal(Card card) {
 		try {
 			Name dn = getDn(card.getEppn());
 			if(dn != null) {
@@ -103,7 +103,7 @@ public class LdapValidateService extends ValidateService {
 
 
 	@Override
-	public void invalidate(Card card) {
+	public void invalidateInternal(Card card) {
 		try {
 			Name dn = getDn(card.getEppn());
 			

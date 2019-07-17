@@ -60,7 +60,7 @@ public class PapercutService extends ValidateService implements InitializingBean
 	}
 
 	@Override
-	public void validate(Card card) {
+	public void validateInternal(Card card) {
 		String uid = getPapercutUid4User(card.getUser());
 		if(serverProxy.isUserExists(uid)) {
 			serverProxy.setUserProperty(uid, cardNumberAttribute, card.getCsn());
@@ -71,7 +71,7 @@ public class PapercutService extends ValidateService implements InitializingBean
 	}
 
 	@Override
-	public void invalidate(Card card) {
+	public void invalidateInternal(Card card) {
 		String uid = getPapercutUid4User(card.getUser());
 		if(serverProxy.isUserExists(uid)) {		
 			serverProxy.setUserProperty(uid, cardNumberAttribute,"");
