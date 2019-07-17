@@ -109,6 +109,22 @@ public class ManagerCardControllerNoHtml {
 	@Transactional
 	public ResponseEntity<byte[]> writeUserPhotoToResponse(@PathVariable Long userId, HttpServletResponse response) throws IOException, SQLException {
 		User user = User.findUser(userId);
+		return getUserPhotoAsResponseEntity(user);
+	}
+	
+	@RequestMapping(value="/photo", params="eppn")
+	@Transactional
+	public ResponseEntity<byte[]> writeUserPhotoToResponse(@RequestParam String eppn, HttpServletResponse response) throws IOException, SQLException {
+		User user = User.findUser(eppn);
+		if(user == null) {
+			user = new User();
+			user.setEppn(eppn);
+			userInfoService.setAdditionalsInfo(user, null);
+		}
+		return getUserPhotoAsResponseEntity(user);
+	}
+
+	protected ResponseEntity<byte[]> getUserPhotoAsResponseEntity(User user) throws IOException, SQLException {
 		PhotoFile photoFile = user.getDefaultPhoto();
 		Long size = photoFile.getFileSize();
 		String contentType = photoFile.getContentType();
@@ -117,6 +133,7 @@ public class ManagerCardControllerNoHtml {
 		headers.setContentLength(size.intValue());
 		return new ResponseEntity(photoFile.getBigFile().getBinaryFileasBytes(), headers, HttpStatus.OK);
 	}
+
 	
 	@RequestMapping(value="/vignette/{cardId}")
 	@ResponseBody
