@@ -127,11 +127,15 @@ public class ManagerCardControllerNoHtml {
 	protected ResponseEntity<byte[]> getUserPhotoAsResponseEntity(User user) throws IOException, SQLException {
 		PhotoFile photoFile = user.getDefaultPhoto();
 		Long size = photoFile.getFileSize();
-		String contentType = photoFile.getContentType();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.parseMediaType(contentType));
-		headers.setContentLength(size.intValue());
-		return new ResponseEntity(photoFile.getBigFile().getBinaryFileasBytes(), headers, HttpStatus.OK);
+		if(size!=null) {
+			String contentType = photoFile.getContentType();
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.parseMediaType(contentType));
+			headers.setContentLength(size.intValue());
+			return new ResponseEntity(photoFile.getBigFile().getBinaryFileasBytes(), headers, HttpStatus.OK);
+		} else {
+			return new ResponseEntity(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	
