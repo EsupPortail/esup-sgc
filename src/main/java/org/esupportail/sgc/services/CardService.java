@@ -2,7 +2,6 @@ package org.esupportail.sgc.services;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.tools.ImageUtils;
 import org.esupportail.sgc.tools.Params;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -290,9 +290,16 @@ public class CardService {
 			String contentType = cardService.getPhotoParams().get("contentType");
 			log.info("Try to upload file '" + filename + "' with size=" + fileSize + " and contentType=" + contentType);
 			card.getPhotoFile().setFilename(filename);
+			log.info("Upload and set file in DB with filesize = " + fileSize);
+			if(fileSize > appliConfigService.getFileSizeMax()) {
+				log.info(String.format("filesize [%s] too big, we try to resize ...", fileSize));
+				bytes = ImageUtils.resizeImage(bytes);
+				fileSize = Long.valueOf(Integer.valueOf(bytes.length));
+				contentType = ImageUtils.getContentType();
+				log.info(String.format("resize to %s OK", fileSize));
+			}
 			card.getPhotoFile().setContentType(contentType);
 			card.getPhotoFile().setFileSize(fileSize);
-			log.info("Upload and set file in DB with filesize = " + fileSize);
 			card.getPhotoFile().getBigFile().setBinaryFile(bytes);
 			Calendar cal = Calendar.getInstance();
 			Date currentTime = cal.getTime();

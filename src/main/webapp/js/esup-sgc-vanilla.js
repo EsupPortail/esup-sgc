@@ -1371,17 +1371,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	}
 			  },onFileChange: function(e) {
 		        var file = e.target.files[0];
-			    if(file.size > photoSizeMax){
-				       alert(messages['photoTooBig'] + photoSizeMax/1000+ "Ko");
-				     document.querySelectorAll(".ezcrop-image-input")[0].value = '';
-				 }else{
-			          if (file && file.name) {
-			              EXIF.getData(file, function() {
-			                  var exifData = EXIF.pretty(this);
-			                  orientation = EXIF.getTag(file, "Orientation");
-			              });
-			          }
-				 }
+			    if (file && file.name) {
+			       EXIF.getData(file, function() {
+			       var exifData = EXIF.pretty(this);
+			       orientation = EXIF.getTag(file, "Orientation");
+			       });
+			    }
 		      },previewSize:{
 		    	  width: 150, height: 188},
 		    	  maxZoom:1.8,
