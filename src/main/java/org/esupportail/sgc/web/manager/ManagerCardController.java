@@ -28,6 +28,7 @@ import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.SgcNotFoundException;
 import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
@@ -196,6 +197,9 @@ public class ManagerCardController {
     	Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
         addDateTimeFormatPatterns(uiModel);
         Card card =  Card.findCard(id);
+        if(card == null) {
+        	throw new SgcNotFoundException(String.format("Card %s not found", id), null);
+        }
         User user = User.findUser(card.getEppn());
         if(!user.getCards().isEmpty()){
         	for(Card cardItem : user.getCards()){

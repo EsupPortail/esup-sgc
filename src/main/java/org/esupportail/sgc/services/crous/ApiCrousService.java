@@ -214,9 +214,21 @@ public class ApiCrousService {
 				log.warn(eppn + " is locked in crous : " + clientEx.getResponseBodyAsString());
 				crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
 				return false;		
-			} else {
-				throw clientEx;
-			}
+			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
+				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
+				if("-41".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
+					log.info("Client en opposition");
+					return false;
+				} else if("-117".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
+					log.info("Client Anonymisé : " + clientEx.getResponseBodyAsString());
+					return false;
+				} else {
+					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
+				}
+			} 
+			throw clientEx;
 		}
 		log.info(eppn + " sent in CROUS as RightHolder");	
 		return true;

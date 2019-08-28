@@ -64,6 +64,7 @@
                 <prop key=".NoSuchRequestHandlingMethodException">resourceNotFound</prop>
                 <prop key=".TypeMismatchException">resourceNotFound</prop>
                 <prop key=".MissingServletRequestParameterException">resourceNotFound</prop>
+                <prop key=".SgcNotFoundException">resourceNotFound</prop>
             </props>
         </property>
     </bean>
