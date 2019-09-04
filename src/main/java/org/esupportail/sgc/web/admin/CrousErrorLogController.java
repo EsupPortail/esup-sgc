@@ -1,6 +1,13 @@
 package org.esupportail.sgc.web.admin;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.esupportail.sgc.domain.User;
@@ -15,6 +22,8 @@ import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.PatchIdentifier;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +34,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.supercsv.cellprocessor.ConvertNullTo;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.dozer.CsvDozerBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 @RequestMapping("/admin/crouserrorlogs")
 @Controller
 @RooWebScaffold(path = "admin/crouserrorlogs", formBackingObject = CrousErrorLog.class, create=false, delete=false, update=false)
 public class CrousErrorLogController {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	public final static String[] CSV_FIELDS = new String[] {"code", "message", "field", "date", "blocking", "eppn", "name", "mail", "csn"};
+	
+	public final static String[] FIELD_MAPPING = new String[] {"code", "message", "field", "date", "blocking", "userAccount.eppn", "userAccount.name", "userAccount.email", "card.csn"};
+	
+	public final static CellProcessor[] CSV_PROCESSORS = new CellProcessor[] {new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
+																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
+																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo("")};
+
 	@Resource
 	CrousService crousService;
 	
@@ -60,6 +83,15 @@ public class CrousErrorLogController {
 	public String getFooter() {
 		return appliConfigService.pageFooter();
 	}  
+	
+	@RequestMapping(method = RequestMethod.DELETE, produces = "text/html")
+    public String purgeAllLogs() {
+		List<CrousErrorLog> logs = CrousErrorLog.findAllCrousErrorLogs();
+		for(CrousErrorLog log : logs) {
+			log.remove();
+		}		
+        return "redirect:/admin/crouserrorlogs";
+    }
 	
     @RequestMapping(produces = "text/html")
     public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, 
@@ -135,5 +167,47 @@ public class CrousErrorLogController {
     	logService.log(crousErrorLog.getCardId(), ACTION.CROUS_DESACTIVATION, RETCODE.SUCCESS, "Désactivation CROUS suite à erreur API : " + crousErrorLog.toString(), user.getEppn(), null);
         return "redirect:/manager?eppn=" + user.getEppn();
     }
+    
+    
+    @RequestMapping(method = RequestMethod.GET, params="csv")
+    public void exportCsv2OutputStream(HttpServletResponse response) {	
+   
+		response.setContentType("text/csv");
+		String reportName = "esup-sgc-crous-errors.csv";
+		response.setHeader("Set-Cookie", "fileDownload=true; path=/");
+		response.setHeader("Content-disposition", "attachment;filename=" + reportName);
+		
+		CsvDozerBeanWriter beanWriter = null;
+		Writer writer = null;
+		try{
+			OutputStream outputStream = response.getOutputStream();
+			writer = new OutputStreamWriter(outputStream, "UTF8");
+			beanWriter =  new CsvDozerBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+			beanWriter.writeHeader(CSV_FIELDS);
+
+            beanWriter.configureBeanMapping(CrousErrorLog.class, FIELD_MAPPING);
+			List<CrousErrorLog> logs = CrousErrorLog.findAllCrousErrorLogs("date", "desc");
+			for(CrousErrorLog log : logs) {
+				beanWriter.write(log, CSV_PROCESSORS);
+			}		
+		} catch(Exception e){
+			log.warn("Interruption de l'export", e);
+		} finally {
+			if(beanWriter!=null) {
+				try {
+					beanWriter.close();
+				} catch (IOException e) {
+					log.warn("IOException ...", e);
+				}
+			}
+			if(writer!=null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					log.warn("IOException ...", e);
+				}
+			}
+		}
+	}
     
 }

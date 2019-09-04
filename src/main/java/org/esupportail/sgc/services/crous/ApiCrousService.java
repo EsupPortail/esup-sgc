@@ -224,6 +224,10 @@ public class ApiCrousService {
 					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
 					log.info("Client Anonymisé : " + clientEx.getResponseBodyAsString());
 					return false;
+				} else if("-42".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
+					log.info("Client inconnu : " + clientEx.getResponseBodyAsString());
+					return false;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
@@ -265,6 +269,10 @@ public class ApiCrousService {
 				} else if("-117".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
 					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
 					log.info("Client Anonymisé : " + clientEx.getResponseBodyAsString());
+					return false;
+				} else if("-42".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+					crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
+					log.info("Client inconnu : " + clientEx.getResponseBodyAsString());
 					return false;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
