@@ -466,6 +466,21 @@ public class UserCardController {
 		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "crous");
 		return "redirect:/user";
 	}
+
+	
+	@RequestMapping(value="/disableCrous", method=RequestMethod.POST)
+	public String disableCrous(final RedirectAttributes redirectAttributes) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		User user = User.findUser(eppn);
+		// autorisé qu'en cas d'erreur crous
+		if(user.getCrousError() != null && !user.getCrousError().isEmpty()) {
+			user.setCrous(false);
+			user.merge();
+		}
+		logService.log(null, ACTION.DISABLECROUS, RETCODE.SUCCESS, "Erreur CROUS : " + user.getCrousError(), eppn, null);
+		return "redirect:/user";
+	}
 	
 	@RequestMapping(value="/enableEuropeanCard", method=RequestMethod.POST)
 	public String enableEuropeanCard(final RedirectAttributes redirectAttributes) {

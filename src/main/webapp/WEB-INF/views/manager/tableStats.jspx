@@ -75,6 +75,7 @@
 				  		<td>${year.value}</td>
 				  	</c:forEach>
 				  	<td class="bold">${loopYear1}</td>
+				  	<c:set var="loopYear1" value="0" />
 			  	</tr>
 			  </c:forEach>
 		  </tbody>
