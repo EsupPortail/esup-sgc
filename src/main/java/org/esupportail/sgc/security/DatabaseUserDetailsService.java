@@ -51,7 +51,11 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		
-		resynchronisationUserService.synchronizeUserInfo(targetUser.getEppn());
+		try {
+			resynchronisationUserService.synchronizeUserInfo(targetUser.getEppn());
+		} catch(Exception e) {
+			log.error("Error when synchronizeUserInfo " + targetUser.getEppn(), e);
+		}
 		ldapGroup2UserRoleService.syncUser(targetUser.getEppn());
 		
 		for(String role : targetUser.getReachableRoles()) {

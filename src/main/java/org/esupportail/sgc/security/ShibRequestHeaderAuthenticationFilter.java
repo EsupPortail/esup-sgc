@@ -51,7 +51,11 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 	       	user.setEppn(eppn);
 	       	user.persist();
 	    }
-	    resynchronisationUserService.synchronizeUserInfo(eppn);
+	    try {
+	    	resynchronisationUserService.synchronizeUserInfo(eppn);
+	    } catch(Exception e) {
+			log.error("Error when synchronizeUserInfo " + eppn, e);
+		}
         userInfoService.updateUser(eppn, request);
         ldapGroup2UserRoleService.syncUser(eppn);
         
