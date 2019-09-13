@@ -190,9 +190,14 @@ public class ApiCrousService {
 			} catch(HttpClientErrorException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					return postRightHolder(eppn);
+				} else if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
+						crousLogService.logErrorCrous(eppn, null, clientEx.getResponseBodyAsString());
+						log.info("LOCKED : " + clientEx.getResponseBodyAsString());
+						log.info("Getting Crous RightHolder failed : IZLY account is locked");
+						return false;
 				} else {
-					throw clientEx;
-				}
+						throw clientEx;
+				} 
 			}
 		}
 		return true;
@@ -453,7 +458,7 @@ public class ApiCrousService {
 				body.put("revalidationDate", "");
 				HttpEntity entity = new HttpEntity(body, headers);
 				log.debug("Try to patch on Crous SmartCard for " +  card.getEppn() + " : " + smartCard); 
-				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);		
+				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
 				log.info("Card with csn " + card.getCsn() + " invalidated in CROUS as CrousSmartCard");
 			} catch(HttpClientErrorException clientEx) {
 				if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
@@ -466,12 +471,28 @@ public class ApiCrousService {
 						crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
 						log.info("Card was already invalidated : due date past");
 						return false;
-					} 
+					} else if("-41".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+						crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
+						log.info("Client en opposition");
+						return false;
+					} else if("-117".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+						crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
+						log.info("Client Anonymisé : " + clientEx.getResponseBodyAsString());
+						return false;
+					} else if("-42".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
+						crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
+						log.info("Client inconnu : " + clientEx.getResponseBodyAsString());
+						return false;
+					}
 				} else if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
 					log.info("Card with csn " + card.getCsn() + " not found in CROUS as CrousSmartCard, no need to invalidate it.");
 					return false;
-				} 
+				} else if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
+					log.info(card.getEppn() + " is locked in crous : " + clientEx.getResponseBodyAsString());
+					crousLogService.logErrorCrous(card.getEppn(), card.getCsn(), clientEx.getResponseBodyAsString());
+					return false;		
+				} 	
 				throw clientEx;
 			}
 		}

@@ -57,10 +57,8 @@ public class CrousService extends ValidateService {
 				postOrUpdateRightHolderOk4invalication = this.postOrUpdateRightHolder(card.getEppn());
 			} catch(HttpClientErrorException clientEx) {
 				if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) || HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
-					// si compte non updatable car non créé, locké, ... on considère que c'est ok pour l'invalidation
-					crousLogService.logErrorCrous(card.getEppn(), null, clientEx.getResponseBodyAsString());
-					log.warn("Exception calling api crous - crousService.invalidate " + card + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
-					postOrUpdateRightHolderOk4invalication = true;
+					// si compte non updatable car non créé, locké, ... on considère que c'est ok pour l'invalidation : pas besoin de la faire.
+					log.info("Exception calling api crous - crousService.invalidate " + card + " : \n" + clientEx.getResponseBodyAsString());
 				} else {
 					throw clientEx;
 				}

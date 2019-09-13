@@ -10,6 +10,8 @@
 		${card.userAccount.verso3}<br/>
 		${card.userAccount.verso4}<br/>
 		${card.userAccount.verso5}<br/>
+		${card.userAccount.verso6}<br/>
+		${card.userAccount.verso7}<br/>
 		</b>
     </div>
 </div>
