@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
+import org.esupportail.sgc.domain.AppliVersion;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class AppliConfigService {
 		USER_TIP_MSG, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, ENABLE_CROUS, 
 		ENABLE_EUROPEAN_CARD, DISPLAY_FORM_EUROPEAN_CARD, PAGE_FOOTER, EXT_USER_EPPN_REGEXP, RETENTION_LOGS_DB_DAYS, P2S_EXPORT_CSV_FILE_NAME, P2S_EXPORT_CSV_NB_LINES_PER_FILE,
 		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS, PHOTO_SIZE_MAX, PHOTO_BORDEREAU, 
-		PAIEMENT_ALERT_MAILTO, PAIEMENT_ALERT_MAILBODY, CROUS_INE_AS_IDENTIFIER
+		PAIEMENT_ALERT_MAILTO, PAIEMENT_ALERT_MAILBODY, CROUS_INE_AS_IDENTIFIER, ESUP_SGC_ETABLISSEMENT_NAME
 	}
 	
 
@@ -327,6 +328,17 @@ public class AppliConfigService {
 	protected AppliConfig getAppliConfigByKey(AppliConfigKey appliConfigKey) {
 		return AppliConfig.findAppliConfigByKey(appliConfigKey.name());
 	}
+
+	private String getEsupSgcEtablissementName() {
+		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ESUP_SGC_ETABLISSEMENT_NAME);
+		return appliConfig==null ? "" : appliConfig.getValue().replaceAll("[^a-zA-Z0-9]", "");
+	}
+	
+	public String getEsupSgcAsHttpUserAgent() {
+		String userAgent = String.format("ESUP-SGC/%s ; %s", AppliVersion.getAppliVersion().getEsupSgcVersion(), getEsupSgcEtablissementName());
+		return userAgent;
+	}
+
 	
 }
 

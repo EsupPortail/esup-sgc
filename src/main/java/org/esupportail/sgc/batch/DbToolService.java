@@ -3,7 +3,6 @@ package org.esupportail.sgc.batch;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.3.x";
+	final static String currentEsupSgcVersion = "1.4.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -233,6 +232,18 @@ public class DbToolService {
 				connection.close();
 				
 	    		esupSgcVersion = "1.3.x";
+			}
+			if("1.3.x".equals(esupSgcVersion)) {
+				
+				String sqlUpdate = "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'ESUP_SGC_ETABLISSEMENT_NAME', '', 'Nom de votre ESUP-SGC : sert notamment à la construction du user-agent utilisé dans les requêtes REST (les caractères spéciaux y seront ignorés).', 'TEXT');";
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+	    		esupSgcVersion = "1.4.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

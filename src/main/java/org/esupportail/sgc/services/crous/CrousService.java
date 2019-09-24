@@ -10,10 +10,10 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
+import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 public class CrousService extends ValidateService {
 	
@@ -29,7 +29,7 @@ public class CrousService extends ValidateService {
 	public void validateInternal(Card card) {
 		User user = User.findUser(card.getEppn());
 		if(user.getCrous() && authApiCrousService.isEnabled()) {
-			if(this.postOrUpdateRightHolder(card.getEppn())) {
+			if(this.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.ACTIVATE)) {
 				CrousSmartCard smartCard = card.getCrousSmartCard();
 				if(smartCard == null) {
 					throw new SgcRuntimeException("Card with csn " + card.getCsn() + " has not the CROUS/IZLY application encoded ?", null);
@@ -38,10 +38,10 @@ public class CrousService extends ValidateService {
 						if(authApiCrousService.validateSmartCard(card)) {
 							card.setCrousError("");
 						}
-					} catch(HttpClientErrorException clientEx) {
-						crousLogService.logErrorCrousAsync(null, card.getCsn(), clientEx.getResponseBodyAsString());
-						log.warn("Exception calling api crous - crousService.validate " + card + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
-						throw clientEx;
+					} catch(CrousHttpClientErrorException clientEx) {
+						crousLogService.logErrorCrousAsync(clientEx);
+						log.warn("Exception calling api crous - crousService.validate " + clientEx, clientEx);
+						throw new SgcRuntimeException("Exception calling api crous - crousService.validate " + clientEx, clientEx);
 					}
 				}
 			}
@@ -54,13 +54,13 @@ public class CrousService extends ValidateService {
 		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			Boolean postOrUpdateRightHolderOk4invalication = false;
 			try {
-				postOrUpdateRightHolderOk4invalication = this.postOrUpdateRightHolder(card.getEppn());
-			} catch(HttpClientErrorException clientEx) {
+				postOrUpdateRightHolderOk4invalication = authApiCrousService.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.DESACTIVATE);
+			} catch(CrousHttpClientErrorException clientEx) {
 				if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) || HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 					// si compte non updatable car non créé, locké, ... on considère que c'est ok pour l'invalidation : pas besoin de la faire.
-					log.info("Exception calling api crous - crousService.invalidate " + card + " : \n" + clientEx.getResponseBodyAsString());
+					log.info("Exception calling api crous - crousService.invalidate " + clientEx);
 				} else {
-					throw clientEx;
+					throw new SgcRuntimeException("Exception calling api crous - crousService.invalidate " + clientEx, clientEx);
 				}
 			}
 			if(postOrUpdateRightHolderOk4invalication) {
@@ -72,10 +72,10 @@ public class CrousService extends ValidateService {
 						if(authApiCrousService.invalidateSmartCard(card)) {
 							card.setCrousError("");
 						}
-					} catch(HttpClientErrorException clientEx) {
-						crousLogService.logErrorCrousAsync(null, card.getCsn(), clientEx.getResponseBodyAsString());
-						log.warn("Exception calling api crous - crousService.invalidate " + card + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
-						throw clientEx;
+					} catch(CrousHttpClientErrorException clientEx) {
+						crousLogService.logErrorCrousAsync(clientEx);
+						log.warn("Exception calling api crous - crousService.invalidate " + clientEx, clientEx);
+						throw new SgcRuntimeException("Exception calling api crous - crousService.invalidate " + clientEx, clientEx);
 					}
 				}
 			}
@@ -96,7 +96,7 @@ public class CrousService extends ValidateService {
 	public RightHolder getRightHolder(String identifier) {
 		try {
 			return authApiCrousService.getRightHolder(identifier);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				return null;
 			} else if(HttpStatus.FORBIDDEN.equals(clientEx.getStatusCode())) { 
@@ -104,51 +104,52 @@ public class CrousService extends ValidateService {
 			}
 			// no crouslogError in db for a getRightHolder
 			// crousLogService.logErrorCrous(eppnOrEmail, null, clientEx.getResponseBodyAsString());
-			log.warn("Exception calling api crous - crousService.getRightHolder " + identifier + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
-			throw clientEx;
+			log.warn("Exception calling api crous - crousService.getRightHolder " + clientEx, clientEx);
+			throw new SgcRuntimeException("Exception calling api crous - crousService.getRightHolder " + clientEx, clientEx);
 		}
 	}
 		
 	public CrousSmartCard getCrousSmartCard(String csn) {
 		try {
 			return authApiCrousService.getCrousSmartCard(csn);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				return null;
 			}
 			// no crouslogError in db for a getRightHolder
 			// crousLogService.logErrorCrous(eppnOrEmail, null, clientEx.getResponseBodyAsString());
-			log.warn("Exception calling api crous - crousService.getCrousSmartCard " + csn + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
-			throw clientEx;
+			log.warn("Exception calling api crous - crousService.getCrousSmartCard " + clientEx, clientEx);
+			throw new SgcRuntimeException("Exception calling api crous - crousService.getCrousSmartCard " + clientEx, clientEx);
 		}
 	}
 	
-	public boolean postOrUpdateRightHolder(String eppn) {		
+	public boolean postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) {		
 		User user = User.findUser(eppn);
 		try {
-			if(authApiCrousService.postOrUpdateRightHolder(eppn)) {
+			if(authApiCrousService.postOrUpdateRightHolder(eppn, esupSgcOperation)) {
 				user.setCrousError("");
 				return true;
 			} else {
 				return false;
 			}
-		} catch(HttpClientErrorException clientEx) {
-			crousLogService.logErrorCrousAsync(eppn, null, clientEx.getResponseBodyAsString());
-			log.warn("Exception calling api crous - crousService.postOrUpdateRightHolder " + eppn + " : \n" + clientEx.getResponseBodyAsString(), clientEx);	
-			throw clientEx;
+		} catch(CrousHttpClientErrorException clientEx) {
+			crousLogService.logErrorCrousAsync(clientEx);
+			log.warn("Exception calling api crous - crousService.postOrUpdateRightHolder " + clientEx, clientEx);	
+			throw new SgcRuntimeException("Exception calling api crous - crousService.postOrUpdateRightHolder " + clientEx, clientEx);
 		}
 	}
 	
-	public void patchIdentifier(PatchIdentifier patchIdentifier) {
+	public void patchIdentifier(PatchIdentifier patchIdentifier, EsupSgcOperation esupSgcOperation) {
 		try {
 			authApiCrousService.patchIdentifier(patchIdentifier);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			List<User> users = User.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
 			if(!users.isEmpty()) {
-				crousLogService.logErrorCrousAsync(users.get(0).getEppn(), null, clientEx.getResponseBodyAsString());
+				clientEx.setEppn(users.get(0).getEppn());
+				crousLogService.logErrorCrousAsync(clientEx);
 			}
-			log.warn("Exception calling api crous status code : " + clientEx.getStatusCode() + " - crousService.patchIdentifier " + patchIdentifier + " : \n" + clientEx.getResponseBodyAsString(), clientEx);
-			throw clientEx;
+			log.warn("Exception calling api crous status code : " + clientEx, clientEx);
+			throw new SgcRuntimeException("Exception calling api crous status code : " + clientEx, clientEx);
 		}	
 	}
 	

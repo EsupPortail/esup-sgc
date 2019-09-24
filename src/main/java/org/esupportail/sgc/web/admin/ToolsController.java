@@ -15,6 +15,7 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.esupportail.sgc.services.crous.CrousPatchIdentifierService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.esc.ApiEscrService;
@@ -180,7 +181,7 @@ public class ToolsController {
 		int nbRightHolderPutinCrous = 0;
 		for(User user : User.findUsersWithCrousAndWithCardEnabled()) {
 			try {
-				if(crousService.postOrUpdateRightHolder(user.getEppn())) {
+				if(crousService.postOrUpdateRightHolder(user.getEppn(), EsupSgcOperation.SYNC)) {
 					nbRightHolderPutinCrous++;
 				}		
 			} catch(Exception e) {

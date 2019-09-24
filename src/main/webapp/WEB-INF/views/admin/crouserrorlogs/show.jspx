@@ -14,6 +14,9 @@
         <field:display field="field" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_field" object="${crouserrorlog}" z="kaXF9XJrhGm04Y1pYjUsTf1O5lk="/>
         <field:display date="true" dateTimePattern="${crousErrorLog_date_date_format}" field="date" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_date" object="${crouserrorlog}" z="0uskcz/AeIm2LTAJJDTpV7+gpVE="/>
         <field:display field="blocking" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_blocking" object="${crouserrorlog}" z="QWcJr3WfWkcOQt87T2+p1HK6Cro="/>
+        <field:display field="crousOperation" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_crousOperation" object="${crouserrorlog}" z="jyS5dxlBfzQEQRZu1VdniVzE4yM="/>
+        <field:display field="esupSgcOperation" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_esupSgcOperation" object="${crouserrorlog}" z="5pp4ATyVVrit5eEmK3gRoFqoxNU="/>
+        <field:display field="crousUrl" id="s_org_esupportail_sgc_services_crous_CrousErrorLog_crousUrl" object="${crouserrorlog}" z="T4LF0hihvVu8ut59M9qC9xHxEgI="/>
     </page:show>
     <div class="row">
         <div class="col-lg-3 well">
@@ -52,7 +55,6 @@
                 </c:otherwise>
             </c:choose>
         </div>
-        <div class="col-lg-1">&amp;nbsp;</div>
         <div class="col-lg-3 well">
             <h3>${crouserrorlog.userEppn}</h3>
             <span class="text-warning">[CROUS - recherche sur identifiant eppn]</span>
@@ -89,7 +91,6 @@
                 </c:otherwise>
             </c:choose>
         </div>
-        <div class="col-lg-1">&amp;nbsp;</div>
         <div class="col-lg-3 well">
             <h3>${crouserrorlog.userEmail}</h3>
             <span class="text-warning">[CROUS - recherche sur email]</span>
@@ -126,12 +127,47 @@
                 </c:otherwise>
             </c:choose>
         </div>
+        <div class="col-lg-3 well" test="${not empty crouserrorlog.userAccount.supannCodeINE}">
+            <h3>${crouserrorlog.userAccount.supannCodeINE}</h3>
+            <span class="text-warning">[CROUS - recherche sur INE]</span>
+            <c:choose>
+                <c:when test="${not empty crousIneRightHolder}">
+                    <dl>
+                        <dt>identifier</dt>
+                        <dd>${crousIneRightHolder.identifier}</dd>
+                        <dt>email</dt>
+                        <dd>${crousIneRightHolder.email}</dd>
+                        <dt>firstName</dt>
+                        <dd>${crousIneRightHolder.firstName}</dd>
+                        <dt>lastName</dt>
+                        <dd>${crousIneRightHolder.lastName}</dd>
+                        <dt>birthDate</dt>
+                        <dd>${crousIneRightHolder.birthDate}</dd>
+                        <dt>dueDate</dt>
+                        <dd>${crousIneRightHolder.dueDate}</dd>
+                        <dt>idCompanyRate</dt>
+                        <dd>${crousIneRightHolder.idCompanyRate}</dd>
+                        <dt>idRate</dt>
+                        <dd>${crousIneRightHolder.idRate}</dd>
+                        <dt>ine</dt>
+                        <dd>${crousIneRightHolder.ine}</dd>
+                        <dt>rneOrgCode</dt>
+                        <dd>${crousIneRightHolder.rneOrgCode}</dd>
+                    </dl>
+                </c:when>
+                <c:when test="${not empty crousIneRightHolderException}">
+                    <span class="warning">${crousIneRightHolderException}</span>
+                </c:when>
+                <c:otherwise>
+                    <span class="warning">Not Found</span>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </div>
     <c:if test="${empty crousEppnRightHolder and not empty crousEmailRightHolder and crousEmailRightHolder.identifier ne esupSgcRightHolder.identifier}">
         <div class="row well danger">
             <h3>Modification/Migration de l'identifiant ...</h3>
-            <p>Au niveau du CROUS, l'identifiant derrière le mail de l'utilisateur ne correspond pas à son eppn et aucun utilisateur n'a pour identifiant cet eppn</p>
-            <p>Vous avez ici la possibilité de changer l'identifiant du compte utilisateur pour qu'il corresponde à l'eppn cité ; ESUP-SGC pourra alors mettre à jour ce compte avec les informations qu'il a sur cet utilisateur.</p>
+            <p>Vous avez ici la possibilité de changer l'identifiant du compte utilisateur pour qu'il corresponde à l'eppn ou in ; ESUP-SGC pourra alors mettre à jour ce compte avec les informations qu'il a sur cet utilisateur.</p>
             <p>Assurez-vous avant de procéder à cette modification que ce changement de compte ne pénalisera pas l'utilisateur (tarif étudiant, cnrs ...)</p>
             <spring:url value="/admin/crouserrorlogs/${crouserrorlog.id}/patchIdentifier" var="patchIdentifierUrl"/>
             <form action="${patchIdentifierUrl}" class="form-horizontal" method="POST">

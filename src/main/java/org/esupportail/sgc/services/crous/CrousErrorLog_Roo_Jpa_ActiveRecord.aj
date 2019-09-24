@@ -14,7 +14,7 @@ privileged aspect CrousErrorLog_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager CrousErrorLog.entityManager;
     
-    public static final List<String> CrousErrorLog.fieldNames4OrderClauseFilter = java.util.Arrays.asList("card", "userAccount", "code", "message", "field", "date", "blocking");
+    public static final List<String> CrousErrorLog.fieldNames4OrderClauseFilter = java.util.Arrays.asList("card", "userAccount", "code", "message", "field", "date", "blocking", "crousOperation", "esupSgcOperation", "crousUrl");
     
     public static final EntityManager CrousErrorLog.entityManager() {
         EntityManager em = new CrousErrorLog().entityManager;

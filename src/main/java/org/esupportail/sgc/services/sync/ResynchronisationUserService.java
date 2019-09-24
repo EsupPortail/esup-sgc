@@ -14,6 +14,7 @@ import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.CrousService;
+import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -170,7 +171,7 @@ public class ResynchronisationUserService {
 				// we synchronize users with crous only if user had enable crous and had an email and had cards - same for europeanStudentCard
 				if(user.getEmail() != null && !user.getEmail().isEmpty() && Card.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}))>0) {
 					if(user.getCrous()) {
-						crousService.postOrUpdateRightHolder(user.getEppn());
+						crousService.postOrUpdateRightHolder(user.getEppn(), EsupSgcOperation.SYNC);
 					}
 					if(user.getEuropeanStudentCard()) {
 						apiEscrService.postOrUpdateEscrStudent(user.getEppn());

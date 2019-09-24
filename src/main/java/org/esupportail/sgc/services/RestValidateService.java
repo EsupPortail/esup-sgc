@@ -1,8 +1,12 @@
 package org.esupportail.sgc.services;
 
+import javax.annotation.Resource;
+
 import org.esupportail.sgc.domain.Card;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +20,9 @@ public class RestValidateService extends ValidateService {
 	String invalidateRestUrl = null;
 	
 	RestTemplate restTemplate;
+	
+	@Resource
+	AppliConfigService appliConfigService;
 	
 	public void setValidateRestUrl(String validateRestUrl) {
 		this.validateRestUrl = validateRestUrl;
@@ -45,7 +52,10 @@ public class RestValidateService extends ValidateService {
 		} else {
 			String url = String.format(restUrl, card.getEppn(), card.getCsn()); 
 			log.debug("Try to send a get here : " + url); 
-			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+			HttpEntity entity = new HttpEntity(null, headers);	
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 			log.info("Got from " + url + " : " + response.getBody());
 		}
 	}

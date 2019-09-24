@@ -4,11 +4,11 @@ import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
+import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 
 @Service
@@ -19,16 +19,16 @@ public class AuthApiCrousService {
 	@Resource
 	ApiCrousService apiCrousService;
 
-	public RightHolder getRightHolder(String identifier) {		
+	public RightHolder getRightHolder(String identifier) throws CrousHttpClientErrorException {		
 		try {
 			return apiCrousService.getRightHolder(identifier);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
 				log.info("Auth Token of Crous API should be renew, we call an authentication");
 				apiCrousService.authenticate();
 				try {
 					return apiCrousService.getRightHolder(identifier);
-				} catch(HttpClientErrorException clientEx2) {
+				} catch(CrousHttpClientErrorException clientEx2) {
 					throw clientEx2;
 				}
 			} else {
@@ -37,19 +37,19 @@ public class AuthApiCrousService {
 		}
 	}
 	
-	public CrousSmartCard getCrousSmartCard(String csn) {		
+	public CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpClientErrorException {		
 		try {
 			return apiCrousService.getCrousSmartCard(csn);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
 				log.info("Auth Token of Crous API should be renew, we call an authentication");
 				apiCrousService.authenticate();
 				try {
 					return apiCrousService.getCrousSmartCard(csn);
-				} catch(HttpClientErrorException clientEx2) {
+				} catch(CrousHttpClientErrorException clientEx2) {
 					// no crouslogError in db for a getRightHolder
 					// crousLogService.logErrorCrous(eppnOrEmail, null, clientEx2.getResponseBodyAsString());
-					log.warn("Exception calling api crous after reauthentication - apiCrousService.getCrousSmartCard " + csn + " : \n" + clientEx2.getResponseBodyAsString(), clientEx2);
+					log.warn("Exception calling api crous after reauthentication - apiCrousService.getCrousSmartCard " + csn + " : \n" + clientEx2.getErrorBodyAsJson(), clientEx2);
 					throw clientEx2;
 				}
 			} else {
@@ -59,16 +59,16 @@ public class AuthApiCrousService {
 	}
 	
 	
-	public boolean postOrUpdateRightHolder(String eppn) {		
+	public boolean postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
 		try {
-			return apiCrousService.postOrUpdateRightHolder(eppn);
-		} catch(HttpClientErrorException clientEx) {
+			return apiCrousService.postOrUpdateRightHolder(eppn, esupSgcOperation);
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
 				log.info("Auth Token of Crous API should be renew, we call an authentication");
 				apiCrousService.authenticate();
 				try {
-					return apiCrousService.postOrUpdateRightHolder(eppn);
-				} catch(HttpClientErrorException clientEx2) {
+					return apiCrousService.postOrUpdateRightHolder(eppn, esupSgcOperation);
+				} catch(CrousHttpClientErrorException clientEx2) {
 					throw clientEx2;
 				}
 			} else {
@@ -78,16 +78,16 @@ public class AuthApiCrousService {
 	}
 	
 
-	public boolean validateSmartCard(Card card) {
+	public boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
 		try {
 			return apiCrousService.validateSmartCard(card);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
 				log.info("Auth Token of Crous API should be renew, we call an authentication");
 				apiCrousService.authenticate();
 				try {
 					return apiCrousService.validateSmartCard(card);
-				} catch(HttpClientErrorException clientEx2) {
+				} catch(CrousHttpClientErrorException clientEx2) {
 					throw clientEx2;
 				}
 			} else {
@@ -96,16 +96,16 @@ public class AuthApiCrousService {
 		}
 	}
 	
-	public boolean invalidateSmartCard(Card card) {
+	public boolean invalidateSmartCard(Card card) throws CrousHttpClientErrorException {
 		try {
 			return apiCrousService.invalidateSmartCard(card);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
 				log.info("Auth Token of Crous API should be renew, we call an authentication");
 				apiCrousService.authenticate();
 				try {
 					return apiCrousService.invalidateSmartCard(card);
-				} catch(HttpClientErrorException clientEx2) {
+				} catch(CrousHttpClientErrorException clientEx2) {
 					throw clientEx2;
 				}
 			} else {
@@ -115,16 +115,16 @@ public class AuthApiCrousService {
 	}
 	
 	
-	public void patchIdentifier(PatchIdentifier patchIdentifier) {
+	public void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpClientErrorException {
 		try {
 			apiCrousService.patchIdentifier(patchIdentifier);
-		} catch(HttpClientErrorException clientEx) {
+		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
 				log.info("Auth Token of Crous API should be renew, we call an authentication");
 				apiCrousService.authenticate();
 				try {
 					apiCrousService.patchIdentifier(patchIdentifier);
-				} catch(HttpClientErrorException clientEx2) {
+				} catch(CrousHttpClientErrorException clientEx2) {
 					throw clientEx2;
 				}
 			} else {

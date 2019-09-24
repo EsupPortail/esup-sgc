@@ -18,6 +18,7 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.crous.ApiCrousService;
 import org.esupportail.sgc.services.crous.CrousErrorLog;
+import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.PatchIdentifier;
 import org.esupportail.sgc.services.crous.RightHolder;
@@ -46,13 +47,14 @@ public class CrousErrorLogController {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	public final static String[] CSV_FIELDS = new String[] {"code", "message", "field", "date", "blocking", "eppn", "name", "mail", "csn"};
+	public final static String[] CSV_FIELDS = new String[] {"code", "message", "field", "crousOperation", "esupSgcOperation", "date", "blocking", "eppn", "ine", "name", "mail", "csn", "crousUrl"};
 	
-	public final static String[] FIELD_MAPPING = new String[] {"code", "message", "field", "date", "blocking", "userAccount.eppn", "userAccount.name", "userAccount.email", "card.csn"};
+	public final static String[] FIELD_MAPPING = new String[] {"code", "message", "field", "crousOperation", "esupSgcOperation", "date", "blocking", "userAccount.eppn", "userAccount.supannCodeINE", "userAccount.name", "userAccount.email", "card.csn", "crousUrl"};
 	
 	public final static CellProcessor[] CSV_PROCESSORS = new CellProcessor[] {new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
 																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
-																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo("")};
+																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
+																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo("")};
 
 	@Resource
 	CrousService crousService;
@@ -119,20 +121,28 @@ public class CrousErrorLogController {
     	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
         uiModel.addAttribute("crouserrorlog", CrousErrorLog.findCrousErrorLog(id));
         uiModel.addAttribute("itemId", id);
+        RightHolder esupSgcRightHolder = computeEsupSgcRightHolderWithSynchronizedInfos(crousErrorLog.getUserEppn());
+        uiModel.addAttribute("esupSgcRightHolder", esupSgcRightHolder);
         try {
         	RightHolder crousEppnRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEppn());
             uiModel.addAttribute("crousEppnRightHolder", crousEppnRightHolder);
         } catch(CrousAccountForbiddenException ex) {
 			uiModel.addAttribute("crousEppnRightHolderException", ex.getMessage());
         }
-        RightHolder esupSgcRightHolder = computeEsupSgcRightHolderWithSynchronizedInfos(crousErrorLog.getUserEppn());
-        uiModel.addAttribute("esupSgcRightHolder", esupSgcRightHolder);
         try {
         	RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail());
         	uiModel.addAttribute("crousEmailRightHolder", crousEmailRightHolder);
         } catch(CrousAccountForbiddenException ex) {
 			uiModel.addAttribute("crousEmailRightHolderException", ex.getMessage());
         }	
+        if(crousErrorLog.getUserAccount().getSupannCodeINE() != null && !crousErrorLog.getUserAccount().getSupannCodeINE().isEmpty()) {
+	        try {
+	        	RightHolder crousIneRightHolder =  crousService.getRightHolder(crousErrorLog.getUserAccount().getSupannCodeINE());
+	        	uiModel.addAttribute("crousIneRightHolder", crousIneRightHolder);
+	        } catch(CrousAccountForbiddenException ex) {
+				uiModel.addAttribute("crousIneRightHolderException", ex.getMessage());
+	        }
+    	}
 
         return "admin/crouserrorlogs/show";
     }
@@ -151,7 +161,7 @@ public class CrousErrorLogController {
     @RequestMapping(value = "/{id}/patchIdentifier", produces = "text/html", method = RequestMethod.POST)
     public String  patchIdentifier(@PathVariable("id") Long id, @Valid PatchIdentifier patchIdentifier, BindingResult bindingResult, Model uiModel) {
     	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
-    	crousService.patchIdentifier(patchIdentifier);
+    	crousService.patchIdentifier(patchIdentifier, EsupSgcOperation.PATCH);
     	logService.log(crousErrorLog.getCardId(), ACTION.CROUS_PATCH_IDENTIFIER, RETCODE.SUCCESS, "PatchIdentifier CROUS : " + patchIdentifier, crousErrorLog.getUserEppn(), null);
         return "redirect:/admin/crouserrorlogs/" + id;
     }

@@ -66,4 +66,28 @@ privileged aspect CrousErrorLog_Roo_JavaBean {
         this.blocking = blocking;
     }
     
+    public CrousOperation CrousErrorLog.getCrousOperation() {
+        return this.crousOperation;
+    }
+    
+    public void CrousErrorLog.setCrousOperation(CrousOperation crousOperation) {
+        this.crousOperation = crousOperation;
+    }
+    
+    public EsupSgcOperation CrousErrorLog.getEsupSgcOperation() {
+        return this.esupSgcOperation;
+    }
+    
+    public void CrousErrorLog.setEsupSgcOperation(EsupSgcOperation esupSgcOperation) {
+        this.esupSgcOperation = esupSgcOperation;
+    }
+    
+    public String CrousErrorLog.getCrousUrl() {
+        return this.crousUrl;
+    }
+    
+    public void CrousErrorLog.setCrousUrl(String crousUrl) {
+        this.crousUrl = crousUrl;
+    }
+    
 }

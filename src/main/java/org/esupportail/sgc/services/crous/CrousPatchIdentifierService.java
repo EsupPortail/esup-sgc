@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.CrousPatchIdentifier;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -72,7 +73,7 @@ public class CrousPatchIdentifierService {
 			patchIdentifier.setCurrentIdentifier(crousPatchIdentifier.getOldId());
 			patchIdentifier.setNewIdentifier(crousPatchIdentifier.getEppnNewId());
 			patchIdentifier.setEmail(crousPatchIdentifier.getMail());
-			crousService.patchIdentifier(patchIdentifier);
+			crousService.patchIdentifier(patchIdentifier, EsupSgcOperation.PATCH);
 			crousPatchIdentifier.setPatchSuccess(true);
 			crousPatchIdentifier.merge();
 			log.info("crous patchIdentifier " + crousPatchIdentifier + " ok");
