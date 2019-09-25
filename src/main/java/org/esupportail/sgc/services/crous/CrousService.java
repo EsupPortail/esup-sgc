@@ -98,6 +98,7 @@ public class CrousService extends ValidateService {
 			return authApiCrousService.getRightHolder(identifier);
 		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+				log.debug(String.format("RightHolder %s not found IN API CROUS", identifier, clientEx.getErrorBodyAsJson()));
 				return null;
 			} else if(HttpStatus.FORBIDDEN.equals(clientEx.getStatusCode())) { 
 				throw new CrousAccountForbiddenException("Forbidden - crous righolder hold by another institute ?", clientEx);
