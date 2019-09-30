@@ -66,15 +66,21 @@
 			    		 	</a>
 			    		 </li>
 			    		 <li class="menuTools">
+			    		 	<a href="/esupsgcclient-installer.exe">
+			    		 		<span class="glyphicon glyphicon-qrcode"><!--  --></span>
+			    		 		Nouvel encodeur [Installateur Win64]
+		    		 		</a>
+			    		 </li>			    		 
+			    		 <li class="menuTools">
 			    		 	<a href="/esupsgcclient-shib.jar">
 			    		 		<span class="glyphicon glyphicon-qrcode"><!--  --></span>
-			    		 		Nouvel encodeur
+			    		 		Nouvel encodeur [Java]
 		    		 		</a>
 			    		 </li>
 			    		 <li class="menuTools">
 			    		 	<a href="/esupsgcclient-r2d2-shib.jar">
 				    		 	<span style="background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
-				    		 	Nouvel encodeur - robot ZXP3
+				    		 	Nouvel encodeur - robot ZXP3 [Java]
 			    		 	</a>
 			    		 </li>
 					 </sec:authorize>
