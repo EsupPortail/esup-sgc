@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
+import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
@@ -126,20 +126,20 @@ public class CrousErrorLogController {
         try {
         	RightHolder crousEppnRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEppn());
             uiModel.addAttribute("crousEppnRightHolder", crousEppnRightHolder);
-        } catch(CrousAccountForbiddenException ex) {
+        } catch(SgcRuntimeException ex) {
 			uiModel.addAttribute("crousEppnRightHolderException", ex.getMessage());
         }
         try {
         	RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail());
         	uiModel.addAttribute("crousEmailRightHolder", crousEmailRightHolder);
-        } catch(CrousAccountForbiddenException ex) {
+        } catch(SgcRuntimeException ex) {
 			uiModel.addAttribute("crousEmailRightHolderException", ex.getMessage());
         }	
         if(crousErrorLog.getUserAccount().getSupannCodeINE() != null && !crousErrorLog.getUserAccount().getSupannCodeINE().isEmpty()) {
 	        try {
 	        	RightHolder crousIneRightHolder =  crousService.getRightHolder(crousErrorLog.getUserAccount().getSupannCodeINE());
 	        	uiModel.addAttribute("crousIneRightHolder", crousIneRightHolder);
-	        } catch(CrousAccountForbiddenException ex) {
+	        } catch(SgcRuntimeException ex) {
 				uiModel.addAttribute("crousIneRightHolderException", ex.getMessage());
 	        }
     	}

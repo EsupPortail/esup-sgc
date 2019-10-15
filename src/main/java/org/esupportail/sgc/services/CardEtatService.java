@@ -2,6 +2,8 @@ package org.esupportail.sgc.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -261,6 +263,9 @@ public class CardEtatService {
 	}
 
 	private List<Card>  groupByEppn(List<Card> cards) {
+		Collections.sort(cards, Comparator.comparing(Card::getEtat)
+	            .thenComparing(Collections.reverseOrder(Comparator.comparing(Card::getDateEtat))));
+		cards.sort((c1, c2) -> c1.getEtat().compareTo(c2.getEtat()));
 		Map<String,Card> cards4eppn = new HashMap<String,Card>();
 		for(Card card : cards) {
 			if(!cards4eppn.containsKey(card.getEppn())) {
@@ -318,6 +323,7 @@ public class CardEtatService {
 		// synchronized on eppn to avoid parallel modifications on ldap (and avoid to add /remove ldap_value %secondary_id%)
 		String lockKey = "CardEtatService.replayValidationOrInvalidation-" + card.getEppn();
 		synchronized (lockKey.intern()) {
+			log.debug("replayValidationOrInvalidation for card " + cardId + " on " + validateServicesNames);
 			if(Etat.ENABLED.equals(card.getEtat())) {
 				if(resynchro) {
 					resynchronisationUserService.synchronizeUserInfo(card.getEppn());

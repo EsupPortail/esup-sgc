@@ -209,7 +209,7 @@ public class ApiCrousService {
 							crousLogService.logErrorCrous(clientEx);	
 						} 
 					}
-					return updateRightHolder(eppn, esupSgcOperation);
+					return updateRightHolder(eppn, oldRightHolder, esupSgcOperation);
 				} 
 			} catch(CrousHttpClientErrorException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
@@ -266,11 +266,20 @@ public class ApiCrousService {
 		return true;
 	}
 
-	private boolean updateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	private boolean updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		User user = User.findUser(eppn);
 		String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
+		if(Long.valueOf(1).equals(oldRightHolder.getIdRate()) && Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
+				&& Long.valueOf(1).equals(rightHolder.getIdRate()) && Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
+				&& oldRightHolder.getDueDate().after(rightHolder.getDueDate())) {
+			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case."
+					+ "Actual dueDate : %s ; wanted dueDate : %s -> we keep the actual dueDate", 
+					oldRightHolder.getDueDate(), 
+					rightHolder.getDueDate()));
+			rightHolder.setDueDate(oldRightHolder.getDueDate());
+		}
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);

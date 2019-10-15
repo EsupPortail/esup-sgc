@@ -36,6 +36,7 @@ public class AccessControlService extends ValidateService {
 	}
 
 	public void sync(String eppn) {
+		log.debug("accessControlService.sync called for " + eppn);
 		for(Export2AccessControlService acService: acServices) {
 			if(eppn.matches(acService.getEppnFilter())) {
 				try {
