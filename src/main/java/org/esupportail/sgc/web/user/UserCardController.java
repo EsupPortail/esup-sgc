@@ -59,7 +59,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
-@Transactional
 @RequestMapping("/user")
 @Controller
 public class UserCardController {
@@ -158,6 +157,7 @@ public class UserCardController {
 		}
 	}
 	
+	@Transactional
 	public String viewExternalCardRequestForm(Model uiModel, HttpServletRequest request, Card externalCard) {
 		uiModel.addAttribute("externalCard", externalCard);
 		byte[] externalCardPhoto = null;
@@ -189,6 +189,7 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 
+	@Transactional
 	@RequestMapping(value="/card-request-form")
 	public String viewCardRequestForm(Model uiModel, HttpServletRequest request, @RequestHeader("User-Agent") String userAgent) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -353,6 +354,7 @@ public class UserCardController {
 		return redirect;
 	}
 	
+	@Transactional
 	@RequestMapping(value="/photo")
 	public void getPhoto(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
 		String eppn = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -373,7 +375,7 @@ public class UserCardController {
 		}
 	}
 	
-	
+	@Transactional
 	@RequestMapping(value="/photo/{cardId}")
 	public void getPhoto(@PathVariable Long cardId, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
 		
@@ -392,6 +394,7 @@ public class UserCardController {
 		}
 	}
 
+	@Transactional
 	@RequestMapping(method = RequestMethod.GET, value = "/payboxOk")
 	public String getPaybox(@RequestParam String montant, @RequestParam String reference, @RequestParam(required = false) String auto, @RequestParam String erreur, 
 			@RequestParam String idtrans, @RequestParam String signature, HttpServletRequest request, final RedirectAttributes redirectAttributes) {
@@ -411,6 +414,7 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 	
+	@Transactional
 	@RequestMapping(value="/difPhoto")
 	public String updateDifPhoto(@RequestParam("diffusionphoto") boolean diffusionphoto, @RequestParam("eppn") String eppn) {
 		// TODO : remove  @RequestParam("eppn") String eppn
@@ -424,6 +428,7 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 	
+	@Transactional
 	@RequestMapping(value="/forcedFreeRenewal", method = RequestMethod.POST)
 	public String setForcedFreeRenewal() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -455,19 +460,19 @@ public class UserCardController {
 	public String enableCrous(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = User.findUser(eppn);
-		Card enabledCard = user.getEnabledCard();
-		if(enabledCard != null) {
-			crousService.validate(enabledCard);
-		}
-		user.setCrous(true);
-		user.merge();
-		logService.log(user.getCards().get(0).getId(), ACTION.ENABLECROUS, RETCODE.SUCCESS, "", eppn, null);
-		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "crous");
+		try {
+			crousService.enableCrous(eppn);
+			logService.log(null, ACTION.ENABLECROUS, RETCODE.SUCCESS, "", eppn, null);
+			redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "crous");
+		} catch (Exception e) {
+			log.error("problème lors de l'activation du CROUS pour " + eppn, e);
+			redirectAttributes.addFlashAttribute("messageError", ERROR_MSG + "crous");
+			logService.log(null, ACTION.ENABLECROUS, RETCODE.FAILED, "", eppn, null);
+		} 
 		return "redirect:/user";
 	}
 
-	
+	@Transactional
 	@RequestMapping(value="/disableCrous", method=RequestMethod.POST)
 	public String disableCrous(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -482,6 +487,7 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 	
+	@Transactional
 	@RequestMapping(value="/enableEuropeanCard", method=RequestMethod.POST)
 	public String enableEuropeanCard(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();

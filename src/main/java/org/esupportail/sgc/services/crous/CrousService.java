@@ -10,10 +10,13 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
+import org.esupportail.sgc.services.LogService.ACTION;
+import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CrousService extends ValidateService {
 	
@@ -153,6 +156,18 @@ public class CrousService extends ValidateService {
 			throw new SgcRuntimeException("Exception calling api crous status code : " + clientEx, clientEx);
 		}	
 	}
+
+	@Transactional
+	public void enableCrous(String eppn) {
+		User user = User.findUser(eppn);
+		Card enabledCard = user.getEnabledCard();
+		user.setCrous(true);
+		if(enabledCard != null) {
+			this.validate(enabledCard);
+		}
+	}
+	
+	
 	
 }
 

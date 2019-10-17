@@ -24,7 +24,7 @@ public class CrousHttpClientErrorException extends Exception {
 
 	public CrousHttpClientErrorException(HttpClientErrorException httpClientErrorException, String eppn, String csn,
 			CrousOperation crousOperation, EsupSgcOperation esupSgcOperation, String crousUrl) {
-		super();
+		super(httpClientErrorException);
 		this.httpClientErrorException = httpClientErrorException;
 		this.eppn = eppn;
 		this.csn = csn;
