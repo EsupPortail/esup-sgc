@@ -23,6 +23,17 @@
 		-->
 		
 	<div class="row">
+		<div class="well">
+			ESUP-SGC enregistre en base les éventuelles erreurs rencontrées lors de la synchronisation de l'ayant droit (RightHolder) et/ou de la carte.
+			<br/>
+			Cette page présente le listing de ces erreurs.
+			<br/>Nous maintenons une page wiki ESUP qui tente de lister et expliquer chaque erreur possible que peut rencontrer esup-sgc, merci de vous y référer : 
+			<a target="_blank" href="https://www.esup-portail.org/wiki/display/SGC/Erreurs+CROUS">https://www.esup-portail.org/wiki/display/SGC/Erreurs+CROUS</a>
+		</div>
+	</div>
+		
+		
+	<div class="row">
 	  <div class="col-md-9"><!--  --></div>
 	  <div class="col-md-1">
 		<spring:url value="/admin/crouserrorlogs?csv" var="csvUrl"/>
