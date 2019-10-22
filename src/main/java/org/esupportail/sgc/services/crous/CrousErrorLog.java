@@ -30,7 +30,7 @@ public class CrousErrorLog {
     };
     
     public static enum EsupSgcOperation {
-    	ACTIVATE, DESACTIVATE, SYNC, PATCH
+    	ACTIVATE, DESACTIVATE, SYNC, PATCH, GET
     };
     
 	@OneToOne

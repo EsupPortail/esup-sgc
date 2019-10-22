@@ -298,7 +298,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@ResponseBody
 	@RequestMapping(value="/getCrousRightHolder", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public RightHolder get(@RequestParam String eppnOrEmail) {
-		return crousService.getRightHolder(eppnOrEmail);
+		return crousService.getRightHolder(eppnOrEmail, eppnOrEmail);
 	}
 
 	/**

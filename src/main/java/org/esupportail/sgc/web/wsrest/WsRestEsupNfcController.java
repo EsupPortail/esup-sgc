@@ -237,6 +237,9 @@ public class WsRestEsupNfcController {
 				case "eppn":
 					secondaryId = user.getEppn();
 					break;
+				case "email":
+					secondaryId = user.getEmail();
+					break;
 				default:
 					secondaryId = user.getEppn();
 					break;

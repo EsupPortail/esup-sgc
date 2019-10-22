@@ -124,20 +124,20 @@ public class CrousErrorLogController {
         RightHolder esupSgcRightHolder = computeEsupSgcRightHolderWithSynchronizedInfos(crousErrorLog.getUserEppn());
         uiModel.addAttribute("esupSgcRightHolder", esupSgcRightHolder);
         try {
-        	RightHolder crousEppnRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEppn());
+        	RightHolder crousEppnRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEppn(), crousErrorLog.getUserEppn());
             uiModel.addAttribute("crousEppnRightHolder", crousEppnRightHolder);
         } catch(SgcRuntimeException ex) {
 			uiModel.addAttribute("crousEppnRightHolderException", ex.getMessage());
         }
         try {
-        	RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail());
+        	RightHolder crousEmailRightHolder =  crousService.getRightHolder(crousErrorLog.getUserEmail(), crousErrorLog.getUserEppn());
         	uiModel.addAttribute("crousEmailRightHolder", crousEmailRightHolder);
         } catch(SgcRuntimeException ex) {
 			uiModel.addAttribute("crousEmailRightHolderException", ex.getMessage());
         }	
         if(crousErrorLog.getUserAccount().getSupannCodeINE() != null && !crousErrorLog.getUserAccount().getSupannCodeINE().isEmpty()) {
 	        try {
-	        	RightHolder crousIneRightHolder =  crousService.getRightHolder(crousErrorLog.getUserAccount().getSupannCodeINE());
+	        	RightHolder crousIneRightHolder =  crousService.getRightHolder(crousErrorLog.getUserAccount().getSupannCodeINE(), crousErrorLog.getUserAccount().getEppn());
 	        	uiModel.addAttribute("crousIneRightHolder", crousIneRightHolder);
 	        } catch(SgcRuntimeException ex) {
 				uiModel.addAttribute("crousIneRightHolderException", ex.getMessage());

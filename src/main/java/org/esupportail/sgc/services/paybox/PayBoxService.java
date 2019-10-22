@@ -13,6 +13,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -190,7 +191,8 @@ public class PayBoxService {
             Signature sig = Signature.getInstance("SHA1WithRSA");
             sig.initVerify(payboxPublicKey);
             sig.update(sData.getBytes());
-            boolean signatureOk = true;//sig.verify(sigBytes);
+            byte[] sigBytes = Base64.getDecoder().decode(signature.getBytes());
+            boolean signatureOk = sig.verify(sigBytes);
             if (!signatureOk) {
                 log.error("Erreur lors de la vérification de la signature, les données ne correspondent pas.");
                 log.error(sData);

@@ -88,17 +88,17 @@ public class CrousService extends ValidateService {
 	public RightHolder getRightHolder(User user) {
 		RightHolder rightHolder = null;
 		if(user.getCrousIdentifier() != null && !user.getCrousIdentifier().isEmpty()) {
-			rightHolder = this.getRightHolder(user.getCrousIdentifier());
+			rightHolder = this.getRightHolder(user.getCrousIdentifier(), user.getEppn());
 		}
 		if(rightHolder == null && !user.getEppn().equals(user.getCrousIdentifier())) {
-			rightHolder = this.getRightHolder(user.getEppn());
+			rightHolder = this.getRightHolder(user.getEppn(), user.getEppn());
 		}
 		return rightHolder;
 	}
 
-	public RightHolder getRightHolder(String identifier) {
+	public RightHolder getRightHolder(String identifier, String eppn) {
 		try {
-			return authApiCrousService.getRightHolder(identifier);
+			return authApiCrousService.getRightHolder(identifier, eppn, EsupSgcOperation.GET);
 		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				log.debug(String.format("RightHolder %s not found IN API CROUS", identifier, clientEx.getErrorBodyAsJson()));

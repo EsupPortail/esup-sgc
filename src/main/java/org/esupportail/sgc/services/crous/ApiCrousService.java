@@ -125,7 +125,7 @@ public class ApiCrousService {
 	}
 	
 	
-	public RightHolder getRightHolder(String identifier) throws CrousHttpClientErrorException {		
+	public RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
 		if(enable) {
 			String url = webUrl + "/rightholders/" + identifier;
 			HttpHeaders headers = this.getAuthHeaders();	
@@ -134,12 +134,7 @@ public class ApiCrousService {
 				ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);		
 				return response.getBody();
 			} catch(HttpClientErrorException clientEx) {
-				String eppn = null;
-				List<User> users = User.findUsersByCrousIdentifier(identifier).getResultList();
-				if(!users.isEmpty()) {
-					eppn = users.get(0).getEppn();
-				}
-				throw new CrousHttpClientErrorException(clientEx, eppn, null, CrousOperation.GET, null, url);
+				throw new CrousHttpClientErrorException(clientEx, eppn, null, CrousOperation.GET, esupSgcOperation, url);
 			}
 		} 
 		return null;
@@ -183,7 +178,7 @@ public class ApiCrousService {
 			}		
 			try {
 				log.debug("Try to get RightHolder of " + eppn + " with identifier " + crousIdentifier);
-				RightHolder oldRightHolder = getRightHolder(crousIdentifier);
+				RightHolder oldRightHolder = getRightHolder(crousIdentifier, eppn, esupSgcOperation);
 				log.info("Getting RightHolder for " + crousIdentifier + " : " + oldRightHolder.toString());
 				RightHolder newRightHolder = computeEsupSgcRightHolder(user, true);
 				// hack dueDate can't be past in IZLY 
@@ -257,7 +252,7 @@ public class ApiCrousService {
 					log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
 					return false;
 				} else {
-					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
+					log.warn("UNPROCESSABLE_ENTITY when posting RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
 			} 
 			throw crousHttpClientErrorException;

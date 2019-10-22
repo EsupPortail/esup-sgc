@@ -26,7 +26,7 @@ public class CrousServiceTest {
 		List<User> users = User.findUsersByCrous(true).getResultList();
 		if(!users.isEmpty()) {
 			User user = users.get(0);
-			RightHolder rightHolder = crousService.getRightHolder(user.getEppn());
+			RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
 			log.info(String.format("rightHolder for %s : %s", user.getEppn(), rightHolder));
 		}
 	}
