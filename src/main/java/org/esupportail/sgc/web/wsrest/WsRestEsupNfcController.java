@@ -2,6 +2,7 @@ package org.esupportail.sgc.web.wsrest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -247,6 +248,33 @@ public class WsRestEsupNfcController {
 		}
 		log.trace("secondaryId : " + secondaryId);
 		return secondaryId;
+	}
+	
+	
+	/**
+	 * Example :
+	 * curl -v -X POST -H "Content-Type: application/json" -d '{"eppn":"joe@univ-ville.fr","lastname":"dalton","firstname":"joe","location":"Livraison ESUP SGC","csn":"040F5E12CB4080", "eppnInit":"jack@univ-ville.fr"}' http://localhost:8080/wsrest/nfc/getUserField?fieldName=email 
+	 */
+	@RequestMapping(value="/getUserField",  method=RequestMethod.POST)
+	@ResponseBody
+	public String getUserField(@RequestBody EsupNfcTagLog taglog, @RequestParam String  fieldName, @RequestParam(required=false) List<Etat>  etats, Model uiModel) {
+		log.trace("fieldName : " + fieldName);
+		log.trace("taglog : " + taglog);
+		String fieldValue = null;
+		Card card = Card.findCardByCsn(taglog.csn);
+		if(card!=null && (etats == null || etats.isEmpty() || etats.contains(card.getEtat()))) {
+			User user = User.findUser(card.getEppn());
+			try {
+			Field field = user.getClass().getDeclaredField(fieldName);	
+			field.setAccessible(true);
+			Object value = field.get(user);
+			fieldValue = value.toString();
+			} catch (NoSuchFieldException|SecurityException|IllegalAccessException e) {
+				log.warn("Get " + fieldName + " on user " + user.getEppn() + " failed", e);
+			}
+		}
+		log.trace("fieldValue : " + fieldValue);
+		return fieldValue;
 	}
 	
 	/**
