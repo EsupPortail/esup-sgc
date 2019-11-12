@@ -97,8 +97,7 @@ public class ApiEscrService extends ValidateService {
 					deleteEscrCard(card);
 				}
 			} catch(HttpClientErrorException clientEx) {
-				log.error("HttpClientErrorException : " + clientEx.getResponseBodyAsString());
-				throw clientEx; 
+				log.error("HttpClientErrorException : " + clientEx.getResponseBodyAsString(), clientEx);
 			}
 		}
 	}	

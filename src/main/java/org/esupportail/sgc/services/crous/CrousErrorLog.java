@@ -1,16 +1,22 @@
 package org.esupportail.sgc.services.crous;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
-import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.domain.Card.Etat;
 import org.springframework.roo.addon.dbre.RooDbManaged;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -93,5 +99,67 @@ public class CrousErrorLog {
     	}
     	return null;
     }
+
+	public static List<CrousErrorLog> findCrousErrorLogs(CrousErrorLog searchCrousErrorLog, int firstResult, int sizeNo,
+			String sortFieldName, String sortOrder) {
+		EntityManager em = entityManager();
+	    CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+	    CriteriaQuery<CrousErrorLog> query = criteriaBuilder.createQuery(CrousErrorLog.class);
+	    Root<CrousErrorLog> c = query.from(CrousErrorLog.class);
+	    
+	    final List<Order> orders = new ArrayList<Order>();
+	    if ("DESC".equalsIgnoreCase(sortOrder)) {
+	        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+	            orders.add(criteriaBuilder.desc(c.get(sortFieldName)));
+	        } 
+	    } else {
+	        if(fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+	            orders.add(criteriaBuilder.asc(c.get(sortFieldName)));
+	        }
+	    }
+
+	    orders.add(criteriaBuilder.desc(c.get("id")));
+	    
+	    final List<Predicate> predicates = getPredicates4SearchCrousErrorLog(searchCrousErrorLog, criteriaBuilder, c);
+	    
+	    query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+	    query.orderBy(orders);
+	    query.select(c);
+	    return em.createQuery(query).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
+	}
+
+	private static List<Predicate> getPredicates4SearchCrousErrorLog(CrousErrorLog searchCrousErrorLog,
+			CriteriaBuilder criteriaBuilder, Root<CrousErrorLog> c) {
+
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		
+        if (searchCrousErrorLog.getBlocking() != null) {
+            Expression<Boolean> blockingExpr = c.get("blocking");
+            if (searchCrousErrorLog.getBlocking()) {
+                predicates.add(criteriaBuilder.isTrue(blockingExpr));
+            } else {
+                predicates.add(criteriaBuilder.isFalse(blockingExpr));
+            }
+        }
+        if (searchCrousErrorLog.getEsupSgcOperation() != null) {
+            predicates.add(criteriaBuilder.equal(c.get("esupSgcOperation"), searchCrousErrorLog.getEsupSgcOperation()));
+        }
+        
+        
+        return predicates;
+	}
+
+	public static long countCrousErrorLogs(CrousErrorLog searchCrousErrorLog) {
+		EntityManager em = entityManager();
+	    CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+	    CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
+	    Root<CrousErrorLog> c = query.from(CrousErrorLog.class);
+	    
+	    final List<Predicate> predicates = getPredicates4SearchCrousErrorLog(searchCrousErrorLog, criteriaBuilder, c);
+	    
+	    query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+	    query.select(criteriaBuilder.count(c));
+        return em.createQuery(query).getSingleResult();
+	}
 
 }

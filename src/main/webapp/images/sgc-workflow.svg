@@ -1,16 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Généré par Microsoft Visio, SVG Export sgc-workflow.svg Page-1 -->
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events"
-		xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/" width="9.86917in" height="7.88428in"
-		viewBox="0 0 710.58 567.668" xml:space="preserve" color-interpolation-filters="sRGB" class="st15">
-	<v:documentProperties v:langID="1036" v:metric="true" v:viewMarkup="false">
+
+<svg
+   xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="9.86917in"
+   height="7.88428in"
+   viewBox="0 0 710.58 567.668"
+   xml:space="preserve"
+   class="st15"
+   version="1.1"
+   id="svg482"
+   sodipodi:docname="sgc-workflow.svg"
+   inkscape:export-filename="/tmp/sgc-workflow.svg.png"
+   inkscape:export-xdpi="92"
+   inkscape:export-ydpi="92"
+   color-interpolation-filters="sRGB"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"><metadata
+   id="metadata486"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1005"
+   id="namedview484"
+   showgrid="false"
+   inkscape:zoom="0.88190887"
+   inkscape:cx="298.98981"
+   inkscape:cy="377.351"
+   inkscape:window-x="0"
+   inkscape:window-y="27"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="shape88-231" />
+	<v:documentProperties
+   v:langID="1036"
+   v:metric="true"
+   v:viewMarkup="false">
 		<v:userDefs>
-			<v:ud v:nameU="msvNoAutoConnect" v:val="VT0(0):26"/>
+			<v:ud
+   v:nameU="msvNoAutoConnect"
+   v:val="VT0(0):26" />
 		</v:userDefs>
 	</v:documentProperties>
 
-	<style type="text/css">
+	<style
+   type="text/css"
+   id="style2">
 	<![CDATA[
 		.st1 {fill:#ffffff;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-width:0.24}
 		.st2 {fill:#000000;font-family:Calibri;font-size:0.833336em}
@@ -30,445 +79,1705 @@
 	]]>
 	</style>
 
-	<defs id="Markers">
-		<g id="lend13">
-			<path d="M 3 1 L 0 0 L 3 -1 L 3 1 " style="stroke:none"/>
+	<defs
+   id="Markers">
+		<g
+   id="lend13">
+			<path
+   d="M 3 1 L 0 0 L 3 -1 L 3 1 "
+   style="stroke:none"
+   id="path4" />
 		</g>
-		<marker id="mrkr13-38" class="st6" v:arrowType="13" v:arrowSize="2" v:setback="12.6" refX="-12.6" orient="auto"
-				markerUnits="strokeWidth" overflow="visible">
-			<use xlink:href="#lend13" transform="scale(-4.36,-4.36) "/>
+		<marker
+   id="mrkr13-38"
+   class="st6"
+   v:arrowType="13"
+   v:arrowSize="2"
+   v:setback="12.6"
+   refX="-12.6"
+   orient="auto"
+   markerUnits="strokeWidth"
+   overflow="visible">
+			<use
+   xlink:href="#lend13"
+   transform="scale(-4.36,-4.36) "
+   id="use7" />
 		</marker>
-		<marker id="mrkr13-61" class="st10" v:arrowType="13" v:arrowSize="2" v:setback="12.6" refX="-12.6" orient="auto"
-				markerUnits="strokeWidth" overflow="visible">
-			<use xlink:href="#lend13" transform="scale(-4.36,-4.36) "/>
+		<marker
+   id="mrkr13-61"
+   class="st10"
+   v:arrowType="13"
+   v:arrowSize="2"
+   v:setback="12.6"
+   refX="-12.6"
+   orient="auto"
+   markerUnits="strokeWidth"
+   overflow="visible">
+			<use
+   xlink:href="#lend13"
+   transform="scale(-4.36,-4.36) "
+   id="use10" />
 		</marker>
-		<marker id="mrkr13-70" class="st12" v:arrowType="13" v:arrowSize="2" v:setback="12.6" refX="-12.6" orient="auto"
-				markerUnits="strokeWidth" overflow="visible">
-			<use xlink:href="#lend13" transform="scale(-4.36,-4.36) "/>
+		<marker
+   id="mrkr13-70"
+   class="st12"
+   v:arrowType="13"
+   v:arrowSize="2"
+   v:setback="12.6"
+   refX="-12.6"
+   orient="auto"
+   markerUnits="strokeWidth"
+   overflow="visible">
+			<use
+   xlink:href="#lend13"
+   transform="scale(-4.36,-4.36) "
+   id="use13" />
 		</marker>
-		<marker id="mrkr13-168" class="st14" v:arrowType="13" v:arrowSize="2" v:setback="12.6" refX="-12.6" orient="auto"
-				markerUnits="strokeWidth" overflow="visible">
-			<use xlink:href="#lend13" transform="scale(-4.36,-4.36) "/>
+		<marker
+   id="mrkr13-168"
+   class="st14"
+   v:arrowType="13"
+   v:arrowSize="2"
+   v:setback="12.6"
+   refX="-12.6"
+   orient="auto"
+   markerUnits="strokeWidth"
+   overflow="visible">
+			<use
+   xlink:href="#lend13"
+   transform="scale(-4.36,-4.36) "
+   id="use16" />
 		</marker>
 	</defs>
-	<g v:mID="5" v:index="1" v:groupContext="foregroundPage">
-		<title>Page 1</title>
-		<v:pageProperties v:drawingScale="0.0393701" v:pageScale="0.0393701" v:drawingUnits="24" v:shadowOffsetX="8.50394"
-				v:shadowOffsetY="-8.50394"/>
-		<v:layer v:name="Lien" v:index="0"/>
-		<v:layer v:name="symbols" v:index="1"/>
-		<g id="shape1-1" v:mID="1" v:groupContext="shape" transform="translate(384.596,-458.173)">
-			<title>Ellipse</title>
-			<desc>Demande effectuée</desc>
+	<g
+   v:mID="5"
+   v:index="1"
+   v:groupContext="foregroundPage"
+   id="g480">
+		<title
+   id="title20">Page 1</title>
+		<v:pageProperties
+   v:drawingScale="0.0393701"
+   v:pageScale="0.0393701"
+   v:drawingUnits="24"
+   v:shadowOffsetX="8.50394"
+   v:shadowOffsetY="-8.50394" />
+		<v:layer
+   v:name="Lien"
+   v:index="0" />
+		<v:layer
+   v:name="symbols"
+   v:index="1" />
+		<g
+   id="shape1-1"
+   v:mID="1"
+   v:groupContext="shape"
+   transform="translate(384.596,-458.173)">
+			<title
+   id="title22">Ellipse</title>
+			<desc
+   id="desc24">Demande effectuée</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="12.9" y="542.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Demande <tspan
-						x="13.18" dy="1.2em" class="st3">effectuée</tspan></text>		</g>
-		<g id="shape2-5" v:mID="2" v:groupContext="shape" transform="translate(384.596,-391.071)">
-			<title>Ellipse.2</title>
-			<desc>Demande validée</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="12.9" y="542.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Demande <tspan
-						x="18.05" dy="1.2em" class="st3">validée</tspan></text>		</g>
-		<g id="shape3-9" v:mID="3" v:groupContext="shape" transform="translate(388.848,-305.087)">
-			<title>Ellipse.3</title>
-			<desc>En cours d’impression</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="34.6358" cy="545.936" width="61.13" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="17.36" y="542.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>En cours <tspan
-						x="8.44" dy="1.2em" class="st3">d</tspan>’impression</text>		</g>
-		<g id="shape4-13" v:mID="4" v:groupContext="shape" transform="translate(397.352,-119.496)">
-			<title>Ellipse.4</title>
-			<desc>En cours d’encodage</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="15.32" y="542.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>En cours <tspan
-						x="8.99" dy="1.2em" class="st3">d</tspan>’encodage</text>		</g>
-		<g id="shape5-17" v:mID="5" v:groupContext="shape" transform="translate(387.431,-48.6298)">
-			<title>Ellipse.5</title>
-			<desc>Encodée</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="15.18" y="548.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Encodée</text>		</g>
-		<g id="shape6-20" v:mID="6" v:groupContext="shape" transform="translate(387.207,-206.85)">
-			<title>Ellipse.6</title>
-			<desc>Imprimée</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="12.86" y="548.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Imprimée</text>		</g>
-		<g id="shape8-23" v:mID="8" v:groupContext="shape" transform="translate(261.289,-458.173)">
-			<title>Ellipse.8</title>
-			<desc>Demande rejetée</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="12.9" y="542.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Demande <tspan
-						x="18.03" dy="1.2em" class="st3">rejetée</tspan></text>		</g>
-		<g id="shape9-27" v:mID="9" v:groupContext="shape" transform="translate(121.585,-61.3227)">
-			<title>Ellipse.9</title>
-			<desc>Activée</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st4"/>
-			<text x="17.53" y="548.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Activée</text>		</g>
-		<g id="shape10-30" v:mID="10" v:groupContext="shape" transform="translate(18.12,-259.748)">
-			<title>Ellipse.10</title>
-			<desc>Désactivée</desc>
-			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
-			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="10.51" y="548.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Désactivée</text>		</g>
-		<g id="shape11-33" v:mID="11" v:groupContext="shape" v:layerMember="0" transform="translate(442.706,-479.906)">
-			<title>Lien dynamique</title>
-			<desc>Accepter</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="17.7165" cy="601.219" width="40" height="17.6036" transform="rotate(-90)"/>
-			<path d="M7.09 567.67 C17.72 567.67 17.72 584.44 17.72 601.22 C17.72 611.9 17.72 622.58 14.97 628.93 L14.68 629.15"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-615.732" y="12.9168" width="29.0267" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-615.73" y="20.12" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Accepter</text>		</g>
-		<g id="shape13-41" v:mID="13" v:groupContext="shape" v:layerMember="0" transform="translate(444.832,-412.803)">
-			<title>Lien dynamique.13</title>
-			<desc>Imprimer</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="19.8423" cy="609.312" width="40.21" height="17.6036" transform="rotate(-90)"/>
-			<path d="M4.96 567.67 C19.84 567.67 19.84 589.24 19.84 610.81 C19.84 625.09 19.84 639.37 16.69 647.31 L16.42 647.54"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-624.509" y="15.0426" width="30.3942" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-624.51" y="22.24" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Imprimer</text>		</g>
-		<g id="shape14-48" v:mID="14" v:groupContext="shape" v:layerMember="0" transform="translate(460.311,-326.819)">
-			<title>Lien dynamique.14</title>
-			<desc>Marquer comme imprimé</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="4.36386" cy="617.267" width="64.63" height="27.2035" transform="rotate(-90)"/>
-			<path d="M-6.27 567.67 C4.36 567.67 4.36 592.2 4.36 616.74 C4.36 634.1 4.36 651.45 0.04 660.16 L-0.25 660.37"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-644.671" y="-5.23586" width="54.808" height="19.1997" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-644.67" y="1.96" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Marquer comme<v:newlineChar/><tspan
-						x="-630.98" dy="1.2em" class="st3">imprimé</tspan></text>		</g>
-		<g id="shape15-56" v:mID="15" v:groupContext="shape" v:layerMember="0" transform="translate(450.39,-228.583)">
-			<title>Lien dynamique.15</title>
-			<desc>Sélectionner pour encodage</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="22.785" cy="607.959" width="67.8" height="27.2035" transform="rotate(-90)"/>
-			<path d="M2.01 567.67 C22.79 567.67 22.79 589.73 22.79 611.79 C22.79 626.22 22.79 640.66 19.62 648.66 L19.35 648.89"
-					class="st9"/>
-			<rect v:rectContext="textBkgnd" x="-636.953" y="13.1853" width="57.9875" height="19.1997" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-636.95" y="20.39" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Sélectionner pour<v:newlineChar/><tspan
-						x="-623.74" dy="1.2em" class="st3">encodage</tspan></text>		</g>
-		<g id="shape16-65" v:mID="16" v:groupContext="shape" v:layerMember="0" transform="translate(464.675,-141.228)">
-			<title>Lien dynamique.16</title>
-			<desc>Encoder</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="8.49545" cy="606.591" width="40" height="17.6036" transform="rotate(-90)"/>
-			<path d="M-2.13 567.67 C8.5 567.67 8.5 585.13 8.5 602.58 C8.5 617.14 8.5 631.7 -2.41 636.71 L-2.76 636.77" class="st11"/>
-			<rect v:rectContext="textBkgnd" x="-619.932" y="3.69572" width="26.6833" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-619.93" y="10.9" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Encoder</text>		</g>
-		<g id="shape17-73" v:mID="17" v:groupContext="shape" v:layerMember="0" transform="translate(417.195,-494.551)">
-			<title>Lien dynamique.17</title>
-			<desc>Rejeter</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="-61.6535" cy="549.951" width="40" height="17.6036"/>
-			<path d="M0 560.58 C0 549.95 -30.83 549.95 -61.65 549.95 C-83.53 549.95 -105.41 549.95 -116.27 553.75 L-116.52 554"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-73.4874" y="545.152" width="23.6676" height="9.59985" class="st7"/>
-			<text x="-73.49" y="552.35" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Rejeter</text>		</g>
-		<g id="shape18-80" v:mID="18" v:groupContext="shape" v:layerMember="0" transform="translate(420.029,-47.8897)">
-			<title>Lien dynamique.18</title>
-			<desc>Activer</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="-135.832" cy="577.558" width="40" height="17.6036" transform="rotate(-90)"/>
-			<path d="M0 566.93 C-0 577.56 -66.36 577.56 -132.72 577.56 C-189.44 577.56 -246.17 577.56 -261.7 563.12 L-261.85 562.8"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-589.012" y="-140.632" width="22.9098" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-589.01" y="-133.43" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Activer</text>		</g>
-		<g id="shape19-87" v:mID="19" v:groupContext="shape" v:layerMember="0" transform="translate(121.585,-83.055)">
-			<title>Lien dynamique.19</title>
-			<desc>Désactiver</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="-65.8164" cy="499.212" width="43.96" height="17.6036" transform="rotate(-90)"/>
-			<path d="M0 567.67 C-17.72 567.67 -41.57 567.67 -54.72 540.97 C-69.72 510.51 -70.78 445.31 -70.86 400.78 L-70.86 400.42"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-516.284" y="-70.6162" width="34.1441" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-516.28" y="-63.42" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Désactiver</text>		</g>
-		<g id="shape21-94" v:mID="21" v:groupContext="shape" v:layerMember="0" transform="translate(293.888,-451.087)">
-			<title>Lien dynamique.21</title>
-			<path d="M0 560.58 C0 571.21 30.83 571.21 61.65 571.21 C83.53 571.21 105.41 571.21 116.27 567.41 L116.52 567.16"
-					class="st5"/>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path26" />
+			<text
+   x="12.9"
+   y="542.94"
+   class="st2"
+   v:langID="1036"
+   id="text30"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Demande <tspan
+   x="13.18"
+   dy="1.2em"
+   class="st3"
+   id="tspan28">effectuée</tspan></text>
 		</g>
-		<g id="shape22-99" v:mID="22" v:groupContext="shape" v:layerMember="0" transform="translate(393.809,-326.819)">
-			<title>Lien dynamique.22</title>
-			<desc>Annuler l’impression</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="-19.8423" cy="526.024" width="77.02" height="17.6036" transform="rotate(-90)"/>
-			<path d="M-4.96 567.67 C-19.84 567.67 -19.84 546.09 -19.84 524.52 C-19.84 510.24 -19.84 495.96 -16.69 488.03 L-16.42
-						 487.8" class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-559.623" y="-24.6421" width="67.1984" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-559.62" y="-17.44" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Annuler l’impression</text>		</g>
-		<g id="shape23-106" v:mID="23" v:groupContext="shape" v:layerMember="0" transform="translate(399.366,-141.228)">
-			<title>Lien dynamique.23</title>
-			<desc>Annuler l’encodage</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="-22.785" cy="527.376" width="72.87" height="17.6036" transform="rotate(-90)"/>
-			<path d="M-2.01 567.67 C-22.79 567.67 -22.79 545.61 -22.79 523.55 C-22.79 509.11 -22.79 494.68 -19.62 486.68 L-19.35
-						 486.45" class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-558.901" y="-27.5848" width="63.05" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-558.9" y="-20.38" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Annuler l’encodage</text>		</g>
-		<g id="shape24-113" v:mID="24" v:groupContext="shape" v:layerMember="0" transform="translate(83.3169,-281.48)">
-			<title>Lien dynamique.24</title>
-			<desc>Réactiver</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="10.631" cy="671.478" width="40.25" height="17.6036" transform="rotate(-90)"/>
-			<path d="M0 567.67 C10.63 567.67 10.63 617.07 10.63 666.47 C10.63 709.76 10.63 753.05 28.77 763.64 L29.12 763.73"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-686.696" y="5.83122" width="30.4371" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-686.7" y="13.03" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Réactiver</text>		</g>
-		<g id="shape28-120" v:mID="28" v:groupContext="shape" v:layerMember="0" transform="translate(451.516,-532.362)">
-			<title>Lien dynamique.28</title>
-			<desc>Nouvelle demande</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="13.6498" cy="563.432" width="71.25" height="17.6036"/>
-			<path d="M0 567.67 C-8.58 567.67 -21.65 567.67 -28.08 573.61 C-31.96 577.19 -33.43 582.92 -33.98 588.59 L-33.99 588.95"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-17.0665" y="558.632" width="61.4328" height="9.59985" class="st7"/>
-			<text x="-17.07" y="565.83" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Nouvelle demande</text>		</g>
-		<g id="shape41-127" v:mID="41" v:groupContext="shape" transform="translate(500.869,-40.5354)">
-			<title>Étiquette</title>
-			<desc>La transition « Encoder » permettant d’arriver dans l’état « ...</desc>
+		<g
+   id="shape2-5"
+   v:mID="2"
+   v:groupContext="shape"
+   transform="translate(384.596,-391.071)">
+			<title
+   id="title33">Ellipse.2</title>
+			<desc
+   id="desc35">Demande validée</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="95.8558" cy="503.888" width="191.72" height="127.559"/>
-			<path d="M19.17 567.67 L172.54 567.67 A19.1708 19.1708 0 0 1 191.71 548.5 L191.71 459.28 A19.1708 19.1708 0 0 1 172.54
-						 440.11 L19.17 440.11 A19.1708 19.1708 0 0 1 0 459.28 L0 548.5 A19.1708 19.1708 0 0 1 19.17 567.67 Z"
-					class="st1"/>
-			<text x="20.89" y="458.89" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>La transition « Encoder » permettant <tspan
-						x="5.76" dy="1.2em" class="st3">d</tspan>’arriver dans l’état « encodée » est réalisée <tspan x="8.82"
-						dy="1.2em" class="st3">par EsupNfcTag au travers du périphérique </tspan><tspan x="6.44" dy="1.2em"
-						class="st3">d</tspan>’encodage lui-même. Cette transition n’est <tspan x="31.41" dy="1.2em" class="st3">donc pas disponible dans l</tspan>’IHM.<v:newlineChar/><tspan
-						x="13.85" dy="1.2em" class="st3">Elle peut en fait être lancée directement </tspan><tspan x="9.26"
-						dy="1.2em" class="st3">depuis l</tspan>’état « en cours d’impression » ; ce <tspan x="21.11" dy="1.2em"
-						class="st3">qui permet ainsi d</tspan>’éviter de marquer <tspan x="13.72" dy="1.2em" class="st3">manuellement la carte comme encodée</tspan>.</text>		</g>
-		<g id="shape46-138" v:mID="46" v:groupContext="shape" transform="translate(516.756,-182.268)">
-			<title>Étiquette.46</title>
-			<desc>La transition « sélectionner pour encodage » n’est pas nécess...</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path37" />
+			<text
+   x="12.9"
+   y="542.94"
+   class="st2"
+   v:langID="1036"
+   id="text41"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Demande <tspan
+   x="18.05"
+   dy="1.2em"
+   class="st3"
+   id="tspan39">validée</tspan></text>
+		</g>
+		<g
+   id="shape3-9"
+   v:mID="3"
+   v:groupContext="shape"
+   transform="translate(388.848,-305.087)">
+			<title
+   id="title44">Ellipse.3</title>
+			<desc
+   id="desc46">En cours d’impression</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="75.7149" cy="525.148" width="151.43" height="85.0394"/>
-			<path d="M15.14 567.67 L136.29 567.67 A15.1427 15.1427 0 0 1 151.43 552.52 L151.43 497.77 A15.1427 15.1427 0 0 1 136.29
-						 482.63 L15.14 482.63 A15.1427 15.1427 0 0 1 0 497.77 L0 552.52 A15.1427 15.1427 0 0 1 15.14 567.67 Z"
-					class="st1"/>
-			<text x="9.74" y="504.15" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>La transition « sélectionner pour <tspan
-						x="5.24" dy="1.2em" class="st3">encodage</tspan> » n’est pas nécessaire et <tspan x="4" dy="1.2em"
-						class="st3">ne doit pas être utilisée si on utilise </tspan><tspan x="11.51" dy="1.2em" class="st3">la facilité donnée par le scan du </tspan><tspan
-						x="57.96" dy="1.2em" class="st3">QRCode</tspan>.</text>		</g>
-		<g id="shape72-145" v:mID="72" v:groupContext="shape" transform="translate(201.775,-83.055)">
-			<title>Étiquette.72</title>
-			<desc>L’activation ou réactivation de la carte correspond à informe...</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="34.6358"
+   cy="545.936"
+   width="61.13"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path48" />
+			<text
+   x="17.36"
+   y="542.94"
+   class="st2"
+   v:langID="1036"
+   id="text52"><v:paragraph
+   v:horizAlign="1" /><v:tabList />En cours <tspan
+   x="8.44"
+   dy="1.2em"
+   class="st3"
+   id="tspan50">d</tspan>’impression</text>
+		</g>
+		<g
+   id="shape4-13"
+   v:mID="4"
+   v:groupContext="shape"
+   transform="translate(397.352,-119.496)">
+			<title
+   id="title55">Ellipse.4</title>
+			<desc
+   id="desc57">En cours d’encodage</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="75.7149" cy="518.062" width="151.43" height="99.2126"/>
-			<path d="M15.14 567.67 L136.29 567.67 A15.1427 15.1427 0 0 1 151.43 552.52 L151.43 483.6 A15.1427 15.1427 0 0 1 136.29
-						 468.46 L15.14 468.46 A15.1427 15.1427 0 0 1 0 483.6 L0 552.52 A15.1427 15.1427 0 0 1 15.14 567.67 Z"
-					class="st1"/>
-			<text x="9.55" y="491.06" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>L’activation ou réactivation de la <tspan
-						x="11.69" dy="1.2em" class="st3">carte correspond à informer les </tspan><tspan x="17.36" dy="1.2em"
-						class="st3">différentes briques </tspan>(contrôle <tspan x="6.36" dy="1.2em" class="st3">d</tspan>’accès, annuaires ldap, cnous) de <tspan
-						x="8.45" dy="1.2em" class="st3">l</tspan>’existence de cette carte comme <tspan x="50.84" dy="1.2em"
-						class="st3">carte valide</tspan>.</text>		</g>
-		<g id="shape73-153" v:mID="73" v:groupContext="shape" transform="translate(521.232,-360.298)">
-			<title>Étiquette.73</title>
-			<desc>L’éventuel paiement permettant de pouvoir demander une carte ...</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path59" />
+			<text
+   x="15.32"
+   y="542.94"
+   class="st2"
+   v:langID="1036"
+   id="text63"><v:paragraph
+   v:horizAlign="1" /><v:tabList />En cours <tspan
+   x="8.99"
+   dy="1.2em"
+   class="st3"
+   id="tspan61">d</tspan>’encodage</text>
+		</g>
+		<g
+   id="shape5-17"
+   v:mID="5"
+   v:groupContext="shape"
+   transform="translate(387.431,-48.6298)">
+			<title
+   id="title66">Ellipse.5</title>
+			<desc
+   id="desc68">Encodée</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="75.7149" cy="525.148" width="151.43" height="85.0394"/>
-			<path d="M15.14 567.67 L136.29 567.67 A15.1427 15.1427 0 0 1 151.43 552.52 L151.43 497.77 A15.1427 15.1427 0 0 1 136.29
-						 482.63 L15.14 482.63 A15.1427 15.1427 0 0 1 0 497.77 L0 552.52 A15.1427 15.1427 0 0 1 15.14 567.67 Z"
-					class="st1"/>
-			<text x="9.48" y="504.15" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>L’éventuel paiement permettant <tspan
-						x="4.86" dy="1.2em" class="st3">de pouvoir demander une carte ou </tspan><tspan x="5.78" dy="1.2em"
-						class="st3">le fait de la marquer comme livrée </tspan><tspan x="13.63" dy="1.2em" class="st3">ne rente pas dans ce workflow </tspan><tspan
-						x="7.29" dy="1.2em" class="st3">d</tspan>’édition et validation de la carte.</text>		</g>
-		<g id="shape74-160" v:mID="74" v:groupContext="shape" transform="translate(127.254,-365.575)">
-			<title>Ellipse.74</title>
-			<desc>Caduque</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path70" />
+			<text
+   x="15.18"
+   y="548.94"
+   class="st2"
+   v:langID="1036"
+   id="text72"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Encodée</text>
+		</g>
+		<g
+   id="shape6-20"
+   v:mID="6"
+   v:groupContext="shape"
+   transform="translate(387.207,-206.85)">
+			<title
+   id="title75">Ellipse.6</title>
+			<desc
+   id="desc77">Imprimée</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="14.54" y="548.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Caduque</text>		</g>
-		<g id="shape75-163" v:mID="75" v:groupContext="shape" v:layerMember="0" transform="translate(127.254,-387.307)">
-			<title>Lien dynamique.75</title>
-			<desc>Dévérouiller</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="-63.8688" cy="585.458" width="49.8" height="17.6036" transform="rotate(-90)"/>
-			<path d="M0 567.67 C-19.13 567.67 -47.46 567.67 -61.81 583.02 C-74.39 596.49 -76.22 621.76 -76.49 641.95 L-76.49 642.31"
-					class="st13"/>
-			<rect v:rectContext="textBkgnd" x="-605.45" y="-68.6686" width="39.9839" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-605.45" y="-61.47" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Dévérouiller</text>		</g>
-		<g id="shape76-171" v:mID="76" v:groupContext="shape" v:layerMember="0" transform="translate(149.931,-104.787)">
-			<title>Lien dynamique.76</title>
-			<desc>Révoquer</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="4.05087" cy="441.602" width="41.15" height="17.6036" transform="rotate(-90)"/>
-			<path d="M4.25 567.67 C4.25 557.04 6.25 557.04 7.54 541.55 C9.86 513.78 9.92 436.2 9.92 316.69 L9.92 316.33"
-					class="st13"/>
-			<rect v:rectContext="textBkgnd" x="-457.268" y="-0.748867" width="31.3319" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-457.27" y="6.45" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Révoquer</text>		</g>
-		<g id="shape77-178" v:mID="77" v:groupContext="shape" transform="translate(182.753,-224.787)">
-			<title>Étiquette.77</title>
-			<desc>La carte devient caduque lorsque la date de fin de droits de ...</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path79" />
+			<text
+   x="12.86"
+   y="548.94"
+   class="st2"
+   v:langID="1036"
+   id="text81"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Imprimée</text>
+		</g>
+		<g
+   id="shape8-23"
+   v:mID="8"
+   v:groupContext="shape"
+   transform="translate(261.289,-458.173)">
+			<title
+   id="title84">Ellipse.8</title>
+			<desc
+   id="desc86">Demande rejetée</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="75.7149" cy="496.802" width="151.43" height="141.732"/>
-			<path d="M15.14 567.67 L136.29 567.67 A15.1427 15.1427 0 0 1 151.43 552.52 L151.43 441.08 A15.1427 15.1427 0 0 1 136.29
-						 425.94 L15.14 425.94 A15.1427 15.1427 0 0 1 0 441.08 L0 552.52 A15.1427 15.1427 0 0 1 15.14 567.67 Z"
-					class="st1"/>
-			<text x="8.24" y="451.8" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>La carte devient caduque lorsque <tspan
-						x="23.78" dy="1.2em" class="st3">la date de fin de droits de </tspan><tspan x="24.03" dy="1.2em"
-						class="st3">l</tspan>’utilisateur est dépassée.<v:newlineChar/><tspan x="12.34" dy="1.2em" class="st3">Si cette date change à nouveau </tspan><tspan
-						x="6.24" dy="1.2em" class="st3">(</tspan>réinscription, nouveau contrat de <tspan x="27.32" dy="1.2em"
-						class="st3">vacation</tspan>, ...) la carte est <tspan x="19.03" dy="1.2em" class="st3">déverrouillée et se retrouve </tspan><tspan
-						x="12.25" dy="1.2em" class="st3">désactivée </tspan>. Elle peut alors être <tspan x="23.61" dy="1.2em"
-						class="st3">réactivée par l</tspan>’utilisateur.</text>		</g>
-		<g id="shape80-189" v:mID="80" v:groupContext="shape" v:layerMember="0" transform="translate(83.3169,-281.48)">
-			<title>Lien dynamique.80</title>
-			<desc>Révoquer</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="58.1902" cy="547.831" width="41.15" height="17.6036" transform="rotate(-90)"/>
-			<path d="M0 567.67 C19.13 567.67 47.46 567.67 61.81 552.31 C74.39 538.85 76.22 513.57 76.49 493.38 L76.49 493.02"
-					class="st13"/>
-			<rect v:rectContext="textBkgnd" x="-563.496" y="53.3905" width="31.3319" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-563.5" y="60.59" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Révoquer</text>		</g>
-		<g id="shape81-196" v:mID="81" v:groupContext="shape" transform="translate(498.331,-458.173)">
-			<title>Ellipse.81</title>
-			<desc>Demande annulée</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path88" />
+			<text
+   x="12.9"
+   y="542.94"
+   class="st2"
+   v:langID="1036"
+   id="text92"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Demande <tspan
+   x="18.03"
+   dy="1.2em"
+   class="st3"
+   id="tspan90">rejetée</tspan></text>
+		</g>
+		<g
+   id="shape9-27"
+   v:mID="9"
+   v:groupContext="shape"
+   transform="translate(121.585,-61.3227)">
+			<title
+   id="title95">Ellipse.9</title>
+			<desc
+   id="desc97">Activée</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="12.9" y="542.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Demande <tspan
-						x="16.2" dy="1.2em" class="st3">annulée</tspan></text>		</g>
-		<g id="shape82-200" v:mID="82" v:groupContext="shape" v:layerMember="0" transform="translate(417.195,-494.551)">
-			<title>Lien dynamique.82</title>
-			<desc>Annuler</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="59.8762" cy="545.463" width="40" height="17.6036"/>
-			<path d="M0 560.58 C0 549.95 31.44 545.46 59.88 545.46 C80 545.46 98.61 547.71 107.77 552.79 L107.99 553.08"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="46.9544" y="540.663" width="25.8434" height="9.59985" class="st7"/>
-			<text x="46.95" y="547.86" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Annuler</text>		</g>
-		<g id="shape83-207" v:mID="83" v:groupContext="shape" transform="translate(49.0394,-437.386)">
-			<title>Ellipse.83</title>
-			<desc>Détruite</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st4"
+   id="path99" />
+			<text
+   x="17.53"
+   y="548.94"
+   class="st2"
+   v:langID="1036"
+   id="text101"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Activée</text>
+		</g>
+		<g
+   id="shape10-30"
+   v:mID="10"
+   v:groupContext="shape"
+   transform="translate(18.12,-259.748)">
+			<title
+   id="title104">Ellipse.10</title>
+			<desc
+   id="desc106">Désactivée</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="32.5984" cy="545.936" width="57.05" height="38.0315"/>
-			<path d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z" class="st1"/>
-			<text x="15.68" y="548.94" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Détruite</text>		</g>
-		<g id="shape84-210" v:mID="84" v:groupContext="shape" v:layerMember="0" transform="translate(159.852,-409.039)">
-			<title>Lien dynamique.84</title>
-			<desc>Marquer comme détruite</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="0.576136" cy="541.246" width="92.78" height="17.6036"/>
-			<path d="M0 567.67 C2.57 550.66 -8.91 534.87 -17.48 526.35 C-23.59 520.28 -28.23 517.9 -35.81 517.42 L-36.17 517.43"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-40.9076" y="536.446" width="82.9677" height="9.59985" class="st7"/>
-			<text x="-40.91" y="543.65" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Marquer comme détruite</text>		</g>
-		<g id="shape85-217" v:mID="85" v:groupContext="shape" v:layerMember="0" transform="translate(56.9655,-303.213)">
-			<title>Lien dynamique.85</title>
-			<desc>Marquer comme détruite</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="-21.0617" cy="488.073" width="92.78" height="17.6036" transform="rotate(-90)"/>
-			<path d="M-6.25 567.67 C-22.1 561.05 -21.31 476.42 -22.15 439.95 C-22.97 404.46 -25.33 414.56 -17.69 412.68 L-17.33 412.65"
-					class="st5"/>
-			<rect v:rectContext="textBkgnd" x="-529.557" y="-25.8614" width="82.9677" height="9.59985" transform="rotate(-90)"
-					class="st7"/>
-			<text x="-529.56" y="-18.66" transform="rotate(-90)" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Marquer comme détruite</text>		</g>
-		<g id="shape86-224" v:mID="86" v:groupContext="shape" v:layerMember="0" transform="translate(261.289,-472.819)">
-			<title>Lien dynamique.86</title>
-			<desc>Annuler</desc>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="91.9649" cy="499.568" width="40" height="17.6036"/>
-			<path d="M0 560.58 C-5.31 560.58 -6.54 560.84 -7.91 560.21 C-13.75 557.5 -22.21 538.55 1.94 523.62 C37.01 501.95 140.83
-						 488.77 219.42 496.06 C292.21 502.81 343.34 527.12 328.84 546.99 C325.07 552.16 316.86 557.03 311.97 559.37
-						 L311.62 559.41" class="st5"/>
-			<rect v:rectContext="textBkgnd" x="79.0431" y="494.768" width="25.8434" height="9.59985" class="st7"/>
-			<text x="79.04" y="501.97" class="st8" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>Annuler</text>		</g>
-		<g id="shape88-231" v:mID="88" v:groupContext="shape" transform="translate(596.947,-479.906)">
-			<title>Étiquette.88</title>
-			<desc>La demande de carte est annulée lorsque la date de fin de dro...</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path108" />
+			<text
+   x="10.51"
+   y="548.94"
+   class="st2"
+   v:langID="1036"
+   id="text110"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Désactivée</text>
+		</g>
+		<g
+   id="shape11-33"
+   v:mID="11"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(442.706,-479.906)">
+			<title
+   id="title113">Lien dynamique</title>
+			<desc
+   id="desc115">Accepter</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="17.7165"
+   cy="601.219"
+   width="40"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M7.09 567.67 C17.72 567.67 17.72 584.44 17.72 601.22 C17.72 611.9 17.72 622.58 14.97 628.93 L14.68 629.15"
+   class="st5"
+   id="path117" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-615.732"
+   y="12.9168"
+   width="29.0267"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect119" />
+			<text
+   x="-615.73"
+   y="20.12"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text121"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Accepter</text>
+		</g>
+		<g
+   id="shape13-41"
+   v:mID="13"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(444.832,-412.803)">
+			<title
+   id="title124">Lien dynamique.13</title>
+			<desc
+   id="desc126">Imprimer</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="19.8423"
+   cy="609.312"
+   width="40.21"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M4.96 567.67 C19.84 567.67 19.84 589.24 19.84 610.81 C19.84 625.09 19.84 639.37 16.69 647.31 L16.42 647.54"
+   class="st5"
+   id="path128" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-624.509"
+   y="15.0426"
+   width="30.3942"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect130" />
+			<text
+   x="-624.51"
+   y="22.24"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text132"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Imprimer</text>
+		</g>
+		<g
+   id="shape14-48"
+   v:mID="14"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(460.311,-326.819)">
+			<title
+   id="title135">Lien dynamique.14</title>
+			<desc
+   id="desc137">Marquer comme imprimé</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="4.36386"
+   cy="617.267"
+   width="64.63"
+   height="27.2035"
+   transform="rotate(-90)" />
+			<path
+   d="M-6.27 567.67 C4.36 567.67 4.36 592.2 4.36 616.74 C4.36 634.1 4.36 651.45 0.04 660.16 L-0.25 660.37"
+   class="st5"
+   id="path139" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-644.671"
+   y="-5.23586"
+   width="54.808"
+   height="19.1997"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect141" />
+			<text
+   x="-644.67"
+   y="1.96"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text145"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Marquer comme<v:newlineChar /><tspan
+   x="-630.98"
+   dy="1.2em"
+   class="st3"
+   id="tspan143">imprimé</tspan></text>
+		</g>
+		<g
+   id="shape15-56"
+   v:mID="15"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(450.39,-228.583)">
+			<title
+   id="title148">Lien dynamique.15</title>
+			<desc
+   id="desc150">Sélectionner pour encodage</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="22.785"
+   cy="607.959"
+   width="67.8"
+   height="27.2035"
+   transform="rotate(-90)" />
+			<path
+   d="M2.01 567.67 C22.79 567.67 22.79 589.73 22.79 611.79 C22.79 626.22 22.79 640.66 19.62 648.66 L19.35 648.89"
+   class="st9"
+   id="path152" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-636.953"
+   y="13.1853"
+   width="57.9875"
+   height="19.1997"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect154" />
+			<text
+   x="-636.95"
+   y="20.39"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text158"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Sélectionner pour<v:newlineChar /><tspan
+   x="-623.74"
+   dy="1.2em"
+   class="st3"
+   id="tspan156">encodage</tspan></text>
+		</g>
+		<g
+   id="shape16-65"
+   v:mID="16"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(464.675,-141.228)">
+			<title
+   id="title161">Lien dynamique.16</title>
+			<desc
+   id="desc163">Encoder</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="8.49545"
+   cy="606.591"
+   width="40"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M-2.13 567.67 C8.5 567.67 8.5 585.13 8.5 602.58 C8.5 617.14 8.5 631.7 -2.41 636.71 L-2.76 636.77"
+   class="st11"
+   id="path165" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-619.932"
+   y="3.69572"
+   width="26.6833"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect167" />
+			<text
+   x="-619.93"
+   y="10.9"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text169"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Encoder</text>
+		</g>
+		<g
+   id="shape17-73"
+   v:mID="17"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(417.195,-494.551)">
+			<title
+   id="title172">Lien dynamique.17</title>
+			<desc
+   id="desc174">Rejeter</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="-61.6535"
+   cy="549.951"
+   width="40"
+   height="17.6036" />
+			<path
+   d="M0 560.58 C0 549.95 -30.83 549.95 -61.65 549.95 C-83.53 549.95 -105.41 549.95 -116.27 553.75 L-116.52 554"
+   class="st5"
+   id="path176" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-73.4874"
+   y="545.152"
+   width="23.6676"
+   height="9.59985"
+   class="st7"
+   id="rect178" />
+			<text
+   x="-73.49"
+   y="552.35"
+   class="st8"
+   v:langID="1036"
+   id="text180"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Rejeter</text>
+		</g>
+		<g
+   id="shape18-80"
+   v:mID="18"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(420.029,-47.8897)">
+			<title
+   id="title183">Lien dynamique.18</title>
+			<desc
+   id="desc185">Activer</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="-135.832"
+   cy="577.558"
+   width="40"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M0 566.93 C-0 577.56 -66.36 577.56 -132.72 577.56 C-189.44 577.56 -246.17 577.56 -261.7 563.12 L-261.85 562.8"
+   class="st5"
+   id="path187" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-589.012"
+   y="-140.632"
+   width="22.9098"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect189" />
+			<text
+   x="-589.01"
+   y="-133.43"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text191"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Activer</text>
+		</g>
+		<g
+   id="shape19-87"
+   v:mID="19"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(121.585,-83.055)">
+			<title
+   id="title194">Lien dynamique.19</title>
+			<desc
+   id="desc196">Désactiver</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="-65.8164"
+   cy="499.212"
+   width="43.96"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M0 567.67 C-17.72 567.67 -41.57 567.67 -54.72 540.97 C-69.72 510.51 -70.78 445.31 -70.86 400.78 L-70.86 400.42"
+   class="st5"
+   id="path198" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-516.284"
+   y="-70.6162"
+   width="34.1441"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect200" />
+			<text
+   x="-516.28"
+   y="-63.42"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text202"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Désactiver</text>
+		</g>
+		<g
+   id="shape21-94"
+   v:mID="21"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(293.888,-451.087)">
+			<title
+   id="title205">Lien dynamique.21</title>
+			<path
+   d="M0 560.58 C0 571.21 30.83 571.21 61.65 571.21 C83.53 571.21 105.41 571.21 116.27 567.41 L116.52 567.16"
+   class="st5"
+   id="path207" />
+		</g>
+		<g
+   id="shape22-99"
+   v:mID="22"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(393.809,-326.819)">
+			<title
+   id="title210">Lien dynamique.22</title>
+			<desc
+   id="desc212">Annuler l’impression</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="-19.8423"
+   cy="526.024"
+   width="77.02"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M-4.96 567.67 C-19.84 567.67 -19.84 546.09 -19.84 524.52 C-19.84 510.24 -19.84 495.96 -16.69 488.03 L-16.42        487.8"
+   class="st5"
+   id="path214" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-559.623"
+   y="-24.6421"
+   width="67.1984"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect216" />
+			<text
+   x="-559.62"
+   y="-17.44"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text218"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Annuler l’impression</text>
+		</g>
+		<g
+   id="shape23-106"
+   v:mID="23"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(399.366,-141.228)">
+			<title
+   id="title221">Lien dynamique.23</title>
+			<desc
+   id="desc223">Annuler l’encodage</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="-22.785"
+   cy="527.376"
+   width="72.87"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M-2.01 567.67 C-22.79 567.67 -22.79 545.61 -22.79 523.55 C-22.79 509.11 -22.79 494.68 -19.62 486.68 L-19.35        486.45"
+   class="st5"
+   id="path225" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-558.901"
+   y="-27.5848"
+   width="63.05"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect227" />
+			<text
+   x="-558.9"
+   y="-20.38"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text229"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Annuler l’encodage</text>
+		</g>
+		<g
+   id="shape24-113"
+   v:mID="24"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(83.3169,-281.48)">
+			<title
+   id="title232">Lien dynamique.24</title>
+			<desc
+   id="desc234">Réactiver</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="10.631"
+   cy="671.478"
+   width="40.25"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M0 567.67 C10.63 567.67 10.63 617.07 10.63 666.47 C10.63 709.76 10.63 753.05 28.77 763.64 L29.12 763.73"
+   class="st5"
+   id="path236" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-686.696"
+   y="5.83122"
+   width="30.4371"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect238" />
+			<text
+   x="-686.7"
+   y="13.03"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text240"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Réactiver</text>
+		</g>
+		<g
+   id="shape28-120"
+   v:mID="28"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(451.516,-532.362)">
+			<title
+   id="title243">Lien dynamique.28</title>
+			<desc
+   id="desc245">Nouvelle demande</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="13.6498"
+   cy="563.432"
+   width="71.25"
+   height="17.6036" />
+			<path
+   d="M0 567.67 C-8.58 567.67 -21.65 567.67 -28.08 573.61 C-31.96 577.19 -33.43 582.92 -33.98 588.59 L-33.99 588.95"
+   class="st5"
+   id="path247" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-17.0665"
+   y="558.632"
+   width="61.4328"
+   height="9.59985"
+   class="st7"
+   id="rect249" />
+			<text
+   x="-17.07"
+   y="565.83"
+   class="st8"
+   v:langID="1036"
+   id="text251"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Nouvelle demande</text>
+		</g>
+		<g
+   id="shape41-127"
+   v:mID="41"
+   v:groupContext="shape"
+   transform="translate(500.869,-40.5354)">
+			<title
+   id="title254">Étiquette</title>
+			<desc
+   id="desc256">La transition « Encoder » permettant d’arriver dans l’état « ...</desc>
 			<v:userDefs>
-				<v:ud v:nameU="visVersion" v:prompt="" v:val="VT0(15):26"/>
+				<v:ud
+   v:nameU="visVersion"
+   v:prompt=""
+   v:val="VT0(15):26" />
 			</v:userDefs>
-			<v:textBlock v:margins="rect(4,4,4,4)" v:tabSpace="42.5197"/>
-			<v:textRect cx="47.817" cy="532.787" width="95.64" height="69.7623"/>
-			<path d="M9.56 567.67 L86.07 567.67 A9.56324 9.56324 0 0 1 95.63 558.1 L95.63 507.47 A9.56324 9.56324 0 0 1 86.07 497.91
-						 L9.56 497.91 A9.56324 9.56324 0 0 1 0 507.47 L0 558.1 A9.56324 9.56324 0 0 1 9.56 567.67 Z" class="st1"/>
-			<text x="5.15" y="511.79" class="st2" v:langID="1036"><v:paragraph v:horizAlign="1"/><v:tabList/>La demande de carte <tspan
-						x="7.81" dy="1.2em" class="st3">est annulée lorsque </tspan><tspan x="15.04" dy="1.2em" class="st3">la date de fin de </tspan><tspan
-						x="5.63" dy="1.2em" class="st3">droits de l</tspan>’utilisateur <tspan x="20.28" dy="1.2em" class="st3">est dépassée</tspan>.</text>		</g>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="95.8558"
+   cy="503.888"
+   width="191.72"
+   height="127.559" />
+			<path
+   d="M 19.611659,583.81633 H 183.2609 A 20.455675,22.235362 0 0 1 203.71572,561.5819 V 458.09957 A 20.455675,22.235362 0 0 1 183.2609,435.86513 H 19.611659 A 20.455675,22.235362 0 0 1 -0.84316137,458.09957 V 561.5819 A 20.455675,22.235362 0 0 1 19.611659,583.81633 Z"
+   class="st1"
+   id="path258"
+   inkscape:connector-curvature="0"
+   style="fill:#ffffff;stroke:#000000;stroke-width:0.26699311;stroke-linecap:round;stroke-linejoin:round" />
+			<text
+   x="29.023598"
+   y="470.44373"
+   class="st2"
+   v:langID="1036"
+   id="text276"
+   transform="scale(1.0128204,0.98734188)"
+   style="font-size:9.54298878px;font-family:Calibri;fill:#000000;stroke-width:0.95429575"><v:paragraph
+   v:horizAlign="1" /><v:tabList />La transition « Encoder » permettant <tspan
+   x="14.585104"
+   class="st3"
+   id="tspan260"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">d</tspan>’arriver dans l’état « encodée » est réalisée <tspan
+   x="17.505249"
+   class="st3"
+   id="tspan262"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">par EsupNfcTag au travers du périphérique </tspan><tspan
+   x="15.234025"
+   class="st3"
+   id="tspan264"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">d</tspan>’encodage lui-même. Cette transition n’est <tspan
+   x="39.062798"
+   class="st3"
+   id="tspan266"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">donc pas disponible dans l</tspan>’IHM.<v:newlineChar /><tspan
+   x="22.305357"
+   class="st3"
+   id="tspan268"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">Elle peut en fait être lancée directement </tspan><tspan
+   x="17.92514"
+   class="st3"
+   id="tspan270"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">depuis l</tspan>’état « en cours d’impression » ; ce <tspan
+   x="29.233545"
+   class="st3"
+   id="tspan272"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">qui permet ainsi d</tspan>’éviter de marquer <tspan
+   x="22.181299"
+   class="st3"
+   id="tspan274"
+   style="font-size:9.54298878px;stroke-width:0.95429575"
+   dy="11.451587">manuellement la carte comme encodée</tspan>.</text>
+		</g>
+		<g
+   id="shape46-138"
+   v:mID="46"
+   v:groupContext="shape"
+   transform="matrix(0.99996095,0,0,1.0499321,516.75896,-210.6159)">
+			<title
+   id="title279">Étiquette.46</title>
+			<desc
+   id="desc281">La transition « sélectionner pour encodage » n’est pas nécess...</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:prompt=""
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="75.7149"
+   cy="525.148"
+   width="151.43"
+   height="85.0394" />
+			<path
+   d="M 18.639033,567.66654 H 167.76056 a 18.6389,16.00685 0 0 1 18.63558,-16.01456 V 493.77755 A 18.6389,16.00685 0 0 1 167.76056,477.77356 H 18.639033 A 18.6389,16.00685 0 0 1 0.00345711,493.77755 v 57.87443 A 18.6389,16.00685 0 0 1 18.639033,567.66654 Z"
+   class="st1"
+   id="path283"
+   inkscape:connector-curvature="0"
+   style="fill:#ffffff;stroke:#000000;stroke-width:0.27376062;stroke-linecap:round;stroke-linejoin:round" />
+			<text
+   x="24.740576"
+   y="504.14999"
+   class="st2"
+   v:langID="1036"
+   id="text293"
+   style="font-size:10.00003242px;font-family:Calibri;fill:#000000"><v:paragraph
+   v:horizAlign="1" /><v:tabList />La transition « sélectionner pour <tspan
+   x="20.24058"
+   dy="12.000039"
+   class="st3"
+   id="tspan285"
+   style="font-size:10.00003242px">encodage</tspan> » n’est pas nécessaire et <tspan
+   x="19.00058"
+   dy="12.000039"
+   class="st3"
+   id="tspan287"
+   style="font-size:10.00003242px">ne doit pas être utilisée si on utilise </tspan><tspan
+   x="26.510574"
+   dy="12.000039"
+   class="st3"
+   id="tspan289"
+   style="font-size:10.00003242px">la facilité donnée par le scan du </tspan><tspan
+   x="72.960594"
+   dy="12.000039"
+   class="st3"
+   id="tspan291"
+   style="font-size:10.00003242px">QRCode</tspan>.</text>
+		</g>
+		<g
+   id="shape72-145"
+   v:mID="72"
+   v:groupContext="shape"
+   transform="translate(201.775,-83.055)">
+			<title
+   id="title296">Étiquette.72</title>
+			<desc
+   id="desc298">L’activation ou réactivation de la carte correspond à informe...</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:prompt=""
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="75.7149"
+   cy="518.062"
+   width="151.43"
+   height="99.2126" />
+			<path
+   d="M 0.50713554,572.76163 H 134.66002 a 16.767948,17.217114 0 0 1 16.76495,-17.22541 V 477.1748 A 16.767948,17.217114 0 0 1 134.66002,459.96075 H 0.50713554 A 16.767948,17.217114 0 0 1 -16.257822,477.1748 v 78.36142 a 16.767948,17.217114 0 0 1 16.76495754,17.22541 z"
+   class="st1"
+   id="path300"
+   inkscape:connector-curvature="0"
+   style="fill:#ffffff;stroke:#000000;stroke-width:0.26929486;stroke-linecap:round;stroke-linejoin:round" />
+			<text
+   x="2.0500021"
+   y="491.06"
+   class="st2"
+   v:langID="1036"
+   id="text312"
+   style="font-size:10.00003242px;font-family:Calibri;fill:#000000"><v:paragraph
+   v:horizAlign="1" /><v:tabList />L’activation ou réactivation de la <tspan
+   x="4.190001"
+   dy="12.000039"
+   class="st3"
+   id="tspan302"
+   style="font-size:10.00003242px">carte correspond à informer les </tspan><tspan
+   x="9.8600006"
+   dy="12.000039"
+   class="st3"
+   id="tspan304"
+   style="font-size:10.00003242px">différentes briques </tspan>(contrôle <tspan
+   x="-1.1399977"
+   dy="12.000039"
+   class="st3"
+   id="tspan306"
+   style="font-size:10.00003242px">d</tspan>’accès, annuaires ldap, cnous) de <tspan
+   x="0.95000213"
+   dy="12.000039"
+   class="st3"
+   id="tspan308"
+   style="font-size:10.00003242px">l</tspan>’existence de cette carte comme <tspan
+   x="43.34"
+   dy="12.000039"
+   class="st3"
+   id="tspan310"
+   style="font-size:10.00003242px">carte valide</tspan>.</text>
+		</g>
+		<g
+   id="shape73-153"
+   v:mID="73"
+   v:groupContext="shape"
+   transform="translate(521.232,-360.298)">
+			<title
+   id="title315">Étiquette.73</title>
+			<desc
+   id="desc317">L’éventuel paiement permettant de pouvoir demander une carte ...</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:prompt=""
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="75.7149"
+   cy="525.148"
+   width="151.43"
+   height="85.0394" />
+			<path
+   d="M 17.620565,575.43061 H 158.58839 a 17.619757,17.583917 0 0 1 17.61662,-17.5924 V 494.26173 A 17.619757,17.583917 0 0 1 158.58839,476.68096 H 17.620565 A 17.619757,17.583917 0 0 1 0.00394956,494.26173 v 63.57648 a 17.619757,17.583917 0 0 1 17.61661544,17.5924 z"
+   class="st1"
+   id="path319"
+   inkscape:connector-curvature="0"
+   style="fill:#ffffff;stroke:#000000;stroke-width:0.27897528;stroke-linecap:round;stroke-linejoin:round" />
+			<text
+   x="18.48"
+   y="504.14999"
+   class="st2"
+   v:langID="1036"
+   id="text329"
+   style="font-size:10.00003242px;font-family:Calibri;fill:#000000"><v:paragraph
+   v:horizAlign="1" /><v:tabList />L’éventuel paiement permettant <tspan
+   x="13.859999"
+   dy="12.000039"
+   class="st3"
+   id="tspan321"
+   style="font-size:10.00003242px">de pouvoir demander une carte ou </tspan><tspan
+   x="14.78"
+   dy="12.000039"
+   class="st3"
+   id="tspan323"
+   style="font-size:10.00003242px">le fait de la marquer comme livrée </tspan><tspan
+   x="22.629999"
+   dy="12.000039"
+   class="st3"
+   id="tspan325"
+   style="font-size:10.00003242px">ne rente pas dans ce workflow </tspan><tspan
+   x="16.289999"
+   dy="12.000039"
+   class="st3"
+   id="tspan327"
+   style="font-size:10.00003242px">d</tspan>’édition et validation de la carte.</text>
+		</g>
+		<g
+   id="shape74-160"
+   v:mID="74"
+   v:groupContext="shape"
+   transform="translate(127.254,-365.575)">
+			<title
+   id="title332">Ellipse.74</title>
+			<desc
+   id="desc334">Caduque</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path336" />
+			<text
+   x="14.54"
+   y="548.94"
+   class="st2"
+   v:langID="1036"
+   id="text338"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Caduque</text>
+		</g>
+		<g
+   id="shape75-163"
+   v:mID="75"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(127.254,-387.307)">
+			<title
+   id="title341">Lien dynamique.75</title>
+			<desc
+   id="desc343">Dévérouiller</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="-63.8688"
+   cy="585.458"
+   width="49.8"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M0 567.67 C-19.13 567.67 -47.46 567.67 -61.81 583.02 C-74.39 596.49 -76.22 621.76 -76.49 641.95 L-76.49 642.31"
+   class="st13"
+   id="path345" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-605.45"
+   y="-68.6686"
+   width="39.9839"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect347" />
+			<text
+   x="-605.45"
+   y="-61.47"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text349"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Dévérouiller</text>
+		</g>
+		<g
+   id="shape76-171"
+   v:mID="76"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(149.931,-104.787)">
+			<title
+   id="title352">Lien dynamique.76</title>
+			<desc
+   id="desc354">Révoquer</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="4.05087"
+   cy="441.602"
+   width="41.15"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M4.25 567.67 C4.25 557.04 6.25 557.04 7.54 541.55 C9.86 513.78 9.92 436.2 9.92 316.69 L9.92 316.33"
+   class="st13"
+   id="path356" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-457.268"
+   y="-0.748867"
+   width="31.3319"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect358" />
+			<text
+   x="-457.27"
+   y="6.45"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text360"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Révoquer</text>
+		</g>
+		<g
+   id="shape77-178"
+   v:mID="77"
+   v:groupContext="shape"
+   transform="translate(182.753,-224.787)">
+			<title
+   id="title363">Étiquette.77</title>
+			<desc
+   id="desc365">La carte devient caduque lorsque la date de fin de droits de ...</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:prompt=""
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="75.7149"
+   cy="496.802"
+   width="151.43"
+   height="141.732" />
+			<path
+   d="M 16.852661,572.76546 H 151.68499 a 16.852872,16.413701 0 0 1 16.84987,-16.42162 V 435.55015 A 16.852872,16.413701 0 0 1 151.68499,419.13937 H 16.852661 A 16.852872,16.413701 0 0 1 0.0027931,435.55015 v 120.79369 a 16.852872,16.413701 0 0 1 16.8498679,16.42162 z"
+   class="st1"
+   id="path367"
+   inkscape:connector-curvature="0"
+   style="fill:#ffffff;stroke:#000000;stroke-width:0.26360163;stroke-linecap:round;stroke-linejoin:round" />
+			<text
+   x="15.74"
+   y="448.79999"
+   class="st2"
+   v:langID="1036"
+   id="text385"
+   style="font-size:10.00003242px;font-family:Calibri;fill:#000000"><v:paragraph
+   v:horizAlign="1" /><v:tabList />La carte devient caduque lorsque <tspan
+   x="31.279999"
+   dy="12.000039"
+   class="st3"
+   id="tspan369"
+   style="font-size:10.00003242px">la date de fin de droits de </tspan><tspan
+   x="31.529999"
+   dy="12.000039"
+   class="st3"
+   id="tspan371"
+   style="font-size:10.00003242px">l</tspan>’utilisateur est dépassée.<v:newlineChar /><tspan
+   x="19.84"
+   dy="12.000039"
+   class="st3"
+   id="tspan373"
+   style="font-size:10.00003242px">Si cette date change à nouveau </tspan><tspan
+   x="13.739998"
+   dy="12.000039"
+   class="st3"
+   id="tspan375"
+   style="font-size:10.00003242px">(</tspan>réinscription, nouveau contrat de <tspan
+   x="34.82"
+   dy="12.000039"
+   class="st3"
+   id="tspan377"
+   style="font-size:10.00003242px">vacation</tspan>, ...) la carte est <tspan
+   x="26.530001"
+   dy="12.000039"
+   class="st3"
+   id="tspan379"
+   style="font-size:10.00003242px">déverrouillée et se retrouve </tspan><tspan
+   x="19.75"
+   dy="12.000039"
+   class="st3"
+   id="tspan381"
+   style="font-size:10.00003242px">désactivée </tspan>. Elle peut alors être <tspan
+   x="31.110001"
+   dy="12.000039"
+   class="st3"
+   id="tspan383"
+   style="font-size:10.00003242px">réactivée par l</tspan>’utilisateur.</text>
+		</g>
+		<g
+   id="shape80-189"
+   v:mID="80"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(83.3169,-281.48)">
+			<title
+   id="title388">Lien dynamique.80</title>
+			<desc
+   id="desc390">Révoquer</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="58.1902"
+   cy="547.831"
+   width="41.15"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M0 567.67 C19.13 567.67 47.46 567.67 61.81 552.31 C74.39 538.85 76.22 513.57 76.49 493.38 L76.49 493.02"
+   class="st13"
+   id="path392" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-563.496"
+   y="53.3905"
+   width="31.3319"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect394" />
+			<text
+   x="-563.5"
+   y="60.59"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text396"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Révoquer</text>
+		</g>
+		<g
+   id="shape81-196"
+   v:mID="81"
+   v:groupContext="shape"
+   transform="translate(498.331,-458.173)">
+			<title
+   id="title399">Ellipse.81</title>
+			<desc
+   id="desc401">Demande annulée</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path403" />
+			<text
+   x="12.9"
+   y="542.94"
+   class="st2"
+   v:langID="1036"
+   id="text407"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Demande <tspan
+   x="16.2"
+   dy="1.2em"
+   class="st3"
+   id="tspan405">annulée</tspan></text>
+		</g>
+		<g
+   id="shape82-200"
+   v:mID="82"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(417.195,-494.551)">
+			<title
+   id="title410">Lien dynamique.82</title>
+			<desc
+   id="desc412">Annuler</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="59.8762"
+   cy="545.463"
+   width="40"
+   height="17.6036" />
+			<path
+   d="M0 560.58 C0 549.95 31.44 545.46 59.88 545.46 C80 545.46 98.61 547.71 107.77 552.79 L107.99 553.08"
+   class="st5"
+   id="path414" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="46.9544"
+   y="540.663"
+   width="25.8434"
+   height="9.59985"
+   class="st7"
+   id="rect416" />
+			<text
+   x="46.95"
+   y="547.86"
+   class="st8"
+   v:langID="1036"
+   id="text418"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Annuler</text>
+		</g>
+		<g
+   id="shape83-207"
+   v:mID="83"
+   v:groupContext="shape"
+   transform="translate(49.0394,-437.386)">
+			<title
+   id="title421">Ellipse.83</title>
+			<desc
+   id="desc423">Détruite</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="32.5984"
+   cy="545.936"
+   width="57.05"
+   height="38.0315" />
+			<path
+   d="M0 545.94 A32.5984 21.7323 0 0 1 65.2 545.94 A32.5984 21.7323 0 1 1 -0 545.94 Z"
+   class="st1"
+   id="path425" />
+			<text
+   x="15.68"
+   y="548.94"
+   class="st2"
+   v:langID="1036"
+   id="text427"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Détruite</text>
+		</g>
+		<g
+   id="shape84-210"
+   v:mID="84"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(159.852,-409.039)">
+			<title
+   id="title430">Lien dynamique.84</title>
+			<desc
+   id="desc432">Marquer comme détruite</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="0.576136"
+   cy="541.246"
+   width="92.78"
+   height="17.6036" />
+			<path
+   d="M0 567.67 C2.57 550.66 -8.91 534.87 -17.48 526.35 C-23.59 520.28 -28.23 517.9 -35.81 517.42 L-36.17 517.43"
+   class="st5"
+   id="path434" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-40.9076"
+   y="536.446"
+   width="82.9677"
+   height="9.59985"
+   class="st7"
+   id="rect436" />
+			<text
+   x="-40.91"
+   y="543.65"
+   class="st8"
+   v:langID="1036"
+   id="text438"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Marquer comme détruite</text>
+		</g>
+		<g
+   id="shape85-217"
+   v:mID="85"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(56.9655,-303.213)">
+			<title
+   id="title441">Lien dynamique.85</title>
+			<desc
+   id="desc443">Marquer comme détruite</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="-21.0617"
+   cy="488.073"
+   width="92.78"
+   height="17.6036"
+   transform="rotate(-90)" />
+			<path
+   d="M-6.25 567.67 C-22.1 561.05 -21.31 476.42 -22.15 439.95 C-22.97 404.46 -25.33 414.56 -17.69 412.68 L-17.33 412.65"
+   class="st5"
+   id="path445" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="-529.557"
+   y="-25.8614"
+   width="82.9677"
+   height="9.59985"
+   transform="rotate(-90)"
+   class="st7"
+   id="rect447" />
+			<text
+   x="-529.56"
+   y="-18.66"
+   transform="rotate(-90)"
+   class="st8"
+   v:langID="1036"
+   id="text449"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Marquer comme détruite</text>
+		</g>
+		<g
+   id="shape86-224"
+   v:mID="86"
+   v:groupContext="shape"
+   v:layerMember="0"
+   transform="translate(261.289,-472.819)">
+			<title
+   id="title452">Lien dynamique.86</title>
+			<desc
+   id="desc454">Annuler</desc>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="91.9649"
+   cy="499.568"
+   width="40"
+   height="17.6036" />
+			<path
+   d="M0 560.58 C-5.31 560.58 -6.54 560.84 -7.91 560.21 C-13.75 557.5 -22.21 538.55 1.94 523.62 C37.01 501.95 140.83        488.77 219.42 496.06 C292.21 502.81 343.34 527.12 328.84 546.99 C325.07 552.16 316.86 557.03 311.97 559.37        L311.62 559.41"
+   class="st5"
+   id="path456" />
+			<rect
+   v:rectContext="textBkgnd"
+   x="79.0431"
+   y="494.768"
+   width="25.8434"
+   height="9.59985"
+   class="st7"
+   id="rect458" />
+			<text
+   x="79.04"
+   y="501.97"
+   class="st8"
+   v:langID="1036"
+   id="text460"><v:paragraph
+   v:horizAlign="1" /><v:tabList />Annuler</text>
+		</g>
+		<g
+   id="shape88-231"
+   v:mID="88"
+   v:groupContext="shape"
+   transform="matrix(0.9998663,0,0,1.1095336,596.95339,-542.09133)">
+			<title
+   id="title463">Étiquette.88</title>
+			<desc
+   id="desc465">La demande de carte est annulée lorsque la date de fin de dro...</desc>
+			<v:userDefs>
+				<v:ud
+   v:nameU="visVersion"
+   v:prompt=""
+   v:val="VT0(15):26" />
+			</v:userDefs>
+			<v:textBlock
+   v:margins="rect(4,4,4,4)"
+   v:tabSpace="42.5197" />
+			<v:textRect
+   cx="47.817"
+   cy="532.787"
+   width="95.64"
+   height="69.7623" />
+			<path
+   d="M 10.506879,575.66439 H 94.594886 A 10.51044,11.58583 0 0 1 105.10177,564.07037 V 502.73231 A 10.51044,11.58583 0 0 1 94.594886,491.1504 H 10.506879 A 10.51044,11.58583 0 0 1 0,502.73231 v 61.33806 a 10.51044,11.58583 0 0 1 10.506879,11.59402 z"
+   class="st1"
+   id="path467"
+   inkscape:connector-curvature="0"
+   style="fill:#ffffff;stroke:#000000;stroke-width:0.27693647;stroke-linecap:round;stroke-linejoin:round" />
+			<text
+   x="8.1504002"
+   y="511.79001"
+   class="st2"
+   v:langID="1036"
+   id="text477"
+   style="font-size:10.00003242px;font-family:Calibri;fill:#000000"><v:paragraph
+   v:horizAlign="1" /><v:tabList />La demande de carte <tspan
+   x="10.8104"
+   dy="12.000039"
+   class="st3"
+   id="tspan469"
+   style="font-size:10.00003242px">est annulée lorsque </tspan><tspan
+   x="18.0404"
+   dy="12.000039"
+   class="st3"
+   id="tspan471"
+   style="font-size:10.00003242px">la date de fin de </tspan><tspan
+   x="8.6304007"
+   dy="12.000039"
+   class="st3"
+   id="tspan473"
+   style="font-size:10.00003242px">droits de l</tspan>’utilisateur <tspan
+   x="23.280401"
+   dy="12.000039"
+   class="st3"
+   id="tspan475"
+   style="font-size:10.00003242px">est dépassée</tspan>.</text>
+		</g>
 	</g>
 </svg>

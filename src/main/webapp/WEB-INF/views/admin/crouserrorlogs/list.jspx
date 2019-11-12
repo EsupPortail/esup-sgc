@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:spring-form="http://www.springframework.org/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:spring-form="http://www.springframework.org/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <h2>Erreurs CROUS</h2>
@@ -34,8 +34,44 @@
 		
 		
 	<div class="row">
-	  <div class="col-md-9"><!--  --></div>
-	  <div class="col-md-1">
+		<div class="col-md-1"><!--  --></div>
+		<div class="col-md-7">
+			<spring:url value="/admin/crouserrorlogs" var="searchUrl" />
+			<form action="${searchUrl}" role="search">
+			<div class="row well">
+				<div class="col-md-4">
+					<label>Bloquant</label>
+					<div class="input-group">
+						<spring-form:select path="searchCrousErrorLog.blocking"
+							cssClass="form-control">
+							<spring-form:option value=""></spring-form:option>>
+							<spring-form:option value="true">true</spring-form:option>
+							<spring-form:option value="false">false</spring-form:option>
+						</spring-form:select>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<label>ESUP-SGC Operation</label>
+					<div class="input-group">
+						<spring-form:select path="searchCrousErrorLog.esupSgcOperation"
+							cssClass="form-control">
+							<spring-form:option value=""></spring-form:option>>
+							<c:forEach items="${esupSgcOperations}" var="esupSgcOperation">
+								<spring-form:option value="${esupSgcOperation}">${esupSgcOperation}</spring-form:option>
+							</c:forEach>
+						</spring-form:select>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-success">Filtrer</button>
+					</span>
+				</div>
+				</div>
+			</form>
+		</div>
+		<div class="col-md-1"><!--  --></div>
+		<div class="col-md-1">
 		<spring:url value="/admin/crouserrorlogs?csv" var="csvUrl"/>
 		<a href="${csvUrl}" class="btn btn-primary">Export CSV</a>
 	  </div>
@@ -47,7 +83,8 @@
 	  </div>
 	</div>
 		
-    <page:list id="pl_org_esupportail_sgc_services_crous_CrousErrorLog" items="${crouserrorlogs}" z="n84WdWGHJIfxccPMFdIEq74xOX8=">
+
+	<page:list id="pl_org_esupportail_sgc_services_crous_CrousErrorLog" items="${crouserrorlogs}" z="n84WdWGHJIfxccPMFdIEq74xOX8=">
         <table:table data="${crouserrorlogs}" delete="false" id="l_org_esupportail_sgc_services_crous_CrousErrorLog" path="/admin/crouserrorlogs" update="false" view="true" z="user-managed">
             <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_card" link="true" linkPrefix="/manager/" property="cardId" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_services_crous_CrousErrorLog_userAccount" link="true" linkPrefix="/manager/?eppn=" property="userEppn" z="user-managed"/>

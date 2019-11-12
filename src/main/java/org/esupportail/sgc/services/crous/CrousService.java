@@ -13,6 +13,7 @@ import org.esupportail.sgc.services.ValidateService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ public class CrousService extends ValidateService {
 	
 	@Resource
 	CrousLogService crousLogService;
+	
+	@Resource 
+	UserInfoService userInfoService;
 	
 	@Override
 	public void validateInternal(Card card) {
@@ -162,6 +166,7 @@ public class CrousService extends ValidateService {
 		User user = User.findUser(eppn);
 		Card enabledCard = user.getEnabledCard();
 		user.setCrous(true);
+		userInfoService.updateUser(eppn, null);
 		if(enabledCard != null) {
 			this.validate(enabledCard);
 		}

@@ -23,6 +23,7 @@ import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.PatchIdentifier;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
@@ -86,6 +87,18 @@ public class CrousErrorLogController {
 		return appliConfigService.pageFooter();
 	}  
 	
+	@ModelAttribute("searchCrousErrorLog")
+	public CrousErrorLog getDefaultCrousErrorLog() {
+		CrousErrorLog searchCrousErrorLog =  new CrousErrorLog();
+		return searchCrousErrorLog;
+	}
+	
+	@ModelAttribute("esupSgcOperations")
+	public EsupSgcOperation[] getEsupSgcOperations() {
+		return CrousErrorLog.EsupSgcOperation.values();
+	}
+	
+	
 	@RequestMapping(method = RequestMethod.DELETE, produces = "text/html")
     public String purgeAllLogs() {
 		List<CrousErrorLog> logs = CrousErrorLog.findAllCrousErrorLogs();
@@ -96,7 +109,7 @@ public class CrousErrorLogController {
     }
 	
     @RequestMapping(produces = "text/html")
-    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, 
+    public String list(CrousErrorLog searchCrousErrorLog, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, 
     		@RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel, HttpServletRequest request) {
     	if(sortFieldName == null) {
     		sortFieldName = "date";
@@ -109,9 +122,10 @@ public class CrousErrorLogController {
     	}
         int sizeNo = size == null ? 10 : size.intValue();
         final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-        uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findCrousErrorLogEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-        float nrOfPages = (float) CrousErrorLog.countCrousErrorLogs() / sizeNo;
+        uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findCrousErrorLogs(searchCrousErrorLog, firstResult, sizeNo, sortFieldName, sortOrder));
+        float nrOfPages = (float) CrousErrorLog.countCrousErrorLogs(searchCrousErrorLog) / sizeNo;
         uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        uiModel.addAttribute("searchCrousErrorLog", searchCrousErrorLog);
         return "admin/crouserrorlogs/list";
     }
     
