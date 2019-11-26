@@ -10,6 +10,7 @@ import org.esupportail.sgc.domain.CrousPatchIdentifier;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.EsupNfcSgcJwsDevice;
 import org.esupportail.sgc.domain.Log;
+import org.esupportail.sgc.domain.NavBarApp;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.Prefs;
 import org.esupportail.sgc.domain.TemplateCard;
@@ -191,6 +192,30 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<NavBarApp, String> ApplicationConversionServiceFactoryBean.getNavBarAppToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.NavBarApp, java.lang.String>() {
+            public String convert(NavBarApp navBarApp) {
+                return new StringBuilder().append(navBarApp.getTitle()).append(' ').append(navBarApp.getUrl()).append(' ').append(navBarApp.getIcon()).append(' ').append(navBarApp.getIndex()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, NavBarApp> ApplicationConversionServiceFactoryBean.getIdToNavBarAppConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.esupportail.sgc.domain.NavBarApp>() {
+            public org.esupportail.sgc.domain.NavBarApp convert(java.lang.Long id) {
+                return NavBarApp.findNavBarApp(id);
+            }
+        };
+    }
+    
+    public Converter<String, NavBarApp> ApplicationConversionServiceFactoryBean.getStringToNavBarAppConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.domain.NavBarApp>() {
+            public org.esupportail.sgc.domain.NavBarApp convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), NavBarApp.class);
+            }
+        };
+    }
+    
     public Converter<PayboxTransactionLog, String> ApplicationConversionServiceFactoryBean.getPayboxTransactionLogToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.PayboxTransactionLog, java.lang.String>() {
             public String convert(PayboxTransactionLog payboxTransactionLog) {
@@ -309,6 +334,9 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getLogToStringConverter());
         registry.addConverter(getIdToLogConverter());
         registry.addConverter(getStringToLogConverter());
+        registry.addConverter(getNavBarAppToStringConverter());
+        registry.addConverter(getIdToNavBarAppConverter());
+        registry.addConverter(getStringToNavBarAppConverter());
         registry.addConverter(getPayboxTransactionLogToStringConverter());
         registry.addConverter(getIdToPayboxTransactionLogConverter());
         registry.addConverter(getStringToPayboxTransactionLogConverter());

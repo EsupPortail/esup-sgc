@@ -47,64 +47,23 @@
   			<sec:authorize access="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')">          
 				<menu:item id="su" label="SU" url="/manager/su" activeMenu="${role=='supervisor'}"/>
 			</sec:authorize>
-			 <sec:authorize access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_LIVREUR') or hasRole('ROLE_UPDATER') or hasRole('ROLE_VERSO')">
+			<c:if test="${not empty navBarApps}">
 			 <li class="dropdown">
 			 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apps<span class="caret"><!--  --></span></a>
 			 	<ul class="dropdown-menu">
-					<sec:authorize access="hasRole('ROLE_MANAGER')">
-					     <spring:url value="/manager/clientjws" var="clientJwsUrl"/>
-			    		 <li class="menuTools">
-			    		 	<a href="${clientJwsUrl}">
-			    		 		<span style="opacity: 0.5;" class="glyphicon glyphicon-qrcode"><!--  --></span>
-			    		 		Encodeur (Ancienne version)
-		    		 		</a>
-			    		 </li>
-			    		 <li class="menuTools">
-			    		 	<a href="${clientJwsUrl}/r2d2">
-				    		 	<span style="opacity: 0.5;background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
-				    		 	Encodeur - robot ZXP3 (Ancienne version)
-			    		 	</a>
-			    		 </li>
-			    		 <li class="menuTools">
-			    		 	<a href="/esupsgcclient-installer.exe">
-			    		 		<span class="glyphicon glyphicon-qrcode"><!--  --></span>
-			    		 		Nouvel encodeur [Installateur Win64]
-		    		 		</a>
-			    		 </li>			    		 
-			    		 <li class="menuTools">
-			    		 	<a href="/esupsgcclient-shib.jar">
-			    		 		<span class="glyphicon glyphicon-qrcode"><!--  --></span>
-			    		 		Nouvel encodeur [Java]
-		    		 		</a>
-			    		 </li>
-			    		 <li class="menuTools">
-			    		 	<a href="/esupsgcclient-r2d2-shib.jar">
-				    		 	<span style="background-size:15px;background-image: url('/resources/images/zebra-1.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
-				    		 	Nouvel encodeur - robot ZXP3 [Java]
-			    		 	</a>
-			    		 </li>
-					 </sec:authorize>
-					<li class="menuTools">
-						<a href="${esupNfcTagDroidApkUrl}">
-							<span style="background-size:15px;background-image: url('/resources/images/esupnfctagdroid.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
-							Lecteur NFC pour Android (apk)
-						</a>
-					</li>
-					<li class="menuTools">
-						<a href="${esupNfcTagDesktopJarUrl}">
-							<span style="background-size:15px;background-image: url('/resources/images/esupnfctagdesktop.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
-							Lecteur NFC pour Desktop (jar)
-						</a>
-					</li>
-					<li class="menuTools">
-						<a href="${esupNfcTagKeyboardJarUrl}">
-							<span style="background-size:15px;background-image: url('/resources/images/esupnfctagkeyboard.svg'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
-							Lecteur NFC pour emulation clavier (jar)
-						</a>
-					</li>
+					<c:forEach var="navBarApp" items="${navBarApps}">
+				    	<spring:url value="${navBarApp.url}" var="navBarAppUrl"/>
+						<spring:url value="${navBarApp.icon}" var="navBarAppIconUrl"/>
+				    	<li class="menuTools">
+				    		<a href="${navBarAppUrl}">
+					    	 	<span style="opacity: 0.5;background-size:15px;background-image: url('${navBarAppIconUrl}'); width: 15px; height: 15px;" class="glyphicon"><!--  --></span>
+					    		${navBarApp.title}
+				    		</a>
+				    	</li>
+			    	</c:forEach>
 	    		 </ul>
     		 </li>
-			 </sec:authorize>
+			 </c:if>
 			<menu:item id="test" label="Aide" url="#collapseHelp" bootstrapIcon="question-sign" menuClass="btn" collapse="collapse"/>
 		</menu:menu>
 		

@@ -17,20 +17,25 @@
  */
 package org.esupportail.sgc.web;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.esupportail.sgc.services.EsupNfcTagService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.esupportail.sgc.domain.NavBarApp;
+import org.esupportail.sgc.domain.NavBarApp.VisibleRole;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 public class ConfigInterceptor extends HandlerInterceptorAdapter {
-	
-	@Autowired(required = false)
-	EsupNfcTagService esupNfcTagService;
 	
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
@@ -49,19 +54,30 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
 
 			boolean viewNameStartsWithRedirect = isViewObject && modelAndView.getViewName().startsWith(UrlBasedViewResolver.REDIRECT_URL_PREFIX);
 
-			if (!isRedirectView && !viewNameStartsWithRedirect) {
-				
-				if(esupNfcTagService != null) {
-					String esupNfcTagDroidApkUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-apk";
-					modelAndView.addObject("esupNfcTagDroidApkUrl", esupNfcTagDroidApkUrl);
-					String esupNfcTagDesktopJarUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-jar";
-					modelAndView.addObject("esupNfcTagDesktopJarUrl", esupNfcTagDesktopJarUrl);
-					String esupNfcTagKeyboardJarUrl = esupNfcTagService.getWebUrl() + "/nfc-index/download-keyb";
-					modelAndView.addObject("esupNfcTagKeyboardJarUrl", esupNfcTagKeyboardJarUrl);
-				}
-				
-				// modelAndView.addObject("versionEsuSgc", AppliVersion.getCacheVersion());
-				
+			if (!isRedirectView && !viewNameStartsWithRedirect) {		
+		        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+				if(authentication != null) {
+					List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
+					Collection<VisibleRole> roles = new HashSet<NavBarApp.VisibleRole>();
+				    if(authorities.contains(authorities.contains(new SimpleGrantedAuthority("ROLE_CONSULT")))) {
+				    	roles.add(VisibleRole.CONSULT);
+				    }
+				    if(authorities.contains(new SimpleGrantedAuthority("ROLE_MANAGER"))) {
+				    	roles.add(VisibleRole.MANAGER);
+				    }
+				    if(authorities.contains(new SimpleGrantedAuthority("ROLE_UPDATER"))) {
+				    	roles.add(VisibleRole.UPDATER);
+				    }
+				    if(authorities.contains(new SimpleGrantedAuthority("ROLE_VERSO"))) {
+				    	roles.add(VisibleRole.VERSO);
+				    }
+				    if(authorities.contains(new SimpleGrantedAuthority("ROLE_LIVREUR"))) {
+				    	roles.add(VisibleRole.LIVREUR);
+				    }
+				    if(!roles.isEmpty()) {
+				    	modelAndView.addObject("navBarApps", NavBarApp.findNavBarAppsByVisible4role(roles));
+				    }
+				}	
 			}
 		
 			if(request.getParameter("size")!=null) {

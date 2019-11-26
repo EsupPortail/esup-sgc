@@ -30,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.4.x";
+	final static String currentEsupSgcVersion = "1.5.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -244,6 +244,32 @@ public class DbToolService {
 				connection.close();
 				
 	    		esupSgcVersion = "1.4.x";
+			}
+			if("1.4.x".equals(esupSgcVersion)) {
+				
+				String sqlUpdate = "";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/esupnfctagdroid.svg', 'Lecteur NFC pour Android (apk)', 'https://play.google.com/store/apps/details?id=org.esupportail.esupnfctagdroid', 3, 5);";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/qrcode.svg', 'Installateur Win64 des clients ESUP-SGC', '/esup-sgc-client-installer.zip', 3, 0);";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/esupnfctagdesktop.svg', 'Lecteur NFC pour Desktop (jar)', 'https://esup-nfc-tag.univ-ville.fr/nfc-index/download-jar', 2, 6);";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/esupnfctagkeyboard.svg', 'Lecteur NFC pour emulation clavier (jar)', 'https://esup-nfc-tag.univ-ville.fr/nfc-index/download-keyb', 3, 7);";
+				sqlUpdate += "INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'CONSULT' FROM nav_bar_app);";
+				sqlUpdate += "INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'UPDATER' FROM nav_bar_app);";
+				sqlUpdate += "INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'VERSO' FROM nav_bar_app);";
+				sqlUpdate += "INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'LIVREUR' FROM nav_bar_app);";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/zebra-1.svg', 'Nouvel encodeur - robot ZXP3 [Java]', '/esupsgcclient-r2d2-shib.jar', 0, 4);";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/qrcode.svg', 'Nouvel encodeur [Java]', '/esupsgcclient-shib.jar', 1, 3);";
+				sqlUpdate += "INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'MANAGER' FROM nav_bar_app);";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (1179954, '/resources/images/qrcode.svg', 'Encodeur (Ancienne version)', '/manager/clientjws', 5, 1);";
+				sqlUpdate += "INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (1179955, '/resources/images/zebra-1.svg', 'Encodeur - robot ZXP3 (Ancienne version)', '/manager/clientjws/r2d2', 0, 1);";
+
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+	    		esupSgcVersion = "1.5.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

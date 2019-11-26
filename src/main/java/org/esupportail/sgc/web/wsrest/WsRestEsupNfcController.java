@@ -662,6 +662,17 @@ public class WsRestEsupNfcController {
 		return cardIdsService.isCrousEncodeEnabled();
 	}
 	
+	
+	/**
+	 * Exemple :
+	 * curl http://localhost:8080/wsrest/nfc/generateAuthToken?eppnInit=bonamvin@univ-rouen.fr
+	 */
+	@RequestMapping(value = "/generateAuthToken", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String generateAuthToken(@RequestParam String eppnInit) {
+		return clientJWSController.generateAuthToken(eppnInit);
+	}
+	
 }
 
 

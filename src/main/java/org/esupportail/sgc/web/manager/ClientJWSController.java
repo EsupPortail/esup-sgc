@@ -106,7 +106,7 @@ public class ClientJWSController {
 		
 	}
 	
-	private String generateAuthToken(String eppnInit) {
+	public String generateAuthToken(String eppnInit) {
 		String authToken = new BigInteger(130, random).toString(32);
 		// JWS Application is not multi-session for one user  
 		// -> only one authToken by user !!

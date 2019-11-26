@@ -14,6 +14,7 @@
             <menu:category id="c_appliconfig" render="false" z="user-managed">
                 <menu:item id="i_appliconfig_new" messageCode="global_menu_new" url="/admin/config?form" z="user-managed"/>
             </menu:category>
+            <menu:item activeMenu="${active=='navbar'}" id="i_navbarapp_list" label="NavBarApp" url="/admin/navbars?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='nfc'}" id="i_esupnfcsgcjwsdevice_list" label="Esup-nfc" url="/admin/jwsdevices?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:category id="c_esupnfcsgcjwsdevice" render="false" z="user-managed"/>
             <menu:category id="c_log" render="false" z="user-managed">
@@ -35,10 +36,10 @@
             <menu:item activeMenu="${active=='actionmsgs'}" id="i_cardactionmessage_list" label="Messages" url="/admin/actionmessages?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='prefs'}" id="i_prefs_list" label="Préférences" url="/admin/prefses?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='template'}" id="i_templatecard_list" label="Thèmes cartes" url="/admin/templatecards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
-        	<menu:item activeMenu="${active=='crous'}" id="i_croussmartcard_list" label="Cartes Crous" url="/admin/crouscards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
-        	<menu:item activeMenu="${active=='crouspatchids'}" id="i_crouspatchidentifier_list" label="Crous patch identifiants" url="/admin/crouspatchids?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
-        	<menu:item activeMenu="${active=='crousError'}" id="i_crouserrorlog_list" label="Erreurs CROUS" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
-        	<menu:item activeMenu="${active=='purge'}" id="i_purge_list" label="Purge" url="/admin/purge" z="user-managed"/>
+            <menu:item activeMenu="${active=='crous'}" id="i_croussmartcard_list" label="Cartes Crous" url="/admin/crouscards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+            <menu:item activeMenu="${active=='crouspatchids'}" id="i_crouspatchidentifier_list" label="Crous patch identifiants" url="/admin/crouspatchids?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+            <menu:item activeMenu="${active=='crousError'}" id="i_crouserrorlog_list" label="Erreurs CROUS" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+            <menu:item activeMenu="${active=='purge'}" id="i_purge_list" label="Purge" url="/admin/purge" z="user-managed"/>
         </sec:authorize>
         <menu:category id="c_cardactionmessage" render="false" z="user-managed">
             <menu:item id="i_cardactionmessage_new" messageCode="global_menu_new" url="/admin/actionmessages?form" z="pZnZ6jYKfu0DMR+I0O3eDphyeOw="/>
@@ -48,7 +49,7 @@
         <menu:item id="i_croussmartcard_new" messageCode="global_menu_new" render="false" url="/admin/crouscards?form" z="user-managed"/>
         <menu:category id="c_crouspatchidentifier" render="false" z="user-managed">
             <menu:item id="i_crouspatchidentifier_new" messageCode="global_menu_new" url="/admin/crouspatchids?form" z="X2zUWohYMo+2SUMCHsTBNkDAp8E="/>
-        </menu:category> 
+        </menu:category>
         <menu:category id="c_prefs" render="false" z="user-managed">
             <menu:item id="i_prefs_list" messageCode="global_menu_list" url="/admin/prefses?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item id="i_prefs_new" messageCode="global_menu_new" url="/prefses?form" z="yQY2P8SHwnz4tytRPPu/4L37fXM="/>
@@ -56,6 +57,9 @@
         <menu:category id="c_templatecard" render="false" z="user-managed">
             <menu:item id="i_templatecard_new" messageCode="global_menu_new" url="/templatecards?form" z="avwsxpm3MA70XNyXMi6kaUAa20c="/>
             <menu:item id="i_templatecard_list" messageCode="global_menu_list" url="/templatecards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="SE+xt25+zpm7NBPhR2m1gIPnD+0="/>
+        </menu:category>
+        <menu:category id="c_navbarapp" render="false" z="user-managed">
+            <menu:item id="i_navbarapp_new" messageCode="global_menu_new" url="/admin/navbars?form" z="1sCButuzxnX7KOFIeTXam4ttgP4="/>
         </menu:category>
     </menu:menu>
 </div>

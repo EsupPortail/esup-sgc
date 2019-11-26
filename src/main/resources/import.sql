@@ -17,7 +17,7 @@ CREATE FUNCTION textsearchable_card_trigger() RETURNS trigger AS $$ begin new.te
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON card FOR EACH ROW EXECUTE PROCEDURE textsearchable_card_trigger();
 CREATE FUNCTION textsearchable_user_account_trigger() RETURNS trigger AS $$ begin update card set textsearchable_index_col = setweight(to_tsvector('simple', coalesce(card.eppn,'')), 'B') || setweight(to_tsvector('simple', replace(coalesce(new.name,''),'-',' ')), 'A') || setweight(to_tsvector('simple', replace(coalesce(new.firstname,''),'-',' ')), 'B') || setweight(to_tsvector('simple', coalesce(new.email,'')), 'B') || setweight(to_tsvector('simple', replace(coalesce(new.supann_emp_id,''),'-',' ')), 'B') || setweight(to_tsvector('simple', replace(coalesce(new.supann_etu_id,''),'-',' ')), 'B') || setweight(to_tsvector('simple', replace(coalesce(new.supann_entite_affectation_principale,''),'-',' ')), 'C') || setweight(to_tsvector('simple', replace(coalesce(card.csn,''),'-',' ')), 'C') where card.eppn=new.eppn; return new; end $$ LANGUAGE plpgsql;
 CREATE TRIGGER tsvectorupdateUser AFTER UPDATE ON user_account FOR EACH ROW EXECUTE PROCEDURE textsearchable_user_account_trigger();
-INSERT INTO appli_version (id, esup_sgc_version, version) SELECT nextval('hibernate_sequence'), '1.4.x', '1' WHERE NOT EXISTS (SELECT * FROM appli_version);
+INSERT INTO appli_version (id, esup_sgc_version, version) SELECT nextval('hibernate_sequence'), '1.5.x', '1' WHERE NOT EXISTS (SELECT * FROM appli_version);
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'SYNCHRONIC_EXPORT_CSV_FILE_NAME', 'synchronic.csv', 'Nom du fichier CSV Synchronic', 'TEXT');
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'TIL_EXPORT_CSV_FILE_NAME', 'til.csv', 'Nom du fichier CSV d''export Til', 'TEXT');
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'P2S_EXPORT_CSV_NB_LINES_PER_FILE', '1000', 'Nombre de lignes par fichier pour l''export CSV P2S.', 'TEXT');
@@ -67,3 +67,16 @@ INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hi
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'PAIEMENT_ALERT_MAILBODY', '', 'Contenu du mail alertant un paiement paybox', 'TEXT');
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'CROUS_INE_AS_IDENTIFIER', 'true', 'Si true, l''INE / supannCodeINE est utilisé comme identifiant crous/izly quand celui-ci est renseigné, si false ou si le supannCodeINE n''est pas renseigné on utilise l''EPPN.', 'BOOLEAN');
 INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'ESUP_SGC_ETABLISSEMENT_NAME', '', 'Nom de votre ESUP-SGC : sert notamment à la construction du user-agent utilisé dans les requêtes REST (les caractères spéciaux y seront ignorés).', 'TEXT');
+INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/esupnfctagdroid.svg', 'Lecteur NFC pour Android (apk)', 'https://play.google.com/store/apps/details?id=org.esupportail.esupnfctagdroid', 3, 5);
+INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/qrcode.svg', 'Installateur Win64 des clients ESUP-SGC', '/esup-sgc-client-installer.zip', 3, 0);
+INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/esupnfctagdesktop.svg', 'Lecteur NFC pour Desktop (jar)', 'https://esup-nfc-tag.univ-ville.fr/nfc-index/download-jar', 2, 6);
+INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/esupnfctagkeyboard.svg', 'Lecteur NFC pour emulation clavier (jar)', 'https://esup-nfc-tag.univ-ville.fr/nfc-index/download-keyb', 3, 7);
+INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'CONSULT' FROM nav_bar_app);
+INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'UPDATER' FROM nav_bar_app);
+INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'VERSO' FROM nav_bar_app);
+INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'LIVREUR' FROM nav_bar_app);
+INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/zebra-1.svg', 'Encodeur - robot ZXP3 [Java]', '/esupsgcclient-r2d2-shib.jar', 0, 4);
+INSERT INTO public.nav_bar_app (id, icon, title, url, version, index) VALUES (nextval('hibernate_sequence'), '/resources/images/qrcode.svg', 'Encodeur [Java]', '/esupsgcclient-shib.jar', 1, 3);
+INSERT INTO nav_bar_app_visible4role (SELECT nav_bar_app.id, 'MANAGER' FROM nav_bar_app);
+
+
