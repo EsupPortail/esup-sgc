@@ -207,7 +207,7 @@ public class CardEtatService {
 			etatsAvailable.remove(Etat.REQUEST_CHECKED);
 			card.setEtatsAvailable(etatsAvailable);
 		}
-		if(Etat.ENABLED.equals(card.getEtat()) && (card.getExternal() || !card.getUser().isEditable()) || hasRequestCard(card.getEppn())){
+		if(Etat.ENABLED.equals(card.getEtat()) && (card.getExternal() || !card.getUser().isEditable() || hasRequestCard(card.getEppn()))){
 			List<Etat> etatsAvailable = new ArrayList<Etat>(card.getEtatsAvailable());
 			etatsAvailable.remove(Etat.RENEWED);
 			card.setEtatsAvailable(etatsAvailable);

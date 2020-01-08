@@ -119,6 +119,7 @@ public class ClientJWSController {
 				}
 			}
 			authTokens.put(authToken, eppnInit);
+			log.info(String.format("New authToken for %s : %s", eppnInit, authToken)); 
 		}
 		return authToken;
 	}

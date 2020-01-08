@@ -133,7 +133,7 @@ public class ResynchronisationUserService {
 							externalCard.getPhotoFile().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
 						}
 						userInfoService.setPrintedInfo(externalCard);
-						if (Etat.DISABLED.equals(externalCard.getEtat()) || Etat.CADUC.equals(externalCard.getEtat())) {
+						if (Etat.DISABLED.equals(externalCard.getEtat()) || Etat.CADUC.equals(externalCard.getEtat()) && (dummyUser.getDueDate() == null || dummyUser.getDueDate().after(new Date()))) {
 							userInfoService.setAdditionalsInfo(user, null);
 							cardEtatService.setCardEtat(externalCard, Etat.ENABLED, null, null, false, true);
 						}

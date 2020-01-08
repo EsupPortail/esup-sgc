@@ -221,8 +221,20 @@ public class Card {
         return getUser().isEditable();
     }
 
+    public String getName() {
+        return getUser().getName();
+    }
+    
+    public String getFirstname() {
+        return getUser().getFirstname();
+    }
+
     public String getDisplayName() {
         return getUser().getDisplayName();
+    }
+
+    public Date getBirthday() {
+        return getUser().getBirthday();
     }
 
     public String getSupannEmpId() {
@@ -233,6 +245,10 @@ public class Card {
         return getUser().getSupannEtuId();
     }
 
+    public String getSupannCodeINE() {
+        return getUser().getSupannCodeINE();
+    }
+    
     public User getUser() {
         return getUserAccount();
     }
