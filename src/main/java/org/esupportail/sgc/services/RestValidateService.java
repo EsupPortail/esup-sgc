@@ -13,6 +13,10 @@ import org.springframework.web.client.RestTemplate;
 
 public class RestValidateService extends ValidateService {
 	
+	private String CSN = "%csn%";
+	
+	private String EPPN = "%eppn%";
+	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	String validateRestUrl = null;
@@ -50,7 +54,7 @@ public class RestValidateService extends ValidateService {
 		if(restUrl == null || restUrl.isEmpty()) {
 			log.warn("RestValidateService [" + this.getBeanName() + "] configured with no restUrl ?!");
 		} else {
-			String url = String.format(restUrl, card.getEppn(), card.getCsn()); 
+			String url = String.format(restUrl, card.getEppn(), card.getCsn());
 			log.debug("Try to send a get here : " + url); 
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
