@@ -181,7 +181,6 @@ public class ApiCrousService {
 				RightHolder oldRightHolder = getRightHolder(crousIdentifier, eppn, esupSgcOperation);
 				log.info("Getting RightHolder for " + crousIdentifier + " : " + oldRightHolder.toString());
 				RightHolder newRightHolder = computeEsupSgcRightHolder(user, true);
-				// hack dueDate can't be past in IZLY 
 				if(log.isTraceEnabled()) {
 					log.trace(String.format("newRightHolder.fieldWoDueDateEquals(oldRightHolder) : %s", newRightHolder.fieldWoDueDateEquals(oldRightHolder)));
 					log.trace(String.format("mustUpdateDueDateCrous(oldRightHolder, eppn) : %s", mustUpdateDueDateCrous(oldRightHolder, eppn)));
@@ -200,7 +199,7 @@ public class ApiCrousService {
 							this.patchIdentifier(patchIdentifier);
 						} catch(CrousHttpClientErrorException clientEx) {
 							clientEx.setEsupSgcOperation(esupSgcOperation);
-							log.warn("patchIdentifier on " + eppn + " falied : " + clientEx.getErrorBodyAsJson());
+							log.warn("patchIdentifier on " + eppn + " failed : " + clientEx.getErrorBodyAsJson());
 							crousLogService.logErrorCrous(clientEx);	
 						} 
 					}

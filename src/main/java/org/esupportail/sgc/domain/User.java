@@ -1,5 +1,6 @@
 package org.esupportail.sgc.domain;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,8 +33,10 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.security.SgcRoleHierarchy;
+import org.esupportail.sgc.services.crous.RightHolder;
 import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -293,235 +296,103 @@ public class User {
 	}
 	
 
-	public boolean fieldsEquals(Object obj) {
+	public String getFieldNotEquals(Object obj) {
 		if (this == obj)
-			return true;
+			return null;
 		if (obj == null)
-			return false;
+			return "null";
 		if (getClass() != obj.getClass())
-			return false;
+			return "null";
 		User other = (User) obj;
-		if (address == null) {
-			if (other.address != null)
-				{log.trace("address <>"); return false;}
-		} else if (!address.equals(other.address))
-			{log.trace("address <>"); return false;}
+
 		if (birthday == null) {
-			if (other.birthday != null)
-				{log.trace("birthday <>"); return false;}
+			if (other.birthday != null) {
+				return "birthday";
+			}
 		} 
 		// compare only day (without time) for birthday 
-		else if (DateTimeComparator.getDateOnlyInstance().compare(birthday, other.birthday) != 0)
-			{log.trace("birthday <>"); return false;}
-		if (cnousReferenceStatut != other.cnousReferenceStatut)
-			{log.trace("cnousReferenceStatut <>"); return false;}
-		if (crous == null) {
-			if (other.crous != null)
-				{log.trace("crous <>"); return false;}
-		} else if (!crous.equals(other.crous))
-			{log.trace("crous <>"); return false;}
-		if (difPhoto == null) {
-			if (other.difPhoto != null)
-				{log.trace("difPhoto <>"); return false;}
-		} else if (!difPhoto.equals(other.difPhoto))
-			{log.trace("difPhoto <>"); return false;}
+		else if (DateTimeComparator.getDateOnlyInstance().compare(birthday, other.birthday) != 0) {
+			return "birthday";
+		}
+
 		if (dueDate == null) {
-			if (other.dueDate != null)
-				{log.trace("dueDate <>"); return false;}
-		} else if (!dueDate.equals(other.dueDate))
-			{log.trace("dueDate <>"); return false;}
-		if (editable != other.editable)
-			{log.trace("editable <>"); return false;}
-		if (eduPersonPrimaryAffiliation == null) {
-			if (other.eduPersonPrimaryAffiliation != null)
-				{log.trace("eduPersonPrimaryAffiliation <>"); return false;}
-		} else if (!eduPersonPrimaryAffiliation.equals(other.eduPersonPrimaryAffiliation))
-			{log.trace("eduPersonPrimaryAffiliation <>"); return false;}
-		if (email == null) {
-			if (other.email != null)
-				{log.trace("email <>"); return false;}
-		} else if (!email.equals(other.email))
-			{log.trace("email <>"); return false;}
-		if (eppn == null) {
-			if (other.eppn != null)
-				{log.trace("eppn <>"); return false;}
-		} else if (!eppn.equals(other.eppn))
-			{log.trace("eppn <>"); return false;}
-		if (europeanStudentCard == null) {
-			if (other.europeanStudentCard != null)
-				{log.trace("europeanStudentCard <>"); return false;}
-		} else if (!europeanStudentCard.equals(other.europeanStudentCard))
-			{log.trace("europeanStudentCard <>"); return false;}
+			if (other.dueDate != null) {
+				return "dueDate";
+			}
+		} else if (!dueDate.equals(other.dueDate)) {
+			return "dueDate";
+		}
+		
 		if (externalCard == null) {
-			if (other.externalCard != null)
-				{log.trace("externalCard <>"); return false;}
-		} else if (!externalCard.equals(other.externalCard))
-			{log.trace("externalCard <>"); return false;}
-		if (firstname == null) {
-			if (other.firstname != null)
-				{log.trace("firstname <>"); return false;}
-		} else if (!firstname.equals(other.firstname))
-			{log.trace("firstname <>"); return false;}
-		if (idCompagnyRate == null) {
-			if (other.idCompagnyRate != null)
-				{log.trace("idCompagnyRate <>"); return false;}
-		} else if (!idCompagnyRate.equals(other.idCompagnyRate))
-			{log.trace("idCompagnyRate <>"); return false;}
-		if (idRate == null) {
-			if (other.idRate != null)
-				{log.trace("idRate <>"); return false;}
-		} else if (!idRate.equals(other.idRate))
-			{log.trace("idRate <>"); return false;}
-		if (indice == null) {
-			if (other.indice != null)
-				{log.trace("indice <>"); return false;}
-		} else if (!indice.equals(other.indice))
-			{log.trace("indice <>"); return false;}
-		if (institute == null) {
-			if (other.institute != null)
-				{log.trace("institute <>"); return false;}
-		} else if (!institute.equals(other.institute))
-			{log.trace("institute <>"); return false;}
-		if (name == null) {
-			if (other.name != null)
-				{log.trace("name <>"); return false;}
-		} else if (!name.equals(other.name))
-			{log.trace("name <>"); return false;}
-		if (nbCards == null) {
-			if (other.nbCards != null)
-				{log.trace("nbCards <>"); return false;}
-		} else if (!nbCards.equals(other.nbCards))
-			{log.trace("nbCards <>"); return false;}
-		if (recto1 == null) {
-			if (other.recto1 != null)
-				{log.trace("recto1 <>"); return false;}
-		} else if (!recto1.equals(other.recto1))
-			{log.trace("recto1 <>"); return false;}
-		if (recto2 == null) {
-			if (other.recto2 != null)
-				{log.trace("recto2 <>"); return false;}
-		} else if (!recto2.equals(other.recto2))
-			{log.trace("recto2 <>"); return false;}
-		if (recto3 == null) {
-			if (other.recto3 != null)
-				{log.trace("recto3 <>"); return false;}
-		} else if (!recto3.equals(other.recto3))
-			{log.trace("recto3 <>"); return false;}
-		if (recto4 == null) {
-			if (other.recto4 != null)
-				{log.trace("recto4 <>"); return false;}
-		} else if (!recto4.equals(other.recto4))
-			{log.trace("recto4 <>"); return false;}
-		if (recto5 == null) {
-			if (other.recto5 != null)
-				{log.trace("recto5 <>"); return false;}
-		} else if (!recto5.equals(other.recto5))
-			{log.trace("recto5 <>"); return false;}
-		if (recto6 == null) {
-			if (other.recto6 != null)
-				{log.trace("recto6 <>"); return false;}
-		} else if (!recto6.equals(other.recto6))
-			{log.trace("recto6 <>"); return false;}
-		if (recto7 == null) {
-			if (other.recto7 != null)
-				{log.trace("recto7 <>"); return false;}
-		} else if (!recto7.equals(other.recto7))
-			{log.trace("recto7 <>"); return false;}
-		if (requestFree != other.requestFree)
-			{log.trace("requestFree <>"); return false;}
-		if (rneEtablissement == null) {
-			if (other.rneEtablissement != null)
-				{log.trace("rneEtablissement <>"); return false;}
-		} else if (!rneEtablissement.equals(other.rneEtablissement))
-			{log.trace("requestFree <>"); return false;}
-		if (secondaryId == null) {
-			if (other.secondaryId != null)
-				{log.trace("secondaryId <>"); return false;}
-		} else if (!secondaryId.equals(other.secondaryId))
-			{log.trace("secondaryId <>"); return false;}
-		if (supannCodeINE == null) {
-			if (other.supannCodeINE != null)
-				{log.trace("supannCodeINE <>"); return false;}
-		} else if (!supannCodeINE.equals(other.supannCodeINE))
-			{log.trace("supannCodeINE <>"); return false;}
-		if (supannEmpId == null) {
-			if (other.supannEmpId != null)
-				{log.trace("supannEmpId <>"); return false;}
-		} else if (!supannEmpId.equals(other.supannEmpId))
-			{log.trace("supannEmpId <>"); return false;}
-		if (supannEntiteAffectationPrincipale == null) {
-			if (other.supannEntiteAffectationPrincipale != null)
-				{log.trace(" <>"); return false;}
-		} else if (!supannEntiteAffectationPrincipale.equals(other.supannEntiteAffectationPrincipale))
-			{log.trace("supannEntiteAffectationPrincipale <>"); return false;}
-		if (supannEtuId == null) {
-			if (other.supannEtuId != null)
-				{log.trace("supannEtuId <>"); return false;}
-		} else if (!supannEtuId.equals(other.supannEtuId))
-			{log.trace("supannEtuId <>"); return false;}
-		if (userType == null) {
-			if (other.userType != null)
-				{log.trace("userType <>"); return false;}
-		} else if (!userType.equals(other.userType))
-			{log.trace("userType <>"); return false;}
-		if (verso1 == null) {
-			if (other.verso1 != null)
-				{log.trace("verso1 <>"); return false;}
-		} else if (!verso1.equals(other.verso1))
-			{log.trace("verso1 <>"); return false;}
-		if (verso2 == null) {
-			if (other.verso2 != null)
-				{log.trace("verso2 <>"); return false;}
-		} else if (!verso2.equals(other.verso2))
-			{log.trace("verso2 <>"); return false;}
-		if (verso3 == null) {
-			if (other.verso3 != null)
-				{log.trace("verso3 <>"); return false;}
-		} else if (!verso3.equals(other.verso3))
-			{log.trace("verso3 <>"); return false;}
-		if (verso4 == null) {
-			if (other.verso4 != null)
-				{log.trace("verso4 <>"); return false;}
-		} else if (!verso4.equals(other.verso4))
-			{log.trace("verso4 <>"); return false;}
-		if (verso5 == null) {
-			if (other.verso5 != null)
-				{log.trace("verso5 <>"); return false;}
-		} else if (!verso5.equals(other.verso5))
-			{log.trace("verso5 <>"); return false;}
-		if (verso6 == null) {
-			if (other.verso6 != null)
-				{log.trace("verso6 <>"); return false;}
-		} else if (!verso6.equals(other.verso6))
-			{log.trace("verso6 <>"); return false;}
-		if (verso7 == null) {
-			if (other.verso7 != null)
-				{log.trace("verso7 <>"); return false;}
-		} else if (!verso7.equals(other.verso7))
-			{log.trace("verso7 <>"); return false;}
-		if (templateKey == null) {
-			if (other.templateKey != null)
-				{log.trace("templateKey <>"); return false;}
-		} else if (!templateKey.equals(other.templateKey))
-			{log.trace("templateKey <>"); return false;}
-		if (blockUserMsg == null) {
-			if (other.blockUserMsg != null)
-				{log.trace("blockUserMsg <>"); return false;}
-		} else if (!blockUserMsg.equals(other.blockUserMsg))
-			{log.trace("blockUserMsg <>"); return false;}
-		if (academicLevel == null) {
-			if (other.academicLevel != null)
-				{log.trace("academicLevel <>"); return false;}
-		} else if (!academicLevel.equals(other.academicLevel))
-			{log.trace("academicLevel <>"); return false;}
+			if (other.externalCard != null) {
+				return "externalCard";
+			}
+		} else if (!externalCard.equals(other.externalCard)) {
+			return "externalCard";
+		}
+		
 		if (this.getDefaultPhoto() == null || this.getDefaultPhoto().getBigFile() == null || this.getDefaultPhoto().getBigFile().getMd5() == null) {
-			if (!(other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || other.getDefaultPhoto().getBigFile().getMd5() == null))
-				{log.trace("defaultPhoto <>"); return false;}
-		} else if (other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || !this.getDefaultPhoto().getBigFile().getMd5().equals(other.getDefaultPhoto().getBigFile().getMd5()))
-			{log.trace("defaultPhoto <>"); return false;}
-		return true;
+			if (!(other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || other.getDefaultPhoto().getBigFile().getMd5() == null)) {
+				return "defaultPhoto";
+			}
+		} else if (other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || !this.getDefaultPhoto().getBigFile().getMd5().equals(other.getDefaultPhoto().getBigFile().getMd5())) {
+			return "defaultPhoto";
+		}
+		
+		for(String varStringName : Arrays.asList(new String[] {"address", "externalAddress", "cnousReferenceStatut", "crous", "difPhoto", "editable", "eduPersonPrimaryAffiliation", "email",
+				"eppn", "europeanStudentCard", "firstname", "idCompagnyRate", "idRate", "indice", "institute", "name", 
+				"recto1", "recto2", "recto3", "recto4", "recto5", "recto6", "recto7", 
+				"freeField1", "freeField2", "freeField3", 
+				"requestFree", "rneEtablissement", "secondaryId", "supannCodeINE", "supannEmpId", "supannEntiteAffectationPrincipale", "supannEtuId", "userType", 
+				"verso1", "verso2", "verso3", "verso4", "verso5", "verso6", "verso7", 
+				"templateKey", "blockUserMsg", "academicLevel"})) {
+			if(!this.checkEqualsVar(varStringName, other)) {
+				return varStringName;
+			}
+		}
+
+		return null;
 	}
 
+	
+	private boolean checkEqualsVar(String varStringName, User other) {	
+		boolean isEquals = true;
+		try {
+			Field f = User.class.getDeclaredField(varStringName);
+			f.setAccessible(true);
+
+			Object thisVarObj = f.get(this);
+			Object otherVarObj = f.get(other);
+
+			if (thisVarObj == null && otherVarObj != null) {
+				if(!otherVarObj.toString().isEmpty()) {
+					isEquals = false;
+				}
+			}
+			if(thisVarObj != null && otherVarObj == null) {
+				if(!thisVarObj.toString().isEmpty()) {
+					isEquals = false;
+				}
+			}
+			if (thisVarObj != null && otherVarObj != null) {
+				String thisVar = thisVarObj.toString();
+				String otherVar = otherVarObj.toString();
+				thisVar = thisVar.toLowerCase();
+				otherVar = otherVar.toLowerCase();
+				thisVar = StringUtils.stripAccents(thisVar);
+				otherVar = StringUtils.stripAccents(otherVar);
+				if (!thisVar.equals(otherVar)) {
+					isEquals = false;
+				}
+			}
+			if(!isEquals) {
+				log.debug(String.format("Users [%s] not synchronized because %s is not synchronized : %s <> %s", this.getEppn(), varStringName, thisVarObj, otherVarObj));
+			}
+		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+			log.warn(String.format("Error when trying to compare %s for %s ans %s [%s]", varStringName, this, other, this.getEppn()));
+		}
+		return isEquals;
+	}
 
     public static List<Object> countNbCrous(String userType) {
         EntityManager em = User.entityManager();
@@ -769,6 +640,11 @@ public class User {
         		+ "and c.etat = 'ENABLED'", User.class);
         return q.getResultList();
 	}
+	
+    public static TypedQuery<User> findAllUsersQuery() {
+    	EntityManager em = User.entityManager();
+        return em.createQuery("SELECT o FROM User o", User.class);
+    }
     
 }
 

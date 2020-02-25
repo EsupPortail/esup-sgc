@@ -82,6 +82,8 @@ public class ManagerCardController {
 	
 	public final static String IMG_INTERDIT = "media/photo_interdite.png";
 	
+	public final static String IMG_NOT_FOUND = "media/nophoto.png";
+	
 	public final static String[] header = new String[]{"eppn", "email", "etat", "name", "firstname", "birthday", "supannEtuId", "supannEmpId", "supannCodeINE", "userType", "crous", "difPhoto", "userEditable", "deliveredDate", "dueDate", "nbCards", "nbRejets", "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dateEtat"};
 
 

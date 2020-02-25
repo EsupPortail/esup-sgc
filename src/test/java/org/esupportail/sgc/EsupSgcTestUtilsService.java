@@ -27,6 +27,13 @@ public class EsupSgcTestUtilsService {
 		}
 		return eppn2test;
 	}
+
+	public User getUserFromDb() {
+		if(User.countUsers()>0) {
+			return User.findAllUsersQuery().setMaxResults(1).getSingleResult();
+		}
+		return null;
+	}
     
 	public String getEppnFromLdap() {
     	String eppn2test = null;

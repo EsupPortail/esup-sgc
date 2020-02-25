@@ -33,52 +33,66 @@ public class WsRestEsupNfcControllerTest {
 	@Test
 	public void getLocationsTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		List<String> locations = wsRestEsupNfcControllerTest.getLocations(eppn);
-		log.info(String.format("Locations for %s : %s", eppn, locations));
+		if(eppn != null) {
+			List<String> locations = wsRestEsupNfcControllerTest.getLocations(eppn);
+			log.info(String.format("Locations for %s : %s", eppn, locations));
+		}
 	}
 	
 	@Test
 	public void getLocationsLivreurTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		List<String> locations = wsRestEsupNfcControllerTest.getLocationsLivreur(eppn);
-		log.info(String.format("LocationsLivreur for %s : %s", eppn, locations));
+		if(eppn != null) {
+			List<String> locations = wsRestEsupNfcControllerTest.getLocationsLivreur(eppn);
+			log.info(String.format("LocationsLivreur for %s : %s", eppn, locations));
+		}
 	}
 		
 	@Test
 	public void getLocationsSearchTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		List<String> locations = wsRestEsupNfcControllerTest.getLocationsSearch(eppn);
-		log.info(String.format("LocationsSearch for %s : %s", eppn, locations));
+		if(eppn != null) {
+			List<String> locations = wsRestEsupNfcControllerTest.getLocationsSearch(eppn);
+			log.info(String.format("LocationsSearch for %s : %s", eppn, locations));
+		}
 	}
 		
 	@Test
 	public void getLocationsSecondaryIdTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		List<String> locations = wsRestEsupNfcControllerTest.getLocationsSecondaryId(eppn);
-		log.info(String.format("LocationsSecondaryId for %s : %s", eppn, locations));
+		if(eppn != null) {
+			List<String> locations = wsRestEsupNfcControllerTest.getLocationsSecondaryId(eppn);
+			log.info(String.format("LocationsSecondaryId for %s : %s", eppn, locations));
+		}
 	}
 	
 	@Test
 	public void getLocationsUpdaterTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		List<String> locations = wsRestEsupNfcControllerTest.getLocationsUpdater(eppn);
-		log.info(String.format("LocationsUpdater for %s : %s", eppn, locations));
+		if(eppn != null) {
+			List<String> locations = wsRestEsupNfcControllerTest.getLocationsUpdater(eppn);
+			log.info(String.format("LocationsUpdater for %s : %s", eppn, locations));
+		}
 	}
 	
 	@Test
 	public void getLocationsVersoTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		List<String> locations = wsRestEsupNfcControllerTest.getLocationsVerso(eppn);
-		log.info(String.format("LocationsVerso for %s : %s", eppn, locations));
+		if(eppn != null) {
+			List<String> locations = wsRestEsupNfcControllerTest.getLocationsVerso(eppn);
+			log.info(String.format("LocationsVerso for %s : %s", eppn, locations));
+		}
 	}
 	
 	@Test
 	public void getVersoTextTest() throws IOException, ParseException {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		String csn = getCsn(eppn);
-		if(csn != null) {
-			List<String> versoText = wsRestEsupNfcControllerTest.getVersoText(csn, new MockHttpServletRequest());
-			log.info(String.format("getVersoText for %s (card %s) : %s", eppn, csn, versoText));
+		if(eppn != null) {
+			String csn = getCsn(eppn);
+			if(csn != null) {
+				List<String> versoText = wsRestEsupNfcControllerTest.getVersoText(csn, new MockHttpServletRequest());
+				log.info(String.format("getVersoText for %s (card %s) : %s", eppn, csn, versoText));
+			}
 		}
 	}
 

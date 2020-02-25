@@ -1,5 +1,7 @@
 package org.esupportail.sgc.services.crous;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -30,6 +32,20 @@ public class CrousServiceTest {
 			log.info(String.format("rightHolder for %s : %s", user.getEppn(), rightHolder));
 		}
 	}
+	
+
+	@Test
+	public void testfieldWoDueDateEqualsRightHolder() {
+		List<User> users = User.findUsersByCrous(true).getResultList();
+		if(!users.isEmpty()) {
+			User user = users.get(0);
+			RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
+			if(rightHolder != null) {
+				assertTrue(rightHolder.fieldWoDueDateEquals(rightHolder));
+			}
+		}
+	}
+	
 	
 }
 

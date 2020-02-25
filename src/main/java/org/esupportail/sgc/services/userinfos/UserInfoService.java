@@ -286,13 +286,14 @@ public class UserInfoService {
 		}
 		
 		setDefaultValues4NullAttributes(userInfos, user);
-		if(user.getCrous()!=null && user.getCrous()) {
-			List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
-			Long idCompagnyRate = idCompagnyRateAndIdRate.get(0);
-			Long idRate = idCompagnyRateAndIdRate.get(1);
-			user.setIdCompagnyRate(idCompagnyRate);
-			user.setIdRate(idRate);
-			
+		
+		List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
+		Long idCompagnyRate = idCompagnyRateAndIdRate.get(0);
+		Long idRate = idCompagnyRateAndIdRate.get(1);
+		user.setIdCompagnyRate(idCompagnyRate);
+		user.setIdRate(idRate);
+		
+		if(user.getCrous()!=null && user.getCrous()) {			
 			// hack crous ~cnrs : idCompanyRate en 7999 -> idRate final/vrai vient en fait du crous 
 			if(Long.valueOf(7999).equals(user.getIdCompagnyRate())) {
 				try {

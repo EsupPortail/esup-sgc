@@ -74,7 +74,10 @@ public class WsRestPhotoController extends AbstractRestController {
 				}
 			}
 		} else {
-			 return new ResponseEntity("No photo found for this request.", HttpStatus.NOT_FOUND);
+			ClassPathResource noImg = new ClassPathResource(ManagerCardController.IMG_NOT_FOUND);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_PNG);
+			return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), headers, HttpStatus.NOT_FOUND);
 		}
 	}
 	
@@ -88,7 +91,10 @@ public class WsRestPhotoController extends AbstractRestController {
 		if(card!=null) {
 			return managerCardControllerNoHtml.writePhotoToResponse(id, response);
 		} else {
-			return new ResponseEntity("No photo found for this request.", HttpStatus.NOT_FOUND);
+			ClassPathResource noImg = new ClassPathResource(ManagerCardController.IMG_NOT_FOUND);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_PNG);
+			return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), headers, HttpStatus.NOT_FOUND);
 		}
 	}
 	
@@ -135,7 +141,10 @@ public class WsRestPhotoController extends AbstractRestController {
 				return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), headers, HttpStatus.FORBIDDEN);
 			}
 		} else {
-			return new ResponseEntity("No photo found for this request.", HttpStatus.NOT_FOUND);
+			ClassPathResource noImg = new ClassPathResource(ManagerCardController.IMG_NOT_FOUND);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_PNG);
+			return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), headers, HttpStatus.NOT_FOUND);
 		}
 	}
 

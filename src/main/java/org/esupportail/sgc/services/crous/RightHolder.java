@@ -1,7 +1,10 @@
 package org.esupportail.sgc.services.crous;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,36 +18,36 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @RooJavaBean
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RightHolder {
-	
+
 	private final static Logger log = LoggerFactory.getLogger(RightHolder.class);
-	
+
 	/**** required part ****/
-	
+
 	String identifier;
-	
+
 	String firstName;
-	
+
 	String lastName;
-	
+
 	String email;
-	
+
 	Date dueDate;
-	
+
 	Long idCompanyRate;
-	
+
 	Long idRate;
-	
+
 	Date birthDate;
-	
+
 	String ine;
-	
+
 	String rneOrgCode;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
 	public Date getDueDate() {
 		return dueDate;
 	}
-	
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
 	public Date getBirthDate() {
 		return birthDate;
@@ -59,113 +62,116 @@ public class RightHolder {
 			return false;
 		RightHolder other = (RightHolder) obj;
 		if (birthDate == null) {
-			if (other.birthDate != null)
-				{log.trace("birthDate <>"); return false;}
+			if (other.birthDate != null) {
+				log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", birthDate, other.birthDate));
+				return false;
+			}
 		} 
 		// compare only day (without time) for birthday 
-		else if (DateTimeComparator.getDateOnlyInstance().compare(birthDate, other.birthDate)!=0)
-			{log.trace("birthDate <>"); return false;}
-		if (email == null) {
-			if (other.email != null)
-				{log.trace("email <>"); return false;}
-		} else if (!email.equalsIgnoreCase(other.email))
-			{log.trace("email <>"); return false;}
-		if (firstName == null) {
-			if (other.firstName != null)
-				{log.trace("firstName <>"); return false;}
-		} else if (!firstName.equalsIgnoreCase(other.firstName))
-			{log.trace("firstName <>"); return false;}
-		if (idCompanyRate == null) {
-			if (other.idCompanyRate != null)
-				{log.trace("idCompanyRate <>"); return false;}
-		} else if (!idCompanyRate.equals(other.idCompanyRate))
-			{log.trace("idCompanyRate <>"); return false;}
-		if (idRate == null) {
-			if (other.idRate != null)
-				{log.trace("idRate <>"); return false;}
-		} else if (!idRate.equals(other.idRate))
-			{log.trace("idRate <>"); return false;}
-		if (identifier == null) {
-			if (other.identifier != null)
-				{log.trace("identifier <>"); return false;}
-		} else if (!identifier.equalsIgnoreCase(other.identifier))
-			{log.trace("identifier <>"); return false;}
-		if (lastName == null) {
-			if (other.lastName != null)
-				{log.trace("lastName <>"); return false;}
-		} else if (!lastName.equalsIgnoreCase(other.lastName))
-			{log.trace("lastName <>"); return false;}
-		if (ine == null) {
-			if (other.ine != null)
-				{log.trace("ine <>"); return false;}
-		} else if (!ine.equalsIgnoreCase(other.ine))
-			{log.trace("ine <>"); return false;}
-		if (rneOrgCode == null) {
-			if (other.rneOrgCode != null)
-				{log.trace("rneOrgCode <>"); return false;}
-		} else if (!rneOrgCode.equalsIgnoreCase(other.rneOrgCode))
-			{log.trace("rneOrgCode <>"); return false;}
+		else if (DateTimeComparator.getDateOnlyInstance().compare(birthDate, other.birthDate)!=0) {
+			log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", birthDate, other.birthDate)); 
+			return false;
+		}
+
+		for(String varStringName : Arrays.asList(new String[] {"email", "firstName", "identifier", "lastName", "ine", "rneOrgCode", "idCompanyRate", "idRate"})) {
+			if(!this.checkEqualsVar(varStringName, other)) {
+				return false;
+			}
+		}
+
 		return true;
 	}
-	
+
+	private boolean checkEqualsVar(String varStringName, RightHolder other) {	
+		boolean isEquals = true;
+		try {
+			Field f = RightHolder.class.getDeclaredField(varStringName);
+			f.setAccessible(true);
+
+			Object thisVarObj = f.get(this);
+			Object otherVarObj = f.get(other);
+
+			if (thisVarObj == null && otherVarObj != null || thisVarObj != null && otherVarObj == null) {
+				isEquals = false;
+			}
+			if (thisVarObj != null && otherVarObj != null) {
+				String thisVar = thisVarObj.toString();
+				String otherVar = otherVarObj.toString();
+				thisVar = thisVar.toLowerCase();
+				otherVar = otherVar.toLowerCase();
+				thisVar = StringUtils.stripAccents(thisVar);
+				otherVar = StringUtils.stripAccents(otherVar);
+				if (!thisVar.equals(otherVar)) {
+					isEquals = false;
+				}
+			}
+			if(!isEquals) {
+				log.info(String.format("RightHolders not equals because %s is not equals : %s <> %s", varStringName, thisVarObj, otherVarObj));
+			}
+		} catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+			log.warn(String.format("Error when trying to compare %s for %s ans %s", varStringName, this, other));
+		}
+		return isEquals;
+	}
+
 
 	/**** optional part ****/
-	
+
 	/*
 	String rneOrgCode;
-	
+
 	String rneDepCode;
-	
+
 	String internalId;
 
 	String secondaryEmail;
-	
+
 	String cellNumber;
-	
+
 	String address1;
-	
+
 	String address2;
-	
+
 	String address3;
-	
+
 	String zipCode;
-	
+
 	String city;
-	
+
 	String country;
-	
+
 	String other1;
-	
+
 	String other2;
-	
+
 	String other3;
-	
+
 	String other4;
-	
+
 	String other5;
-	
+
 	String other6;
-	
+
 	String other7;
-	
+
 	String other8;
-	
+
 	String other9;
-	
+
 	String other10;
-	
+
 	String changeRateDate;
-	
+
 	Long futurIdCompanyRate;
-	
+
 	Long futureRate;
-	
+
 	Boolean student = false;
-	
+
 	Long idCrous;
 
-	
-	*/
-	
+
+	 */
+
 }
 

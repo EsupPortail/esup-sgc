@@ -1,5 +1,9 @@
 package org.esupportail.sgc.services.userinfos;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.EsupSgcTestUtilsService;
@@ -49,5 +53,14 @@ public class UserInfoServiceTest {
 		}
     }
 
+    @Test
+    public void testUserFieldsEquals() {
+    	User user = esupSgcTestUtilsService.getUserFromDb();
+    	log.info(String.format("Test User.fieldsEquals on %s", user.getEppn()));
+    	if(user!=null) {
+    		assertNull(user.getFieldNotEquals(user));
+    	}
+    }
+	
 }
 
