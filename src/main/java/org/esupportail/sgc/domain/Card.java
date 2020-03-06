@@ -675,9 +675,13 @@ public class Card {
     /***Stats****/
     public static List<Object> countNbCardsByYearEtat(String userType, String etatCase) {
         EntityManager em = Card.entityManager();
-        String sql = "SELECT CAST(date_part('year',request_date) AS INTEGER) AS year, " + etatCase + ", count(*) as count FROM card GROUP BY year, etat ORDER BY year ASC";
+        String sql = "SELECT CASE WHEN(DATE_PART('month', request_date)<7) "
+        		+ "THEN CONCAT(CAST(DATE_PART('year', request_date)-1 AS TEXT),'-',CAST(DATE_PART('year', request_date) AS TEXT)) "
+        		+ "ELSE CONCAT(CAST(DATE_PART('year', request_date) AS TEXT),'-',CAST(DATE_PART('year', request_date)+1 AS TEXT)) END AS Saison, " + etatCase + ", count(*) as count FROM card GROUP BY Saison, etat ORDER BY Saison ASC";
         if (!userType.isEmpty()) {
-            sql = "SELECT CAST(date_part('year',request_date) AS INTEGER) AS year, " + etatCase + ", count(*) as count FROM card, user_account WHERE card.user_account= user_account.id " + "AND user_type =:userType GROUP BY year, etat ORDER BY year ASC";
+            sql = "SELECT CASE WHEN(DATE_PART('month', request_date)<7) "
+        		+ "THEN CONCAT(CAST(DATE_PART('year', request_date)-1 AS TEXT),'-',CAST(DATE_PART('year', request_date) AS TEXT)) "
+        		+ "ELSE CONCAT(CAST(DATE_PART('year', request_date) AS TEXT),'-',CAST(DATE_PART('year', request_date)+1 AS TEXT)) END AS Saison, " + etatCase + ", count(*) as count FROM card, user_account WHERE card.user_account= user_account.id " + "AND user_type =:userType GROUP BY Saison, etat ORDER BY Saison ASC";
         }
         Query q = em.createNativeQuery(sql);
         if (!userType.isEmpty()) {
@@ -746,6 +750,45 @@ public class Card {
         }
         return q.getResultList();
     }
+    
+
+	public static List<Object> countNbCardsEditedByYear(String userType) {
+        EntityManager em = Card.entityManager();
+        String sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
+        		+ "THEN CONCAT(CAST(DATE_PART('year', encoded_date)-1 AS TEXT),'-',CAST(DATE_PART('year', encoded_date) AS TEXT)) "
+        		+ "ELSE CONCAT(CAST(DATE_PART('year', encoded_date) AS TEXT),'-',CAST(DATE_PART('year', encoded_date)+1 AS TEXT)) END AS Saison, "
+        		+ "count(*) AS count FROM card where encoded_date is not null GROUP BY Saison order by Saison";
+        if (!userType.isEmpty()) {
+        	sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
+            		+ "THEN CONCAT(CAST(DATE_PART('year', encoded_date)-1 AS TEXT),'-',CAST(DATE_PART('year', encoded_date) AS TEXT)) "
+            		+ "ELSE CONCAT(CAST(DATE_PART('year', encoded_date) AS TEXT),'-',CAST(DATE_PART('year', encoded_date)+1 AS TEXT)) END AS Saison, "
+            		+ "count(*) AS count FROM card, user_account where card.encoded_date is not null AND card.user_account=user_account.id AND user_type =:userType GROUP BY Saison order by Saison"; 
+        }
+        Query q = em.createNativeQuery(sql);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return q.getResultList();
+	}
+	
+	public static List<Object> countNbCardsEnabledEncodedByYear(String userType) {
+        EntityManager em = Card.entityManager();
+        String sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
+        		+ "THEN CONCAT(CAST(DATE_PART('year', encoded_date)-1 AS TEXT),'-',CAST(DATE_PART('year', encoded_date) AS TEXT)) "
+        		+ "ELSE CONCAT(CAST(DATE_PART('year', encoded_date) AS TEXT),'-',CAST(DATE_PART('year', encoded_date)+1 AS TEXT)) END AS Saison, "
+        		+ "count(*) AS count FROM card where encoded_date is not null AND etat IN ('ENABLED', 'ENCODED') GROUP BY Saison order by Saison";
+        if (!userType.isEmpty()) {
+        	sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
+            		+ "THEN CONCAT(CAST(DATE_PART('year', encoded_date)-1 AS TEXT),'-',CAST(DATE_PART('year', encoded_date) AS TEXT)) "
+            		+ "ELSE CONCAT(CAST(DATE_PART('year', encoded_date) AS TEXT),'-',CAST(DATE_PART('year', encoded_date)+1 AS TEXT)) END AS Saison, "
+            		+ "count(*) AS count FROM card, user_account where card.encoded_date is not null AND etat IN ('ENABLED', 'ENCODED') AND card.user_account=user_account.id AND user_type =:userType GROUP BY Saison order by Saison"; 
+        }
+        Query q = em.createNativeQuery(sql);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return q.getResultList();
+	}
 
     public static List<Object> countNbDeliverdCardsByDay(String userType) {
         String sql = "SELECT to_date(to_char(delivered_date, 'DD-MM-YYYY'), 'DD-MM-YYYY') AS day, count(*) as count FROM card WHERE DATE_PART('days', now() - delivered_date) < 31 GROUP BY day ORDER BY day";
@@ -828,11 +871,26 @@ public class Card {
         }
         return q.getResultList();
     }
+    
+    public static List<Object> countRealOsStats(String userType) {
+        String sql = "SELECT request_os, count(*) as count FROM Card WHERE request_os IS NOT NULL GROUP BY request_os ORDER BY count DESC";
+        EntityManager em = Card.entityManager();
+        if (!userType.isEmpty()) {
+            sql = "SELECT request_os, count(*) as count FROM Card, user_account WHERE card.user_account=user_account.id AND user_type = :userType " + "AND request_os IS NOT NULL GROUP BY request_os ORDER BY count DESC";
+        }
+        Query q = em.createNativeQuery(sql);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return q.getResultList();
+    }
 
     public static List<Object> countNbEditedCardNotDelivered(String typeCase) {
         EntityManager em = Card.entityManager();
      
-        String sql = "SELECT " + typeCase + ", count(*) FROM card, user_account WHERE card.user_account= user_account.id AND delivered_date is null AND etat IN ('ENABLED', 'ENCODED') AND user_type NOT LIKE '' GROUP BY user_type";
+        String sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
+        		+ "THEN CONCAT(CAST(DATE_PART('year', encoded_date)-1 AS TEXT),'-',CAST(DATE_PART('year', encoded_date) AS TEXT)) "
+        		+ "ELSE CONCAT(CAST(DATE_PART('year', encoded_date) AS TEXT),'-',CAST(DATE_PART('year', encoded_date)+1 AS TEXT)) END AS Saison, " + typeCase + ", count(*) FROM card, user_account WHERE card.user_account= user_account.id AND delivered_date is null AND etat IN ('ENABLED', 'ENCODED') AND user_type NOT LIKE '' GROUP BY Saison, user_type ORDER by Saison";
         Query q = em.createNativeQuery(sql);
 
         return q.getResultList();

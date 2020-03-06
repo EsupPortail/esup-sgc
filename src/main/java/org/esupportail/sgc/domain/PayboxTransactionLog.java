@@ -41,10 +41,14 @@ public class PayboxTransactionLog {
     
     public static List<Object> countNbPayboxByYearEtat() {
         EntityManager em = PayboxTransactionLog.entityManager();
-        String sql = "SELECT CAST(EXTRACT(year FROM transaction_date) AS INTEGER) AS date, CASE WHEN montant = '1' THEN '' ELSE 'FINALISE' END AS etat, count(*) FROM paybox_transaction_log "
-        		+ "WHERE reference IN (SELECT pay_cmd_num FROM card WHERE pay_cmd_num IS NOT NULL) GROUP BY date, etat UNION "
-        		+ "SELECT CAST(EXTRACT(year FROM transaction_date) AS INTEGER) AS date, CASE WHEN montant = '1' THEN '' ELSE 'PAYE' END AS etat, count(*) FROM paybox_transaction_log "
-        		+ "WHERE reference NOT IN (SELECT pay_cmd_num FROM card WHERE pay_cmd_num IS NOT NULL) GROUP BY date, etat ORDER BY date ASC";
+        String sql = "SELECT CASE WHEN(DATE_PART('month', transaction_date)<7) "
+        		+ "THEN CONCAT(CAST(DATE_PART('year', transaction_date)-1 AS TEXT),'-',CAST(DATE_PART('year', transaction_date) AS TEXT)) "
+        		+ "ELSE CONCAT(CAST(DATE_PART('year', transaction_date) AS TEXT),'-',CAST(DATE_PART('year', transaction_date)+1 AS TEXT)) END AS Saison, CASE WHEN montant = '1' THEN '' ELSE 'FINALISE' END AS etat, count(*) FROM paybox_transaction_log "
+        		+ "WHERE reference IN (SELECT pay_cmd_num FROM card WHERE pay_cmd_num IS NOT NULL) GROUP BY Saison, etat UNION "
+        		+ "SELECT CASE WHEN(DATE_PART('month', transaction_date)<7) "
+        		+ "THEN CONCAT(CAST(DATE_PART('year', transaction_date)-1 AS TEXT),'-',CAST(DATE_PART('year', transaction_date) AS TEXT)) "
+        		+ "ELSE CONCAT(CAST(DATE_PART('year', transaction_date) AS TEXT),'-',CAST(DATE_PART('year', transaction_date)+1 AS TEXT)) END AS Saison, CASE WHEN montant = '1' THEN '' ELSE 'PAYE' END AS etat, count(*) FROM paybox_transaction_log "
+        		+ "WHERE reference NOT IN (SELECT pay_cmd_num FROM card WHERE pay_cmd_num IS NOT NULL) GROUP BY Saison, etat ORDER BY Saison ASC";
 
         Query q = em.createNativeQuery(sql);
 

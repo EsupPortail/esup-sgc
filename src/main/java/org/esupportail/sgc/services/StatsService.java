@@ -103,7 +103,11 @@ public class StatsService {
 			   SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 			   LinkedHashMap<String,String>  anneeUnivs = getAnneeUnivs();
 	        {
-	        	if("cardsByYearEtat".equals(typeStats)){
+	        	if("cardsEdited".equals(typeStats)){
+	        		put("cardsEdited",mapField(Card.countNbCardsEditedByYear(typeInd), 2));
+	        	}else if("cardsOld".equals(typeStats)){
+	        		put("cardsOld",mapField(Card.countNbCardsEnabledEncodedByYear(typeInd), 2));
+	        	}else if("cardsByYearEtat".equals(typeStats)){
 	        		put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), 3));
 	        	}else if("crous".equals(typeStats)){
 	        		put("crous",mapField(User.countNbCrous(typeInd), 2));
@@ -129,10 +133,12 @@ public class StatsService {
 	        		put("browsers",mapField(Card.countBrowserStats(typeInd), 2));
 	        	}else if("os".equals(typeStats)){
 	        		put("os",mapField(Card.countOsStats(typeInd), 2));
+	        	}else if("realos".equals(typeStats)){
+	        		put("realos",mapField(Card.countRealOsStats(typeInd), 2));
 	        	}else if("nbRejets".equals(typeStats)){
 	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd), 2));
 	        	}else if("notDelivered".equals(typeStats)){
-	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), 2));
+	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), 3));
 	        	}else if("deliveryByAdress".equals(typeStats)){
 	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress().getResultList(),2));
 	        	}else if("userDeliveries".equals(typeStats)){

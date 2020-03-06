@@ -540,7 +540,10 @@ function getStats(id, chartType, selectedType, spinner, option, transTooltip, fo
 				clearInterval(window['p' + spinner]);
 				if(chartType == "multiBar"){
 					// multiChartStackBar(allData, id, start, transTooltip,formatDate){
-					multiChartStackBar(data[id], id, 3, transTooltip, formatDate);
+					multiChartStackBar(data[id], id, 3, transTooltip, formatDate, 'linear');
+				}else if(chartType == "multiBarLoga"){
+					// multiChartStackBar(allData, id, start, transTooltip,formatDate){
+					multiChartStackBar(data[id], id, 3, transTooltip, formatDate, 'logarithmic');
 				}else if(chartType == "chartBar"){
 					//chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
 					chartBar(data[id], label1, id, transTooltip, formatDate, data[data2], label2);
@@ -559,7 +562,7 @@ function getStats(id, chartType, selectedType, spinner, option, transTooltip, fo
  }
 
 //Stats bar chart
-function multiChartStackBar(allData, id, start, transTooltip,formatDate){
+function multiChartStackBar(allData, id, start, transTooltip, formatDate, scaleType){
 	if(document.getElementById(id) != null){
     	var barLabels = [];
     	var length = Object.keys(allData).length;
@@ -609,7 +612,9 @@ function multiChartStackBar(allData, id, start, transTooltip,formatDate){
     	            yAxes: [{
     	                ticks: {
     	                    beginAtZero:true
+    	                    
     	                },
+    	                type: scaleType,
     	                stacked: true
     	            }],
     	            xAxes: [{
@@ -991,33 +996,37 @@ document.addEventListener('DOMContentLoaded', function() {
     //stats
     if(typeof (statsRootUrl) != "undefined"){
     	//getStats(id, chartType, dateFin, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth)
-    	getStats("cardsByYearEtat", "multiBar", selectedType, 0);
-    	getStats("crous", "pie", selectedType, 1);
-    	getStats("difPhoto", "pie", selectedType, 2);
-    	getStats("cardsByDay", "chartBar", selectedType, 3);
-    	getStats("paybox", "multiBar", selectedType, 4);
-    	getStats("motifs", "chartBar", selectedType, 5);
-    	getStats("dates", "lineChart", selectedType, 6, null, null, false, null, null, null, true, monthsArray, true);
-    	getStats("deliveredCardsByDay", "chartBar", selectedType, 7);
-    	getStats("encodedCardsByday", "chartBar", selectedType, 8);
-    	getStats("nbCards", "doughnut", selectedType, 9);
-    	getStats("editable", "chartBar", selectedType, 10);
-    	getStats("browsers", "pie", selectedType, 12);
-    	getStats("os", "pie", selectedType, 13);
-    	getStats("nbRejets", "doughnut", selectedType, 14);
-    	getStats("notDelivered", "chartBar", selectedType, 15);
-    	getStats("deliveryByAdress", "pie", selectedType, 19, "legend");
-    	getStats("userDeliveries", "chartBar", selectedType, 20);
-    	getStats("tarifsCrousBars", "multiBar", selectedType, 21);
-    	getStats("cardsByMonth", "chartBar", selectedType, 22, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
-    	getStats("nbRejetsByMonth", "chartBar", selectedType, 23);
-    	getStats("requestFree", "multiBar", selectedType, 24);
-    	getStats("templateCards", "doughnut", selectedType, 25);
-    	getStats("europeanCardChart", "pie", selectedType, 26);
-    	getStats("nbRoles", "doughnut", selectedType, 27);
-    	getStats("pendingCards", "pie", selectedType, 28);
-    	getStats("dueDate", "chartBar", selectedType, 29);
-    	getStats("cardsByEtat", "pie", selectedType, 30, null, null, false, null, null, null, false, monthsArray,false, true);
+    	nbGraph = 0;
+    	getStats("cardsEdited", "chartBar", selectedType, nbGraph++);
+    	getStats("cardsOld", "pie", selectedType, nbGraph++);
+    	getStats("cardsByYearEtat", "multiBar", selectedType, nbGraph++);
+    	getStats("crous", "pie", selectedType, nbGraph++);
+    	getStats("difPhoto", "pie", selectedType, nbGraph++);
+    	getStats("cardsByDay", "chartBar", selectedType, nbGraph++);
+    	getStats("paybox", "multiBar", selectedType, nbGraph++);
+    	getStats("motifs", "chartBar", selectedType, nbGraph++);
+    	getStats("dates", "lineChart", selectedType, nbGraph++, null, null, false, null, null, null, true, monthsArray, true);
+    	getStats("deliveredCardsByDay", "chartBar", selectedType, nbGraph++);
+    	getStats("encodedCardsByday", "chartBar", selectedType, nbGraph++);
+    	getStats("nbCards", "doughnut", selectedType, nbGraph++);
+    	getStats("editable", "chartBar", selectedType, nbGraph++);
+    	getStats("browsers", "pie", selectedType, nbGraph++);
+    	getStats("os", "pie", selectedType, nbGraph++);
+    	getStats("realos", "pie", selectedType, nbGraph++);
+    	getStats("nbRejets", "doughnut", selectedType, nbGraph++);
+    	getStats("notDelivered", "multiBar", selectedType, nbGraph++);
+    	getStats("deliveryByAdress", "pie", selectedType, nbGraph++, "legend");
+    	getStats("userDeliveries", "chartBar", selectedType, nbGraph++);
+    	getStats("tarifsCrousBars", "multiBarLoga", selectedType, nbGraph++);
+    	getStats("cardsByMonth", "chartBar", selectedType, nbGraph++, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
+    	getStats("nbRejetsByMonth", "chartBar", selectedType, nbGraph++);
+    	getStats("requestFree", "multiBar", selectedType, nbGraph++);
+    	getStats("templateCards", "doughnut", selectedType, nbGraph++);
+    	getStats("europeanCardChart", "pie", selectedType, nbGraph++);
+    	getStats("nbRoles", "doughnut", selectedType, nbGraph++);
+    	getStats("pendingCards", "pie", selectedType, nbGraph++);
+    	getStats("dueDate", "chartBar", selectedType, nbGraph++);
+    	getStats("cardsByEtat", "pie", selectedType, nbGraph++, null, null, false, null, null, null, false, monthsArray,false, true);
 
        	var downloadBtn = document.querySelectorAll('.downloadBtn');
     	Array.from(downloadBtn).forEach(function(link) {

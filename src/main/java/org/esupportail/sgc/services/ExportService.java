@@ -35,7 +35,7 @@ public class ExportService {
 	   
 		if("editable".equals(stats)){
 			objs = User.selectEditableCsv().getResultList();
-		}else if("notDelivered".equals(stats)){
+		} else if("deliveryByAdress".equals(stats)){
 			objs = Card.countDeliveryByAddress().getResultList();
 		}
 		
@@ -61,7 +61,7 @@ public class ExportService {
 					email= item[3].toString();
 				}
 				exportBean.setEmail(email);
-			}else if("notDelivered".equals(stats)){
+			}else if("deliveryByAdress".equals(stats)){
 				exportBean = new ExportBean();
 				exportBean.setAdresse(item[0].toString());
 				exportBean.setNombre(item[1].toString());
@@ -147,7 +147,7 @@ public class ExportService {
 		
 		if("editable".equals(stats)){
 			return new String[]{"editable", "nom", "prenom", "email"};
-		}else if("notDelivered".equals(stats)){
+		}else if("deliveryByAdress".equals(stats)){
 			return new String[]{"adresse", "nombre"};
 		}else if("tableStats".equals(stats)){
 			return new String[]{"type", "contractuel", "etudiant", "formationContinue", "apprentissage", "heberge", "passager", 

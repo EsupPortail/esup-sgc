@@ -25,6 +25,17 @@
             <span class="glyphicon glyphicon-cog"/>
         </a>     
     </h2>
+    
+    <div class="well">
+    	<ul>
+    		<li>
+    			Les années universitaire utilisées dans les statistiques vont de debut juillet à fin juin de l'année suivante.
+    		</li>
+    		<li>
+    			Les statistiques "Navigateurs", ""Appareils" et "Systèmes d'exploitation" concernent les navigateurs et appareils utilisés lors d'une demande de carte.
+    		</li>
+    	</ul>
+    </div>
 
 	<ul class="nav nav-tabs" role="tablist">
 	    <li role="presentation" class="${empty selectedType ? 'active' : 'sleep' }"><a href="#0"  role="tab" data-toggle="tab"><spring:message code="manager.type.All" htmlEscape="false" /></a></li>
@@ -35,6 +46,37 @@
 	    </c:if>
   	</ul>
   	<div id="statsPanels">
+  		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesEditesAnneeUniv">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Cartes éditées
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="cardsEdited" width="400" height="400">&amp;nbsp;</canvas>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cardsOldStats">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Années d'édition des cartes encodées/activées
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="cardsOld" width="400" height="400">&amp;nbsp;</canvas>
+					<div class="chartjs-tooltip">
+						<table>
+							<!--  -->
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDemandeEtEtat">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -173,7 +215,7 @@
 								<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 								<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
 								<sec:authorize access="hasRole('ROLE_ADMIN')">
-									<a href="${downloadUrl}/notDelivered" title="${downloadUrl}/notDelivered" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
+									<a href="${downloadUrl}/deliveryByAdress" title="${downloadUrl}/deliveryByAdress" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
 									<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
 								</sec:authorize>							
 							</h5>
@@ -191,7 +233,7 @@
 				<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editeesNonLivrees">
 					<div class="panel panel-primary">
 						<div class="panel-heading">
-							<h5>Editées, non livrées de l'année universitaire
+							<h5>Editées, non livrées
 								<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 								<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
 							</h5>
@@ -297,7 +339,7 @@
 		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="rejets">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<h5>Nb de rejets par carte de l'année universitaire courante
+					<h5>Nb de rejets par utilisateur
 						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
 					</h5>
@@ -372,7 +414,7 @@
 			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="tarifsCrous">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						<h5>Tarifs Crous
+						<h5>Tarifs Crous (échelle logarithmique)
 							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
 						</h5>
@@ -411,6 +453,24 @@
 				</div>
 				<div class="panel-body ">
 					<canvas id="os" width="400" height="400">&amp;nbsp;</canvas>
+					<div class="chartjs-tooltip">
+						<table>
+							<!--  -->
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="systemesexploit">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Systèmes d'exploitation
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="realos" width="400" height="400">&amp;nbsp;</canvas>
 					<div class="chartjs-tooltip">
 						<table>
 							<!--  -->
