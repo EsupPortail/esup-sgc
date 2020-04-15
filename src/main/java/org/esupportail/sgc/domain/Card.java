@@ -308,7 +308,10 @@ public class Card {
     public static Card findCardByEscnUid(String escn) {
         if (escn == null || escn.length() == 0) throw new IllegalArgumentException("The escn argument is required");
         EntityManager em = entityManager();
-        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.escnUid = upper(:escn)", Card.class);
+        if(!escn.contains("-")) {
+        	escn = Card.getEscnWithDash(escn);
+        }
+        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE upper(o.escnUid) = upper(:escn)", Card.class);
         q.setParameter("escn", escn);
         List<Card> cards = q.getResultList();
         if (cards.isEmpty()) {
