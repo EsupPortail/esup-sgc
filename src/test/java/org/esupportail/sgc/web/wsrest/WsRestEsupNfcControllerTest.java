@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.esupportail.sgc.EsupSgcTestUtilsService;
 import org.esupportail.sgc.domain.Card;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -33,67 +34,59 @@ public class WsRestEsupNfcControllerTest {
 	@Test
 	public void getLocationsTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		if(eppn != null) {
-			List<String> locations = wsRestEsupNfcControllerTest.getLocations(eppn);
-			log.info(String.format("Locations for %s : %s", eppn, locations));
-		}
+		Assume.assumeTrue(eppn != null);
+		List<String> locations = wsRestEsupNfcControllerTest.getLocations(eppn);
+		log.info(String.format("Locations for %s : %s", eppn, locations));
 	}
 	
 	@Test
 	public void getLocationsLivreurTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		if(eppn != null) {
-			List<String> locations = wsRestEsupNfcControllerTest.getLocationsLivreur(eppn);
-			log.info(String.format("LocationsLivreur for %s : %s", eppn, locations));
-		}
+		Assume.assumeTrue(eppn != null);
+		List<String> locations = wsRestEsupNfcControllerTest.getLocationsLivreur(eppn);
+		log.info(String.format("LocationsLivreur for %s : %s", eppn, locations));
 	}
 		
 	@Test
 	public void getLocationsSearchTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		if(eppn != null) {
-			List<String> locations = wsRestEsupNfcControllerTest.getLocationsSearch(eppn);
-			log.info(String.format("LocationsSearch for %s : %s", eppn, locations));
-		}
+		Assume.assumeTrue(eppn != null);
+		List<String> locations = wsRestEsupNfcControllerTest.getLocationsSearch(eppn);
+		log.info(String.format("LocationsSearch for %s : %s", eppn, locations));
 	}
 		
 	@Test
 	public void getLocationsSecondaryIdTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		if(eppn != null) {
-			List<String> locations = wsRestEsupNfcControllerTest.getLocationsSecondaryId(eppn);
-			log.info(String.format("LocationsSecondaryId for %s : %s", eppn, locations));
-		}
+		Assume.assumeTrue(eppn != null);
+		List<String> locations = wsRestEsupNfcControllerTest.getLocationsSecondaryId(eppn);
+		log.info(String.format("LocationsSecondaryId for %s : %s", eppn, locations));
 	}
 	
 	@Test
 	public void getLocationsUpdaterTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		if(eppn != null) {
-			List<String> locations = wsRestEsupNfcControllerTest.getLocationsUpdater(eppn);
-			log.info(String.format("LocationsUpdater for %s : %s", eppn, locations));
-		}
+		Assume.assumeTrue(eppn != null);
+		List<String> locations = wsRestEsupNfcControllerTest.getLocationsUpdater(eppn);
+		log.info(String.format("LocationsUpdater for %s : %s", eppn, locations));
 	}
 	
 	@Test
 	public void getLocationsVersoTest() {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		if(eppn != null) {
-			List<String> locations = wsRestEsupNfcControllerTest.getLocationsVerso(eppn);
-			log.info(String.format("LocationsVerso for %s : %s", eppn, locations));
-		}
+		Assume.assumeTrue(eppn != null);
+		List<String> locations = wsRestEsupNfcControllerTest.getLocationsVerso(eppn);
+		log.info(String.format("LocationsVerso for %s : %s", eppn, locations));
 	}
 	
 	@Test
 	public void getVersoTextTest() throws IOException, ParseException {
 		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-		if(eppn != null) {
-			String csn = getCsn(eppn);
-			if(csn != null) {
-				List<String> versoText = wsRestEsupNfcControllerTest.getVersoText(csn, new MockHttpServletRequest());
-				log.info(String.format("getVersoText for %s (card %s) : %s", eppn, csn, versoText));
-			}
-		}
+		Assume.assumeTrue(eppn != null);
+		String csn = getCsn(eppn);
+		Assume.assumeTrue(csn != null);
+		List<String> versoText = wsRestEsupNfcControllerTest.getVersoText(csn, new MockHttpServletRequest());
+		log.info(String.format("getVersoText for %s (card %s) : %s", eppn, csn, versoText));
 	}
 
 	private String getCsn(String eppn) {

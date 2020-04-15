@@ -29,12 +29,14 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
+import org.esupportail.sgc.services.esc.EscDeuInfoService;
 import org.esupportail.sgc.services.ldap.GroupService;
 import org.esupportail.sgc.web.manager.ClientJWSController;
 import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -49,6 +51,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+
+/**
+ * This Web Service is called by esup-nfc-tag-server
+ * - it gives "esup-nfc-tag locations" (tag room) for a user
+ * - it says if a card is enabled
+ * - it retrieve a card from csn/uid card or card desfire identifier
+ * - it provides informations for encoding deuinfo of the European Student Card
+ * - it provides possibility to check an European Student Card
+ * - ...
+ */
 @Transactional
 @RequestMapping("/wsrest/nfc")
 @Controller 
@@ -88,6 +100,10 @@ public class WsRestEsupNfcController {
 	
 	@Resource
 	SearchLongPollController searchLongPollController;
+	
+	@Lazy
+	@Resource
+	EscDeuInfoService escDeuInfoService;
 
 	/**
 	 * Example :
@@ -671,6 +687,158 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public String generateAuthToken(@RequestParam String eppnInit) {
 		return clientJWSController.generateAuthToken(eppnInit);
+	}
+	
+	
+	/**
+	 * ESC DEUINFO
+	 */
+	
+	@RequestMapping(value = "/getEscDeuInfoEscnUid", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getEscDeuInfoEscnUid(@RequestParam String csn) {
+		String escnData = escDeuInfoService.getDeuInfoEscnUid(Card.findCardByCsn(csn));
+		return escnData;
+	}
+	
+	@RequestMapping(value = "/getEscDeuInfoSignature", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getEscDeuInfoSignature(@RequestParam String csn) {
+		String signature = escDeuInfoService.getDeuInfoSignature(Card.findCardByCsn(csn));
+		return signature;
+	}
+	
+	@RequestMapping(value = "/getEscDeuInfoCertificat", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getEscDeuInfoCertificat(@RequestParam String csn) throws Exception {
+		String certificat = escDeuInfoService.getPublicKeyAsHexa();
+		return certificat;
+	}
+	
+	@RequestMapping(value = "/getEscDeuInfoEscn", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getEscDeuInfoEscn(@RequestParam String csn) {
+		String escn = Card.findCardByCsn(csn).getEscnUidAsHexa();
+		return escn;
+	}
+	
+	@RequestMapping(value="/locationsDeuinfo",  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public List<String> getLocationsDeuinfo(@RequestParam String eppn) {
+		List<String> locations = new ArrayList<String>();
+		List<String> managerGroups = shibAuthenticatedUserDetailsService.getConsultManagerGroups();
+		List<String> userGroups = groupService.getGroupsForEppn(eppn);
+		for(String managerGroup : managerGroups) {
+			if(userGroups.contains(managerGroup)) {
+				locations.add(EsupNfcTagLog.DEUINFO);
+				break;
+			}
+		}
+		log.info("locations for " + eppn + " -> locations");
+		return locations;
+	}
+	
+
+	@RequestMapping(value="/isTagableDeuinfo",  method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public ResponseEntity<String> isTagableDeuinfo(@RequestBody EsupNfcTagLog esupNfcTagLog) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		
+		String desfireId = esupNfcTagLog.getDesfireId();
+		log.info("isTagableDeuinfo with desfireId " + desfireId);	
+		
+		List<String> desfireIds = Arrays.asList(desfireId.split("@"));
+		
+		String uid = desfireIds.get(0);
+		String escn = desfireIds.get(1);
+		String signature = desfireIds.get(2);
+		String certAsHexa = desfireIds.get(3);
+		
+		String escnData = escn + uid;
+		
+		if(escDeuInfoService.check(escnData, signature, certAsHexa)){
+			log.info("DEUINFO OK");
+			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("KO", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	
+	@RequestMapping(value="/validateTagDeuinfo",  method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public ResponseEntity<String> validateTagDeuinfo(@RequestBody EsupNfcTagLog esupNfcTagLog) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+
+		String desfireId = esupNfcTagLog.getDesfireId();
+		log.info("validateTagDeuinfo with desfireId " + desfireId);	
+		
+		List<String> desfireIds = Arrays.asList(desfireId.split("@"));
+		
+		String uid = desfireIds.get(0);
+		String escn = desfireIds.get(1);
+		String signature = desfireIds.get(2);
+		String certAsHexa = desfireIds.get(3);
+		String escnData = escn + uid;
+		
+		return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+	}
+
+	
+	@RequestMapping(value="/tagIdCheckDeuinfo", params={"desfireId", "appName"},  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public EsupNfcTagLog tagIdCheckDeuinfo(@RequestParam String desfireId, @RequestParam String appName) {
+		
+		log.info("tagIdCheckDeuinfo with desfireId " + desfireId);	
+		List<String> desfireIds = Arrays.asList(desfireId.split("@"));
+		
+		String uid = desfireIds.get(0);
+		String escn = desfireIds.get(1);
+		String signature = desfireIds.get(2);
+		String certAsHexa = desfireIds.get(3);
+		
+		String escnData = escn + uid;
+		
+		EsupNfcTagLog esupNfcTagLog = null;
+		
+		if(escDeuInfoService.check(escnData, signature, certAsHexa)) {
+			esupNfcTagLog = new EsupNfcTagLog();
+			esupNfcTagLog.setCsn(uid);
+			esupNfcTagLog.setEppn(escn);
+			
+			String lastname = "Non reconnu";
+			String firstname = "";
+			Card card = Card.findCardByEscnUid(escn);
+			if(card != null) {
+				lastname = card.getName();
+				firstname = card.getFirstname();
+			} 
+			esupNfcTagLog.setLastname(lastname);
+			esupNfcTagLog.setFirstname(firstname);
+			log.info("Checking of deuinfo (validation of escn, signature and cert) OK : " + esupNfcTagLog);
+		} else {
+			log.warn("Checking of deuinfo (validation of escn, signature and cert) failed");
+		}
+		return esupNfcTagLog;
+	}	
+	
+	@RequestMapping(value="/deuinfo",  method=RequestMethod.POST)
+	public String deuinfo(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
+		log.info("get deuinfo from : " + taglog);	
+		// TODO : display cert and get data from ESCR
+		String desfireId = taglog.getDesfireId();
+		log.info("deuinfo with desfireId " + desfireId);	
+		List<String> desfireIds = Arrays.asList(desfireId.split("@"));
+		String uid = desfireIds.get(0);
+		String escn = desfireIds.get(1);
+		String signature = desfireIds.get(2);
+		String certAsHexa = desfireIds.get(3);
+		uiModel.addAttribute("uid", uid);
+		uiModel.addAttribute("escn", escn);
+		uiModel.addAttribute("signature", signature);
+		uiModel.addAttribute("certAsHexa", certAsHexa);
+		uiModel.addAttribute("card", Card.findCardByEscnUid(escn));
+		uiModel.addAttribute("qrCodeUrl", escDeuInfoService.getQrCodeUrl(escn));
+		return "deuinfo";
 	}
 	
 }

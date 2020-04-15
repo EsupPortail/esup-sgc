@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.EscrCard;
 import org.esupportail.sgc.domain.EscrStudent;
@@ -323,4 +324,17 @@ public class ApiEscrService extends ValidateService {
 		return false;
 	}
 	
+	public String getCaChainCertAsHexa(String picInstitutionCode) {
+		String urlTemplate = webUrl.replaceFirst("/v1", "/certs/files/%s/ca-chain.cert.pem");
+		String url = String.format(urlTemplate, picInstitutionCode);
+		HttpHeaders headers = this.getJsonHeaders();			
+		HttpEntity entity = new HttpEntity(headers);
+		log.info("Try to get CA Chain Cert on " + url); 
+		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+		log.info("CA Chain Cert for " + picInstitutionCode + " -> \n" + response.getBody());
+		byte[] certAsBytesArray = response.getBody().getBytes();
+		return Hex.toHexString(certAsBytesArray);
+	}
+	
 }
+

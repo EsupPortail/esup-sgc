@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services.paybox;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,9 +20,8 @@ public class PayBoxServiceTest {
 
     @Test
     public void testGetPayBoxActionUrl() {
-    	if(payBoxService!=null) {
-    		String payBoxActionUrl = payBoxService.getPayBoxActionUrl();
-    		log.info(String.format("Get payBoxActionUrl : %s", payBoxActionUrl));
-    	}
+    	Assume.assumeTrue(payBoxService!=null);
+    	String payBoxActionUrl = payBoxService.getPayBoxActionUrl();
+    	log.info(String.format("Get payBoxActionUrl : %s", payBoxActionUrl));
     }
 }

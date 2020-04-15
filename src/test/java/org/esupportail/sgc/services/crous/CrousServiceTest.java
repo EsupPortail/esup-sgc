@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.User;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -26,24 +27,21 @@ public class CrousServiceTest {
 	@Test
 	public void testGetRightHolder() {
 		List<User> users = User.findUsersByCrous(true).getResultList();
-		if(!users.isEmpty()) {
-			User user = users.get(0);
-			RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
-			log.info(String.format("rightHolder for %s : %s", user.getEppn(), rightHolder));
-		}
+		Assume.assumeTrue(!users.isEmpty());
+		User user = users.get(0);
+		RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
+		log.info(String.format("rightHolder for %s : %s", user.getEppn(), rightHolder));
 	}
 	
 
 	@Test
 	public void testfieldWoDueDateEqualsRightHolder() {
 		List<User> users = User.findUsersByCrous(true).getResultList();
-		if(!users.isEmpty()) {
-			User user = users.get(0);
-			RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
-			if(rightHolder != null) {
-				assertTrue(rightHolder.fieldWoDueDateEquals(rightHolder));
-			}
-		}
+		Assume.assumeTrue(!users.isEmpty());
+		User user = users.get(0);
+		RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
+		Assume.assumeTrue(rightHolder != null);
+		assertTrue(rightHolder.fieldWoDueDateEquals(rightHolder));
 	}
 	
 	

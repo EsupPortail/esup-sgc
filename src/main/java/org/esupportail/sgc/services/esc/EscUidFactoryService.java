@@ -40,7 +40,11 @@ public class EscUidFactoryService {
 	}
 
 	public String getQrCodeUrl(Card card) {
-		return qrCodeUrlPrefixe + card.getEscnUid();
+		return getQrCodeUrl(card.getEscnUid());
+	}
+	
+	public String getQrCodeUrl(String escn) {
+		return qrCodeUrlPrefixe + escn;
 	}
 	
 }

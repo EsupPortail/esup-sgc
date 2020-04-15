@@ -304,6 +304,19 @@ public class Card {
             return cards.get(0);
         }
     }
+    
+    public static Card findCardByEscnUid(String escn) {
+        if (escn == null || escn.length() == 0) throw new IllegalArgumentException("The escn argument is required");
+        EntityManager em = entityManager();
+        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.escnUid = upper(:escn)", Card.class);
+        q.setParameter("escn", escn);
+        List<Card> cards = q.getResultList();
+        if (cards.isEmpty()) {
+            return null;
+        } else {
+            return cards.get(0);
+        }
+    }
 
     public static TypedQuery<Card> findCardsByEtatIn(List<Etat> etats) {
         EntityManager em = Card.entityManager();
@@ -1057,6 +1070,24 @@ public class Card {
     	List<String> distinctResults = q.getResultList();
     	return distinctResults;
     }
+    
+    public static TypedQuery<Card> findCardsWithEscnAndCsn() {
+        EntityManager em = Card.entityManager();
+        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.escnUid IS NOT NULL and o.escnUid IS NOT EMPTY AND o.csn IS NOT NULL and o.csn IS NOT EMPTY", Card.class);
+        return q;
+    }
+
+	public String getEscnUidAsHexa() {
+		return getEscnUidAsHexa(getEscnUid());
+	}
+	
+	static public String getEscnUidAsHexa(String escnWithDash) {
+		return escnWithDash.replaceAll("-", "");
+	}
+	
+	static public String getEscnWithDash(String escnHexa) {
+		return String.format("%s-%s-%s-%s-%s", escnHexa.substring(0, 8), escnHexa.substring(8, 12), escnHexa.substring(12, 16), escnHexa.substring(16, 20), escnHexa.substring(20, 32));
+	}
 
 }
 

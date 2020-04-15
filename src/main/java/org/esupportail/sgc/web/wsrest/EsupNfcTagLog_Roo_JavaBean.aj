@@ -55,4 +55,19 @@ privileged aspect EsupNfcTagLog_Roo_JavaBean {
         this.location = location;
     }
     
+	public String EsupNfcTagLog.getDesfireId() {
+		return desfireId;
+	}
+
+	public void EsupNfcTagLog.setDesfireId(String desfireId) {
+		this.desfireId = desfireId;
+	}
+
+	public String EsupNfcTagLog.getApplicationName() {
+		return applicationName;
+	}
+
+	public void EsupNfcTagLog.setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
+	}
 }

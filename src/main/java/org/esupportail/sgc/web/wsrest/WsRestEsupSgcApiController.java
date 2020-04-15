@@ -52,6 +52,15 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
+
+/**
+ * This Web Service provides commands for interaction with sgc from informations systems
+ * With this, you can 
+ *  - request remotely a card, 
+ *   - ask synchronization of user so that sgc is synchronized quickly with your information system
+ *   - ...  
+ *
+ */
 @RequestMapping("/wsrest/api")
 @Controller
 public class WsRestEsupSgcApiController extends AbstractRestController {
