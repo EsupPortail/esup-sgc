@@ -3,6 +3,8 @@ package org.esupportail.sgc.services.esc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.EsupSgcTestUtilsService;
@@ -97,5 +99,13 @@ public class EscDeuInfoServiceTest {
 		log.info(String.format("publicKeyAsHexa [%s] : %s", publicKeyAsHexa.length(), publicKeyAsHexa));
 		//assertEquals(540, publicKeyAsHexa.length());
 	}
+	
+	@Test 
+	public void getCertInfoTest() throws Exception {
+		Map<String, String> certInfo = escDeuInfoService.getCertSubjectName(escDeuInfoService.getPublicKeyAsHexa());
+		log.info(String.format("Cert info : %s", certInfo));
+		//assertEquals(540, publicKeyAsHexa.length());
+	}
+	
 }
 

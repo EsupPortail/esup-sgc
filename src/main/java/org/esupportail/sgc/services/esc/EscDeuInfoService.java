@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.esc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyStore;
@@ -11,11 +12,19 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -25,7 +34,6 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -192,6 +200,36 @@ public class EscDeuInfoService  {
 		String escnHexa = escnData.substring(0, 32);
 		String escn = Card.getEscnWithDash(escnHexa);
 		return escUidFactoryService.getQrCodeUrl(escn);
+	}
+
+	public Map<String, String> getCertSubjectName(String certAsHexa) {
+		Map<String, String> subjectMap = new HashMap<String, String>();
+		try {
+			byte[] certBytes;
+			certBytes = Hex.decodeHex(certAsHexa.toCharArray());
+			ByteArrayInputStream in = new ByteArrayInputStream(certBytes);
+			CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+			X509Certificate x509cert = (X509Certificate)certFactory.generateCertificate(in);
+			String dn = x509cert.getSubjectX500Principal().getName();
+			LdapName ldapDN = new LdapName(dn);
+			for(Rdn rdn: ldapDN.getRdns()) {
+				// we don't want no display string attrs, like 1.2.840.113549.1.9.1 for example
+				if("1.2.840.113549.1.9.1".equals(rdn.getType())) {
+					 //String mailBase64 = rdn.getValue();
+					 byte[] mailBytes = (byte[])rdn.getValue();
+					 String mail = new String(mailBytes);
+					 // TODO : check what is 2 first bytes of "1.2.840.113549.1.9.1 ?
+					 String mailOnly = mail.substring(2);
+					 subjectMap.put("Mail", mailOnly);
+				} else {
+					subjectMap.put(rdn.getType(), new String(rdn.getValue().toString().getBytes("ISO-8859-1"), "utf-8"));
+				}
+			}
+			log.debug(String.format("subjectMap from cert : %s", subjectMap));
+		} catch (DecoderException|CertificateException|InvalidNameException|UnsupportedEncodingException e) {
+			log.warn("Can't get cert subject name from this certificat " + certAsHexa, e);
+		}
+		return subjectMap;
 	}
 
 }

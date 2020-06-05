@@ -2,7 +2,13 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
     <div class="item" style="width: 100%; background-color: #ede6b4; padding:20px; font-size: 15px; text-align: left;">
-    	<h1>Card is valid</h1>
+    	<h1>ESC DEUINFO Card is valid</h1>
+    	<c:if test="${not isoOnly}">
+    		<h2>Desfire Validation</h2>
+    	</c:if>
+    	<c:if test="${isoOnly}">
+    		<h2>ISO 7816 Validation</h2>
+    	</c:if>
     	<c:if test="${not empty card}">
     		<h2>Card registered for : </h2>
     		<p>${card.name} ${card.firstname}</p>
@@ -11,14 +17,26 @@
     		<h2>Card not registered</h2>
     	</c:if>
     	<p>
-			<span style="color:green">Diversified key with ESCN OK</span><br/>
-			<span style="color:green">Diversified key with UID OK</span><br/>
+    		<c:if test="${not isoOnly}">
+				<span style="color:green">Diversified key with ESCN OK</span><br/>
+				<span style="color:green">Diversified key with UID OK</span><br/>
+			</c:if>
 			<span style="color:green">Signature OK</span><br/>
 			<span style="color:green">Certificate OK</span><br/>
+			<ul>
+				<c:forEach var="certSubjectNamePart" items="${certSubjectName}">
+				  <li>${certSubjectNamePart.key} : ${certSubjectNamePart.value}</li>
+				</c:forEach>
+			</ul>
 		</p>
 		<b>
 			Page on ESCR for this card : <br/>
 			${qrCodeUrl}
 		</b>
+		<c:if test="${not isoOnly}">
+			<p>
+				Card free memory : ${freeMemory} bytes
+			</p>
+		</c:if>
     </div>
 </div>

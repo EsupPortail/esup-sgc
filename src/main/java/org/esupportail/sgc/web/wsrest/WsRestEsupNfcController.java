@@ -828,6 +828,7 @@ public class WsRestEsupNfcController {
 		String desfireId = taglog.getDesfireId();
 		log.info("deuinfo with desfireId " + desfireId);	
 		List<String> desfireIds = Arrays.asList(desfireId.split("@"));
+		boolean isoOnly = desfireIds.size()<5;
 		String uid = desfireIds.get(0);
 		String escn = desfireIds.get(1);
 		String signature = desfireIds.get(2);
@@ -836,8 +837,14 @@ public class WsRestEsupNfcController {
 		uiModel.addAttribute("escn", escn);
 		uiModel.addAttribute("signature", signature);
 		uiModel.addAttribute("certAsHexa", certAsHexa);
+		uiModel.addAttribute("certSubjectName", escDeuInfoService.getCertSubjectName(certAsHexa));
 		uiModel.addAttribute("card", Card.findCardByEscnUid(escn));
 		uiModel.addAttribute("qrCodeUrl", escDeuInfoService.getQrCodeUrl(escn));
+		uiModel.addAttribute("isoOnly", isoOnly);
+		if(!isoOnly) {
+			String freeMemory = desfireIds.get(4);
+			uiModel.addAttribute("freeMemory", freeMemory);
+		}
 		return "deuinfo";
 	}
 	
