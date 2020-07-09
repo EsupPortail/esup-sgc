@@ -36,7 +36,7 @@ public class ExportService {
 		if("editable".equals(stats)){
 			objs = User.selectEditableCsv().getResultList();
 		} else if("deliveryByAdress".equals(stats)){
-			objs = Card.countDeliveryByAddress().getResultList();
+			objs = Card.countDeliveryByAddress();
 		}
 		
 		List<ExportBean> exportList = new ArrayList<>();

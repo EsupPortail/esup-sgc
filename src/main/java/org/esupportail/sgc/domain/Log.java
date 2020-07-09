@@ -38,7 +38,7 @@ public class Log {
     private String remoteAddress;
 
 
-    public static List<Object> countUserDeliveries() {
+    public static List<Object[]> countUserDeliveries() {
         EntityManager em = Log.entityManager();
         String sql = "SELECT to_date(to_char(log_date, 'DD-MM-YYYY'), 'DD-MM-YYYY') AS day, count(*) FROM log WHERE action = 'USER_DELIVERY' GROUP BY day ORDER BY day";
         Query q = em.createNativeQuery(sql);

@@ -539,16 +539,12 @@ function getStats(id, chartType, selectedType, spinner, option, transTooltip, fo
 			    var data = JSON.parse(this.response);
 				clearInterval(window['p' + spinner]);
 				if(chartType == "multiBar"){
-					// multiChartStackBar(allData, id, start, transTooltip,formatDate){
 					multiChartStackBar(data[id], id, 3, transTooltip, formatDate, 'linear');
 				}else if(chartType == "multiBarLoga"){
-					// multiChartStackBar(allData, id, start, transTooltip,formatDate){
 					multiChartStackBar(data[id], id, 3, transTooltip, formatDate, 'logarithmic');
 				}else if(chartType == "chartBar"){
-					//chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
 					chartBar(data[id], label1, id, transTooltip, formatDate, data[data2], label2);
 				}else if(chartType == "pie"){
-					// chartPieorDoughnut(data, id, type, option)
 					chartPieorDoughnut(data[id], id, chartType, option, datalabels);
 				}else if(chartType == "doughnut"){
 					chartPieorDoughnut(data[id], id, chartType, option, datalabels);
@@ -564,49 +560,31 @@ function getStats(id, chartType, selectedType, spinner, option, transTooltip, fo
 //Stats bar chart
 function multiChartStackBar(allData, id, start, transTooltip, formatDate, scaleType){
 	if(document.getElementById(id) != null){
-    	var barLabels = [];
-    	var length = Object.keys(allData).length;
-    	var dataSets = [];
-    	var j=0;
-    	for (var idx in allData){ 
-    		//Hack : on enlève le '_'
-    		lab = idx.substr(1, idx.length);
-    		if(formatDate){
-    			lab = formatDateString(idx.substr(1, idx.length));
-    		}
-    		barLabels.push(lab);
-    		var k=start;
-    		var obj = allData[idx];
-    		for (var key in obj){
-	        	var values = [];
-	        	for (var i = 0; i < length; i++)
-	        	{
-	        		values.push(0);
-	        	}
-	    		values[j] = obj[key];
-	        	dataSets.push({
-	        		label: key,
-	        		data: values,
-	        		backgroundColor: generateStackColors[k],
-	    			datalabels: {
-	    				display: false
-	    			}
-	        	});
-	        	k++;
-	    	};
-	    	j++;
-    	 };
+		var dataSets = [];
+    	var k = 0;
+    	for(key in allData[1]) { 	
+	        dataSets.push({
+	        	label: key,
+	        	data: allData[1][key],
+	        	backgroundColor: generateStackColors[k],
+    			datalabels: {
+    				display: false
+    			}
+	        });
+	        k++;
+    	}
         var  barChartData = {
-            	labels : barLabels,
+            	labels : allData[0],
             	datasets : dataSets
         }
      	var ctx =  document.getElementById(id).getContext("2d");
     	myBar = new Chart(ctx, {
     		type: 'bar',
     		data: barChartData,
-    		options: {responsive : true,
+    		options: {
+    			responsive : true,
     			legend: {
-    				display: false
+    				display: true
     			},
     	        scales: {
     	            yAxes: [{
@@ -625,7 +603,6 @@ function multiChartStackBar(allData, id, start, transTooltip, formatDate, scaleT
                 	mode: 'label',
                 	bodyFontSize :  15,
                 	titleFontSize: 16,
-                	footerFontSize: 15,
                 	callbacks: {
                         afterTitle: function() {
                             window.total = 0;
@@ -635,12 +612,7 @@ function multiChartStackBar(allData, id, start, transTooltip, formatDate, scaleT
 	                            var a = e.datasets[t.datasetIndex].label || '';
 	                            var valor = parseInt(e.datasets[t.datasetIndex].data[t.index]);
 	                            window.total += valor;
-	                            if(transTooltip != null){
-	                            	b = a.toString().replace(/_/g,"");
-	                            	msg = transTooltip + b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
-	                            	a = messages[msg];
-	                            }
-	                            return a + ': ' + t.yLabel 
+	                            return a + ': ' + t.yLabel
                         	}
                         },
                         footer: function() {
@@ -662,27 +634,17 @@ function chartPieorDoughnut(data, id, type, option, datalabels){
 		if(option=="legend"){
 		 legend = false;
 		}
-    	var doughnutLabels = [];
-    	var values = [];
-    	var dataSets = [];
+		var dataSets = [];
     	var doughnutDataArray =[];
-    	for (var idx in data){
-    		doughnutLabels.push(idx);
-    		values.push(data[idx]);
-        };
     	dataSets.push({
-    		data: values,
+    		data: data[1],
     		backgroundColor:  generateStackColors,
-    		hoverBackgroundColor: generateColors,
-			datalabels: {
-				anchor: 'end',
-				display: datalabels
-			}
+    		hoverBackgroundColor: generateColors
     	});
     	var doughnutDataArray={
-			   labels: doughnutLabels,
-			   datasets: dataSets
-        	};	 	        	
+		   labels: data[0],
+		   datasets: dataSets
+        }; 	        	
      	var ctx3 = document.getElementById(id).getContext("2d");
      	var myDoughnutChart2 = new Chart(ctx3, {
     		type: type,
@@ -702,10 +664,9 @@ function chartPieorDoughnut(data, id, type, option, datalabels){
 						borderWidth: 2,
 						color: 'white',
 						display: function(context) {
-							var dataset = context.dataset;
-							var count = dataset.data.length;
-							var value = dataset.data[context.dataIndex];
-							return value > count * 1.5;
+							var total = context.dataset.data.reduce((a, b) => a + b);
+							var value = context.dataset.data[context.dataIndex];
+							return context.dataIndex < 5 && value > total/10;
 						},
 						font: {
 							weight: 'bold'
@@ -792,29 +753,13 @@ function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
 	if(document.getElementById(id) != null){
     	var listLabels = [];
     	var listValeurs = [];
-    	var listTooltipLabels = [];
-    	for (var idx in data1){ 
-    		if(formatDate){
-    			idx = formatDateString(idx);
-    		}
-    		listTooltipLabels.push(idx);
-    		if (idx.length > 12) {
-    			idx = idx.substring(0, 12) +".";
-    		}
-        	if(transTooltip != null){
-        		b = idx.replace(/_/g,"");
-        		msg = transTooltip + b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(); 
-        		idx = messages[msg];
-        	}
-    		listLabels.push(idx);
-    		listValeurs.push(data1[idx]);
-        };
+    	var listTooltipLabels = [];     	
     	var datasets = [{
 	            label: label1,
     			backgroundColor: generateColors[3],
 	            borderColor: generateBorderColors[3],
 	            borderWidth: 1,
-	            data : listValeurs,
+	            data : data1[1],
     			datalabels: {
     				display: false
     			}
@@ -829,37 +774,24 @@ function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
     			backgroundColor: generateColors[4],
 	            borderColor: generateBorderColors[4],
 	            borderWidth: 1,
-    			data : listValeurs2,
+    			data :  data2[1],
     			datalabels: {
     				display: false
     			}
     	})
     	}
         var  barChartData = {
-            	labels : listLabels,
+            	labels : data1[0],
             	datasets : datasets
             }
      	var ctx = document.getElementById(id).getContext("2d");
     	myBar = new Chart(ctx, {
     		type: 'bar',
     		data: barChartData,
-    		options: {responsive : true,
+    		options: {
+    			responsive : true,
     			legend: {
-    				display: false
-    			},
-    			tooltips: {
-    				bodyFontSize : 22,
-    				callbacks: {
-                        title: function (t, e) {
-                        	tootipTitle = listTooltipLabels[t[0].index];
-                        	if(transTooltip != null){
-                        		b = tootipTitle.replace(/_/g,"");
-                        		msg = transTooltip + b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(); 
-                        		tootipTitle = messages[msg];
-                        	}
-                        	return tootipTitle;
-                        }
-                	}
+    				display: label1 != undefined
     			},
     	        scales: {
     	            yAxes: [{
@@ -881,7 +813,7 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
     	var xValues = [];
     	var dates = arrayDates;
     	//Hack : on enlève le '_'
-    	for (var idx in data){ 
+    	for (var idx in data[1]){ 
 			if(!byMonth){			
 				xValues= Object.keys(data[idx]).filter(function (propertyName) {
 				    return propertyName.substr(1, propertyName.length);
@@ -894,18 +826,11 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
 	    			}	
 				};
 			}else{
-				var keyMois = Object.keys(data[idx]);
-				for(i=1;i<=12;i++){
-					if(keyMois.indexOf(i.toString())>-1){
-		        		inlineValeurs.push(data[idx][i]);
-	    			}else{
-		        		inlineValeurs.push(null);
-	    			}			
-				}
+		        inlineValeurs = data[1][idx];
 			}
             inlineDatasets.push({
             	//Hack : on enlève le '_'
-        	     label: idx.substr(1, idx.length),
+        	     label: idx,
 		         backgroundColor: generateColors[a],
 		         borderColor: generateColors[a],
 		         pointColor: generateBorderColors[a],
@@ -932,6 +857,7 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
  		    datasets: inlineDatasets
  		};      
      	var ctx3 = document.getElementById(id).getContext("2d");
+     	console.log(dataMois);
      	var myLineChart = new Chart(ctx3, {
     		type: 'line',
     		data: dataMois,

@@ -3,24 +3,28 @@ package org.esupportail.sgc.services;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
-import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -58,41 +62,93 @@ public class StatsService {
 	}
 
 	
-    public LinkedHashMap<String, Object> mapField(List<Object> listes, int level){
+public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
     	
-    	LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+    	List data = new ArrayList<>();
     	
-    	LinkedHashMap<String, Object> secondMap = new LinkedHashMap<String, Object>();
+    	List<String> labels1 = new ArrayList<String>();
+    	for(Object[] r : queryResults) {
+    		if(!labels1.contains(r[0].toString())) {
+    			labels1.add(r[0].toString());
+    		}
+    	}   	
+    	data.add(labels1);
     	
-    	String test = null;
-    	int i = 1;
+        List<String> labels2 = new ArrayList<String>();
+        for(Object[] r : queryResults) {
+        	if(!labels2.contains(r[1].toString())) {
+        		labels2.add(r[1].toString());
+        	}
+    	}    	
     	
-   		for (Object result : listes) {
-   			Object[] r = (Object[]) result;	
-   			if (level == 2){
-   				String r0 = "Aucune donnée";
-   				if(r[0]!=null){
-   					r0 = r[0].toString();
-   				}
-	   		    map.put(r0,r[1]);
-   			}else{
-   				//Hack '_' pour ne pas changer pas l'ordre de la requête dans le navigateur
-   				if(test== null || test.equals("_" + r[0].toString())){
-   					secondMap.put(r[1].toString(),r[2]);
-   				}else{
-   					map.put(test, secondMap);
-   					secondMap = new LinkedHashMap<String, Object>();
-   					secondMap.put(r[1].toString(),r[2]);
-   				}
-   			//Hack '_' pour ne pas changer pas l'ordre de la requête dans le navigateur
-   				test = "_" +  r[0].toString();
-   				if(i ==  listes.size()){
-   					map.put(test, secondMap);
-   				}
-   				i++;
-   			}
-   		}
-        return map;
+        Map<String, List<Long>> valuesMap = new HashMap<String, List<Long>>();
+    	for(String label2: labels2) {
+    		ArrayList<Long> values = new ArrayList<Long>();
+    		// initialize to 0
+    		for(String label1: labels1) {
+    			values.add(0L);
+    		}
+    		for(Object[] r : queryResults) {
+    	       	if(label2.equals(r[1].toString())) {
+    	       		values.set(labels1.indexOf(r[0].toString()), Long.valueOf(r[2].toString()));
+    	       	}
+    		 }
+    		valuesMap.put(label2, values);
+    	}
+    	if(order) {
+	    	// order valuesMap
+	    	Map<String, List<Long>> valuesMapSorted = valuesMap
+	    	        .entrySet()
+	    	        .stream()
+	    	        .sorted(Entry.comparingByValue(new Comparator<List<Long>>() {
+						@Override
+						public int compare(List<Long> o1, List<Long> o2) {
+							Long v1 = 0L;
+							Long v2 = 0L;
+							for(Long s: o1) {
+								v1 += s;
+							}
+							for(Long s: o2) {
+								v2 += s;
+							}
+							return v2.compareTo(v1);
+						}
+					}))
+	    	        .collect(
+	    	            Collectors.toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2,
+	    	                LinkedHashMap::new));
+	    	
+	    	data.add(valuesMapSorted);
+    	} else {
+    		data.add(valuesMap);
+    	}
+    	
+        return data;
+    }
+
+    
+    public List mapFieldWith1Labels(List<Object[]> queryResults) {
+    	
+    	List data = new ArrayList<>();
+    	
+    	List<String> labels1 = new ArrayList<String>();
+    	for(Object[] r : queryResults) {
+    		if(r[0] == null) {
+    			labels1.add("");
+    		} else if(!labels1.contains(r[0].toString())) {
+    			labels1.add(r[0].toString());
+    		}
+    	}   	
+    	data.add(labels1);
+
+    	ArrayList<Long> values = new ArrayList<Long>();
+
+    	for(Object[] r : queryResults) {
+    	    values.add(Long.valueOf(r[1].toString()));
+    	}
+    	data.add(values);
+    	
+        return data;
     }
     
     @SuppressWarnings("serial")
@@ -104,66 +160,66 @@ public class StatsService {
 			   LinkedHashMap<String,String>  anneeUnivs = getAnneeUnivs();
 	        {
 	        	if("cardsEdited".equals(typeStats)){
-	        		put("cardsEdited",mapField(Card.countNbCardsEditedByYear(typeInd), 2));
+	        		put("cardsEdited", mapFieldWith1Labels(Card.countNbCardsEditedByYear(typeInd)));
 	        	}else if("cardsOld".equals(typeStats)){
-	        		put("cardsOld",mapField(Card.countNbCardsEnabledEncodedByYear(typeInd), 2));
+	        		put("cardsOld", mapFieldWith1Labels(Card.countNbCardsEnabledEncodedByYear(typeInd)));
 	        	}else if("cardsByYearEtat".equals(typeStats)){
-	        		put("cardsByYearEtat",mapField(Card.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), 3));
+	        		put("cardsByYearEtat", mapFieldWith2Labels(Card.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), true));
 	        	}else if("crous".equals(typeStats)){
-	        		put("crous",mapField(User.countNbCrous(typeInd), 2));
+	        		put("crous", mapFieldWith1Labels(User.countNbCrous(typeInd)));
 	        	}else if("difPhoto".equals(typeStats)){
-	        		put("difPhoto",mapField(User.countNbDifPhoto(typeInd), 2));
+	        		put("difPhoto", mapFieldWith1Labels(User.countNbDifPhoto(typeInd)));
 	        	}else if("cardsByDay".equals(typeStats)){
-	        		put("cardsByDay",mapField(Card.countNbCardsByDay(typeInd, "request_date"), 2));
+	        		put("cardsByDay", mapFieldWith1Labels(Card.countNbCardsByDay(typeInd, "request_date")));
 	        	}else if("paybox".equals(typeStats)){
-	        		put("paybox",mapField(PayboxTransactionLog.countNbPayboxByYearEtat(), 3));
+	        		put("paybox", mapFieldWith2Labels(PayboxTransactionLog.countNbPayboxByYearEtat(), true));
 	        	}else if("motifs".equals(typeStats)){
-	        		put("motifs",mapField(Card.countNbCardsByMotifsDisable(typeInd, mapToCase("motif_disable", mapsFromI18n("motifs", Locale.FRENCH, "card.label"), "motif_disable")), 2));
+	        		put("motifs", mapFieldWith1Labels(Card.countNbCardsByMotifsDisable(typeInd, mapToCase("motif_disable", mapsFromI18n("motifs", Locale.FRENCH, "card.label"), "motif_disable"))));
 	        	}else if("dates".equals(typeStats)){
-	        		put("dates",mapField(Card.countNbCardsByMonthYear(typeInd), 3));
+	        		put("dates", mapFieldWith2Labels(Card.countNbCardsByMonthYear(typeInd), false));
 	        	}else if("deliveredCardsByDay".equals(typeStats)){
-	        		put("deliveredCardsByDay",mapField(Card.countNbDeliverdCardsByDay(typeInd), 2));
+	        		put("deliveredCardsByDay", mapFieldWith1Labels(Card.countNbDeliverdCardsByDay(typeInd)));
 	        	}else if("encodedCardsByday".equals(typeStats)){
-	        		put("encodedCardsByday",mapField(Card.countNbEncodedCardsByDay(typeInd), 2));
+	        		put("encodedCardsByday", mapFieldWith1Labels(Card.countNbEncodedCardsByDay(typeInd)));
 	        	}else if("nbCards".equals(typeStats)){
-	        		put("nbCards",mapField(User.countNbCardsByuser(typeInd), 2));
+	        		put("nbCards", mapFieldWith1Labels(User.countNbCardsByuser(typeInd)));
 	        	}else if("editable".equals(typeStats)){
-	        		put("editable",mapField(User.countNbEditable(), 2));
+	        		put("editable", mapFieldWith1Labels(User.countNbEditable()));
 	        	}else if("browsers".equals(typeStats)){
-	        		put("browsers",mapField(Card.countBrowserStats(typeInd), 2));
+	        		put("browsers", mapFieldWith1Labels(Card.countBrowserStats(typeInd)));
 	        	}else if("os".equals(typeStats)){
-	        		put("os",mapField(Card.countOsStats(typeInd), 2));
+	        		put("os", mapFieldWith1Labels(Card.countOsStats(typeInd)));
 	        	}else if("realos".equals(typeStats)){
-	        		put("realos",mapField(Card.countRealOsStats(typeInd), 2));
+	        		put("realos", mapFieldWith1Labels(Card.countRealOsStats(typeInd)));
 	        	}else if("nbRejets".equals(typeStats)){
-	        		put("nbRejets",mapField(Card.countNbCardsByRejets(typeInd), 2));
+	        		put("nbRejets", mapFieldWith1Labels(Card.countNbCardsByRejets(typeInd)));
 	        	}else if("notDelivered".equals(typeStats)){
-	        		put("notDelivered",mapField(Card.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), 3));
+	        		put("notDelivered", mapFieldWith2Labels(Card.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), true));
 	        	}else if("deliveryByAdress".equals(typeStats)){
-	        		put("deliveryByAdress",mapField(Card.countDeliveryByAddress().getResultList(),2));
+	        		put("deliveryByAdress", mapFieldWith1Labels(Card.countDeliveryByAddress()));
 	        	}else if("userDeliveries".equals(typeStats)){
-	        		put("userDeliveries",mapField(Log.countUserDeliveries(),2));
+	        		put("userDeliveries", mapFieldWith1Labels(Log.countUserDeliveries()));
 	        	}else if("tarifsCrousBars".equals(typeStats)){
-	        		put("tarifsCrousBars",mapField(User.countTarifCrousByType(),3));
+	        		put("tarifsCrousBars", mapFieldWith2Labels(User.countTarifCrousByType(), true));
 	        	}else if("cardsByMonth".equals(typeStats)){
-	        		put("cardsByMonth",mapField(Card.countNbCardRequestByMonth(typeInd), 2));
-	        		put("encodedCardsByMonth",mapField(Card.countNbCardEncodedByMonth(typeInd), 2));
+	        		put("cardsByMonth", mapFieldWith1Labels(Card.countNbCardRequestByMonth(typeInd)));
+	        		put("encodedCardsByMonth", mapFieldWith1Labels(Card.countNbCardEncodedByMonth(typeInd)));
 	        	}else if("nbRejetsByMonth".equals(typeStats)){
-	        		put("nbRejetsByMonth",mapField(Card.countNbRejetsByMonth(typeInd), 2));
+	        		put("nbRejetsByMonth", mapFieldWith1Labels(Card.countNbRejetsByMonth(typeInd)));
 	        	}else if("requestFree".equals(typeStats)){
-	        		put("requestFree",mapField(User.countNbRequestFree(),3));
+	        		put("requestFree", mapFieldWith2Labels(User.countNbRequestFree(), true));
 	        	}else if("templateCards".equals(typeStats)){
-	        		put("templateCards",mapField(TemplateCard.countTemplateCardByNameVersion(),2));
+	        		put("templateCards", mapFieldWith1Labels(TemplateCard.countTemplateCardByNameVersion()));
 	        	}else if("europeanCardChart".equals(typeStats)){
-	        		put("europeanCardChart",mapField(User.countNbEuropenCards(),2));
+	        		put("europeanCardChart", mapFieldWith1Labels(User.countNbEuropenCards()));
 	        	}else if("nbRoles".equals(typeStats)){
-	        		put("nbRoles",mapField(User.countNbRoles(),2));
+	        		put("nbRoles", mapFieldWith1Labels(User.countNbRoles()));
 	        	}else if("pendingCards".equals(typeStats)){
-	        		put("pendingCards",mapField(User.countNbPendingCards(typeInd), 2));
+	        		put("pendingCards", mapFieldWith1Labels(User.countNbPendingCards(typeInd)));
 	        	}else if("dueDate".equals(typeStats)){
-	        		put("dueDate",mapField(Card.countDueDatesByDate(typeInd), 2));
+	        		put("dueDate", mapFieldWith1Labels(Card.countDueDatesByDate(typeInd)));
 	        	}else if("cardsByEtat".equals(typeStats)){
-	        		put("cardsByEtat",mapField(Card.countNbCardsByEtat(typeInd), 2));
+	        		put("cardsByEtat", mapFieldWith1Labels(Card.countNbCardsByEtat(typeInd)));
 	        	}
 	        }
 	    };

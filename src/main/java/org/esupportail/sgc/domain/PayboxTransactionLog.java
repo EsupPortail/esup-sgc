@@ -39,7 +39,7 @@ public class PayboxTransactionLog {
         return mnt.toString();
     }
     
-    public static List<Object> countNbPayboxByYearEtat() {
+    public static List<Object[]> countNbPayboxByYearEtat() {
         EntityManager em = PayboxTransactionLog.entityManager();
         String sql = "SELECT CASE WHEN(DATE_PART('month', transaction_date)<7) "
         		+ "THEN CONCAT(CAST(DATE_PART('year', transaction_date)-1 AS TEXT),'-',CAST(DATE_PART('year', transaction_date) AS TEXT)) "

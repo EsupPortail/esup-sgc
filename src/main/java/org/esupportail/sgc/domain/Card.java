@@ -689,7 +689,7 @@ public class Card {
     }
 
     /***Stats****/
-    public static List<Object> countNbCardsByYearEtat(String userType, String etatCase) {
+    public static List<Object[]> countNbCardsByYearEtat(String userType, String etatCase) {
         EntityManager em = Card.entityManager();
         String sql = "SELECT CASE WHEN(DATE_PART('month', request_date)<7) "
         		+ "THEN CONCAT(CAST(DATE_PART('year', request_date)-1 AS TEXT),'-',CAST(DATE_PART('year', request_date) AS TEXT)) "
@@ -706,7 +706,7 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbCardsByDay(String userType, String typeDate) {
+    public static List<Object[]> countNbCardsByDay(String userType, String typeDate) {
         String sql = "SELECT to_date(to_char(" + typeDate + ", 'DD-MM-YYYY'), 'DD-MM-YYYY') AS day, count(*) as count FROM card WHERE DATE_PART('days', now() - " + typeDate + ") < 31 GROUP BY day ORDER BY day";
         EntityManager em = Card.entityManager();
         if (!userType.isEmpty()) {
@@ -720,7 +720,7 @@ public class Card {
         return q.getResultList();
     }
     
-    public static List<Object> countNbCardsByEtat(String userType) {
+    public static List<Object[]> countNbCardsByEtat(String userType) {
         EntityManager em = Card.entityManager();
         String sql = "SELECT etat, count(*) as count FROM card GROUP BY etat ORDER BY count DESC ";
         if (!userType.isEmpty()) {
@@ -740,7 +740,7 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbCardsByMotifsDisable(String userType, String motifCase) {
+    public static List<Object[]> countNbCardsByMotifsDisable(String userType, String motifCase) {
         EntityManager em = Card.entityManager();
         String sql = "SELECT " + motifCase + ", COUNT(*) FROM card WHERE motif_disable IS NOT NULL GROUP BY motif_disable ORDER BY motif_disable";
         if (!userType.isEmpty()) {
@@ -753,12 +753,12 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbCardsByMonthYear(String userType) {
+    public static List<Object[]> countNbCardsByMonthYear(String userType) {
         EntityManager em = Card.entityManager();
-        String sql = "SELECT CAST(DATE_PART('year', request_date) AS INTEGER) AS year, CAST(DATE_PART('month', request_date) AS INTEGER) AS month, count(*) AS count FROM card GROUP BY year, month";
+        String sql = "SELECT CAST(DATE_PART('month', request_date) AS INTEGER) AS month, CAST(DATE_PART('year', request_date) AS INTEGER) AS year, count(*) AS count FROM card GROUP BY month, year ORDER BY month, year";
         if (!userType.isEmpty()) {
-            sql = "SELECT CAST(DATE_PART('year', request_date) AS INTEGER) AS year, CAST(DATE_PART('month', request_date) AS INTEGER) AS month, count(*) AS count FROM card, user_account "
-            		+ "WHERE card.user_account= user_account.id " + " AND user_type =:userType GROUP BY year, month";
+            sql = "SELECT CAST(DATE_PART('month', request_date) AS INTEGER) AS month, CAST(DATE_PART('year', request_date) AS INTEGER) AS year, count(*) AS count FROM card, user_account "
+            		+ "WHERE card.user_account= user_account.id " + " AND user_type =:userType GROUP BY month, year ORDER BY month, year";
         }
         Query q = em.createNativeQuery(sql);
         if (!userType.isEmpty()) {
@@ -768,7 +768,7 @@ public class Card {
     }
     
 
-	public static List<Object> countNbCardsEditedByYear(String userType) {
+	public static List<Object[]> countNbCardsEditedByYear(String userType) {
         EntityManager em = Card.entityManager();
         String sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
         		+ "THEN CONCAT(CAST(DATE_PART('year', encoded_date)-1 AS TEXT),'-',CAST(DATE_PART('year', encoded_date) AS TEXT)) "
@@ -787,7 +787,7 @@ public class Card {
         return q.getResultList();
 	}
 	
-	public static List<Object> countNbCardsEnabledEncodedByYear(String userType) {
+	public static List<Object[]> countNbCardsEnabledEncodedByYear(String userType) {
         EntityManager em = Card.entityManager();
         String sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
         		+ "THEN CONCAT(CAST(DATE_PART('year', encoded_date)-1 AS TEXT),'-',CAST(DATE_PART('year', encoded_date) AS TEXT)) "
@@ -806,7 +806,7 @@ public class Card {
         return q.getResultList();
 	}
 
-    public static List<Object> countNbDeliverdCardsByDay(String userType) {
+    public static List<Object[]> countNbDeliverdCardsByDay(String userType) {
         String sql = "SELECT to_date(to_char(delivered_date, 'DD-MM-YYYY'), 'DD-MM-YYYY') AS day, count(*) as count FROM card WHERE DATE_PART('days', now() - delivered_date) < 31 GROUP BY day ORDER BY day";
         EntityManager em = Card.entityManager();
         if (!userType.isEmpty()) {
@@ -841,7 +841,7 @@ public class Card {
         return Long.valueOf(String.valueOf(q.getSingleResult()));
     }
 
-    public static List<Object> countNbEncodedCardsByDay(String userType) {
+    public static List<Object[]> countNbEncodedCardsByDay(String userType) {
         String sql = "SELECT to_date(to_char(encoded_date, 'DD-MM-YYYY'), 'DD-MM-YYYY') AS day, count(*) as count FROM card WHERE DATE_PART('days', now() - encoded_date) < 31 GROUP BY day ORDER BY day";
         EntityManager em = Card.entityManager();
         if (!userType.isEmpty()) {
@@ -862,7 +862,7 @@ public class Card {
         return distinctNbCards;
     }
 
-    public static List<Object> countBrowserStats(String userType) {
+    public static List<Object[]> countBrowserStats(String userType) {
         String sql = "SELECT CASE WHEN request_browser LIKE '%Firefox%' THEN 'Firefox' WHEN request_browser LIKE '%Chrome%' THEN 'Chrome' " + "WHEN request_browser LIKE '%Explorer%' THEN 'Internet Explorer' " + "WHEN request_browser LIKE '%IE%' THEN 'Internet Explorer' " + "WHEN request_browser LIKE '%Apple%' THEN 'Safari' " + "WHEN request_browser LIKE '%Safari%' THEN 'Safari' " + "WHEN request_browser LIKE '%Edge%' THEN 'Microsoft Edge' " + "WHEN request_browser LIKE '%Opera%' THEN 'Opera' ELSE request_browser END  AS browser , " + "COUNT(*) AS count FROM card WHERE request_browser IS NOT NULL GROUP BY browser ORDER BY count DESC";
         EntityManager em = Card.entityManager();
         if (!userType.isEmpty()) {
@@ -875,7 +875,7 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countOsStats(String userType) {
+    public static List<Object[]> countOsStats(String userType) {
         String sql = "SELECT CASE WHEN request_os LIKE '%iPhone%' THEN 'Smartphone' " + "WHEN request_os LIKE 'Android%x' THEN 'Smartphone' " + "WHEN request_os LIKE '%Phone%' THEN 'Smartphone' WHEN request_os LIKE '%iPad%' THEN 'Tablette' " + "WHEN request_os  LIKE '%Tablet%' THEN 'Tablette' WHEN request_os LIKE '%Touch%' THEN 'Tablette' " + "ELSE 'Desktop' END  AS os, count(*) as count FROM Card WHERE request_os IS NOT NULL GROUP BY os ORDER BY count DESC";
         EntityManager em = Card.entityManager();
         if (!userType.isEmpty()) {
@@ -888,7 +888,7 @@ public class Card {
         return q.getResultList();
     }
     
-    public static List<Object> countRealOsStats(String userType) {
+    public static List<Object[]> countRealOsStats(String userType) {
         String sql = "SELECT request_os, count(*) as count FROM Card WHERE request_os IS NOT NULL GROUP BY request_os ORDER BY count DESC";
         EntityManager em = Card.entityManager();
         if (!userType.isEmpty()) {
@@ -901,7 +901,7 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbEditedCardNotDelivered(String typeCase) {
+    public static List<Object[]> countNbEditedCardNotDelivered(String typeCase) {
         EntityManager em = Card.entityManager();
      
         String sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
@@ -912,7 +912,7 @@ public class Card {
         return q.getResultList();
     }
 
-    public static List<Object> countNbCardsByRejets(String userType) {
+    public static List<Object[]> countNbCardsByRejets(String userType) {
         EntityManager em = Card.entityManager();
 
         String sql = "SELECT nb_rejets, count(*) FROM card GROUP BY nb_rejets";
@@ -973,11 +973,11 @@ public class Card {
         return ((Long) q.getSingleResult());
     }
 
-    public static Query countDeliveryByAddress() {
+    public static List<Object[]> countDeliveryByAddress() {
         EntityManager em = User.entityManager();
         String sql = "SELECT address, count(*) FROM card INNER JOIN user_account ON card.user_account=user_account.id AND delivered_date is null GROUP BY address ORDER BY count DESC";
         Query q = em.createNativeQuery(sql);
-        return q;
+        return q.getResultList();
     }
 
     public static Boolean areCardsReadyToBeDelivered(List<Long> cardIds) {
@@ -1006,7 +1006,7 @@ public class Card {
         return q.getResultList();
 	}
 	
-    public static List<Object> countNbCardRequestByMonth(String userType) {
+    public static List<Object[]> countNbCardRequestByMonth(String userType) {
         String sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
             sql = "SELECT to_char(request_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(request_date, 'MM-YYYY'), 'MM-YYYY')";
@@ -1020,7 +1020,7 @@ public class Card {
         return q.getResultList();
     }
     
-    public static List<Object> countNbCardEncodedByMonth(String userType) {
+    public static List<Object[]> countNbCardEncodedByMonth(String userType) {
         String endDate = "";
         String sql = "SELECT to_char(encoded_date, 'MM-YYYY') tochar, count(*) FROM card GROUP BY tochar ORDER BY to_date(to_char(encoded_date, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
@@ -1035,7 +1035,7 @@ public class Card {
         return q.getResultList();
     }
     
-    public static List<Object> countNbRejetsByMonth(String userType) {
+    public static List<Object[]> countNbRejetsByMonth(String userType) {
         String sql = "SELECT to_char(date_etat, 'MM-YYYY') tochar, count(*) FROM card WHERE etat='REJECTED' GROUP BY tochar ORDER BY to_date(to_char(date_etat, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
             sql = "SELECT to_char(date_etat, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id " + "AND etat='REJECTED' AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(date_etat, 'MM-YYYY'), 'MM-YYYY')";
@@ -1050,7 +1050,7 @@ public class Card {
         return q.getResultList();
     }
     
-    public static List<Object> countDueDatesByDate(String userType) {
+    public static List<Object[]> countDueDatesByDate(String userType) {
         String sql = "SELECT to_char(user_account.due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account=user_account.id AND etat IN ('NEW','REJECTED','RENEWED') GROUP BY tochar ORDER BY to_date(to_char(user_account.due_date, 'MM-YYYY'), 'MM-YYYY')";
         if (!userType.isEmpty()) {
             sql = "SELECT to_char(user_account.due_date, 'MM-YYYY') tochar, count(*) FROM card, user_account WHERE card.user_account= user_account.id AND etat IN ('NEW','REJECTED','RENEW') AND user_type = :userType GROUP BY tochar ORDER BY to_date(to_char(user_account.due_date, 'MM-YYYY'), 'MM-YYYY')";

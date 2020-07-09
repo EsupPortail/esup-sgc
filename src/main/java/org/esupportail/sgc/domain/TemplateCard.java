@@ -73,7 +73,7 @@ public class TemplateCard {
         return this.codeBarres!=null && this.codeBarres;
     }
    
-    public static List<Object> countTemplateCardByNameVersion() {
+    public static List<Object[]> countTemplateCardByNameVersion() {
         String sql = "SELECT CONCAT(name, ' / V', num_version) as nom, count(*) FROM card,template_card WHERE card.template_card= template_card.id AND etat='ENABLED' GROUP BY nom";
 
         EntityManager em = TemplateCard.entityManager();

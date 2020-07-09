@@ -394,7 +394,7 @@ public class User {
 		return isEquals;
 	}
 
-    public static List<Object> countNbCrous(String userType) {
+    public static List<Object[]> countNbCrous(String userType) {
         EntityManager em = User.entityManager();
         String sql = "SELECT crous, count(*) as count FROM user_account GROUP BY crous ORDER BY count DESC";
         if (!userType.isEmpty()) {
@@ -407,7 +407,7 @@ public class User {
         return q.getResultList();
     }
     
-    public static List<Object> countNbDifPhoto(String userType) {
+    public static List<Object[]> countNbDifPhoto(String userType) {
         EntityManager em = User.entityManager();
         String sql = "SELECT dif_photo, count(*) as count FROM user_account GROUP BY dif_photo ORDER BY count DESC";
         if (!userType.isEmpty()) {
@@ -472,7 +472,7 @@ public class User {
 		 return distinctNbCards;
 	}
 	
-	public static List<Object> countNbCardsByuser(String userType) {
+	public static List<Object[]> countNbCardsByuser(String userType) {
         EntityManager em = User.entityManager();
         String sql = "SELECT nb_cards, count(*) as count FROM user_account GROUP BY nb_cards ORDER BY count DESC";
         if (!userType.isEmpty()) {
@@ -485,7 +485,7 @@ public class User {
         return q.getResultList();
     }
 	
-    public static List<Object> countNbEditable() {
+    public static List<Object[]> countNbEditable() {
         EntityManager em = User.entityManager();
         String sql = "SELECT CASE WHEN editable = 't' THEN 'Editable' ELSE 'Non editable' END AS etat , count(*) FROM card, user_account WHERE card.user_account=user_account.id AND etat='NEW' GROUP BY editable ORDER BY count";
         Query q = em.createNativeQuery(sql);
@@ -521,7 +521,7 @@ public class User {
         return dueDateIncluded;
     }
 	
-    public static List<Object> countTarifCrousByType() {
+    public static List<Object[]> countTarifCrousByType() {
         EntityManager em = User.entityManager();
         String sql = "SELECT CONCAT(id_rate, '/', id_compagny_rate) as rate, user_type, COUNT(id_rate) FROM user_account WHERE id_rate IS NOT NULL GROUP BY rate, user_type ORDER BY rate";
 
@@ -530,7 +530,7 @@ public class User {
         return q.getResultList();
     }
     
-    public static List<Object> countNbRequestFree() {
+    public static List<Object[]> countNbRequestFree() {
         EntityManager em = User.entityManager();
         String sql = "SELECT CASE WHEN request_free THEN 'GRATUIT' ELSE 'PAYANT' END AS request_free, user_type, count(*) FROM user_account WHERE user_type IS NOT NULL GROUP BY request_free, user_type ORDER BY request_free";
 
@@ -570,7 +570,7 @@ public class User {
 		return templateCards;
 	}
 	
-    public static List<Object> countNbEuropenCards() {
+    public static List<Object[]> countNbEuropenCards() {
         EntityManager em = User.entityManager();
         String sql = "SELECT european_student_card, count(*) as count FROM user_account, card WHERE user_account.id= card.user_account AND etat='ENABLED' AND user_type='E' GROUP BY european_student_card ORDER BY count DESC";
 
@@ -579,7 +579,7 @@ public class User {
         return q.getResultList();
     }
     
-    public static List<Object> countNbRoles() {
+    public static List<Object[]> countNbRoles() {
         EntityManager em = User.entityManager();
         String sql = "SELECT role, count(role) AS count FROM roles, user_account WHERE roles.user_account=user_account.id GROUP BY role ORDER BY count DESC";
 
@@ -588,7 +588,7 @@ public class User {
         return q.getResultList();
     }
     
-    public static List<Object> countNbPendingCards(String userType) {
+    public static List<Object[]> countNbPendingCards(String userType) {
         EntityManager em = User.entityManager();
         String sql = "SELECT has_card_request_pending, count(*) as count FROM user_account GROUP BY has_card_request_pending ORDER BY count DESC";
         if (!userType.isEmpty()) {
