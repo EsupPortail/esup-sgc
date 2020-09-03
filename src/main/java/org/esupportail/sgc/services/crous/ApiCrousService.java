@@ -265,14 +265,28 @@ public class ApiCrousService {
 		String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
-		if(Long.valueOf(1).equals(oldRightHolder.getIdRate()) && Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
-				&& Long.valueOf(1).equals(rightHolder.getIdRate()) && Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
+		// hack crous duedate étudiants 
+		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
+				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
 				&& oldRightHolder.getDueDate().after(rightHolder.getDueDate())) {
-			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case."
+			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case for %s."
 					+ "Actual dueDate : %s ; wanted dueDate : %s -> we keep the actual dueDate", 
+					oldRightHolder.getIdentifier(),
 					oldRightHolder.getDueDate(), 
 					rightHolder.getDueDate()));
 			rightHolder.setDueDate(oldRightHolder.getDueDate());
+		}
+		// hack crous tarifs spéciaux étudiants ~boursiers
+		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
+				&& !oldRightHolder.getIdRate().equals(rightHolder.getIdRate())
+				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())) {
+			log.debug(String.format("For student, idRate can be set up by Crous/Izly - "
+					+ "For %s : idRate - %s->%s", 
+					oldRightHolder.getIdentifier(),
+					rightHolder.getIdRate(),
+					oldRightHolder.getIdRate()));
+			rightHolder.setIdRate(oldRightHolder.getIdRate());
+			user.setIdRate(rightHolder.getIdRate());
 		}
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {

@@ -177,6 +177,8 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
 	        		put("motifs", mapFieldWith1Labels(Card.countNbCardsByMotifsDisable(typeInd, mapToCase("motif_disable", mapsFromI18n("motifs", Locale.FRENCH, "card.label"), "motif_disable"))));
 	        	}else if("dates".equals(typeStats)){
 	        		put("dates", mapFieldWith2Labels(Card.countNbCardsByMonthYear(typeInd), false));
+	        	}else if("encodagedates".equals(typeStats)){
+	        		put("encodagedates", mapFieldWith2Labels(Card.countNbCardsEncodedByMonthYear(typeInd), false));
 	        	}else if("deliveredCardsByDay".equals(typeStats)){
 	        		put("deliveredCardsByDay", mapFieldWith1Labels(Card.countNbDeliverdCardsByDay(typeInd)));
 	        	}else if("encodedCardsByday".equals(typeStats)){
@@ -197,10 +199,16 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
 	        		put("notDelivered", mapFieldWith2Labels(Card.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), true));
 	        	}else if("deliveryByAdress".equals(typeStats)){
 	        		put("deliveryByAdress", mapFieldWith1Labels(Card.countDeliveryByAddress()));
+	        	}else if("noneditableByAdress".equals(typeStats)){
+	        		put("noneditableByAdress", mapFieldWith1Labels(Card.countNonEditableByAddress()));
 	        	}else if("userDeliveries".equals(typeStats)){
 	        		put("userDeliveries", mapFieldWith1Labels(Log.countUserDeliveries()));
 	        	}else if("tarifsCrousBars".equals(typeStats)){
 	        		put("tarifsCrousBars", mapFieldWith2Labels(User.countTarifCrousByType(), true));
+	        	}else if("nextDueDatesOneYearByType".equals(typeStats)){
+	        		put("nextDueDatesOneYearByType", mapFieldWith2Labels(User.countNextDueDatesOneYearByType(), true));
+	        	}else if("nextDueDatesOneMonthByType".equals(typeStats)){
+	        		put("nextDueDatesOneMonthByType", mapFieldWith2Labels(User.countNextDueDatesOneMonthByType(), true));
 	        	}else if("cardsByMonth".equals(typeStats)){
 	        		put("cardsByMonth", mapFieldWith1Labels(Card.countNbCardRequestByMonth(typeInd)));
 	        		put("encodedCardsByMonth", mapFieldWith1Labels(Card.countNbCardEncodedByMonth(typeInd)));

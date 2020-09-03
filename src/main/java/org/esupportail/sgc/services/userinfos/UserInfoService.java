@@ -290,13 +290,24 @@ public class UserInfoService {
 		List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
 		Long idCompagnyRate = idCompagnyRateAndIdRate.get(0);
 		Long idRate = idCompagnyRateAndIdRate.get(1);
-		user.setIdCompagnyRate(idCompagnyRate);
+		
+		if(user.getCrous()!=null && user.getCrous()) {			
+			// hack crous tarifs spéciaux étudiants ~boursiers : idCompanyRate en 10 -> idRate final/vrai vient en fait du crous 
+			// on s'arrange cependant ici pour ne pas faire un Get sur Api Crous pour chaque étudiant
+			// donc récupération en base de l'idRate précédemment récupéré depuis ApiCrousService.updateRightHolder
+			if(Long.valueOf(10).equals(idCompagnyRate) && Long.valueOf(10).equals(user.getIdCompagnyRate()) && user.getIdRate()!=null) {
+				idRate = user.getIdRate();
+			}			
+		}	
+		
 		user.setIdRate(idRate);
+		user.setIdCompagnyRate(idCompagnyRate);
 		
 		if(user.getCrous()!=null && user.getCrous()) {			
 			// hack crous ~cnrs : idCompanyRate en 7999 -> idRate final/vrai vient en fait du crous 
 			if(Long.valueOf(7999).equals(user.getIdCompagnyRate())) {
 				try {
+					// GET sur Api Crous pour chaque agent CNRS (on estime que ça reste raisonnable)
 					RightHolder rightHolder = crousService.getRightHolder(user);
 					if(rightHolder == null) {
 						log.debug("rightHolder on crous is null for "  + user.getEppn());
@@ -307,8 +318,7 @@ public class UserInfoService {
 				} catch(HttpClientErrorException ex) {
 					log.debug("Exception getting crous rightHolder for " + user.getEppn(), ex);
 				}
-			}
-			
+			}			
 		}	
 		
 		if(caducIfEmpty != null && !caducIfEmpty.isEmpty()) {

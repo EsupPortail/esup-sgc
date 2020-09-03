@@ -340,7 +340,7 @@ public class User {
 		}
 		
 		for(String varStringName : Arrays.asList(new String[] {"address", "externalAddress", "cnousReferenceStatut", "crous", "difPhoto", "editable", "eduPersonPrimaryAffiliation", "email",
-				"eppn", "europeanStudentCard", "firstname", "idCompagnyRate", "idRate", "indice", "institute", "name", 
+				"eppn", "europeanStudentCard", "firstname", "idCompagnyRate", "indice", "institute", "name", 
 				"recto1", "recto2", "recto3", "recto4", "recto5", "recto6", "recto7", 
 				"freeField1", "freeField2", "freeField3", 
 				"requestFree", "rneEtablissement", "secondaryId", "supannCodeINE", "supannEmpId", "supannEntiteAffectationPrincipale", "supannEtuId", "userType", 
@@ -348,6 +348,17 @@ public class User {
 				"templateKey", "blockUserMsg", "academicLevel"})) {
 			if(!this.checkEqualsVar(varStringName, other)) {
 				return varStringName;
+			}
+		}
+		
+		// hack idRate pour student : si idCompagnyRate == 10 (student), idRate pas pris en compte pour getFieldNotEquals
+		if (idRate == null) {
+			if (other.idRate != null) {
+				return "idRate";
+			}
+		} else if(idCompagnyRate==null || other.idCompagnyRate==null || !idCompagnyRate.equals(other.idCompagnyRate) || !idCompagnyRate.equals(Long.valueOf(10))) {
+			if(!this.checkEqualsVar("idRate", other)) {
+				return "idRate";
 			}
 		}
 
@@ -523,12 +534,31 @@ public class User {
 	
     public static List<Object[]> countTarifCrousByType() {
         EntityManager em = User.entityManager();
-        String sql = "SELECT CONCAT(id_rate, '/', id_compagny_rate) as rate, user_type, COUNT(id_rate) FROM user_account WHERE id_rate IS NOT NULL GROUP BY rate, user_type ORDER BY rate";
+        String sql = "SELECT CONCAT(id_compagny_rate, '/', id_rate) as rate, user_type, COUNT(id_rate) FROM user_account WHERE due_date > now() AND id_rate IS NOT NULL GROUP BY rate, user_type ORDER BY rate";
 
         Query q = em.createNativeQuery(sql);
 
         return q.getResultList();
     }
+    
+    public static List<Object[]> countNextDueDatesOneYearByType() {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT to_char(due_date, 'MM-YYYY') tochar, user_type, count(*) FROM user_account WHERE due_date > now() AND due_date < now() + INTERVAL '1 YEAR' GROUP BY tochar, user_type ORDER BY to_date(to_char(due_date, 'MM-YYYY'), 'MM-YYYY')";
+
+        Query q = em.createNativeQuery(sql);
+
+        return q.getResultList();
+    }
+    
+    public static List<Object[]> countNextDueDatesOneMonthByType() {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT to_char(due_date, 'DD-MM-YYYY') tochar, user_type, count(*) FROM user_account WHERE due_date > now() AND due_date < now() + INTERVAL '1 MONTH' GROUP BY tochar, user_type ORDER BY to_date(to_char(due_date, 'DD-MM-YYYY'), 'DD-MM-YYYY')";
+
+        Query q = em.createNativeQuery(sql);
+
+        return q.getResultList();
+    }
+    
     
     public static List<Object[]> countNbRequestFree() {
         EntityManager em = User.entityManager();

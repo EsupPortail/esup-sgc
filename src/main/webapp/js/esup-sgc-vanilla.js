@@ -932,6 +932,7 @@ document.addEventListener('DOMContentLoaded', function() {
     	getStats("paybox", "multiBar", selectedType, nbGraph++);
     	getStats("motifs", "chartBar", selectedType, nbGraph++);
     	getStats("dates", "lineChart", selectedType, nbGraph++, null, null, false, null, null, null, true, monthsArray, true);
+    	getStats("encodagedates", "lineChart", selectedType, nbGraph++, null, null, false, null, null, null, true, monthsArray, true);
     	getStats("deliveredCardsByDay", "chartBar", selectedType, nbGraph++);
     	getStats("encodedCardsByday", "chartBar", selectedType, nbGraph++);
     	getStats("nbCards", "doughnut", selectedType, nbGraph++);
@@ -942,6 +943,7 @@ document.addEventListener('DOMContentLoaded', function() {
     	getStats("nbRejets", "doughnut", selectedType, nbGraph++);
     	getStats("notDelivered", "multiBar", selectedType, nbGraph++);
     	getStats("deliveryByAdress", "pie", selectedType, nbGraph++, "legend");
+    	getStats("noneditableByAdress", "pie", selectedType, nbGraph++, "legend");
     	getStats("userDeliveries", "chartBar", selectedType, nbGraph++);
     	getStats("tarifsCrousBars", "multiBarLoga", selectedType, nbGraph++);
     	getStats("cardsByMonth", "chartBar", selectedType, nbGraph++, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
@@ -953,6 +955,8 @@ document.addEventListener('DOMContentLoaded', function() {
     	getStats("pendingCards", "pie", selectedType, nbGraph++);
     	getStats("dueDate", "chartBar", selectedType, nbGraph++);
     	getStats("cardsByEtat", "pie", selectedType, nbGraph++, null, null, false, null, null, null, false, monthsArray,false, true);
+    	getStats("nextDueDatesOneYearByType", "multiBarLoga", selectedType, nbGraph++);
+    	getStats("nextDueDatesOneMonthByType", "multiBar", selectedType, nbGraph++);
 
        	var downloadBtn = document.querySelectorAll('.downloadBtn');
     	Array.from(downloadBtn).forEach(function(link) {

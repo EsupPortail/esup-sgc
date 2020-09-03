@@ -230,6 +230,24 @@
 						</div>
 					</div>
 				</div>
+				<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nonEditablesParAdresse">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h5>Demandes non éditables par adresse
+								<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+								<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>							
+							</h5>
+						</div>
+						<div class="panel-body ">
+							<canvas id="noneditableByAdress" width="400" height="400">&amp;nbsp;</canvas>
+							<div class="chartjs-tooltip">
+								<table>
+									<!--  -->
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editeesNonLivrees">
 					<div class="panel panel-primary">
 						<div class="panel-heading">
@@ -274,6 +292,19 @@
 				</div>
 				<div class="panel-body ">
 					<canvas id="dates" width="400" height="400">&amp;nbsp;</canvas>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="periodesEncodageCarte">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h5>Périodes d'édition des cartes
+						<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+						<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+					</h5>
+				</div>
+				<div class="panel-body ">
+					<canvas id="encodagedates" width="400" height="400">&amp;nbsp;</canvas>
 				</div>
 			</div>
 		</div>
@@ -414,7 +445,7 @@
 			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="tarifsCrous">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						<h5>Tarifs Crous (échelle logarithmique)
+						<h5>Tarifs Crous (comptes actifs, échelle logarithmique)
 							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
 							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
 						</h5>
@@ -530,6 +561,34 @@
 				</div>
 			</div>
 		</c:if>	
+		<c:if test="${empty selectedType}">
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nextDueDatesOneYearByTypeDiv">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Prochains comptes 'caducs' (d'ici 1 an)
+							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="nextDueDatesOneYearByType" width="400" height="400">&amp;nbsp;</canvas>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nextDueDatesOneMonthByTypeDiv">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h5>Prochains comptes 'caducs' (d'ici 1 mois)
+							<button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+							<span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+						</h5>
+					</div>
+					<div class="panel-body ">
+						<canvas id="nextDueDatesOneMonthByType" width="400" height="400">&amp;nbsp;</canvas>
+					</div>
+				</div>
+			</div>
+		</c:if>
 	</div>
 	<jsp:include page="includes/modals.jspx"/>
 </div>

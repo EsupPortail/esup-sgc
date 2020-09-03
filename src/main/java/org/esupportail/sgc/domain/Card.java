@@ -767,7 +767,20 @@ public class Card {
         return q.getResultList();
     }
     
-
+    public static List<Object[]> countNbCardsEncodedByMonthYear(String userType) {
+        EntityManager em = Card.entityManager();
+        String sql = "SELECT CAST(DATE_PART('month', encoded_date) AS INTEGER) AS month, CAST(DATE_PART('year', encoded_date) AS INTEGER) AS year, count(*) AS count FROM card WHERE encoded_date is not null GROUP BY month, year ORDER BY month, year";
+        if (!userType.isEmpty()) {
+            sql = "SELECT CAST(DATE_PART('month', encoded_date) AS INTEGER) AS month, CAST(DATE_PART('year', encoded_date) AS INTEGER) AS year, count(*) AS count FROM card, user_account "
+            		+ "WHERE encoded_date is not null AND card.user_account= user_account.id " + " AND user_type =:userType GROUP BY month, year ORDER BY month, year";
+        }
+        Query q = em.createNativeQuery(sql);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return q.getResultList();
+    }  
+    
 	public static List<Object[]> countNbCardsEditedByYear(String userType) {
         EntityManager em = Card.entityManager();
         String sql = "SELECT CASE WHEN(DATE_PART('month', encoded_date)<7) "
@@ -976,6 +989,13 @@ public class Card {
     public static List<Object[]> countDeliveryByAddress() {
         EntityManager em = User.entityManager();
         String sql = "SELECT address, count(*) FROM card INNER JOIN user_account ON card.user_account=user_account.id AND delivered_date is null GROUP BY address ORDER BY count DESC";
+        Query q = em.createNativeQuery(sql);
+        return q.getResultList();
+    }
+    
+    public static List<Object[]> countNonEditableByAddress() {
+        EntityManager em = User.entityManager();
+        String sql = "SELECT address, count(*) FROM card INNER JOIN user_account ON card.user_account=user_account.id AND not editable and etat='NEW' GROUP BY address ORDER BY count DESC";
         Query q = em.createNativeQuery(sql);
         return q.getResultList();
     }
