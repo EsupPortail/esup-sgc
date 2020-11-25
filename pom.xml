@@ -5,7 +5,7 @@
 	<groupId>org.esupportail</groupId>
 	<artifactId>sgc</artifactId>
 	<packaging>war</packaging>
-	<version>1.5.4-SNAPSHOT</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<name>esup-sgc</name>
 	<properties>
 		<aspectj.version>1.8.13</aspectj.version>
@@ -13,8 +13,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<roo.version>1.3.2.RELEASE</roo.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<spring.version>4.3.23.RELEASE</spring.version>
-		<spring-security.version>4.2.13.RELEASE</spring-security.version>
+		<spring.version>4.3.29.RELEASE</spring.version>
+		<spring-security.version>4.2.18.RELEASE</spring-security.version>
 		<skipTests>true</skipTests>
 	</properties>
 	<repositories>
@@ -459,11 +459,59 @@
 		    <artifactId>cache-api</artifactId>
 		    <version>1.1.0</version>
 		</dependency>
-			
+
 		<dependency>
 			<groupId>xmlrpc</groupId>
 			<artifactId>xmlrpc</artifactId>
 			<version>2.0.1</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>webjars-locator</artifactId>
+			<version>0.37</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>3.3.7</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.webjars.npm</groupId>
+		    <artifactId>slim-select</artifactId>
+		    <version>1.24.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>chartjs</artifactId>
+			<version>2.9.3</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.webjars.bower</groupId>
+		    <artifactId>konva</artifactId>
+		    <version>2.1.7</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.webjars.npm</groupId>
+		    <artifactId>awesomplete</artifactId>
+		    <version>1.1.5</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.webjars.npm</groupId>
+		    <artifactId>dragula</artifactId>
+		    <version>3.7.2</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.webjars.npm</groupId>
+		    <artifactId>exif-js</artifactId>
+		    <version>2.3.0</version>
 		</dependency>
 		
 	</dependencies>

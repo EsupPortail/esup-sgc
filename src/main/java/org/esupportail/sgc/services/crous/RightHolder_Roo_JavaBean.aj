@@ -80,4 +80,20 @@ privileged aspect RightHolder_Roo_JavaBean {
         this.rneOrgCode = rneOrgCode;
     }
     
+    public AccountStatus RightHolder.getAccountStatus() {
+        return this.accountStatus;
+    }
+    
+    public void RightHolder.setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+    
+    public BlockingStatus RightHolder.getBlockingStatus() {
+        return this.blockingStatus;
+    }
+    
+    public void RightHolder.setBlockingStatus(BlockingStatus blockingStatus) {
+        this.blockingStatus = blockingStatus;
+    }
+    
 }

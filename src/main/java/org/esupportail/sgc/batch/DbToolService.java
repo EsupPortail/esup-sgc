@@ -30,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.5.x";
+	final static String currentEsupSgcVersion = "1.6.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -270,6 +270,28 @@ public class DbToolService {
 				connection.close();
 				
 	    		esupSgcVersion = "1.5.x";
+			}			
+			if("1.5.x".equals(esupSgcVersion)) {
+				
+				String sqlUpdate = "";
+				log.warn("Suppression des escr_student en double pour un même eppn ; on garde ceux dont l'identifiant ESC correspont au code INE");
+				sqlUpdate += "delete from escr_student where id in (select escr_student.id from escr_student, user_account where user_account.eppn in (select eppn from (" + 
+						"  SELECT eppn," + 
+						"  ROW_NUMBER() OVER(PARTITION BY eppn ORDER BY eppn asc) AS Row" + 
+						"  FROM escr_student" + 
+						") dups where dups.Row > 1)"
+						+ " and escr_student.eppn=user_account.eppn and escr_student.european_student_identifier NOT LIKE '%' || user_account.supann_codeine);";
+
+				// ajout contrainte unicité
+				sqlUpdate += "ALTER TABLE escr_student ADD CONSTRAINT  escr_student_eppn_unique UNIQUE (eppn);";
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+	    		esupSgcVersion = "1.6.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

@@ -2,6 +2,8 @@ package org.esupportail.sgc.domain;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import org.springframework.roo.addon.dbre.RooDbManaged;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @RooJpaActiveRecord(finders = {"findEscrStudentsByEppnEquals"})
 public class EscrStudent {
 	
+	@Column(unique=true)
 	String eppn;
 
 	String europeanStudentIdentifier;

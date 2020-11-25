@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CrousSmartCard;
@@ -20,6 +21,7 @@ import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.crous.CrousErrorLog.CrousOperation;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
+import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -131,7 +133,7 @@ public class ApiCrousService {
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			try {
-				ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);		
+				ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);	
 				return response.getBody();
 			} catch(HttpClientErrorException clientEx) {
 				throw new CrousHttpClientErrorException(clientEx, eppn, null, CrousOperation.GET, esupSgcOperation, url);
@@ -139,7 +141,7 @@ public class ApiCrousService {
 		} 
 		return null;
 	}
-	
+
 	public CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpClientErrorException {
 		Card card = Card.findCardByCsn(csn);
 		CrousSmartCard crousSmartCard = null;
@@ -182,14 +184,14 @@ public class ApiCrousService {
 				log.info("Getting RightHolder for " + crousIdentifier + " : " + oldRightHolder.toString());
 				RightHolder newRightHolder = computeEsupSgcRightHolder(user, true);
 				if(log.isTraceEnabled()) {
-					log.trace(String.format("newRightHolder.fieldWoDueDateEquals(oldRightHolder) : %s", newRightHolder.fieldWoDueDateEquals(oldRightHolder)));
+					log.trace(String.format("newRightHolder.fieldWoDueDateEquals(oldRightHolder) : %s", fieldsEqualsOrCanNotBeUpdate(newRightHolder, oldRightHolder)));
 					log.trace(String.format("mustUpdateDueDateCrous(oldRightHolder, eppn) : %s", mustUpdateDueDateCrous(oldRightHolder, eppn)));
 				}
 				if(!crousIdentifier.equals(user.getCrousIdentifier())) {
 					// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore - bis
 					user.setCrousIdentifier(crousIdentifier);
 				}
-				if(!newRightHolder.fieldWoDueDateEquals(oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
+				if(!fieldsEqualsOrCanNotBeUpdate(newRightHolder, oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
 					if(!newRightHolder.getIdentifier().equals(oldRightHolder.getIdentifier())) {
 						PatchIdentifier patchIdentifier = new PatchIdentifier();
 						patchIdentifier.setCurrentIdentifier(oldRightHolder.getIdentifier());
@@ -228,6 +230,39 @@ public class ApiCrousService {
 		return true;
 	}
 
+
+	boolean fieldsEqualsOrCanNotBeUpdate(RightHolder newRightHolder, RightHolder oldRightHolder) {
+		// pour les étudiants, pas d'update sur nom/prenom/email/datedenaissance quelque soit l'état du compte
+		// ces infos sont normalement créés par l'import du fichier de la CVEC et l'api ne peut pas les modifier
+		if(StringUtils.isNotEmpty(oldRightHolder.getIne()) && StringUtils.isNotEmpty(newRightHolder.getIne())) {
+			// ETUDIANT
+			for(String varStringName : Arrays.asList(new String[] {"identifier", "ine", "rneOrgCode", "idCompanyRate", "idRate"})) {
+				if(!newRightHolder.checkEqualsVar(varStringName, oldRightHolder)) {
+					return false;
+				}
+			}			
+		} else {
+			// NON ETUDIANT
+			if (newRightHolder.getBirthDate() == null) {
+				if (oldRightHolder.birthDate != null) {
+					log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate()));
+					return false;
+				}
+			} 
+			// compare only day (without time) for birthday 
+			else if (DateTimeComparator.getDateOnlyInstance().compare(newRightHolder.getBirthDate(), oldRightHolder.getBirthDate())!=0) {
+				log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate())); 
+				return false;
+			}
+
+			for(String varStringName : Arrays.asList(new String[] {"email", "firstName", "identifier", "lastName", "ine", "rneOrgCode", "idCompanyRate", "idRate"})) {
+				if(!newRightHolder.checkEqualsVar(varStringName, oldRightHolder)) {
+					return false;
+				}
+			}			
+		}
+		return true;
+	}
 
 	private boolean postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		String url = webUrl + "/rightholders";
@@ -562,7 +597,6 @@ public class ApiCrousService {
 	public boolean isEnabled() {
 		return enable;
 	}
-
 }
 
 

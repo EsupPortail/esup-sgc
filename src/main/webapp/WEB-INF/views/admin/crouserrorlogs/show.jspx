@@ -45,6 +45,10 @@
                         <dd>${esupSgcRightHolder.ine}</dd>
                         <dt>rneOrgCode</dt>
                         <dd>${esupSgcRightHolder.rneOrgCode}</dd>
+                        <dt>accountStatus</dt>
+						<dd>${esupSgcRightHolder.accountStatus}</dd>	
+						<dt>blockingStatus</dt>
+						<dd>${esupSgcRightHolder.blockingStatus}</dd>	
                     </dl>
                 </c:when>
                 <c:when test="${not empty esupSgcRightHolderException}">
@@ -81,6 +85,10 @@
                         <dd>${crousEppnRightHolder.ine}</dd>
                         <dt>rneOrgCode</dt>
                         <dd>${crousEppnRightHolder.rneOrgCode}</dd>
+                        <dt>accountStatus</dt>
+						<dd>${crousEppnRightHolder.accountStatus}</dd>	
+						<dt>blockingStatus</dt>
+						<dd>${crousEppnRightHolder.blockingStatus}</dd>	
                     </dl>
                 </c:when>
                 <c:when test="${not empty crousEppnRightHolderException}">
@@ -117,6 +125,10 @@
                         <dd>${crousEmailRightHolder.ine}</dd>
                         <dt>rneOrgCode</dt>
                         <dd>${crousEmailRightHolder.rneOrgCode}</dd>
+                        <dt>accountStatus</dt>
+						<dd>${crousEmailRightHolder.accountStatus}</dd>	
+						<dt>blockingStatus</dt>
+						<dd>${crousEmailRightHolder.blockingStatus}</dd>	
                     </dl>
                 </c:when>
                 <c:when test="${not empty crousEmailRightHolderException}">
@@ -153,6 +165,10 @@
                         <dd>${crousIneRightHolder.ine}</dd>
                         <dt>rneOrgCode</dt>
                         <dd>${crousIneRightHolder.rneOrgCode}</dd>
+                        <dt>accountStatus</dt>
+						<dd>${crousIneRightHolder.accountStatus}</dd>	
+						<dt>blockingStatus</dt>
+						<dd>${crousIneRightHolder.blockingStatus}</dd>	                      
                     </dl>
                 </c:when>
                 <c:when test="${not empty crousIneRightHolderException}">

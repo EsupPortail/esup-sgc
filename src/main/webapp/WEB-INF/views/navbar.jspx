@@ -85,7 +85,7 @@
  -->	    
  
 		<sec:authorize access="hasRole('ROLE_PREVIOUS_ADMINISTRATOR')">
-			<spring:url value="/j_spring_security_logout" var="su_exit_url" />
+			<spring:url value="/logout" var="su_exit_url" />
 			<ul class="nav navbar-nav navbar-right esupsgc-supervisor-nav">
 				<li><a href="${su_exit_url}" class="btn btn-warning">SORTIR DU SU !</a></li>
 			</ul>

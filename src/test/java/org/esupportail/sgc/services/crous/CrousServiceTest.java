@@ -24,6 +24,9 @@ public class CrousServiceTest {
 	@Resource
 	CrousService crousService;
 
+	@Resource
+	ApiCrousService apiCrousService;
+	
 	@Test
 	public void testGetRightHolder() {
 		List<User> users = User.findUsersByCrous(true).getResultList();
@@ -41,7 +44,7 @@ public class CrousServiceTest {
 		User user = users.get(0);
 		RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
 		Assume.assumeTrue(rightHolder != null);
-		assertTrue(rightHolder.fieldWoDueDateEquals(rightHolder));
+		assertTrue(apiCrousService.fieldsEqualsOrCanNotBeUpdate(rightHolder, rightHolder));
 	}
 	
 	

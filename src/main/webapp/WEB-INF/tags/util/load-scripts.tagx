@@ -6,25 +6,26 @@
 
   	<jsp:output omit-xml-declaration="yes" />
 
-	<spring:url value="/resources/css/bootstrap.min.css" var="bootstrap_css_url" />
-	<spring:url value="/resources/css/awesomplete.css" var="awesome_css_url" />
+	<spring:url value="/webjars/bootstrap/css/bootstrap.min.css" var="bootstrap_css_url" />
+	<spring:url value="/webjars/awesomplete/awesomplete.css" var="awesome_css_url" />
 	<spring:url value="/resources/css/progress-wizard.min.css" var="progress_css_url" />
 	<spring:url value="/resources/css/suneditor.css" var="suneditor_css_url" />
-	<spring:url value="/resources/css/dragula.min.css" var="dragula_css_url" />
-	<spring:url value="/resources/css/slimselect.min.css" var="slimselect_css_url" />
+	<spring:url value="/webjars/dragula/dist/dragula.min.css" var="dragula_css_url" />
+	<spring:url value="/webjars/slim-select/dist/slimselect.min.css" var="slimselect_css_url" />
 	<spring:url value="/resources/css/esup-sgc.css" var="esupSgc_css_url" />
 
-	<spring:url value="/resources/js/bootstrap-native-custom.min.js" var="bootstrap_js__url" />
+	<spring:url value="/resources/js/bootstrap-native-custom.min.js" var="bootstrap_js_url" />
 	<spring:url value="/resources/js/ezcrop.js" var="ezcrop_js_url" />
-	<spring:url value="/resources/js/konva.min.js" var="konva_js_url" />
-	<spring:url value="/resources/js/Chart.min.js" var="chart_js_url" />
+	<spring:url value="/webjars/konva/konva.min.js" var="konva_js_url" />
+	<spring:url value="/webjars/chartjs/Chart.min.js" var="chart_js_url" />
 	<spring:url value="/resources/js/esup-sgc_msg_fr.js" var="esup_sgc_msg_fr_url" />
-	<spring:url value="/resources/js/awesomplete.min.js" var="awesome_js_url" />
+	
+	<spring:url value="/webjars/awesomplete/awesomplete.min.js" var="awesome_js_url" />
 	<spring:url value="/resources/js/suneditor.min.js" var="suneditor_js_url" />
-	<spring:url value="/resources/js/exif.js" var="exif_js_url" />
-	<spring:url value="/resources/js/dragula.min.js" var="dragula_js_url" />
+	<spring:url value="/webjars/exif-js/exif.js" var="exif_js_url" />
+	<spring:url value="/webjars/dragula/dist/dragula.min.js" var="dragula_js_url" />
 	<spring:url value="/resources/js/webcam.min.js" var="webcam_url" />
-	<spring:url value="/resources/js/slimselect.min.js" var="slimselect_js_url" />
+	<spring:url value="/webjars/slim-select/dist/slimselect.min.js" var="slimselect_js_url" />
 	<spring:url value="/resources/js/equalDiv.js" var="equalDiv_js_url" />
 	<spring:url value="/resources/js/chartjs-plugin-datalabels.min.js" var="chartjs_labels_url" />
 	<spring:url value="/resources/js/esup-sgc-vanilla.js" var="esupSgcVanilla_js_url" />
@@ -49,7 +50,7 @@
 
 	<link rel="SHORTCUT ICON" href="${favicon}" />
 
-	<script src="${bootstrap_js__url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<script src="${bootstrap_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${ezcrop_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${konva_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${chart_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>

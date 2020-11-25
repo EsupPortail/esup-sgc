@@ -17,6 +17,8 @@
 		<dd>${rightHolder.firstName}</dd>	
 		<dt>lastName</dt>
 		<dd>${rightHolder.lastName}</dd>	
+		<dt>birthDate</dt>
+		<dd>${rightHolder.birthDate}</dd>	
 		<dt>email</dt>
 		<dd>${rightHolder.email}</dd>	
 		<dt>dueDate</dt>
@@ -29,6 +31,10 @@
 		<dd>${rightHolder.ine}</dd>		
 		<dt>rneOrgCode</dt>
 		<dd>${rightHolder.rneOrgCode}</dd>		
+		<dt>accountStatus</dt>
+		<dd>${rightHolder.accountStatus}</dd>	
+		<dt>blockingStatus</dt>
+		<dd>${rightHolder.blockingStatus}</dd>	
 	</dl>
 	
 </div>

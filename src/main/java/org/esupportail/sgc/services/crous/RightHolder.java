@@ -13,6 +13,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 @RooToString
 @RooJavaBean
@@ -20,9 +21,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class RightHolder {
 
 	private final static Logger log = LoggerFactory.getLogger(RightHolder.class);
+	
+	public enum AccountStatus {
+		DUMMY, NON_CONFIRME, ACTIF, CLOTURE, CLOTURE_EN_COURS;
+	}  
 
-	/**** required part ****/
-
+	public enum BlockingStatus {
+		DUMMY, NON_BLOQUE, BLOCAGE_PAR_3_MOTS_DE_PASSE_ERRONNES, MIS_EN_OPPOSITION, COMPTE_GELE;
+	}  
+	
 	String identifier;
 
 	String firstName;
@@ -42,6 +49,10 @@ public class RightHolder {
 	String ine;
 
 	String rneOrgCode;
+	
+	AccountStatus accountStatus;
+	
+	BlockingStatus blockingStatus;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
 	public Date getDueDate() {
@@ -53,36 +64,7 @@ public class RightHolder {
 		return birthDate;
 	}
 
-	public boolean fieldWoDueDateEquals(RightHolder obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		RightHolder other = (RightHolder) obj;
-		if (birthDate == null) {
-			if (other.birthDate != null) {
-				log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", birthDate, other.birthDate));
-				return false;
-			}
-		} 
-		// compare only day (without time) for birthday 
-		else if (DateTimeComparator.getDateOnlyInstance().compare(birthDate, other.birthDate)!=0) {
-			log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", birthDate, other.birthDate)); 
-			return false;
-		}
-
-		for(String varStringName : Arrays.asList(new String[] {"email", "firstName", "identifier", "lastName", "ine", "rneOrgCode", "idCompanyRate", "idRate"})) {
-			if(!this.checkEqualsVar(varStringName, other)) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	private boolean checkEqualsVar(String varStringName, RightHolder other) {	
+	boolean checkEqualsVar(String varStringName, RightHolder other) {	
 		boolean isEquals = true;
 		try {
 			Field f = RightHolder.class.getDeclaredField(varStringName);
