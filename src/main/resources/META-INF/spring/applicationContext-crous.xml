@@ -37,8 +37,8 @@
 	<bean id="apiCrousService" class="org.esupportail.sgc.services.crous.ApiCrousService">
 		<property name="enable" value="false"/>
 		<property name="webUrl" value="https://api-pp.nuonet.fr/v1" />
-		<property name="login" value="toto@univ-ville.fr" />
-		<property name="password" value="motdepasseapicrous" />
+		<property name="appId" value="appIdDeApiCrousPourEsupSgc" />
+		<property name="appSecret" value="appSecretDeApiCrousPourEsupSgc" />
 		<property name="restTemplate" ref="restTemplate" />
 	</bean>
 	

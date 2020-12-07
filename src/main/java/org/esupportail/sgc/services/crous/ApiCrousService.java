@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.MotifDisable;
@@ -60,9 +61,9 @@ public class ApiCrousService {
 	
 	String webUrl;
 	
-	String login;
+	String appId;
 	
-	String password;
+	String appSecret;
 	
 	String authToken = null;
 	
@@ -75,26 +76,39 @@ public class ApiCrousService {
 	public void setWebUrl(String webUrl) {
 		this.webUrl = webUrl;
 	}
+	
 
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 	
+	public void setAppSecret(String appSecret) {
+		this.appSecret = appSecret;
+	}
+
 	public void setEnable(Boolean enable) {
 		this.enable = enable;
 	}
 
 	public synchronized void authenticate() {
 		if(enable) {
-			String url = webUrl + "/authenticate";
-			HttpHeaders headers = getJsonHeaders();
-			Map<String, String> body = new HashMap<String, String>();
-			body.put("login", login);
-			body.put("password", password);
+			String url = webUrl + "/token";
+			String basicAuthorisation = String.format("%s:%s", appId, appSecret);
+			basicAuthorisation = Base64.encodeBase64String(basicAuthorisation.getBytes());
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "application/x-www-form-urlencoded");
+			headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+			headers.set("Authorization", basicAuthorisation);
+			log.trace(String.format("Headers for CROUS API authentication : %s", headers));
+			String body = "grant_type=client_credentials";
+			if("https://api.lescrous.fr/v1".equals(webUrl)) {
+				body += "&env=PRD";
+			} else if("https://api-pp.nuonet.fr/v1".equals(webUrl)) {
+				body += "&env=PPD";
+			} else {
+				log.error("webUrl should be https://api-pp.nuonet.fr/v1 or https://api.nuonet.fr/v1 ?!");
+			}
+			log.trace(String.format("Body for CROUS API authentication : %s", body));
 			HttpEntity entity = new HttpEntity(body, headers);	
 			HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 			HttpHeaders httpHeadersResponse = response.getHeaders();
@@ -103,6 +117,7 @@ public class ApiCrousService {
 			if(authorizations!=null && !authorizations.isEmpty()) {
 				authToken = authorizations.get(0);
 				log.info("Auth Token of Crous API is renew : " + authToken);
+				
 			} else {
 				throw new SgcRuntimeException("No authorization header when crous authentication : " + httpHeadersResponse, null);
 			}

@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.crous;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -31,9 +32,13 @@ public class CrousServiceTest {
 	public void testGetRightHolder() {
 		List<User> users = User.findUsersByCrous(true).getResultList();
 		Assume.assumeTrue(!users.isEmpty());
-		User user = users.get(0);
-		RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
-		log.info(String.format("rightHolder for %s : %s", user.getEppn(), rightHolder));
+		for(User user: users) {
+			if((new Date()).before(user.getDueDate())) {
+				RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
+				log.info(String.format("rightHolder for %s : %s", user.getEppn(), rightHolder));
+				break;
+			}
+		}
 	}
 	
 
@@ -41,10 +46,14 @@ public class CrousServiceTest {
 	public void testfieldWoDueDateEqualsRightHolder() {
 		List<User> users = User.findUsersByCrous(true).getResultList();
 		Assume.assumeTrue(!users.isEmpty());
-		User user = users.get(0);
-		RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
-		Assume.assumeTrue(rightHolder != null);
-		assertTrue(apiCrousService.fieldsEqualsOrCanNotBeUpdate(rightHolder, rightHolder));
+		for(User user: users) {
+			if((new Date()).before(user.getDueDate())) {
+				RightHolder rightHolder = crousService.getRightHolder(user.getEppn(), user.getEppn());
+				Assume.assumeTrue(rightHolder != null);
+				assertTrue(apiCrousService.fieldsEqualsOrCanNotBeUpdate(rightHolder, rightHolder));
+				break;
+			}
+		}
 	}
 	
 	
