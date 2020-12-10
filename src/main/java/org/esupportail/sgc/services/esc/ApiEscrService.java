@@ -145,7 +145,8 @@ public class ApiEscrService extends ValidateService {
 		HttpHeaders headers = this.getJsonHeaders();			
 		EscrStudent escrStudent = this.computeEscrStudent(eppn);
 		if(escrStudent == null) {
-			throw new SgcRuntimeException(String.format("Can't compute escrStudent for %s, because EuropeanStudentIdentifier can't be generated ?", eppn), null);
+		    log.error(String.format("Can't compute escrStudent for %s, because EuropeanStudentIdentifier can't be generated ?", eppn));
+		    return ;
 		}
 		HttpEntity entity = new HttpEntity(escrStudent, headers);
 		log.debug("Try to post to ESCR Student : " + escrStudent); 
