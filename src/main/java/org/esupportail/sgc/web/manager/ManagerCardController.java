@@ -237,7 +237,7 @@ public class ManagerCardController {
 		card.merge();
 		logService.log(card.getId(), ACTION.MANAGER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
 		uiModel.asMap().clear();
-		if(!Etat.ENABLED.equals(card.getEtat())) {
+		if(Etat.ENCODED.equals(card.getEtat())) {
 			log.info("livraison of " + card.getCsn() + " -> activation");
 			cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, "Activation suite à la livraison.", null, false, false);
 		}

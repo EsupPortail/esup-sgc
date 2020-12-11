@@ -222,20 +222,20 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 													</c:otherwise>
 												</c:choose>
 											</div>
-											<c:if test="${livraison and !card.external}">
-												<div class="alert alert-info">
-													<p>
-														Si votre carte vous a bien été remise, veuillez le
+										</c:if>
+										<c:if test="${livraison and !card.external and (card.etat eq 'ENABLED' or card.etat eq 'DISABLED') and empty card.deliveredDate}">
+											<div class="alert alert-info">
+												<p>
+													Si votre carte vous a bien été remise, veuillez le
 														signaler ci-dessous
-														<spring:url value="/user/deliver/${card.id}"
-															var="deliverUrl" />
-													<form action="${deliverUrl}" method="POST">
-														<button class="btn btn-warning" type="submit">
-															Noter comme livrée</button>
-													</form>
-													</p>
-												</div>
-											</c:if>
+													<spring:url value="/user/deliver/${card.id}"
+														var="deliverUrl" />
+												<form action="${deliverUrl}" method="POST">
+													<button class="btn btn-warning" type="submit">
+														Noter comme livrée</button>
+												</form>
+												</p>
+											</div>
 										</c:if>
 										<c:set var="etat" value="${card.etat}" />
 										<c:if test="${etat eq 'RENEWED'}">
@@ -348,6 +348,13 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 												<fmt:formatDate pattern="dd/MM/yyyy"
 													value="${card.requestDate}" />
 											</dd>
+											<c:if test="${livraison and not empty card.deliveredDate}">
+												<dt>Date de livraison :</dt>
+												<dd>
+													<fmt:formatDate pattern="dd/MM/yyyy"
+														value="${card.deliveredDate}" />
+												</dd>
+											</c:if>
 											<c:if test="${not empty card.commentaire}">
 												<dt>Message :</dt>
 												<dd>${card.commentaire}</dd>

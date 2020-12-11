@@ -367,7 +367,7 @@
                                                     </form>
                                                     /sec:authorize-->
                                                     <sec:authorize access="hasRole('ROLE_LIVREUR') or hasRole('ROLE_MANAGER')">
-                                                        <c:if test="${livraison and (card.etat eq 'ENABLED' or card.etat eq 'ENCODED') and empty card.deliveredDate}">
+                                                        <c:if test="${livraison and (card.etat eq 'ENABLED' or card.etat eq 'ENCODED' or card.etat eq 'DISABLED' or card.etat eq 'CADUC' or card.etat eq 'DESTROYED') and empty card.deliveredDate}">
                                                             <spring:url value="/manager/deliver/${card.id}" var="deliverUrl"/>
                                                             <form action="${deliverUrl}" method="POST">
                                                                 <button class="btn btn-primary btn-block" type="submit">

@@ -107,6 +107,9 @@ public class CrousService extends ValidateService {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				log.debug(String.format("RightHolder %s not found IN API CROUS", identifier, clientEx.getErrorBodyAsJson()));
 				return null;
+			} else if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
+				log.info(String.format("RightHolder %s locked IN API CROUS", identifier, clientEx.getErrorBodyAsJson()));
+				return null;
 			} else if(HttpStatus.FORBIDDEN.equals(clientEx.getStatusCode())) { 
 				throw new CrousAccountForbiddenException("Forbidden - crous righolder hold by another institute ?", clientEx);
 			}
