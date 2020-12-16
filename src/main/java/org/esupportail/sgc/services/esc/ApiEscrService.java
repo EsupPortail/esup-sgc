@@ -170,24 +170,17 @@ public class ApiEscrService extends ValidateService {
 	}
 	
 	private void updateEscrStudent(String eppn) {
-		EscrStudent escrStudent = EscrStudent.findEscrStudentsByEppnEquals(eppn).getSingleResult();
-		User user = User.findUser(eppn);
-		if(!picInstitutionCode.equals(escrStudent.getPicInstitutionCode()) || 
-				!user.getEmail().equals(escrStudent.getEmailAddress()) || 
-				!user.getDueDate().equals(escrStudent.getExpiryDate()) ||
-				!user.getDisplayName().equals(escrStudent.getName()) ||
-				user.getAcademicLevel() == null && escrStudent.getAcademicLevel() != null ||
-				user.getAcademicLevel() != null && !user.getAcademicLevel().equals(escrStudent.getAcademicLevel())) {
-			escrStudent.setEmailAddress(user.getEmail());
-			escrStudent.setExpiryDate(user.getDueDate());
-			escrStudent.setName(user.getDisplayName());
-			escrStudent.setAcademicLevel(user.getAcademicLevel());
-			String url = webUrl + "/students/" + escrStudent.getEuropeanStudentIdentifier();
+		EscrStudent escrStudentInESCR = EscrStudent.findEscrStudentsByEppnEquals(eppn).getSingleResult();
+		EscrStudent escrStudentGoal = computeEscrStudent(eppn);
+		if(!escrStudentInESCR.equals(escrStudentGoal) && escrStudentGoal!=null) {
+			String europeanStudentIdentifierInESCR =  escrStudentInESCR.getEuropeanStudentIdentifier();
+			escrStudentInESCR.updateWith(escrStudentGoal);
+			String url = webUrl + "/students/" + europeanStudentIdentifierInESCR;
 			HttpHeaders headers = this.getJsonHeaders();
-			HttpEntity entity = new HttpEntity(escrStudent, headers);
-			log.debug("Try to put/update ESCR Student : " + escrStudent); 
+			HttpEntity entity = new HttpEntity(escrStudentInESCR, headers);
+			log.debug("Try to put/update ESCR Student : " + escrStudentInESCR); 
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-			log.info(user.getEppn() + " updated in ESCR as Student -> " + response.getBody());	
+			log.info(eppn + " updated in ESCR as Student -> " + response.getBody());	
 		} 
 	}
 	
@@ -302,13 +295,23 @@ public class ApiEscrService extends ValidateService {
 	}
 	
 	protected String getEuropeanStudentIdentifier(String eppn) {
-		User user = User.findUser(eppn);
-		String supannCodeINE = user.getSupannCodeINE();
-		if(supannCodeINE==null || supannCodeINE.isEmpty()) {
-			log.info(eppn + " has no or empty supannCodeINE and this attribute is required for the European Student Card !");
-			return null;
+		String esi = null;
+		List<EscrStudent> escrStudentsInESCR = EscrStudent.findEscrStudentsByEppnEquals(eppn).getResultList();
+		if(!escrStudentsInESCR.isEmpty()) {
+			// ESI can't be modified in ESCR
+			// Si/quand l'API permettra de modifier le ESI, il suffira de supprimer ce bloc
+			EscrStudent escrStudentInESCR = escrStudentsInESCR.get(0);
+			esi = escrStudentInESCR.getEuropeanStudentIdentifier();
+		} else {
+			User user = User.findUser(eppn);
+			String supannCodeINE = user.getSupannCodeINE();
+			if(supannCodeINE==null || supannCodeINE.isEmpty()) {
+				log.info(eppn + " has no or empty supannCodeINE and this attribute is required for the European Student Card !");
+				return null;
+			}
+			esi = countryCode + "-" + picInstitutionCode + "-" + supannCodeINE;
 		}
-		return countryCode + "-" + picInstitutionCode + "-" + supannCodeINE;
+		return esi;
 	}
 
 	@Transactional
