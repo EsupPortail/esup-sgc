@@ -34,6 +34,10 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 						<dt>Prénom : </dt><dd>${user.firstname}</dd>
 						<dt>Nom : </dt><dd>${user.name}</dd>
 						<dt>Date de naissance : </dt><dd><fmt:formatDate pattern="dd/MM/yyyy" value="${user.birthday}" /></dd>
+						<dt>Date limite : </dt>
+                        <dd>
+                           <fmt:formatDate pattern="dd/MM/yyyy" value="${user.dueDate}"/>
+                        </dd>
 						<!-- <dt>Statut : </dt><dd>${user.cnousReferenceStatut}</dd> -->
 						<dt>Email : </dt><dd>${user.email}</dd>
 						<c:if test="${!user.hasExternalCard}">
@@ -355,6 +359,10 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 														value="${card.deliveredDate}" />
 												</dd>
 											</c:if>
+											<dt>Date limite : </dt>
+                                            <dd>
+                                                 <fmt:formatDate pattern="dd/MM/yyyy" value="${card.dueDate}"/>
+                                            </dd>
 											<c:if test="${not empty card.commentaire}">
 												<dt>Message :</dt>
 												<dd>${card.commentaire}</dd>

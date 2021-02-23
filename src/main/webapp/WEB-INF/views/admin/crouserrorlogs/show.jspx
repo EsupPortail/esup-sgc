@@ -180,7 +180,7 @@
             </c:choose>
         </div>
     </div>
-    <c:if test="${empty crousEppnRightHolder and not empty crousEmailRightHolder and crousEmailRightHolder.identifier ne esupSgcRightHolder.identifier}">
+    <c:if test="${not empty crousEmailRightHolder and crousEmailRightHolder.identifier ne esupSgcRightHolder.identifier}">
         <div class="row well danger">
             <h3>Modification/Migration de l'identifiant ...</h3>
             <p>Vous avez ici la possibilité de changer l'identifiant du compte utilisateur pour qu'il corresponde à l'eppn ou in ; ESUP-SGC pourra alors mettre à jour ce compte avec les informations qu'il a sur cet utilisateur.</p>
