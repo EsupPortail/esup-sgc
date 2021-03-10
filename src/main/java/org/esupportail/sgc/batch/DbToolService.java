@@ -284,7 +284,8 @@ public class DbToolService {
 						+ " and escr_student.eppn=user_account.eppn and escr_student.european_student_identifier NOT LIKE '%' || user_account.supann_codeine);";
 
 				// ajout contrainte unicité
-				sqlUpdate += "ALTER TABLE escr_student ADD CONSTRAINT  escr_student_eppn_unique UNIQUE (eppn);";
+				sqlUpdate += "ALTER TABLE escr_student DROP CONSTRAINT IF EXISTS escr_student_eppn_unique;";
+				sqlUpdate += "ALTER TABLE escr_student ADD CONSTRAINT escr_student_eppn_unique UNIQUE (eppn);";
 				
 				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
 				Connection connection = dataSource.getConnection();
