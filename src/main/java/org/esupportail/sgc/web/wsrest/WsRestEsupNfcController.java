@@ -756,7 +756,7 @@ public class WsRestEsupNfcController {
 		
 		String escnData = escn + uid;
 		
-		if(escDeuInfoService.check(escnData, signature, certAsHexa)){
+		if(escDeuInfoService.check(escnData, signature, certAsHexa, false)){
 			log.info("DEUINFO OK");
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		}
@@ -800,11 +800,11 @@ public class WsRestEsupNfcController {
 		
 		EsupNfcTagLog esupNfcTagLog = null;
 		
-		if(escDeuInfoService.check(escnData, signature, certAsHexa)) {
+		if(escDeuInfoService.check(escnData, signature, certAsHexa, false)) {
 			esupNfcTagLog = new EsupNfcTagLog();
 			esupNfcTagLog.setCsn(uid);
 			esupNfcTagLog.setEppn(escn);
-			
+			esupNfcTagLog.setDesfireId(desfireId);
 			String lastname = "Non reconnu";
 			String firstname = "";
 			Card card = Card.findCardByEscnUid(escn);
@@ -814,9 +814,9 @@ public class WsRestEsupNfcController {
 			} 
 			esupNfcTagLog.setLastname(lastname);
 			esupNfcTagLog.setFirstname(firstname);
-			log.info("Checking of deuinfo (validation of escn, signature and cert) OK : " + esupNfcTagLog);
+			log.info("Checking of deuinfo (validation of escn, signature) OK : " + esupNfcTagLog);
 		} else {
-			log.warn("Checking of deuinfo (validation of escn, signature and cert) failed");
+			log.warn("Checking of deuinfo (validation of escn, signature) failed");
 		}
 		return esupNfcTagLog;
 	}	
@@ -824,7 +824,6 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value="/deuinfo",  method=RequestMethod.POST)
 	public String deuinfo(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
 		log.info("get deuinfo from : " + taglog);	
-		// TODO : display cert and get data from ESCR
 		String desfireId = taglog.getDesfireId();
 		log.info("deuinfo with desfireId " + desfireId);	
 		List<String> desfireIds = Arrays.asList(desfireId.split("@"));
@@ -841,6 +840,11 @@ public class WsRestEsupNfcController {
 		uiModel.addAttribute("card", Card.findCardByEscnUid(escn));
 		uiModel.addAttribute("qrCodeUrl", escDeuInfoService.getQrCodeUrl(escn));
 		uiModel.addAttribute("isoOnly", isoOnly);
+
+		String escnData = escn + uid;			
+		Boolean certOk = escDeuInfoService.check(escnData, signature, certAsHexa, true);
+		uiModel.addAttribute("certOk", certOk);
+		
 		if(!isoOnly) {
 			String freeMemory = desfireIds.get(4);
 			uiModel.addAttribute("freeMemory", freeMemory);

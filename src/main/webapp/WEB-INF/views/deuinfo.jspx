@@ -22,7 +22,12 @@
 				<span style="color:green">Diversified key with UID OK</span><br/>
 			</c:if>
 			<span style="color:green">Signature OK</span><br/>
-			<span style="color:green">Certificate OK</span><br/>
+			<c:if test="${certOk}">
+				<span style="color:green">Certificate OK</span><br/>
+			</c:if>
+			<c:if test="${not certOk}">
+				<span style="color:red">Certificate KO</span><br/>
+			</c:if>
 			<ul>
 				<c:forEach var="certSubjectNamePart" items="${certSubjectName}">
 				  <li>${certSubjectNamePart.key} : ${certSubjectNamePart.value}</li>

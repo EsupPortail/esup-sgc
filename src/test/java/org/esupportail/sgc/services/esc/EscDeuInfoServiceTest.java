@@ -83,7 +83,7 @@ public class EscDeuInfoServiceTest {
 		String uid = c.getCsn();
 		String signature = escDeuInfoService.sign(escn + uid);
 		log.info(String.format("Sign of %s : %s", escn + uid, signature));
-		boolean signedIsOK = escDeuInfoService.check(escn + uid, signature, "dummy");
+		boolean signedIsOK = escDeuInfoService.check(escn + uid, signature, "dummy", true);
 		assertTrue(!signedIsOK);
 	}
 	

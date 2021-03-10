@@ -112,12 +112,15 @@ public class EscDeuInfoService  {
 		return checkSignature(escnData, signature, pubKey);
 	}
 
-	public boolean check(String escnData, String signature, String certAsHexa) {
+	public boolean check(String escnData, String signature, String certAsHexa, Boolean checkCertificate) {
 		try {
 			byte[] certBytes = Hex.decodeHex(certAsHexa.toCharArray());
 			PublicKey pubKey = getPublicKeyFromCert(certBytes);
 			if(checkSignature(escnData, signature, pubKey)) {
 				log.debug("Signature OK");
+				if(!checkCertificate) {
+					return true;
+				}
 				String escn = escnData.substring(0, 32);
 				String picInstitutionCode = escn.substring(23);
 				String chainCertAsHexa = apiEscrService.getCaChainCertAsHexa(picInstitutionCode);
