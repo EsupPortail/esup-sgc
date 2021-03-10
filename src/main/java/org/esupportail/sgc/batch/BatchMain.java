@@ -21,7 +21,10 @@ public class BatchMain {
 
 		if("dbupgrade".equals(args[0])) {
 			DbToolService dbToolService = springContext.getBean("dbToolService", DbToolService.class);
-			dbToolService.upgrade();					
+			dbToolService.disableIndexTriggers();
+			dbToolService.upgrade();
+			dbToolService.reindex();
+			dbToolService.enableIndexTriggers();
 		} else {
 			System.err.println("Commande non trouvée.");
 		}

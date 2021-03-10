@@ -1,9 +1,11 @@
 package org.esupportail.sgc.services.esc;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.EscrStudent;
 import org.junit.Assume;
 import org.junit.Test;
@@ -38,6 +40,14 @@ public class ApiEscrServiceTest {
 		String caChainCertAsHexa = apiEscrService.getCaChainCertAsHexa("932465463");
 		log.info("caChainCertAsHexa : " + caChainCertAsHexa);
 	} */
+	
+	@Test
+	public void getCardTypeTest() {
+		Card c = new Card();
+		c.setEncodedDate(new Date());
+		Long cardType = apiEscrService.getCardType(c);
+		log.info("cardType : " + cardType);
+	}
 
 }
 

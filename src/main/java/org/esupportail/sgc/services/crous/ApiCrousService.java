@@ -247,11 +247,11 @@ public class ApiCrousService {
 
 
 	boolean fieldsEqualsOrCanNotBeUpdate(RightHolder newRightHolder, RightHolder oldRightHolder) {
-		// pour les étudiants, pas d'update sur nom/prenom/email/datedenaissance quelque soit l'état du compte
+		// pour les étudiants, pas d'update sur nom/prenom/email/datedenaissance/idRate quelque soit l'état du compte
 		// ces infos sont normalement créés par l'import du fichier de la CVEC et l'api ne peut pas les modifier
 		if(StringUtils.isNotEmpty(oldRightHolder.getIne()) && StringUtils.isNotEmpty(newRightHolder.getIne())) {
 			// ETUDIANT
-			for(String varStringName : Arrays.asList(new String[] {"identifier", "ine", "rneOrgCode", "idCompanyRate", "idRate"})) {
+			for(String varStringName : Arrays.asList(new String[] {"identifier", "ine", "rneOrgCode", "idCompanyRate"})) {
 				if(!newRightHolder.checkEqualsVar(varStringName, oldRightHolder)) {
 					return false;
 				}
@@ -280,6 +280,10 @@ public class ApiCrousService {
 	}
 
 	private boolean postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+		if(user.getDueDate()!=null && user.getDueDate().before(new Date())) {
+			log.info(String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
+			return false;
+		}
 		String url = webUrl + "/rightholders";
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
@@ -591,6 +595,10 @@ public class ApiCrousService {
 			List<User> users = User.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
 			if(!users.isEmpty()) {
 				user = users.get(0);
+				if(user.getDueDate()!=null && user.getDueDate().before(new Date())) {
+					log.warn(String.format("%s not patched in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
+					return;
+				}
 			}
 			try {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);	

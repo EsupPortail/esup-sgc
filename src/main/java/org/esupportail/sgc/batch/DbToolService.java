@@ -14,6 +14,7 @@ import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
 import org.esupportail.sgc.domain.AppliVersion;
 import org.esupportail.sgc.domain.BigFile;
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
@@ -30,7 +31,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.6.x";
+	final static String currentEsupSgcVersion = "1.7.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -293,6 +294,52 @@ public class DbToolService {
 				
 	    		esupSgcVersion = "1.6.x";
 			}
+			if("1.6.x".equals(esupSgcVersion)) {
+				
+				log.warn("Mise à jour de l'index plein texte");
+				String sqlUpdate = "";
+				
+				sqlUpdate += "CREATE OR REPLACE FUNCTION textsearchable_card_trigger()"
+						+ " RETURNS trigger AS $$ begin new.textsearchable_index_col := setweight(to_tsvector('simple', coalesce(new.eppn,'')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.name,''),'-',' ')), 'A')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.firstname,''),'-',' ')), 'B')"
+						+ " || setweight(to_tsvector('simple', coalesce(user_account.email,'')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.supann_emp_id,''),'-',' ')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.supann_etu_id,''),'-',' ')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.supann_entite_affectation_principale,''),'-',' ')), 'C')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.csn,''),'-',' ')), 'C')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.full_text,''),'-',' ')), 'D')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.full_text,''),'-',' ')), 'D')"
+						+ " FROM user_account where new.eppn=user_account.eppn; return new; end $$ LANGUAGE plpgsql;";
+				
+				sqlUpdate += "CREATE OR REPLACE FUNCTION textsearchable_user_account_trigger()"
+						+ " RETURNS trigger AS $$ begin update card set textsearchable_index_col = setweight(to_tsvector('simple', coalesce(card.eppn,'')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.name,''),'-',' ')), 'A')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.firstname,''),'-',' ')), 'B')"
+						+ " || setweight(to_tsvector('simple', coalesce(new.email,'')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.supann_emp_id,''),'-',' ')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.supann_etu_id,''),'-',' ')), 'B')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.supann_entite_affectation_principale,''),'-',' ')), 'C')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(card.csn,''),'-',' ')), 'C')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(card.full_text,''),'-',' ')), 'D')"
+						+ " || setweight(to_tsvector('simple', replace(coalesce(new.full_text,''),'-',' ')), 'D')"
+						+ " where card.eppn=new.eppn; return new; end $$ LANGUAGE plpgsql;";
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				
+				log.warn(String.format("Mise à jour des colonnes full_text pour %s users et %s cards", User.countUsers(), Card.countCards()));
+				for(User user : User.findAllUsers()) {
+					user.updateFullText();
+				}
+				for(Card card : Card.findAllCards()) {
+					card.updateFullText();
+				}			
+				
+	    		esupSgcVersion = "1.7.x";
+			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
 			log.warn("\n\n#####\n\t" +
@@ -300,6 +347,57 @@ public class DbToolService {
     				"\n#####\n");
 		} catch(Exception e) {
 			throw new RuntimeException("Erreur durant la mise à jour de la base de données", e);
+		}
+	}
+	
+	public void modifyIndexTriggers(boolean enable) {
+		try {
+			String sqlUpdate = "";
+			if(enable) {
+				sqlUpdate += "alter table user_account enable trigger tsvectorupdateuser;";
+				sqlUpdate += "alter table card enable trigger tsvectorupdate;";
+			} else {
+				sqlUpdate += "alter table user_account disable trigger tsvectorupdateuser;";
+				sqlUpdate += "alter table card disable trigger tsvectorupdate;";
+			}
+			log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+			Connection connection = dataSource.getConnection();
+			CallableStatement statement = connection.prepareCall(sqlUpdate);
+			statement.execute();
+			connection.close();
+		} catch(Exception e) {
+			throw new RuntimeException("Erreur durant la désactivation des triggers", e);
+		}
+	}
+
+	public void disableIndexTriggers() {
+		modifyIndexTriggers(false);
+	}
+
+	public void enableIndexTriggers() {
+		modifyIndexTriggers(true);
+	}
+
+	public void reindex() {
+		try {
+			String sqlUpdate = "UPDATE card SET textsearchable_index_col = setweight(to_tsvector('simple', coalesce(card.eppn,'')), 'B')"
+					+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.name,''),'-',' ')), 'A')"
+					+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.firstname,''),'-',' ')), 'B')"
+					+ " || setweight(to_tsvector('simple', coalesce(user_account.email,'')), 'B')"
+					+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.supann_emp_id,''),'-',' ')), 'B')"
+					+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.supann_etu_id,''),'-',' ')), 'B')"
+					+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.supann_entite_affectation_principale,''),'-',' ')), 'C')"
+					+ "  || setweight(to_tsvector('simple', replace(coalesce(card.csn,''),'-',' ')), 'C')"
+					+ " || setweight(to_tsvector('simple', replace(coalesce(card.full_text,''),'-',' ')), 'D')"
+					+ " || setweight(to_tsvector('simple', replace(coalesce(user_account.full_text,''),'-',' ')), 'D')"
+					+ " FROM user_account where card.eppn=user_account.eppn;";
+			log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+			Connection connection = dataSource.getConnection();
+			CallableStatement statement = connection.prepareCall(sqlUpdate);
+			statement.execute();
+			connection.close();
+		} catch(Exception e) {
+			throw new RuntimeException("Erreur durant la réindexation", e);
 		}
 	}
 

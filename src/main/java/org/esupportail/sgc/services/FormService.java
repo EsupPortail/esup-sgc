@@ -8,8 +8,12 @@ import java.util.Map;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FormService {
+	
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private Map<String, String> idsMap = new HashMap<String, String>();
 	
@@ -17,15 +21,24 @@ public class FormService {
 	
 	private int nbFields = 3;
 	
+	private int fieldsValuesNbMax = 200;
+	
 	public int getNbFields() {
 		return nbFields;
 	}
 	public void setNbFields(int nbFields) {
 		this.nbFields = nbFields;
 	}
+	public int getFieldsValuesNbMax() {
+		return fieldsValuesNbMax;
+	}
+	public void setFieldsValuesNbMax(int fieldsValuesNbMax) {
+		this.fieldsValuesNbMax = fieldsValuesNbMax;
+	}
 	public Map<String, String> getFieldsList() {
 		return fieldsList;
 	}
+	
 	public void setFieldsList(Map<String, String> fieldsList) {
 		this.fieldsList = fieldsList;
 	}
@@ -45,7 +58,10 @@ public class FormService {
 			return "";
 		}
 		String path = idsMap.get(string2decode);
-		return path;
+		if(path != null) {
+			return path;
+		} 
+		return string2decode;
 	}
 	
 	public List<String> getFieldsListAsCamel() {
@@ -67,11 +83,28 @@ public class FormService {
 			} else {
 				List<String> fields = new ArrayList<String>();
 				if(field.startsWith("card.")) {
-					fields = Card.getDistinctFreeField(field.substring("card.".length()));
+					long nbFields = Card.getCountDistinctFreeField(field.substring("card.".length()));
+					if(nbFields>fieldsValuesNbMax) {
+						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
+					} else {
+						fields = Card.getDistinctFreeField(field.substring("card.".length()));
+					}
 				} else if(field.startsWith("user_account.")) {
-					fields = User.getDistinctFreeField(field.substring("user_account.".length()));
-				} else {
-					fields = User.getDistinctFreeField(field);
+					long nbFields = User.getCountDistinctFreeField(field.substring("user_account.".length()));
+					if(nbFields>fieldsValuesNbMax) {
+						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
+					} else {
+						fields = User.getDistinctFreeField(field.substring("user_account.".length()));
+					}
+				} else if(field.contains(".")) {
+					log.debug(String.format("champ %s inconnu ?", field));
+				} else if(!"desfire_ids".equals(field)) {
+					long nbFields = User.getCountDistinctFreeField(field);
+					if(nbFields>fieldsValuesNbMax) {
+						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
+					} else {
+						fields = User.getDistinctFreeField(field);
+					}
 				}
 				fields.remove("");
 				for(String s : fields) {

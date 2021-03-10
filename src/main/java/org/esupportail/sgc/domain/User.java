@@ -24,6 +24,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
@@ -204,6 +206,30 @@ public class User {
 	
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private PhotoFile defaultPhoto = new PhotoFile();
+    
+	@Column(columnDefinition="TEXT")
+    public String fullText;
+	
+	@PreUpdate
+	@PrePersist
+	public void updateFullText() {
+		fullText = "";
+		fullText += StringUtils.join(getVersoText(), " ");
+		fullText += getInstitute() + " ";
+		fullText += getRneEtablissement() + " ";
+		fullText += getSecondaryId() + " ";
+		fullText += getSupannCodeINE() + " ";
+		fullText += getRecto1() + " ";
+		fullText += getRecto2() + " ";
+		fullText += getRecto3() + " ";
+		fullText += getRecto4() + " ";
+		fullText += getRecto5() + " ";
+		fullText += getRecto6() + " ";
+		fullText += getRecto7() + " ";
+		fullText += getFreeField1() + " ";
+		fullText += getFreeField2() + " ";
+		fullText += getFreeField3() + " ";
+	}
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();
@@ -236,7 +262,6 @@ public class User {
 		String[] versoText = new String[] {verso1, verso2, verso3, verso4, verso5, verso6, verso7};
 		return Arrays.asList(versoText);
 	}
-	
 	
 	public static User findUser(String eppn) {
 		User user = null;
@@ -585,6 +610,14 @@ public class User {
 		Query q = em.createNativeQuery(req);
 		List<String> distinctResults = q.getResultList();
 		return distinctResults;
+	}
+	
+	public static Long getCountDistinctFreeField(String field) {
+		EntityManager em = User.entityManager();
+		// FormService.getField1List uses its preventing sql injection
+		String req = "SELECT count(DISTINCT(" + field + ")) FROM user_account WHERE " + field  + " IS NOT NULL";
+		Query q = em.createNativeQuery(req);
+		return ((BigInteger)q.getSingleResult()).longValue();
 	}
 
 	public static List<TemplateCard> findDistinctLastTemplateCardsPrinted() {

@@ -17,6 +17,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
@@ -32,6 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.web.manager.CardSearchBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.dbre.RooDbManaged;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -48,6 +52,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @RooJpaActiveRecord(versionField = "", table = "Card", finders = { "findCardsByEppnEquals", "findCardsByEppnAndEtatEquals", "findCardsByEppnLike", "findCardsByEtatEqualsAndDateDemandeLessThan", "findCardsByDesfireId", "findCardsByCsn", "findCardsByEppnAndEtatNotEquals",  "findCardsByEtatAndDateEtatLessThan" })
 @JsonFilter("cardFilter")
 public class Card {
+	
+	private static final Logger log = LoggerFactory.getLogger(Card.class);
 
     public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire", "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate");
 
@@ -200,6 +206,26 @@ public class Card {
     private TemplateCard templateCard;
     
 	private String crousError;
+	
+	@Column(columnDefinition="TEXT")
+    public String fullText;
+	
+	@PreUpdate
+	@PrePersist
+	public void updateFullText() {
+		fullText = "";
+		for(String desfireId : desfireIds.values()) {
+			fullText += desfireId + " ";
+		}
+		fullText += recto1Printed + " ";
+		fullText += recto2Printed + " ";
+		fullText += recto3Printed + " ";
+		fullText += recto4Printed + " ";
+		fullText += recto5Printed + " ";
+		fullText += recto6Printed + " ";
+		fullText += recto7Printed + " ";
+		fullText += versoTextPrinted + " ";
+	}
 
     public Long getNbRejets() {
         return nbRejets;
@@ -552,6 +578,12 @@ public class Card {
         query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
         query.orderBy(orders);
         query.select(c);
+        if (searchBean.getSearchText().isEmpty() && searchBean.getFreeField() != null && searchBean.getFreeField().values().contains("desfire_ids")) {
+        	// hack : use distinct because of join on desfireIds
+        	// but can't use distinct with searchText :  
+        	//  org.postgresql.util.PSQLException: ERROR: for SELECT DISTINCT, ORDER BY expressions must appear in select list
+        	query.distinct(true);
+        }
         return em.createQuery(query);
     }
     
@@ -565,7 +597,12 @@ public class Card {
         final List<Predicate> predicates = getPredicates4CardSearchBean(searchBean, eppn, criteriaBuilder, c);
 
         query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
-        query.select(criteriaBuilder.count(c));
+        if (searchBean.getSearchText().isEmpty() && searchBean.getFreeField() != null && searchBean.getFreeField().values().contains("desfire_ids")) {
+        	// hack : use distinct because of join on desfireIds
+        	query.select(criteriaBuilder.countDistinct(c));
+        } else {
+        	query.select(criteriaBuilder.count(c));
+        }
         return em.createQuery(query).getSingleResult();
     }
 
@@ -586,6 +623,7 @@ public class Card {
 		            	List<Predicate> orPredicates = new ArrayList<Predicate>();
 	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
 	            		for(String v : entry.getValue()){
+	            			log.trace(String.format("%s -> %s", camelString, v));
 		            		if(!searchBean.getFreeField().get(entry.getKey()).isEmpty() && v!=null){
 		            			if(camelString.startsWith("card.")) {
 		            				if(camelString.equals("card.templateCard")) {
@@ -605,6 +643,8 @@ public class Card {
 		            				} else {
 		            					orPredicates.add(criteriaBuilder.equal(u.get(camelString.substring("userAccount.".length())), v));
 		            				}
+		            			} else if(camelString.startsWith("desfireIds")) {
+		            				orPredicates.add(criteriaBuilder.equal(c.joinMap("desfireIds").value(), v));
 		            			} else {
 		            				orPredicates.add(criteriaBuilder.equal(u.get(camelString), v));
 		            			}
@@ -1092,6 +1132,14 @@ public class Card {
     	Query q = em.createNativeQuery(req);
     	List<String> distinctResults = q.getResultList();
     	return distinctResults;
+    }
+    
+    public static Long getCountDistinctFreeField(String field) {
+    	EntityManager em = Card.entityManager();
+    	// FormService.getField1List uses its preventing sql injection
+    	String req = "SELECT count(DISTINCT(" + field + ")) FROM card WHERE " + field  + " IS NOT NULL";
+    	Query q = em.createNativeQuery(req);
+    	return ((BigInteger)q.getSingleResult()).longValue();
     }
     
     public static TypedQuery<Card> findCardsWithEscnAndCsn() {

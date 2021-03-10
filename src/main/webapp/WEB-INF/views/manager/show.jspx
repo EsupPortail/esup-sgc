@@ -384,7 +384,7 @@
                                                                     <c:when test="${not empty card.cardActionMessages[etatAvailable]}">
                                                                         <form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
                                                                             <button class="btn btn-success btn-block" data-target="#commentEtat${i.index}-${j.index}" data-toggle="modal" type="button">
-                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
+                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>                                                                   
                                                                             </button>
                                                                             <div class="modal fade" id="commentEtat${i.index}-${j.index}">
                                                                                 <div class="modal-dialog">
@@ -461,13 +461,6 @@
                                                                     <c:when test="${etatAvailable eq 'DESTROYED'}">
                                                                         <form action="${etatActionUrl}?etatFinal=${etatAvailable}" id="${etatAvailable}Form" method="POST">
                                                                             <button class="btn btn-danger btn-block" onclick="return confirm('Confirmez la destruction de la carte');" type="submit">
-                                                                                <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
-                                                                            </button>
-                                                                        </form>
-                                                                    </c:when>
-                                                                    <c:when test="${etatAvailable eq 'REQUEST_CHECKED' }">
-                                                                        <form action="${etatActionUrl}?etatFinal=${etatAvailable}" method="POST">
-                                                                            <button class="btn btn-success btn-block" type="submit">
                                                                                 <spring:message code="manager.action.${card.etat}-${etatAvailable}"/>
                                                                             </button>
                                                                         </form>

@@ -264,6 +264,7 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 		request.onload = function() {
 		  if (request.status >= 200 && request.status < 400) {
 			  try {
+				if(this.response!='{}') {
 				  var data = JSON.parse(this.response);
 				  empty("freeFieldValue" + indice);
 				  var freeFieldValue = document.getElementById("freeFieldValue" + indice); 
@@ -277,7 +278,17 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 		        		selected ="selected='selected'";
 				      }
 			      	  freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ key.substring(1, key.length) + "' " + selected +  ">" + data[key] + "</option>");  
-		          };            
+		          };         
+				 } else if(fieldsValue != '' && selectedField != '') {
+                     var fieldsValue4thisField = fieldsValue.split(';')[indice];
+                     if(fieldsValue4thisField!=undefined) {
+                         var freeFieldValue = document.getElementById("freeFieldValue" + indice);
+              			 var v = fieldsValue4thisField.split(',');
+                         for(i in v) {
+                          	freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ v[i] + "' selected='selected'>" + v[i] + "</option>");
+                         }
+                     }
+                 }
 			  } catch(e){
 				  console.log(e);
 			  }
@@ -1217,7 +1228,13 @@ document.addEventListener('DOMContentLoaded', function() {
 			    new SlimSelect({
 			    	  select: '#freeFieldValue' + i,
 			    	  placeholder: selectLabel,
-			    	  allowDeselect: true
+			    	  allowDeselect: true,
+			    	  addable: function (value) {
+			    	     return {
+			    	      text: value,
+			    	      value: value
+			    	     };
+			    	  }
 			    	})
 		    }
 	    }
@@ -1553,13 +1570,6 @@ document.addEventListener('DOMContentLoaded', function() {
 						request.send(new FormData(this));
 			   		});
 				}
-			   	//Update etat dans interface retouche
-			   	var retoucheAction = document.querySelectorAll(".retoucheAction");
-				  if(retoucheAction!=null && retoucheAction.length==0){
-					  if(document.getElementById("REQUEST_CHECKEDForm")!=null){
-						  document.getElementById("REQUEST_CHECKEDForm").style = "display:none;";
-					  }
-				  }
 			   	if(typeof actionUrl != "undefined"){
 			   		var retoucheAction = document.querySelectorAll('.retoucheAction');
 			   		Array.from(retoucheAction).forEach(function(link) {
@@ -1969,7 +1979,8 @@ document.addEventListener('DOMContentLoaded', function() {
    		return link.addEventListener('change', function(event) {
    		 var searchEppnForm = document.getElementById("searchEppnForm");
 			 searchEppnForm.querySelectorAll("select").forEach(function(element) {
-				 if(!element.value) {
+				 // supprime entrées vides - !element.slim.data.searchValue utile pour la partie 'addable' de slim
+				 if(!element.value && !element.slim.data.searchValue) {
 					 element.disabled = true;
 				 }
 			});

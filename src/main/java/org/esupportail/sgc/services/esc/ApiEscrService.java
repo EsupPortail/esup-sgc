@@ -1,6 +1,12 @@
 package org.esupportail.sgc.services.esc;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
@@ -27,6 +33,8 @@ public class ApiEscrService extends ValidateService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	@Resource
 	AppliConfigService appliConfigService;
 	
@@ -43,6 +51,8 @@ public class ApiEscrService extends ValidateService {
 	Long picInstitutionCode;
 	
 	Long cardType;
+	
+	Map<Date, Long> cardTypes = new HashMap<Date, Long>();
 
 	public void setRestTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
@@ -70,6 +80,14 @@ public class ApiEscrService extends ValidateService {
 
 	public void setCardType(Long cardType) {
 		this.cardType = cardType;
+	}
+
+	public void setCardTypes(Map<String, Long> cardTypesDateAsString) throws ParseException {
+		cardTypes = new HashMap<Date, Long>();
+		for(String dateAsString : cardTypesDateAsString.keySet()) {
+			Date date = dateFormat.parse(dateAsString);
+			cardTypes.put(date, cardTypesDateAsString.get(dateAsString));
+		}
 	}
 
 	@Override
@@ -280,9 +298,20 @@ public class ApiEscrService extends ValidateService {
 	private EscrCard computeEscrCard(Card card) {
 		EscrCard escrCard = new EscrCard();
 		escrCard.setEuropeanStudentCardNumber(card.getEscnUid());
-		escrCard.setCardType(cardType);
+		escrCard.setCardType(getCardType(card));
 		escrCard.setCardUid(card.getCsn());
 		return escrCard;
+	}
+	
+	protected Long getCardType(Card card) {
+		Long type = cardType;
+		TreeSet<Date> dates = new TreeSet<Date>(cardTypes.keySet());
+		for(Date date : dates) {
+			if(card.getEncodedDate().after(date)) {
+				type = cardTypes.get(date);
+			}
+		}
+		return type;
 	}
 
 	private HttpHeaders getJsonHeaders() {	
@@ -309,7 +338,7 @@ public class ApiEscrService extends ValidateService {
 				log.info(eppn + " has no or empty supannCodeINE and this attribute is required for the European Student Card !");
 				return null;
 			}
-			esi = countryCode + "-" + picInstitutionCode + "-" + supannCodeINE;
+			esi = String.format("urn:schac:personalUniqueCode:int:esi:%s:%s", countryCode.toLowerCase(), supannCodeINE);
 		}
 		return esi;
 	}
