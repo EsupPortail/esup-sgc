@@ -29,14 +29,13 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
-import org.esupportail.sgc.services.esc.EscDeuInfoService;
+import org.esupportail.sgc.services.esc.EscDeuInfoMetaService;
 import org.esupportail.sgc.services.ldap.GroupService;
 import org.esupportail.sgc.web.manager.ClientJWSController;
 import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -101,9 +100,8 @@ public class WsRestEsupNfcController {
 	@Resource
 	SearchLongPollController searchLongPollController;
 	
-	@Lazy
 	@Resource
-	EscDeuInfoService escDeuInfoService;
+	EscDeuInfoMetaService escDeuInfoMetaService;
 
 	/**
 	 * Example :
@@ -697,21 +695,21 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/getEscDeuInfoEscnUid", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String getEscDeuInfoEscnUid(@RequestParam String csn) {
-		String escnData = escDeuInfoService.getDeuInfoEscnUid(Card.findCardByCsn(csn));
+		String escnData = escDeuInfoMetaService.getDeuInfoEscnUid(Card.findCardByCsn(csn));
 		return escnData;
 	}
 	
 	@RequestMapping(value = "/getEscDeuInfoSignature", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String getEscDeuInfoSignature(@RequestParam String csn) {
-		String signature = escDeuInfoService.getDeuInfoSignature(Card.findCardByCsn(csn));
+		String signature = escDeuInfoMetaService.getDeuInfoSignature(Card.findCardByCsn(csn));
 		return signature;
 	}
 	
 	@RequestMapping(value = "/getEscDeuInfoCertificat", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String getEscDeuInfoCertificat(@RequestParam String csn) throws Exception {
-		String certificat = escDeuInfoService.getPublicKeyAsHexa();
+		String certificat = escDeuInfoMetaService.getPublicKeyAsHexa(Card.findCardByCsn(csn));
 		return certificat;
 	}
 	
@@ -756,7 +754,7 @@ public class WsRestEsupNfcController {
 		
 		String escnData = escn + uid;
 		
-		if(escDeuInfoService.check(escnData, signature, certAsHexa, false)){
+		if(escDeuInfoMetaService.check(escnData, signature, certAsHexa, false)){
 			log.info("DEUINFO OK");
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		}
@@ -800,7 +798,7 @@ public class WsRestEsupNfcController {
 		
 		EsupNfcTagLog esupNfcTagLog = null;
 		
-		if(escDeuInfoService.check(escnData, signature, certAsHexa, false)) {
+		if(escDeuInfoMetaService.check(escnData, signature, certAsHexa, false)) {
 			esupNfcTagLog = new EsupNfcTagLog();
 			esupNfcTagLog.setCsn(uid);
 			esupNfcTagLog.setEppn(escn);
@@ -836,13 +834,13 @@ public class WsRestEsupNfcController {
 		uiModel.addAttribute("escn", escn);
 		uiModel.addAttribute("signature", signature);
 		uiModel.addAttribute("certAsHexa", certAsHexa);
-		uiModel.addAttribute("certSubjectName", escDeuInfoService.getCertSubjectName(certAsHexa));
+		uiModel.addAttribute("certSubjectName", escDeuInfoMetaService.getCertSubjectName(certAsHexa));
 		uiModel.addAttribute("card", Card.findCardByEscnUid(escn));
-		uiModel.addAttribute("qrCodeUrl", escDeuInfoService.getQrCodeUrl(escn));
+		uiModel.addAttribute("qrCodeUrl", escDeuInfoMetaService.getQrCodeUrl(escn));
 		uiModel.addAttribute("isoOnly", isoOnly);
 
 		String escnData = escn + uid;			
-		Boolean certOk = escDeuInfoService.check(escnData, signature, certAsHexa, true);
+		Boolean certOk = escDeuInfoMetaService.check(escnData, signature, certAsHexa, true);
 		uiModel.addAttribute("certOk", certOk);
 		
 		if(!isoOnly) {

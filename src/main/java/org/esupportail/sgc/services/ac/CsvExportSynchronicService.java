@@ -37,11 +37,15 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	@Resource
 	CardEtatService cardEtatService;
 	
-	@Resource
-	AccessService synchronicVfsAccessService;
+	AccessService accessService;
 	
 	@Resource
 	AppliConfigService appliConfigService;
+	
+	public CsvExportSynchronicService(AccessService accessService) {
+		super();
+		this.accessService = accessService;
+	}
 	
 	public String getEppnFilter() {
 		return eppnFilter;
@@ -55,7 +59,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	public void sync(List<String> eppns) throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_P2S);
 		String filename = appliConfigService.getSynchronicExportcsvFilename();
-		synchronicVfsAccessService.putFile(null, filename, csv, true);
+		accessService.putFile(null, filename, csv, true);
 	} 
 	
 	public void sync(String eppn) throws IOException {
@@ -65,7 +69,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		String csvStr = sgc2csv4eppn(eppn).toString();
 		
 		InputStream csv = IOUtils.toInputStream(csvStr, ENCODING_P2S);
-		synchronicVfsAccessService.putFile(null, eppn + "_" + filename, csv, true);
+		accessService.putFile(null, eppn + "_" + filename, csv, true);
 	}
 	
 	private StringBuffer sgc2csv(List<String> eppns4UpdateSynchronic) {

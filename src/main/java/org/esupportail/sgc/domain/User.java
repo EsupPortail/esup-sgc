@@ -1,8 +1,6 @@
 package org.esupportail.sgc.domain;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -38,7 +36,6 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.security.SgcRoleHierarchy;
-import org.esupportail.sgc.services.crous.RightHolder;
 import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,7 +205,9 @@ public class User {
     private PhotoFile defaultPhoto = new PhotoFile();
     
 	@Column(columnDefinition="TEXT")
-    public String fullText;
+	private String fullText;
+	
+	private String pic = "";
 	
 	@PreUpdate
 	@PrePersist
@@ -370,7 +369,7 @@ public class User {
 				"freeField1", "freeField2", "freeField3", 
 				"requestFree", "rneEtablissement", "secondaryId", "supannCodeINE", "supannEmpId", "supannEntiteAffectationPrincipale", "supannEtuId", "userType", 
 				"verso1", "verso2", "verso3", "verso4", "verso5", "verso6", "verso7", 
-				"templateKey", "blockUserMsg", "academicLevel"})) {
+				"templateKey", "blockUserMsg", "academicLevel", "pic"})) {
 			if(!this.checkEqualsVar(varStringName, other)) {
 				return varStringName;
 			}

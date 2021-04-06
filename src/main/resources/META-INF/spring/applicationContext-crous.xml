@@ -69,6 +69,11 @@
 		4 - Smartcard on which application may be installed by service providers
 		 -->
  		<property name="cardType" value="2"/>
+		<property name="cardTypes">
+                  <map>
+                    <entry key="2050-03-09 16:17:10" value="3"/>
+                  </map>
+		</property>
 	</bean>
 
 
@@ -80,6 +85,7 @@
 
 	<!--
         <bean id="escDeuInfoService" class="org.esupportail.sgc.services.esc.EscDeuInfoService">
+	        <property name="pic" value="123456789"/>
                 <property name="deuInfoPrivateKey" value="classpath:META-INF/security/esc/ca.intermediate.key.der"/>
                 <property name="deuInfoPublicKey" value="classpath:META-INF/security/esc/ca.intermediate.cert.der" />
         </bean>

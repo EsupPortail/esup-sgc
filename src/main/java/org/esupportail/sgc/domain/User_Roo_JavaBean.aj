@@ -477,4 +477,20 @@ privileged aspect User_Roo_JavaBean {
         this.defaultPhoto = defaultPhoto;
     }
     
+    public String User.getFullText() {
+        return this.fullText;
+    }
+    
+    public void User.setFullText(String fullText) {
+        this.fullText = fullText;
+    }
+    
+    public String User.getPic() {
+        return this.pic;
+    }
+    
+    public void User.setPic(String pic) {
+        this.pic = pic;
+    }
+    
 }

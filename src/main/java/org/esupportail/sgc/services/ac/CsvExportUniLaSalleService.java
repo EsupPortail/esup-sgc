@@ -38,7 +38,7 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 	private String eppnFilter = ".*";
 	
 	@Resource
-	AccessService uniLaSalleVfsAccessService;
+	AccessService accessService;
 	
 	@Resource
 	CardEtatService cardEtatService;
@@ -48,6 +48,10 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 
 	private Set<String> queueEppns2Update = new HashSet<String>();
 	
+	public CsvExportUniLaSalleService(AccessService accessService) {
+		super();
+		this.accessService = accessService;
+	}
 
 	public String getEppnFilter() {
 		return eppnFilter;
@@ -56,7 +60,7 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 	public void setEppnFilter(String eppnFilter) {
 		this.eppnFilter = eppnFilter;
 	}
-
+	
 	public void sync(List<String> eppns) throws IOException {
 		synchronized (queueEppns2Update) {
 			log.info("Ajout de " + eppns + " à la liste des eppns à mettre à jour dans le contrôle d'accès - maj par paquet tous les jours");
@@ -67,7 +71,7 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService, 
 	public boolean syncNow(List<String> eppns) throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_AC);
 		String filename = CSV_FILENAME;
-		return uniLaSalleVfsAccessService.putFile(null, filename, csv, false);
+		return accessService.putFile(null, filename, csv, false);
 	} 
 	
 	

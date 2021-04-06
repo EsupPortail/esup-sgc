@@ -37,8 +37,7 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 	
 	private String eppnFilter = ".*";
 	
-	@Resource
-	AccessService pcPassVfsAccessService;
+	AccessService accessService;
 	
 	@Resource
 	CardEtatService cardEtatService;
@@ -57,6 +56,10 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 		this.eppnFilter = eppnFilter;
 	}
 
+	public void setAccessService(AccessService accessService) {
+		this.accessService = accessService;
+	}
+	
 	public void sync(List<String> eppns) throws IOException {
 		synchronized (queueEppns2Update) {
 			log.info("Ajout de " + eppns + " à la liste des eppns à mettre à jour dans PCPASS - maj par paquet tous les jours");
@@ -67,7 +70,7 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 	public boolean syncNow(List<String> eppns) throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_PCPASS);
 		String filename = CSV_FILENAME;
-		return pcPassVfsAccessService.putFile(null, filename, csv, false);
+		return accessService.putFile(null, filename, csv, false);
 	} 
 	
 	

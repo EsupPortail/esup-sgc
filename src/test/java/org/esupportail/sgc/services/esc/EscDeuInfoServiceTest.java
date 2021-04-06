@@ -15,8 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -25,22 +23,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EscDeuInfoServiceTest {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-
-	@Lazy
+	
 	@Resource
-	EscDeuInfoService escDeuInfoService;
+	EscDeuInfoMetaService escDeuInfoMetaService;
 	
 	@Resource
 	EsupSgcTestUtilsService esupSgcTestUtilsService;
 	
 	 @Before
 	 public void beforeMethod() throws Exception {
-		 try {
-			 Assume.assumeTrue(escDeuInfoService.getPublicKeyAsHexa() != null);
-		 } catch(NoSuchBeanDefinitionException ex) {
-			 log.warn("escDeuInfoService is not defined");
-			 Assume.assumeTrue(false);
-		 }
+		 Card c = getCardithEscnFromDb();
+		Assume.assumeTrue(c != null);
+		Assume.assumeTrue(escDeuInfoMetaService.getPublicKeyAsHexa(c) != null);
 	 }	
 	
 	Card getCardithEscnFromDb() {
@@ -55,22 +49,20 @@ public class EscDeuInfoServiceTest {
 	@Test
 	public void signTest() throws Exception {
 		Card c = getCardithEscnFromDb();
-		Assume.assumeTrue(c !=null);
 		String escn = c.getEscnUidAsHexa();
 		String uid = c.getCsn();
-		String signature = escDeuInfoService.sign(escn + uid);
+		String signature = escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()).sign(escn + uid);
 		log.info(String.format("Sign of %s : %s", escn + uid, signature));
 	}
 
 	@Test
 	public void checkSignatureTest() throws Exception {
 		Card c = getCardithEscnFromDb();
-		Assume.assumeTrue(c !=null);
 		String escn = c.getEscnUidAsHexa();
 		String uid = c.getCsn();
-		String signature = escDeuInfoService.sign(escn + uid);
+		String signature = escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()).sign(escn + uid);
 		log.info(String.format("Sign of %s : %s", escn + uid, signature));
-		boolean signedIsOK = escDeuInfoService.checkSignature(escn + uid, signature);
+		boolean signedIsOK = escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()).checkSignature(escn + uid, signature);
 		assertTrue(signedIsOK);
 	}
 
@@ -78,12 +70,11 @@ public class EscDeuInfoServiceTest {
 	@Test
 	public void checkSignatureTestFailed() throws Exception {
 		Card c = getCardithEscnFromDb();
-		Assume.assumeTrue(c !=null);
 		String escn = c.getEscnUidAsHexa();
 		String uid = c.getCsn();
-		String signature = escDeuInfoService.sign(escn + uid);
+		String signature = escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()).sign(escn + uid);
 		log.info(String.format("Sign of %s : %s", escn + uid, signature));
-		boolean signedIsOK = escDeuInfoService.check(escn + uid, signature, "dummy", true);
+		boolean signedIsOK = escDeuInfoMetaService.check(escn + uid, signature, "dummy", true);
 		assertTrue(!signedIsOK);
 	}
 	
@@ -95,14 +86,16 @@ public class EscDeuInfoServiceTest {
 	
 	@Test 
 	public void getPublicKeyAsHexaTest() throws Exception {
-		String publicKeyAsHexa = escDeuInfoService.getPublicKeyAsHexa();
+		Card c = getCardithEscnFromDb();
+		String publicKeyAsHexa = escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()).getPublicKeyAsHexa();
 		log.info(String.format("publicKeyAsHexa [%s] : %s", publicKeyAsHexa.length(), publicKeyAsHexa));
 		//assertEquals(540, publicKeyAsHexa.length());
 	}
 	
 	@Test 
 	public void getCertInfoTest() throws Exception {
-		Map<String, String> certInfo = escDeuInfoService.getCertSubjectName(escDeuInfoService.getPublicKeyAsHexa());
+		Card c = getCardithEscnFromDb();
+		Map<String, String> certInfo = escDeuInfoMetaService.getCertSubjectName(escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()).getPublicKeyAsHexa());
 		log.info(String.format("Cert info : %s", certInfo));
 		//assertEquals(540, publicKeyAsHexa.length());
 	}

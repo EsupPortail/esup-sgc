@@ -33,13 +33,17 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	
 	@Resource
 	CardEtatService cardEtatService;
-	
-	@Resource
-	AccessService insaVfsAccessService;
+
+	AccessService accessService;
 	
 	@Resource
 	AppliConfigService appliConfigService;
 	
+	public CsvExportAcInsaService(AccessService accessService) {
+		super();
+		this.accessService = accessService;
+	}
+
 	public String getEppnFilter() {
 		return eppnFilter;
 	}
@@ -54,7 +58,7 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	@Override
 	public void sync(List<String> eppns) throws IOException {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING);
-		insaVfsAccessService.putFile(null, CSV_FILENAME, csv, true);
+		accessService.putFile(null, CSV_FILENAME, csv, true);
 	} 
 	
 	/* (non-Javadoc)
@@ -66,7 +70,7 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		String csvStr = sgc2csv4eppn(eppn).toString();
 		
 		InputStream csv = IOUtils.toInputStream(csvStr, ENCODING);
-		insaVfsAccessService.putFile(null, eppn + "_" + CSV_FILENAME, csv, true);
+		accessService.putFile(null, eppn + "_" + CSV_FILENAME, csv, true);
 	}
 	
 	private StringBuffer sgc2csv(List<String> eppns) {

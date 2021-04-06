@@ -276,7 +276,6 @@ public class CardService {
 		card.setRequestDate(new Date());
 		card.setRequestBrowser(navigateur);
 		card.setRequestOs(systeme);
-		cardIdsService.generateQrcode4Card(card);
 
 		if (card.getPhotoFile().getImageData().isEmpty()) {
 			emptyPhoto = true;
@@ -331,6 +330,7 @@ public class CardService {
 				card.setPayCmdNum(reference);
 			}
 			userInfoService.setAdditionalsInfo(user, null);
+			cardIdsService.generateQrcode4Card(card);
 			if(card.getId() ==null) {
 				card.persist();
 			}else{
@@ -341,6 +341,7 @@ public class CardService {
 			}else{
 				user.merge();
 			}
+			
 			String messageLog = "Succès de la demande de carte pour l'utilisateur " +  eppn;
 			log.info(messageLog);
 

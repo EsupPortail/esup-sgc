@@ -13,19 +13,26 @@
 		<property name="use4ExternalCard" value="true"/>
 	</bean>
   	
-  	<bean class="org.esupportail.sgc.services.ac.CsvExportP2sService"/>
-  	
-  	<bean class="org.esupportail.sgc.services.ac.CsvExportSynchronicService"/>
-  	
-  	<bean class="org.esupportail.sgc.services.ac.CsvExportTilService"/>
-  		
+  	<bean class="org.esupportail.sgc.services.ac.CsvExportP2sService">
+  		<constructor-arg ref="p2sVfsAccessService"/>
+  	</bean>
+  	  		
   	<bean id="p2sVfsAccessService" class="org.esupportail.sgc.services.fs.VfsAccessService">
       <property name="uri" value="file://tmp/" />
     </bean>
     
+  	
+  	<bean class="org.esupportail.sgc.services.ac.CsvExportSynchronicService">
+  	  		<constructor-arg ref="synchronicVfsAccessService"/>
+  	</bean>
+  	
     <bean id="synchronicVfsAccessService" class="org.esupportail.sgc.services.fs.VfsAccessService">
       <property name="uri" value="file://tmp/" />
     </bean>
+    
+  	<bean class="org.esupportail.sgc.services.ac.CsvExportTilService">
+  	  		<constructor-arg ref="tilVfsAccessService"/>
+  	</bean>
     
     <bean id="tilVfsAccessService" class="org.esupportail.sgc.services.fs.VfsAccessService">
       <property name="uri" value="file://tmp/" />

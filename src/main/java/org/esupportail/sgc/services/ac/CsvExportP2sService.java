@@ -14,7 +14,6 @@ import javax.annotation.Resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -36,9 +35,8 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 	private boolean isRunning = false;
 	
 	private String eppnFilter = ".*";
-	
-	@Resource
-	AccessService p2sVfsAccessService;
+
+	AccessService accessService;
 	
 	@Resource
 	CardEtatService cardEtatService;
@@ -47,6 +45,11 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 	AppliConfigService appliConfigService;
 
 	private Set<String> queueEppns2Update = new HashSet<String>();
+	
+	public CsvExportP2sService(AccessService accessService) {
+		super();
+		this.accessService = accessService;
+	}
 	
 	public String getEppnFilter() {
 		return eppnFilter;
@@ -60,7 +63,7 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 		InputStream csv = IOUtils.toInputStream(sgc2csv(null).toString(), ENCODING_P2S);
 		String filename = appliConfigService.getP2sExportcsvFilename();
 		Date date = new Date();
-		p2sVfsAccessService.putFile(null, date.getTime() + "_" + filename, csv, false);
+		accessService.putFile(null, date.getTime() + "_" + filename, csv, false);
 	} 
 	
 	/* with P2S we can't import a very big file, so we split it*/
@@ -84,7 +87,7 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 			i++;
 			if(i>nbLinesMax) {
 				InputStream csv = IOUtils.toInputStream(csvLines, ENCODING_P2S);
-				p2sVfsAccessService.putFile(null, date.getTime() + "_" + j + "_" + filename, csv, false);
+				accessService.putFile(null, date.getTime() + "_" + j + "_" + filename, csv, false);
 				i=1;
 				j++;
 				csvLines = null;
@@ -97,7 +100,7 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 		}
 		if(!"".equals(csvLines)) {
 			InputStream csv = IOUtils.toInputStream(csvLines, ENCODING_P2S);
-			p2sVfsAccessService.putFile(null, date.getTime() + "_" + j + "_" + filename, csv, false);
+			accessService.putFile(null, date.getTime() + "_" + j + "_" + filename, csv, false);
 		}
 	}
 	
@@ -130,7 +133,7 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 		String csvStr = sgc2csv4eppn(eppn).toString();
 		
 		InputStream csv = IOUtils.toInputStream(csvStr, ENCODING_P2S);
-		p2sVfsAccessService.putFile(null, eppn + "_" + filename, csv, false);
+		accessService.putFile(null, eppn + "_" + filename, csv, false);
 	}
 	
 	private StringBuffer sgc2csv(List<String> eppn4UpdateP2S) {

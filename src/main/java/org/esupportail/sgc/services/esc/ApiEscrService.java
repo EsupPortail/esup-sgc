@@ -10,6 +10,7 @@ import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.EscrCard;
@@ -210,12 +211,16 @@ public class ApiEscrService extends ValidateService {
 		EscrStudent escrStudent = new EscrStudent();
 		escrStudent.setEppn(eppn);
 		escrStudent.setEuropeanStudentIdentifier(europeanStudentIdentifier);
-		escrStudent.setPicInstitutionCode(picInstitutionCode);
 		User user = User.findUser(eppn);
 		escrStudent.setEmailAddress(user.getEmail());
 		escrStudent.setExpiryDate(user.getDueDate());
 		escrStudent.setName(user.getDisplayName());
 		escrStudent.setAcademicLevel(user.getAcademicLevel());
+		Long pic = picInstitutionCode;
+		if(!StringUtils.isEmpty(user.getPic())) {
+			pic = new Long(user.getPic());
+		}
+		escrStudent.setPicInstitutionCode(pic);
 		return escrStudent;
 		
 	}
@@ -323,7 +328,7 @@ public class ApiEscrService extends ValidateService {
 		return headers;
 	}
 	
-	protected String getEuropeanStudentIdentifier(String eppn) {
+	public String getEuropeanStudentIdentifier(String eppn) {
 		String esi = null;
 		List<EscrStudent> escrStudentsInESCR = EscrStudent.findEscrStudentsByEppnEquals(eppn).getResultList();
 		if(!escrStudentsInESCR.isEmpty()) {
@@ -358,7 +363,7 @@ public class ApiEscrService extends ValidateService {
 	}
 	
 	public String getCaChainCertAsHexa(String picInstitutionCode) {
-		String urlTemplate = webUrl.replaceFirst("/v1", "/certs/files/%s/ca-chain.cert.pem");
+		String urlTemplate = webUrl.replaceFirst("/v1", "/v1/certs/files/%s/ca-chain.cert.pem");
 		String url = String.format(urlTemplate, picInstitutionCode);
 		HttpHeaders headers = this.getJsonHeaders();			
 		HttpEntity entity = new HttpEntity(headers);

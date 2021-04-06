@@ -14,8 +14,10 @@ import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
+import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.AttributeInUseException;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
@@ -35,6 +37,10 @@ public class LdapValidateService extends ValidateService {
 	private String EPPN = "%eppn%";
 	
 	private String PHOTO = "%photo%";
+	
+	private String ESCN = "%escn%";
+	
+	private String ESI = "%esi%";
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -61,6 +67,9 @@ public class LdapValidateService extends ValidateService {
 	public void setPeopleSearchFilter(String peopleSearchFilter) {
 		this.peopleSearchFilter = peopleSearchFilter;
 	}
+	
+    @Autowired(required=false)  
+	ApiEscrService apiEscrService;
 
 	@Override
 	public void validateInternal(Card card) {
@@ -151,6 +160,15 @@ public class LdapValidateService extends ValidateService {
 		ldapValueRef = ldapValueRef.replaceAll(EPPN, card.getEppn());
 		if(card.getUser().getSecondaryId() != null) {
 			ldapValueRef = ldapValueRef.replaceAll(SECONDARYID, card.getUser().getSecondaryId());
+		}
+		if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
+			ldapValueRef = ldapValueRef.replaceAll(ESCN, card.getEscnUid());
+		}
+		if(apiEscrService!=null && ldapValueRef.contains(ESI)) {
+			String esi = apiEscrService.getEuropeanStudentIdentifier(card.getEppn());
+			if(esi != null) {
+				ldapValueRef = ldapValueRef.replaceAll(ESI, esi);
+			}
 		}
 		for(String appName : card.getDesfireIds().keySet()) {
 			ldapValueRef = ldapValueRef.replaceAll("%" + appName + "%", card.getDesfireIds().get(appName));
