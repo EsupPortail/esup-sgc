@@ -36,6 +36,10 @@ public class EscUidFactoryService {
 	public synchronized void generateEscnUid(Card card) {
 		try {
 			User user = card.getUser();
+			if(user==null) {
+				// renouvellement ...
+				user = User.findUser(card.getEppn());
+			}
 			String pic = this.defaultPic;
 			if(!StringUtils.isEmpty(user.getPic())) {
 				pic = user.getPic();
