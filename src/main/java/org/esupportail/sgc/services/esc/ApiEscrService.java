@@ -33,26 +33,26 @@ import org.springframework.web.client.RestTemplate;
 public class ApiEscrService extends ValidateService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
+
 	@Resource
 	AppliConfigService appliConfigService;
-	
+
 	RestTemplate restTemplate;
-	
+
 	String webUrl;
 
 	String key;
-	
+
 	Boolean enable = false;
-	
+
 	String countryCode;
-	
+
 	Long picInstitutionCode;
-	
+
 	Long cardType;
-	
+
 	Map<Date, Long> cardTypes = new HashMap<Date, Long>();
 
 	public void setRestTemplate(RestTemplate restTemplate) {
@@ -121,7 +121,7 @@ public class ApiEscrService extends ValidateService {
 			}
 		}
 	}	
-	
+
 	public void postOrUpdateEscrStudent(String eppn) {
 		User user = User.findUser(eppn);
 		if(user.getEuropeanStudentCard() && enable) {
@@ -157,15 +157,15 @@ public class ApiEscrService extends ValidateService {
 			}
 		}
 	}
-	
-	
+
+
 	protected void postEscrStudent(String eppn) {
 		String url = webUrl + "/students";
 		HttpHeaders headers = this.getJsonHeaders();			
 		EscrStudent escrStudent = this.computeEscrStudent(eppn);
 		if(escrStudent == null) {
-		    log.error(String.format("Can't compute escrStudent for %s, because EuropeanStudentIdentifier can't be generated ?", eppn));
-		    return ;
+			log.error(String.format("Can't compute escrStudent for %s, because EuropeanStudentIdentifier can't be generated ?", eppn));
+			return ;
 		}
 		HttpEntity entity = new HttpEntity(escrStudent, headers);
 		log.debug("Try to post to ESCR Student : " + escrStudent); 
@@ -187,7 +187,7 @@ public class ApiEscrService extends ValidateService {
 		}
 		escrStudent.persist();
 	}
-	
+
 	private void updateEscrStudent(String eppn) {
 		EscrStudent escrStudentInESCR = EscrStudent.findEscrStudentsByEppnEquals(eppn).getSingleResult();
 		EscrStudent escrStudentGoal = computeEscrStudent(eppn);
@@ -202,7 +202,31 @@ public class ApiEscrService extends ValidateService {
 			log.info(eppn + " updated in ESCR as Student -> " + response.getBody());	
 		} 
 	}
-	
+
+
+	public void deleteEscrStudent(String eppn) {		
+		String europeanStudentIdentifier = getEuropeanStudentIdentifier(eppn);
+		if(europeanStudentIdentifier == null) {
+			return;
+		}
+		String url = webUrl + "/students/" + europeanStudentIdentifier;
+		HttpHeaders headers = this.getJsonHeaders();			
+		HttpEntity entity = new HttpEntity(null, headers);
+		log.debug("Try to delete student : " + europeanStudentIdentifier); 
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+			log.info(eppn + " deleted in ESCR -> " + response.getBody());
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+				log.warn("No need to delete " + eppn + " in ESCR because not found in ESCR");
+			} else {
+				throw clientEx;
+			}
+		}			
+	}
+
+
+
 	private EscrStudent computeEscrStudent(String eppn) {
 		String europeanStudentIdentifier = getEuropeanStudentIdentifier(eppn);
 		if(europeanStudentIdentifier == null) {
@@ -222,7 +246,7 @@ public class ApiEscrService extends ValidateService {
 		}
 		escrStudent.setPicInstitutionCode(pic);
 		return escrStudent;
-		
+
 	}
 
 	public EscrCard getEscrCard(String eppn, String csn) {
@@ -248,7 +272,7 @@ public class ApiEscrService extends ValidateService {
 			}	
 		}
 	}
-	
+
 	protected void postEscrCard(Card card) {
 		String europeanStudentIdentifier = getEuropeanStudentIdentifier(card.getEppn());
 		String url = webUrl + "/students/" + europeanStudentIdentifier + "/cards";
@@ -274,7 +298,7 @@ public class ApiEscrService extends ValidateService {
 		}
 		escrCard.persist();
 	}
-	
+
 	protected void deleteEscrCard(Card card) {
 		EscrStudent escrStudent = EscrStudent.findEscrStudentsByEppnEquals(card.getEppn()).getSingleResult();		
 		List<EscrCard> escrCards = EscrCard.findEscrCardsByCardUidEquals(card.getCsn()).getResultList();
@@ -307,7 +331,7 @@ public class ApiEscrService extends ValidateService {
 		escrCard.setCardUid(card.getCsn());
 		return escrCard;
 	}
-	
+
 	protected Long getCardType(Card card) {
 		Long type = cardType;
 		TreeSet<Date> dates = new TreeSet<Date>(cardTypes.keySet());
@@ -327,7 +351,7 @@ public class ApiEscrService extends ValidateService {
 		headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
 		return headers;
 	}
-	
+
 	public String getEuropeanStudentIdentifier(String eppn) {
 		String esi = null;
 		List<EscrStudent> escrStudentsInESCR = EscrStudent.findEscrStudentsByEppnEquals(eppn).getResultList();
@@ -361,7 +385,7 @@ public class ApiEscrService extends ValidateService {
 		}
 		return false;
 	}
-	
+
 	public String getCaChainCertAsHexa(String picInstitutionCode) {
 		String urlTemplate = webUrl.replaceFirst("/v1", "/v1/certs/files/%s/ca-chain.cert.pem");
 		String url = String.format(urlTemplate, picInstitutionCode);
@@ -373,6 +397,6 @@ public class ApiEscrService extends ValidateService {
 		byte[] certAsBytesArray = response.getBody().getBytes();
 		return Hex.toHexString(certAsBytesArray);
 	}
-	
+
 }
 

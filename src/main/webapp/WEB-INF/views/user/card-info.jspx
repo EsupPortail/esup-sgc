@@ -59,9 +59,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 						<c:if test="${displayFormParts['displayEuropeanCard'] or user.europeanStudentCard}">
 							<dt>Carte européenne :</dt>
 							<dd>${user.europeanStudentCard ? 'Oui' : 'non'} &amp;nbsp
-								<c:if test="${!user.europeanStudentCard}">
-									<button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#europeanCollapse">Modifier</button>
-								</c:if>
+								<button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#europeanCollapse">Modifier</button>
 							</dd>
 						</c:if>					
 						<dt>Diffusion photo pour usage interne :</dt>
@@ -143,12 +141,24 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 						</div>
 					</div>
 					<div class="collapse" id="europeanCollapse">
-						<spring:url value="/user/enableEuropeanCard" var="europeanUrl" />
-						<form action="${europeanUrl}" method="post" id="europeanForm">
-							<div class="alert alert-warning"><strong>Je souhaite adhérer au projet de carte étudiante européenne. </strong>
-								<input type="submit" class="btn btn-success" value="Valider"/>
-							</div>
-						</form>
+						<c:choose>
+							<c:when test="${!user.europeanStudentCard}">
+								<spring:url value="/user/enableEuropeanCard" var="europeanUrl" />
+								<form action="${europeanUrl}" method="post" id="europeanForm">
+									<div class="alert alert-warning"><strong>Je souhaite adhérer au projet de carte étudiante européenne. </strong>
+										<input type="submit" class="btn btn-success" value="Valider"/>
+									</div>
+								</form>
+							</c:when>
+							<c:otherwise>
+								<spring:url value="/user/disableEuropeanCard" var="europeanUrl" />
+								<form action="${europeanUrl}" method="post" id="europeanForm">
+									<div class="alert alert-warning"><strong>Je ne souhaite pas adhérer au projet de carte étudiante européenne. </strong>
+										<input type="submit" class="btn btn-danger" value="Valider"/>
+									</div>
+								</form>
+							</c:otherwise>
+						</c:choose>	
 					</div>
 					<c:if test="${not empty payboxList}">
 					 <h4>Historique des paiements</h4>

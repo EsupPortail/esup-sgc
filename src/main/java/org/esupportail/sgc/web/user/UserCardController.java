@@ -504,6 +504,20 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 	
+	@Transactional
+	@RequestMapping(value="/disableEuropeanCard", method=RequestMethod.POST)
+	public String disableEuropeanCard(final RedirectAttributes redirectAttributes) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		apiEscrService.deleteEscrStudent(eppn);
+		User user = User.findUser(eppn);
+		user.setEuropeanStudentCard(false);
+		user.merge();
+		logService.log(user.getCards().get(0).getId(), ACTION.DISABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
+		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european.disable");
+		return "redirect:/user";
+	}
+	
 	@RequestMapping(value="/templatePhoto/{type}/{templateId}")
 	@Transactional
 	public void getPhoto(@PathVariable String type, @PathVariable Long templateId, HttpServletResponse response) throws IOException, SQLException {

@@ -3,10 +3,12 @@ package org.esupportail.sgc.services.esc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Files;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.esupportail.sgc.EsupSgcTestUtilsService;
 import org.esupportail.sgc.domain.Card;
 import org.junit.Assume;
@@ -15,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,6 +32,12 @@ public class EscDeuInfoServiceTest {
 	
 	@Resource
 	EsupSgcTestUtilsService esupSgcTestUtilsService;
+	
+	@Value("classpath:META-INF/security/esc/test-ca.intermediate.cert.pem")
+	org.springframework.core.io.Resource resourceCertAsHexa;
+	
+	@Value("classpath:META-INF/security/esc/test-ca-chain.cert.pem")
+	org.springframework.core.io.Resource resourceChainCertAsHexa;
 	
 	 @Before
 	 public void beforeMethod() throws Exception {
@@ -98,6 +107,16 @@ public class EscDeuInfoServiceTest {
 		Map<String, String> certInfo = escDeuInfoMetaService.getCertSubjectName(escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()).getPublicKeyAsHexa());
 		log.info(String.format("Cert info : %s", certInfo));
 		//assertEquals(540, publicKeyAsHexa.length());
+	}
+	
+	@Test 
+	public void checkCertTest() throws Exception {
+		byte[] chainCertAsHexaAsBytesArray =Files.readAllBytes(resourceChainCertAsHexa.getFile().toPath());
+		byte[] certAsHexaAsBytesArray = Files.readAllBytes(resourceCertAsHexa.getFile().toPath());
+		String chainCertAsHexa = Hex.toHexString(chainCertAsHexaAsBytesArray);
+		String certAsHexa = Hex.toHexString(certAsHexaAsBytesArray);
+		boolean certAndChainIsOk = escDeuInfoMetaService.checkCert(certAsHexa, chainCertAsHexa);
+		assertTrue(certAndChainIsOk);
 	}
 	
 }
