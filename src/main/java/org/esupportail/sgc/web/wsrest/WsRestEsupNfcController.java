@@ -4,12 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.persistence.NoResultException;
@@ -29,6 +24,7 @@ import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
+import org.esupportail.sgc.services.esc.DamService;
 import org.esupportail.sgc.services.esc.EscDeuInfoMetaService;
 import org.esupportail.sgc.services.ldap.GroupService;
 import org.esupportail.sgc.web.manager.ClientJWSController;
@@ -36,6 +32,7 @@ import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -103,6 +100,8 @@ public class WsRestEsupNfcController {
 	@Resource
 	EscDeuInfoMetaService escDeuInfoMetaService;
 
+	@Resource
+	DamService damService;
 	/**
 	 * Example :
 	 * curl -v -H "Content-Type: application/json" http://localhost:8080/wsrest/nfc/locations?eppn=joe@univ-ville.fr
@@ -848,6 +847,25 @@ public class WsRestEsupNfcController {
 			uiModel.addAttribute("freeMemory", freeMemory);
 		}
 		return "deuinfo";
+	}
+
+	@RequestMapping(value = "/createDamDiversBaseKey", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String createDamDiversBaseKey(@RequestParam String csn) {
+		return damService.createDamDiversBaseKey(csn);
+	}
+
+	@RequestMapping(value = "/getDamDiversBaseKey", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String getDamDiversBaseKey(@RequestParam String csn) {
+		return damService.getDamDiversBaseKey(csn);
+	}
+
+	@RequestMapping(value = "/resetDamDiversBaseKey", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String resetDamDiversBaseKey(@RequestParam String csn) {
+		damService.resetDamDiversBaseKey(csn);
+		return "OK";
 	}
 	
 }
