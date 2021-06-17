@@ -22,6 +22,7 @@ public class EscrStudent {
 	@Column(unique=true)
 	String eppn;
 
+	@Column(unique=true)
 	String europeanStudentIdentifier;
 	
 	Long picInstitutionCode;

@@ -334,4 +334,20 @@ privileged aspect Card_Roo_JavaBean {
         this.crousError = crousError;
     }
     
+    public String Card.getFullText() {
+        return this.fullText;
+    }
+    
+    public void Card.setFullText(String fullText) {
+        this.fullText = fullText;
+    }
+    
+    public String Card.getDiversDamBaseKey() {
+        return this.diversDamBaseKey;
+    }
+    
+    public void Card.setDiversDamBaseKey(String diversDamBaseKey) {
+        this.diversDamBaseKey = diversDamBaseKey;
+    }
+    
 }

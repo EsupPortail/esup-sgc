@@ -31,7 +31,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.7.x";
+	final static String currentEsupSgcVersion = "1.8.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -340,6 +340,21 @@ public class DbToolService {
 				}			
 				
 	    		esupSgcVersion = "1.7.x";
+			}
+			if("1.7.x".equals(esupSgcVersion)) {
+				
+				log.warn("Ajout de contraintes en base");
+				String sqlUpdate = "";
+				
+				sqlUpdate += "ALTER TABLE escr_student ADD CONSTRAINT escr_student_european_student_identifier_unique UNIQUE (european_student_identifier);";
+				
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+
+	    		esupSgcVersion = "1.8.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
