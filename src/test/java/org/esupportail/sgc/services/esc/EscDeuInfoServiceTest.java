@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import org.bouncycastle.util.encoders.Hex;
 import org.esupportail.sgc.EsupSgcTestUtilsService;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +44,12 @@ public class EscDeuInfoServiceTest {
 	 public void beforeMethod() throws Exception {
 		 Card c = getCardithEscnFromDb();
 		Assume.assumeTrue(c != null);
+		try {
+			Assume.assumeTrue(escDeuInfoMetaService.getEscDeuInfoService(c.getUser().getPic()) != null);
+		} catch(SgcRuntimeException e) {
+			log.info("EscDeuInfoService Tests skipped : " + e.getMessage(), e);
+			Assume.assumeNoException(e);
+		}
 		Assume.assumeTrue(escDeuInfoMetaService.getPublicKeyAsHexa(c) != null);
 	 }	
 	

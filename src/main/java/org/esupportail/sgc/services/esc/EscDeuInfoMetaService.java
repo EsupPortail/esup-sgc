@@ -47,6 +47,9 @@ public class EscDeuInfoMetaService  {
 	EscUidFactoryService escUidFactoryService;
 	
 	protected EscDeuInfoService getEscDeuInfoService(String pic) {
+		if(escDeuInfoServicesList == null) {
+			return null;
+		}
 		Map<String, EscDeuInfoService> escDeuInfoServices = escDeuInfoServicesList.stream().collect(Collectors.toMap(EscDeuInfoService::getPic, escDeuInfoService -> escDeuInfoService));;
 		if(StringUtils.isEmpty(pic) && escDeuInfoServices.size()==1) {
 			return escDeuInfoServices.values().iterator().next();
