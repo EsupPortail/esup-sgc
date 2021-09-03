@@ -529,6 +529,7 @@ public class ApiCrousService {
 			body.put("revalidationDate", "");
 			HttpEntity entity = new HttpEntity(body, headers);
 			log.debug("Try to patch on Crous SmartCard for " +  card.getEppn() + " : " + smartCard); 
+			log.trace(String.format("Url : %s / Body : %s / Hraders : %s", url, body, headers));
 			try {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
 				log.info("Card with csn " + card.getCsn() + " invalidated in CROUS as CrousSmartCard");

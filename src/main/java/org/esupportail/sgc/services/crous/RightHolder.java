@@ -73,7 +73,7 @@ public class RightHolder {
 			Object thisVarObj = f.get(this);
 			Object otherVarObj = f.get(other);
 
-			if (thisVarObj == null && otherVarObj != null || thisVarObj != null && otherVarObj == null) {
+			if (thisVarObj == null && otherVarObj != null && !otherVarObj.toString().isEmpty() || thisVarObj != null && !thisVarObj.toString().isEmpty() && otherVarObj == null) {
 				isEquals = false;
 			}
 			if (thisVarObj != null && otherVarObj != null) {
