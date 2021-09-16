@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class RestValidateService extends ValidateService {
@@ -59,8 +61,16 @@ public class RestValidateService extends ValidateService {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
 			HttpEntity entity = new HttpEntity(null, headers);	
-			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-			log.info("Got from " + url + " : " + response.getBody());
+			try {
+				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+				log.info("Got from " + url + " : " + response.getBody());
+			} catch(HttpClientErrorException clientEx) {
+				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
+					log.warn(String.format("Response NOT_FOUND on GET %s ", url));
+				} else {
+					throw clientEx;
+				}
+			}	
 		}
 	}
 }

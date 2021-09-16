@@ -54,6 +54,8 @@ public class ApiEscrService extends ValidateService {
 	Long cardType;
 
 	Map<Date, Long> cardTypes = new HashMap<Date, Long>();
+	
+	boolean abortActivationIfEscFails = false;
 
 	public void setRestTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
@@ -102,7 +104,9 @@ public class ApiEscrService extends ValidateService {
 				}
 			} catch(HttpClientErrorException clientEx) {
 				log.error("HttpClientErrorException : " + clientEx.getResponseBodyAsString());
-				throw clientEx; 
+				if(abortActivationIfEscFails) {
+					throw clientEx; 
+				}
 			}
 		}
 	}
