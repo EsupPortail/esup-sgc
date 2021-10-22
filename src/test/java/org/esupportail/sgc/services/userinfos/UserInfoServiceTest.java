@@ -54,8 +54,8 @@ public class UserInfoServiceTest {
     @Test
     public void testUserFieldsEquals() {
     	User user = esupSgcTestUtilsService.getUserFromDb();
+	Assume.assumeTrue(user!=null);
     	log.info(String.format("Test User.fieldsEquals on %s", user.getEppn()));
-    	Assume.assumeTrue(user!=null);
     	assertNull(user.getFieldNotEquals(user));
     }
 	
