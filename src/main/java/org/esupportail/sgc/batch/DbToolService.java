@@ -347,6 +347,7 @@ public class DbToolService {
 				String sqlUpdate = "";
 				
 				sqlUpdate += "ALTER TABLE escr_student ADD CONSTRAINT escr_student_european_student_identifier_unique UNIQUE (european_student_identifier);";
+				sqlUpdate += "ALTER TABLE paybox_transaction_log ADD CONSTRAINT paybox_transaction_log_reference_unique UNIQUE (reference);";
 				
 				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
 				Connection connection = dataSource.getConnection();

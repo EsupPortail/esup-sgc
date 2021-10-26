@@ -2,10 +2,12 @@ package org.esupportail.sgc.domain;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -22,6 +24,7 @@ public class PayboxTransactionLog {
 
     private String eppn;
 
+    @Column(unique=true)
     private String reference;
 
     private String montant;

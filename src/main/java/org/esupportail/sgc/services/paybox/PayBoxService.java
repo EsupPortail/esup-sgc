@@ -26,8 +26,10 @@ import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.EmailService;
+import org.esupportail.sgc.tools.MutexFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -44,6 +46,9 @@ public class PayBoxService {
     
 	@Resource
 	protected EmailService emailService;	
+	
+	@Autowired
+	private MutexFactory<String> mutexFactory;
 
     private String site;
 
@@ -206,52 +211,54 @@ public class PayBoxService {
     }
 
     public boolean payboxCallback(String montant, String reference, String auto, String erreur, String idtrans, String signature, String queryString, String ip) {
-        List<PayboxTransactionLog> txLogs = PayboxTransactionLog.findPayboxTransactionLogsByIdtransEquals(idtrans).getResultList();
-        boolean newTxLog = txLogs.size() == 0;
-        PayboxTransactionLog txLog = txLogs.size() > 0 ? txLogs.get(0) : null;
-        if (txLog == null) {
-            txLog = new PayboxTransactionLog();
-        } else {
-            if (!"00000".equals(txLog.getErreur())) {
-                log.info("This transaction + " + idtrans + " is already OK");
-                return true;
-            }
-        }
-        txLog.setMontant(montant);
-        txLog.setReference(reference);
-        txLog.setAuto(auto);
-        txLog.setErreur(erreur);
-        txLog.setIdtrans(idtrans);
-        txLog.setSignature(signature);
-        txLog.setTransactionDate(new Date());
-        String eppn = getEppn(reference);
-        txLog.setEppn(eppn);
-        if (this.checkPayboxSignature(queryString, signature)) {
-                if ("00000".equals(erreur)) {
-                	log.info("Transaction : " + reference + " pour un montant de " + montant + " OK !");
-                	if (newTxLog) {
-                		txLog.persist();
-                	} else {
-                		txLog.merge();
-                	}
-                	try {
-                		String paiementAlertMailto = appliConfigService.getPaiementAlertMailto();
-                		String paiementAlertMailbody = appliConfigService.getPaiementAlertMailbody();
-                		String mailFrom = appliConfigService.getNoReplyMsg();
-                		if(!paiementAlertMailto.isEmpty() && !paiementAlertMailbody.isEmpty()) {
-                			emailService.sendMessage(mailFrom, paiementAlertMailto, "Paiement paybox ESUP-SGC", paiementAlertMailbody);
-                		}
-                	} catch (Exception ex) {
-                		log.error("Exception during sending email ?", ex);
-                	}
-                	return true;
-                } else {
-                    log.info("'Erreur' " + erreur + "  (annulation) lors de la transaction paybox : " + reference + " pour un montant de " + montant);
-                }
-            } else {
-                log.error("signature checking of paybox failed, transaction " + txLog + " canceled.");
-            }
-        return false;
+    	synchronized(mutexFactory.getMutex(reference)) {
+	        List<PayboxTransactionLog> txLogs = PayboxTransactionLog.findPayboxTransactionLogsByIdtransEquals(idtrans).getResultList();
+	        boolean newTxLog = txLogs.size() == 0;
+	        PayboxTransactionLog txLog = txLogs.size() > 0 ? txLogs.get(0) : null;
+	        if (txLog == null) {
+	            txLog = new PayboxTransactionLog();
+	        } else {
+	            if (!"00000".equals(txLog.getErreur())) {
+	                log.info("This transaction + " + idtrans + " is already OK");
+	                return true;
+	            }
+	        }
+	        txLog.setMontant(montant);
+	        txLog.setReference(reference);
+	        txLog.setAuto(auto);
+	        txLog.setErreur(erreur);
+	        txLog.setIdtrans(idtrans);
+	        txLog.setSignature(signature);
+	        txLog.setTransactionDate(new Date());
+	        String eppn = getEppn(reference);
+	        txLog.setEppn(eppn);
+	        if (this.checkPayboxSignature(queryString, signature)) {
+	                if ("00000".equals(erreur)) {
+	                	log.info("Transaction : " + reference + " pour un montant de " + montant + " OK !");
+	                	if (newTxLog) {
+	                		txLog.persist();
+	                	} else {
+	                		txLog.merge();
+	                	}
+	                	try {
+	                		String paiementAlertMailto = appliConfigService.getPaiementAlertMailto();
+	                		String paiementAlertMailbody = appliConfigService.getPaiementAlertMailbody();
+	                		String mailFrom = appliConfigService.getNoReplyMsg();
+	                		if(!paiementAlertMailto.isEmpty() && !paiementAlertMailbody.isEmpty()) {
+	                			emailService.sendMessage(mailFrom, paiementAlertMailto, "Paiement paybox ESUP-SGC", paiementAlertMailbody);
+	                		}
+	                	} catch (Exception ex) {
+	                		log.error("Exception during sending email ?", ex);
+	                	}
+	                	return true;
+	                } else {
+	                    log.info("'Erreur' " + erreur + "  (annulation) lors de la transaction paybox : " + reference + " pour un montant de " + montant);
+	                }
+	            } else {
+	                log.error("signature checking of paybox failed, transaction " + txLog + " canceled.");
+	            }
+	        return false;
+    	}
     }
 
     public String getEppn(String reference) {
