@@ -6,6 +6,10 @@
              xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
              					 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
                                  http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <http security="none" pattern="/resources/**" />
+
+    <http security="none" pattern="/webjars/**" />
     
     <!-- HTTP security configurations -->
     <http disable-url-rewriting="true" use-expressions="true" entry-point-ref="http403EntryPoint">
@@ -29,10 +33,14 @@
 		<custom-filter position="PRE_AUTH_FILTER" ref="shibFilter"/>
 		<custom-filter position="SWITCH_USER_FILTER" ref="switchUserProcessingFilter" />
 		<custom-filter ref="concurrencyFilter" position="CONCURRENT_SESSION_FILTER" />
+		<custom-filter ref="resourceUrlEncodingFilter" position="LAST"/>        
 		<logout logout-success-url="/" />
 		<expression-handler ref="sgcWebSecurityExpressionHandler"/>
                 <csrf disabled="true"/>
     </http>
+
+	<beans:bean id="resourceUrlEncodingFilter"
+		class="org.springframework.web.servlet.resource.ResourceUrlEncodingFilter"/>    
 
     <beans:bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 

@@ -22,16 +22,23 @@
          Also registers default Formatters and Validators for use across all @Controllers -->
     <mvc:annotation-driven conversion-service="applicationConversionService"/>
     
+    <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/**" order="1">
+        <mvc:cache-control cache-public="true" max-age="86400"/>
+        <mvc:resource-chain resource-cache="true">
+            <mvc:resolvers>
+                <mvc:version-resolver>
+                    <mvc:content-version-strategy patterns="/**"/>
+                </mvc:version-resolver>
+                <bean class="org.springframework.web.servlet.resource.PathResourceResolver"/>
+            </mvc:resolvers>
+        </mvc:resource-chain>
+    </mvc:resources>
 
-    <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources -->
-    <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/**">
-    	<mvc:cache-control cache-public="true" max-age="3600"/>
+    <mvc:resources location="/webjars/" mapping="/webjars/**"  order="2">
+        <mvc:cache-control cache-public="true" max-age="86400"/>
+        <mvc:resource-chain resource-cache="true"/>
     </mvc:resources>
-    
-    <mvc:resources location="/webjars/" mapping="/webjars/**">
-    	<mvc:cache-control cache-public="true" max-age="3600"/>
-    	<mvc:resource-chain resource-cache="false"/> 	
-    </mvc:resources>
+
     
 
     <!-- Allows for mapping the DispatcherServlet to "/" by forwarding static resource 
