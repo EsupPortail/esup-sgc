@@ -93,7 +93,7 @@ public class UserInfoService {
 	
 	/**
 	 * Get and set userInfos from userInfoservices to user object
-	 * Return false if synchronize is set to true by userInfoservices computing
+	 * Return false if synchronize is set to false by userInfoservices computing
 	 */
 	public boolean setAdditionalsInfo(User user, HttpServletRequest request) {
 		Map<String, String> userInfos = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER); 

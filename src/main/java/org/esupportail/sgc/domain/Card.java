@@ -15,11 +15,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Query;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -51,6 +53,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "Card", finders = { "findCardsByEppnEquals", "findCardsByEppnAndEtatEquals", "findCardsByEppnLike", "findCardsByEtatEqualsAndDateDemandeLessThan", "findCardsByDesfireId", "findCardsByCsn", "findCardsByEppnAndEtatNotEquals",  "findCardsByEtatAndDateEtatLessThan"})
 @JsonFilter("cardFilter")
+@Table(name = "Card", indexes = {
+		@Index(name = "card_user_account_request_date_id", columnList = "user_account, requestDate desc"),
+		@Index(name = "card_etat_desc_id", columnList = "dateEtat desc, id desc"),
+		@Index(name = "card_nb_rejets_id", columnList = "nbRejets"),
+})
 public class Card {
 	
 	private static final Logger log = LoggerFactory.getLogger(Card.class);

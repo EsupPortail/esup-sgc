@@ -49,9 +49,9 @@ public class CardEtatService {
 	
 	private final static Map<Etat, List<Etat>> workflow = new HashMap<Etat, List<Etat>>();
 	static {
-		workflow.put(Etat.NEW, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED})); // NEW -> CANCELED is not an action made via the gui
-		workflow.put(Etat.RENEWED, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED}));
-		workflow.put(Etat.REQUEST_CHECKED, Arrays.asList(new Etat[]{Etat.IN_PRINT}));
+		workflow.put(Etat.NEW, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED, Etat.CANCELED}));
+		workflow.put(Etat.RENEWED, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED, Etat.CANCELED}));
+		workflow.put(Etat.REQUEST_CHECKED, Arrays.asList(new Etat[]{Etat.IN_PRINT, Etat.CANCELED}));
 		workflow.put(Etat.IN_PRINT, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED, Etat.IN_PRINT, Etat.PRINTED}));
 		// workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{Etat.IN_ENCODE}));
 		workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{}));

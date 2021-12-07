@@ -15,8 +15,6 @@ privileged aspect Card_Roo_Jpa_Entity {
     
     declare @type: Card: @Entity;
     
-    declare @type: Card: @Table(name = "Card");
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

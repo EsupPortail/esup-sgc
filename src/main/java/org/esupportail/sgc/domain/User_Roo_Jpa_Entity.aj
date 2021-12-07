@@ -15,8 +15,6 @@ privileged aspect User_Roo_Jpa_Entity {
     
     declare @type: User: @Entity;
     
-    declare @type: User: @Table(name = "UserAccount");
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

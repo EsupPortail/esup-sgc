@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -25,6 +26,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Query;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -53,6 +55,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous", "findUsersByEuropeanStudentCard", "findUsersByCrousIdentifier"})
 @JsonFilter("userFilter")
+@Table(name = "UserAccount", indexes = {
+		@Index(name = "user_account_nb_cards_id", columnList = "nbCards"),
+		@Index(name = "user_account_user_type_id", columnList = "userType"),
+		@Index(name = "user_account_address_id", columnList = "address asc")
+})
 public class User {
 	
 	private final static Logger log = LoggerFactory.getLogger(User.class);
@@ -178,7 +185,8 @@ public class User {
 	private TemplateCard lastCardTemplatePrinted;
 
 	@ElementCollection
-    @CollectionTable(name="roles", joinColumns=@JoinColumn(name="user_account"))
+    @CollectionTable(name="roles", joinColumns=@JoinColumn(name="user_account"), indexes = {
+    		@Index(name="roles_role_id", columnList = "role"), @Index(name="roles_user_account_id", columnList = "user_account")})
     @Column(name="role")
     private Set<String> roles = new HashSet<String>();
 	
