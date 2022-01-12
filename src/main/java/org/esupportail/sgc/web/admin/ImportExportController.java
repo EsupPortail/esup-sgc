@@ -3,7 +3,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+
 import java.io.Writer;
 import java.text.ParseException;
 import java.util.List;
@@ -80,7 +80,7 @@ public class ImportExportController {
 	}
 
 	@RequestMapping(value = "/exportCsvFile/{stats}", method = RequestMethod.GET)
-	public void getCsv(@PathVariable("stats") String stats, HttpServletRequest request, HttpServletResponse response, Locale locale) throws UnsupportedEncodingException, IOException {
+	public void getCsv(@PathVariable("stats") String stats, HttpServletRequest request, HttpServletResponse response, Locale locale) throws IOException {
 		
 		response.setContentType("text/csv");
 		String reportName = "editable.csv";
@@ -114,7 +114,7 @@ public class ImportExportController {
 	}
 	
 	@RequestMapping(value = "/tableStats", method = RequestMethod.GET)
-	public void getCsvTableStats(HttpServletRequest request, HttpServletResponse response, Locale locale) throws UnsupportedEncodingException, IOException {
+	public void getCsvTableStats(HttpServletRequest request, HttpServletResponse response, Locale locale) throws IOException {
 		
 		response.setContentType("text/csv");
 		String reportName = "stats.csv";

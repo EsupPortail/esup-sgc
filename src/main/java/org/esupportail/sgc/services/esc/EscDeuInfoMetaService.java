@@ -1,6 +1,7 @@
 package org.esupportail.sgc.services.esc;
 
 import java.io.ByteArrayInputStream;
+
 import java.io.UnsupportedEncodingException;
 import java.security.PublicKey;
 import java.security.Signature;

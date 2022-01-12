@@ -1,7 +1,7 @@
 package org.esupportail.sgc.web.admin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
@@ -188,9 +188,7 @@ public class TemplateCardController {
         if (enc == null) {
             enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
         }
-        try {
-            pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {}
+		pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
         return pathSegment;
     }
     

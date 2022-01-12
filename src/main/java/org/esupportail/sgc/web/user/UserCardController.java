@@ -1,7 +1,7 @@
 package org.esupportail.sgc.web.user;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -137,7 +137,7 @@ public class UserCardController {
 	ApiEscrService apiEscrService;
 	
 	@RequestMapping
-	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) throws UnsupportedEncodingException {
+	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();

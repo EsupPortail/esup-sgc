@@ -100,9 +100,7 @@ privileged aspect PrefsController_Roo_Controller {
         if (enc == null) {
             enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
         }
-        try {
-            pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {}
+        pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
         return pathSegment;
     }
     
