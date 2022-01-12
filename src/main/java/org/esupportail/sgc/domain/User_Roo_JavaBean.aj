@@ -493,4 +493,12 @@ privileged aspect User_Roo_JavaBean {
         this.pic = pic;
     }
     
+    public Date User.getUpdateDate() {
+        return this.updateDate;
+    }
+    
+    public void User.setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+    
 }

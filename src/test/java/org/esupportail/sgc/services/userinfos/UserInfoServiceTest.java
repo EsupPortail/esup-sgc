@@ -1,6 +1,7 @@
 package org.esupportail.sgc.services.userinfos;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath*:META-INF/spring/applicationContext*.xml"})
@@ -54,9 +56,10 @@ public class UserInfoServiceTest {
     @Test
     public void testUserFieldsEquals() {
     	User user = esupSgcTestUtilsService.getUserFromDb();
-	Assume.assumeTrue(user!=null);
+		Assume.assumeTrue(user!=null);
     	log.info(String.format("Test User.fieldsEquals on %s", user.getEppn()));
-    	assertNull(user.getFieldNotEquals(user));
+		// TODO : user == user -> getFieldNotEquals is not really tested here :(
+    	assertTrue(user.getFieldNotEquals(user).isEmpty());
     }
 	
 }

@@ -216,6 +216,9 @@ public class User {
 	private String fullText;
 	
 	private String pic = "";
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd@HH:mm:ss.SSSZ")
+	private Date updateDate;
 	
 	@PreUpdate
 	@PrePersist
@@ -328,47 +331,53 @@ public class User {
 	}
 	
 
-	public String getFieldNotEquals(Object obj) {
-		if (this == obj)
-			return null;
-		if (obj == null)
-			return "null";
-		if (getClass() != obj.getClass())
-			return "null";
+	public List<String> getFieldNotEquals(Object obj) {
+		List<String> fieldsNotEquals = new ArrayList<String>();
+		if (this == obj) {
+			return fieldsNotEquals;
+		}
+		if (obj == null) {
+			fieldsNotEquals.add("null");
+			return fieldsNotEquals;
+		}
+		if (getClass() != obj.getClass()) {
+			fieldsNotEquals.add("class");
+			return fieldsNotEquals;
+		}
 		User other = (User) obj;
 
 		if (birthday == null) {
 			if (other.birthday != null) {
-				return "birthday";
+				fieldsNotEquals.add("birthday");
 			}
 		} 
 		// compare only day (without time) for birthday 
 		else if (DateTimeComparator.getDateOnlyInstance().compare(birthday, other.birthday) != 0) {
-			return "birthday";
+			fieldsNotEquals.add("birthday");
 		}
 
 		if (dueDate == null) {
 			if (other.dueDate != null) {
-				return "dueDate";
+				fieldsNotEquals.add("dueDate");
 			}
 		} else if (!dueDate.equals(other.dueDate)) {
-			return "dueDate";
+			fieldsNotEquals.add("dueDate");
 		}
 		
 		if (externalCard == null) {
 			if (other.externalCard != null) {
-				return "externalCard";
+				fieldsNotEquals.add("externalCard");
 			}
 		} else if (!externalCard.equals(other.externalCard)) {
-			return "externalCard";
+			fieldsNotEquals.add("externalCard");
 		}
 		
 		if (this.getDefaultPhoto() == null || this.getDefaultPhoto().getBigFile() == null || this.getDefaultPhoto().getBigFile().getMd5() == null) {
 			if (!(other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || other.getDefaultPhoto().getBigFile().getMd5() == null)) {
-				return "defaultPhoto";
+				fieldsNotEquals.add("defaultPhoto");
 			}
 		} else if (other.getDefaultPhoto() == null || other.getDefaultPhoto().getBigFile() == null || !this.getDefaultPhoto().getBigFile().getMd5().equals(other.getDefaultPhoto().getBigFile().getMd5())) {
-			return "defaultPhoto";
+			fieldsNotEquals.add("defaultPhoto");
 		}
 		
 		for(String varStringName : Arrays.asList(new String[] {"address", "externalAddress", "cnousReferenceStatut", "crous", "difPhoto", "editable", "eduPersonPrimaryAffiliation", "email",
@@ -379,22 +388,21 @@ public class User {
 				"verso1", "verso2", "verso3", "verso4", "verso5", "verso6", "verso7", 
 				"templateKey", "blockUserMsg", "academicLevel", "pic"})) {
 			if(!this.checkEqualsVar(varStringName, other)) {
-				return varStringName;
+				fieldsNotEquals.add(varStringName);
 			}
 		}
 		
 		// hack idRate pour student : si idCompagnyRate == 10 (student), idRate pas pris en compte pour getFieldNotEquals
 		if (idRate == null) {
 			if (other.idRate != null) {
-				return "idRate";
+				fieldsNotEquals.add("idRate");
 			}
 		} else if(idCompagnyRate==null || other.idCompagnyRate==null || !idCompagnyRate.equals(other.idCompagnyRate) || !idCompagnyRate.equals(Long.valueOf(10))) {
 			if(!this.checkEqualsVar("idRate", other)) {
-				return "idRate";
+				fieldsNotEquals.add("idRate");
 			}
 		}
-
-		return null;
+		return fieldsNotEquals;
 	}
 
 	

@@ -176,6 +176,10 @@
                                 <dd>${user.freeField2}</dd>
                                 <dt>freeField3</dt>
                                 <dd>${user.freeField3}</dd>
+                                <dt>mis à jour :</dt>
+                                <dd>
+                                    <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${user.updateDate}"/>
+                                </dd>
                             </dl>
                             <c:if test="${managePermission}">
                                 <spring:url value="/manager/${currentCard.id}/resync-user/${user.eppn}" var="resynchUrl"/>

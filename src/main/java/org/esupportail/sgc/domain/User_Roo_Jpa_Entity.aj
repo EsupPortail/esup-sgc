@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import org.esupportail.sgc.domain.User;
 
 privileged aspect User_Roo_Jpa_Entity {

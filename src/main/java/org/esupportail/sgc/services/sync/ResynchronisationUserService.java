@@ -3,6 +3,7 @@ package org.esupportail.sgc.services.sync;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -141,8 +142,8 @@ public class ResynchronisationUserService {
 				}
 			}
 			
-			String fieldNotEquals = dummyUser.getFieldNotEquals(user);
-			if(fieldNotEquals!=null && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
+			List<String> fieldNotEquals = dummyUser.getFieldNotEquals(user);
+			if(!fieldNotEquals.isEmpty() && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
 				if(dummyUser.getDueDate() == null && user.getDueDate().after(new Date())) {
 					// TODO : avec shib, quelle dueDate ??
 					log.warn(user.getEppn() + " has no more dueDate from sql/shib/ldap userInfoService (no more entry) "
@@ -166,7 +167,7 @@ public class ResynchronisationUserService {
 					}
 				}
 				
-				log.info(String.format("Synchronize of user %s is needed : %s is not synchronized.", eppn, fieldNotEquals));
+				log.info(String.format("Synchronize of user %s is needed : %s is/are not synchronized.", eppn, fieldNotEquals));
 				userInfoService.setAdditionalsInfo(user, null);
 				user.merge();
 				// we synchronize users with crous only if user had enable crous and had an email and had cards - same for europeanStudentCard
@@ -183,6 +184,7 @@ public class ResynchronisationUserService {
 				}
 				log.debug("Synchronize of user " + eppn + " was needed : done.");
 				updated = true;
+				user.setUpdateDate(new Date());
 			} else {
 				log.trace("Synchronize of user " + eppn + " was not needed.");
 			}
