@@ -13,6 +13,7 @@ import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,5 +86,15 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
         super.setCredentialsRequestHeader(credentialsRequestHeader);
         this.credentialsRequestHeader4thisClass = credentialsRequestHeader;
     }
+
+	@Override
+	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
+		Object principal = super.getPreAuthenticatedPrincipal(request);
+		if (principal == null && request.getServletPath().matches("^/user.*|^/manager.*|^/admin.*")) {
+			throw new PreAuthenticatedCredentialsNotFoundException("principalRequestHeader (REMOTE_USER ?) header not found in request. Pb with Shibboleth Provider setup ?");
+		} else {
+			return principal;
+		}
+	}
 
 }
