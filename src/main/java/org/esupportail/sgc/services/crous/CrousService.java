@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.User;
@@ -97,6 +98,9 @@ public class CrousService extends ValidateService {
 		if(rightHolder == null && !user.getEppn().equals(user.getCrousIdentifier())) {
 			rightHolder = this.getRightHolder(user.getEppn(), user.getEppn());
 		}
+		if(rightHolder == null && !StringUtils.isEmpty(user.getSupannCodeINE()) && !user.getSupannCodeINE().equals(user.getCrousIdentifier())) {
+			rightHolder = this.getRightHolder(user.getSupannCodeINE(), user.getEppn());
+		}
 		return rightHolder;
 	}
 
@@ -174,9 +178,4 @@ public class CrousService extends ValidateService {
 			this.validate(enabledCard);
 		}
 	}
-	
-	
-	
 }
-
-

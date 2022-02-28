@@ -31,10 +31,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 public class ApiCrousService {
 
@@ -361,7 +363,20 @@ public class ApiCrousService {
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
-			} 
+			}
+			throw crousHttpClientErrorException;
+		} catch(RestClientResponseException clientEx2) {
+			CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx2, eppn, null, CrousOperation.PUT, esupSgcOperation, url);
+			if(clientEx2.getRawStatusCode() == 462) {
+				// correspond à une erreur type "Le compte a un rne prioritaire qui est différent du rne proposé "
+				// Lorsque l'étudiant est inscrit dans 2 établissements, seul l'établissement propriétaire peut modifier le compte.
+				// par contre, tous les établissements peuvent ajouter une carte
+				// (Note : s'il y a changement de date de fin de validité (== nouvelle année, nouvelle inscription) alors l'update est ok : reset de ce rne prioritaire)
+				log.info("NOT_ACCEPTABLE : " + clientEx2.getResponseBodyAsString());
+				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				log.info(getErrorMessage(clientEx2.getResponseBodyAsString()));
+				return false;
+			}
 			throw crousHttpClientErrorException;
 		}
 		return true;

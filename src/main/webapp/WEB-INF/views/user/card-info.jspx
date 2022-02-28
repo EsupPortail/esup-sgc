@@ -127,6 +127,9 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 								<br/>
 								Cette erreur peut avoir plusieurs origines : vous avez peut-être demandé à clôturer votre <a href="https://mon-espace.izly.fr">compte au niveau de l'espace Crous/Izly</a> par exemple.
 								<br/>
+								Ce message d'erreur peut aussi indiquer, si vous êtes étudiant, que les données, issues d'un autre établissement dans lequel vous êtes également inscrit, sont, au niveau du CROUS/IZLY, prioritaires à celles proposées par notre établissement.
+								<i>"Le compte a un rne prioritaire qui est différent du rne proposé"</i>.
+								<br/>
 								Aussi
 								<ul>
 									<li>Si vous n'utilisez pas les services Crous/Izly, cette erreur peut ne pas vous poser de problème.</li> 
