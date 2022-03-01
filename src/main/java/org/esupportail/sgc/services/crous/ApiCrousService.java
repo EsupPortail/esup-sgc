@@ -363,7 +363,7 @@ public class ApiCrousService {
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
-			} else if(HttpStatus.NOT_ACCEPTABLE.equals(clientEx.getRawStatusCode())) {
+			} else if(HttpStatus.NOT_ACCEPTABLE.equals(clientEx.getStatusCode())) {
 				// correspond à une erreur type "Le compte a un rne prioritaire qui est différent du rne proposé "
 				// Lorsque l'étudiant est inscrit dans 2 établissements, seul l'établissement propriétaire peut modifier le compte.
 				// par contre, tous les établissements peuvent ajouter une carte
