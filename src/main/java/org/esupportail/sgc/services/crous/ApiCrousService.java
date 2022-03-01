@@ -363,21 +363,17 @@ public class ApiCrousService {
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
-			}
-			throw crousHttpClientErrorException;
-		} catch(RestClientResponseException clientEx2) {
-			if(clientEx2.getRawStatusCode() == 462) {
+			} else if(HttpStatus.NOT_ACCEPTABLE.equals(clientEx.getRawStatusCode())) {
 				// correspond à une erreur type "Le compte a un rne prioritaire qui est différent du rne proposé "
 				// Lorsque l'étudiant est inscrit dans 2 établissements, seul l'établissement propriétaire peut modifier le compte.
 				// par contre, tous les établissements peuvent ajouter une carte
 				// (Note : s'il y a changement de date de fin de validité (== nouvelle année, nouvelle inscription) alors l'update est ok : reset de ce rne prioritaire)
-				log.info("NOT_ACCEPTABLE : " + clientEx2.getResponseBodyAsString());
-				//CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx2, eppn, null, CrousOperation.PUT, esupSgcOperation, url);
-				//crousLogService.logErrorCrous(crousHttpClientErrorException);
-				log.info(getErrorMessage(clientEx2.getResponseBodyAsString()));
+				log.info("NOT_ACCEPTABLE : " + clientEx.getResponseBodyAsString());
+				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
 				return false;
 			}
-			throw clientEx2;
+			throw crousHttpClientErrorException;
 		}
 		return true;
 	}
