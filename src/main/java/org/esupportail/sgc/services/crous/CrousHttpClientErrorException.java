@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.crous;
 
 import org.esupportail.sgc.services.crous.CrousErrorLog.CrousOperation;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientResponseException;
 
@@ -9,7 +10,7 @@ public class CrousHttpClientErrorException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
 
-	RestClientResponseException httpClientErrorException;
+	HttpClientErrorException httpClientErrorException;
 	
 	String eppn;
 	
@@ -23,7 +24,7 @@ public class CrousHttpClientErrorException extends Exception {
 	
 	Boolean blocking = false;
 
-	public CrousHttpClientErrorException(RestClientResponseException httpClientErrorException, String eppn, String csn,
+	public CrousHttpClientErrorException(HttpClientErrorException httpClientErrorException, String eppn, String csn,
 										 CrousOperation crousOperation, EsupSgcOperation esupSgcOperation, String crousUrl) {
 		super(httpClientErrorException);
 		this.httpClientErrorException = httpClientErrorException;
@@ -80,8 +81,8 @@ public class CrousHttpClientErrorException extends Exception {
 				+ "]";
 	}
 
-	public int getStatusCode() {
-		return httpClientErrorException.getRawStatusCode();
+	public HttpStatus getStatusCode() {
+		return httpClientErrorException.getStatusCode();
 	}
 	
 }

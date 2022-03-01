@@ -372,8 +372,8 @@ public class ApiCrousService {
 				// par contre, tous les établissements peuvent ajouter une carte
 				// (Note : s'il y a changement de date de fin de validité (== nouvelle année, nouvelle inscription) alors l'update est ok : reset de ce rne prioritaire)
 				log.info("NOT_ACCEPTABLE : " + clientEx2.getResponseBodyAsString());
-				CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx2, eppn, null, CrousOperation.PUT, esupSgcOperation, url);
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				//CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx2, eppn, null, CrousOperation.PUT, esupSgcOperation, url);
+				//crousLogService.logErrorCrous(crousHttpClientErrorException);
 				log.info(getErrorMessage(clientEx2.getResponseBodyAsString()));
 				return false;
 			}
