@@ -94,7 +94,7 @@ public class ApiCrousService {
 
 	public synchronized void authenticate() {
 		if(enable) {
-			String url = webUrl + "/token";
+			String url = webUrl + "/v1/token";
 			String basicAuthorisation = String.format("%s:%s", appId, appSecret);
 			basicAuthorisation = Base64.encodeBase64String(basicAuthorisation.getBytes());
 			HttpHeaders headers = new HttpHeaders();
@@ -103,12 +103,12 @@ public class ApiCrousService {
 			headers.set("Authorization", basicAuthorisation);
 			log.trace(String.format("Headers for CROUS API authentication : %s", headers));
 			String body = "grant_type=client_credentials";
-			if("https://api.lescrous.fr/v1".equals(webUrl)) {
+			if("https://api.lescrous.fr".equals(webUrl)) {
 				body += "&env=PRD";
-			} else if("https://api-pp.nuonet.fr/v1".equals(webUrl)) {
+			} else if("https://api-pp.nuonet.fr".equals(webUrl)) {
 				body += "&env=PPD";
 			} else {
-				log.error("webUrl should be https://api-pp.nuonet.fr/v1 or https://api.nuonet.fr/v1 ?!");
+				log.error("webUrl should be https://api-pp.nuonet.fr or https://api.lescrous.fr ?!");
 			}
 			log.trace(String.format("Body for CROUS API authentication : %s", body));
 			HttpEntity entity = new HttpEntity(body, headers);	
@@ -146,7 +146,7 @@ public class ApiCrousService {
 	
 	public RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
 		if(enable) {
-			String url = webUrl + "/rightholders/" + identifier;
+			String url = webUrl + "/beforeizly/v1/rightholders/" + identifier;
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			try {
@@ -165,7 +165,7 @@ public class ApiCrousService {
 		if(enable && card!=null) {
 			if(enable) {
 				User user = User.findUser(card.getEppn());
-				String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+				String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 				HttpHeaders headers = this.getAuthHeaders();	
 				HttpEntity entity = new HttpEntity(headers);	
 				try {
@@ -286,7 +286,7 @@ public class ApiCrousService {
 			log.info(String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
 			return false;
 		}
-		String url = webUrl + "/rightholders";
+		String url = webUrl + "/beforeizly/v1/rightholders";
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
@@ -318,7 +318,7 @@ public class ApiCrousService {
 
 	private boolean updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		User user = User.findUser(eppn);
-		String url = webUrl + "/rightholders/" + user.getCrousIdentifier();
+		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
 		// hack crous duedate étudiants 
@@ -441,7 +441,7 @@ public class ApiCrousService {
 	public boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
 		if(enable) {
 			User user = User.findUser(card.getEppn());
-			String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			try {
@@ -463,7 +463,7 @@ public class ApiCrousService {
 	
 	private boolean validateNewSmartCard(Card card) throws CrousHttpClientErrorException {
 		User user = User.findUser(card.getEppn());
-		String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard";
+		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard";
 		HttpHeaders headers = this.getAuthHeaders();
 		CrousSmartCard smartCard = card.getCrousSmartCard();
 		HttpEntity entity = new HttpEntity(smartCard, headers);
@@ -499,7 +499,7 @@ public class ApiCrousService {
 	
 	private boolean revalidateSmartCard(Card card) throws CrousHttpClientErrorException {
 		User user = User.findUser(card.getEppn());
-		String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
+		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 		HttpHeaders headers = this.getAuthHeaders();
 		headers.add("uid", card.getCsn().toUpperCase());
 		Map<String, String> body = new HashMap<String, String>();
@@ -527,7 +527,7 @@ public class ApiCrousService {
 		if(enable) {
 			User user = User.findUser(card.getEppn());
 			CrousSmartCard smartCard = CrousSmartCard.findCrousSmartCard(card.getCsn());
-			String url = webUrl + "/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + smartCard.getIdZdc();
+			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + smartCard.getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();
 			headers.add("uid", card.getCsn().toUpperCase());
 			Map<String, String> body = new HashMap<String, String>();
@@ -600,7 +600,7 @@ public class ApiCrousService {
 
 	public void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpClientErrorException {
 		if(enable) {
-			String url = webUrl + "/rightholders/" + patchIdentifier.getCurrentIdentifier();
+			String url = webUrl + "/beforeizly/v1/rightholders/" + patchIdentifier.getCurrentIdentifier();
 			HttpHeaders headers = this.getAuthHeaders();
 			HttpEntity entity = new HttpEntity(patchIdentifier, headers);
 			User user = null;
