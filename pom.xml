@@ -5,7 +5,7 @@
 	<groupId>org.esupportail</groupId>
 	<artifactId>sgc</artifactId>
 	<packaging>war</packaging>
-	<version>1.8.5</version>
+	<version>1.8.6-SNAPSHOT</version>
 	<name>esup-sgc</name>
 	<properties>
 		<aspectj.version>1.9.7</aspectj.version>
