@@ -296,8 +296,10 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 							                     </dd>
 						                    </c:if>
 										</c:if>
+											<c:if test="${card.printed}">
 	                                            <button class="preview btn btn-warning" data-target="#previewCarte${i.index}" data-toggle="modal" type="button">
 														Voir carte</button>
+											</c:if>
 
 											<dt>Csn : </dt><dd>${card.csn}</dd>
                                              <div class="modal fade" id="previewCarte${i.index}">
