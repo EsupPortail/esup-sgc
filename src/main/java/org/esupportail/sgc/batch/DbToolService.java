@@ -31,7 +31,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.8.x";
+	final static String currentEsupSgcVersion = "1.9.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -357,6 +357,9 @@ public class DbToolService {
 
 	    		esupSgcVersion = "1.8.x";
 			}
+            if("1.8.x".equals(esupSgcVersion)) {
+                esupSgcVersion = "1.9.x";
+            }
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
 			log.warn("\n\n#####\n\t" +
