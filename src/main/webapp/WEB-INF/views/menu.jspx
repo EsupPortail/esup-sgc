@@ -36,6 +36,7 @@
             <menu:item activeMenu="${active=='actionmsgs'}" id="i_cardactionmessage_list" label="Messages" url="/admin/actionmessages?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='prefs'}" id="i_prefs_list" label="Préférences" url="/admin/prefses?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='template'}" id="i_templatecard_list" label="Thèmes cartes" url="/admin/templatecards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+            <menu:item activeMenu="${active=='crousrules'}" id="i_crousrule_list" label="Tarifs Crous" url="/admin/crousrules?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='crous'}" id="i_croussmartcard_list" label="Cartes Crous" url="/admin/crouscards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='crouspatchids'}" id="i_crouspatchidentifier_list" label="Crous patch identifiants" url="/admin/crouspatchids?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='crousError'}" id="i_crouserrorlog_list" label="Erreurs CROUS" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
@@ -60,6 +61,13 @@
         </menu:category>
         <menu:category id="c_navbarapp" render="false" z="user-managed">
             <menu:item id="i_navbarapp_new" messageCode="global_menu_new" url="/admin/navbars?form" z="1sCButuzxnX7KOFIeTXam4ttgP4="/>
+        </menu:category>
+        <menu:category id="c_crousrule" render="false" z="user-managed">
+            <menu:item id="i_crousrule_new" messageCode="global_menu_new" url="/admin/crousrules?form" z="GPsKe+6ZOP4ibt8FVyK1h6kJSr0="/>
+        </menu:category>
+        <menu:category id="c_crousruleconfig" render="false" z="user-managed">
+            <menu:item id="i_crousruleconfig_new" messageCode="global_menu_new" url="/admin/crousruleconfigs?form" z="u+4AVr+lMzPbEr6FT2doBWTBAFQ="/>
+            <menu:item id="i_crousruleconfig_list" messageCode="global_menu_list" url="/admin/crousruleconfigs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="+0ee+TI5a0Hkyz0ILZDym7NrDK4="/>
         </menu:category>
     </menu:menu>
 </div>

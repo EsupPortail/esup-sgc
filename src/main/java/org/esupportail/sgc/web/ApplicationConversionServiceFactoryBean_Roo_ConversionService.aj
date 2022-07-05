@@ -15,6 +15,8 @@ import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.Prefs;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.services.crous.CrousErrorLog;
+import org.esupportail.sgc.services.crous.CrousRule;
+import org.esupportail.sgc.services.crous.CrousRuleConfig;
 import org.esupportail.sgc.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.core.convert.converter.Converter;
@@ -312,6 +314,54 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<CrousRule, String> ApplicationConversionServiceFactoryBean.getCrousRuleToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.services.crous.CrousRule, java.lang.String>() {
+            public String convert(CrousRule crousRule) {
+                return new StringBuilder().append(crousRule.getRne()).append(' ').append(crousRule.getReferenceStatus()).append(' ').append(crousRule.getIndiceMin()).append(' ').append(crousRule.getIndiceMax()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, CrousRule> ApplicationConversionServiceFactoryBean.getIdToCrousRuleConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.esupportail.sgc.services.crous.CrousRule>() {
+            public org.esupportail.sgc.services.crous.CrousRule convert(java.lang.Long id) {
+                return CrousRule.findCrousRule(id);
+            }
+        };
+    }
+    
+    public Converter<String, CrousRule> ApplicationConversionServiceFactoryBean.getStringToCrousRuleConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.services.crous.CrousRule>() {
+            public org.esupportail.sgc.services.crous.CrousRule convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), CrousRule.class);
+            }
+        };
+    }
+    
+    public Converter<CrousRuleConfig, String> ApplicationConversionServiceFactoryBean.getCrousRuleConfigToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.services.crous.CrousRuleConfig, java.lang.String>() {
+            public String convert(CrousRuleConfig crousRuleConfig) {
+                return new StringBuilder().append(crousRuleConfig.getRne()).append(' ').append(crousRuleConfig.getNumeroCrous()).append(' ').append(crousRuleConfig.getPriority()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, CrousRuleConfig> ApplicationConversionServiceFactoryBean.getIdToCrousRuleConfigConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.esupportail.sgc.services.crous.CrousRuleConfig>() {
+            public org.esupportail.sgc.services.crous.CrousRuleConfig convert(java.lang.Long id) {
+                return CrousRuleConfig.findCrousRuleConfig(id);
+            }
+        };
+    }
+    
+    public Converter<String, CrousRuleConfig> ApplicationConversionServiceFactoryBean.getStringToCrousRuleConfigConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.services.crous.CrousRuleConfig>() {
+            public org.esupportail.sgc.services.crous.CrousRuleConfig convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), CrousRuleConfig.class);
+            }
+        };
+    }
+    
     public void ApplicationConversionServiceFactoryBean.installLabelConverters(FormatterRegistry registry) {
         registry.addConverter(getAppliConfigToStringConverter());
         registry.addConverter(getIdToAppliConfigConverter());
@@ -349,6 +399,12 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getCrousErrorLogToStringConverter());
         registry.addConverter(getIdToCrousErrorLogConverter());
         registry.addConverter(getStringToCrousErrorLogConverter());
+        registry.addConverter(getCrousRuleToStringConverter());
+        registry.addConverter(getIdToCrousRuleConverter());
+        registry.addConverter(getStringToCrousRuleConverter());
+        registry.addConverter(getCrousRuleConfigToStringConverter());
+        registry.addConverter(getIdToCrousRuleConfigConverter());
+        registry.addConverter(getStringToCrousRuleConfigConverter());
     }
     
     public void ApplicationConversionServiceFactoryBean.afterPropertiesSet() {

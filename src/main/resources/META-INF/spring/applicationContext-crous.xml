@@ -43,17 +43,6 @@
 	</bean>
 	
 	
-	<bean id="esistCrousService" class="org.esupportail.sgc.services.crous.EsistCrousService">
-		<property name="esistFiles">
-		    <list>
-                        	<value>esist/ESIST-etd.xml</value>
-				<!-- value>esist/ESIST-cnrs.xml</value-->
-				<value>esist/ESIST1eravril.xml</value>
-			</list>
-		</property>
-	</bean>
-
-
 	<bean id="europeanStudentCardService" class="org.esupportail.sgc.services.esc.ApiEscrService">
 		<property name="enable" value="false"/>
 		<property name="webUrl" value="http://api-sandbox.europeanstudentcard.eu/v1" />

@@ -1,17 +1,7 @@
 package org.esupportail.sgc.services.crous;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
@@ -25,18 +15,26 @@ import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.client.UnknownHttpStatusCodeException;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ApiCrousService {
 
@@ -621,6 +619,40 @@ public class ApiCrousService {
 				log.info("patchIdentifier : " + patchIdentifier + " OK : " + response.getBody());
 			} catch(HttpClientErrorException clientEx) {
 				throw new CrousHttpClientErrorException(clientEx, user!=null ? user.getEppn() : null, null, CrousOperation.PATCH, null, url);
+			}
+		}
+	}
+
+	public List<CrousRule> getTarifRules(String numeroCrous, String rne) {
+		if(enable) {
+			HttpHeaders headers = this.getAuthHeaders();
+			HttpEntity entity = new HttpEntity(headers);
+			String sturl = webUrl + String.format("/beforeizly/v1/crous/%s/organization/%s", numeroCrous, rne);
+			ResponseEntity<List<CrousRule>> s = restTemplate.exchange(sturl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<CrousRule>>() {
+			});
+			log.info(s.getBody().toString());
+			return s.getBody();
+		}
+		return new ArrayList<CrousRule>();
+	}
+
+	protected void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+		if(enable) {
+			User user = User.findUser(eppn);
+			String crousIdentifier = user.getCrousIdentifier();
+			if (crousIdentifier == null || crousIdentifier.isEmpty()) {
+				// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore
+				crousIdentifier = computeEsupSgcRightHolder(user, true).getIdentifier();
+			}
+			log.debug("Try to unclose RightHolder " + eppn + " with identifier " + crousIdentifier);
+			String url = webUrl + "/beforeizly/v1/closed-rightholders/" + crousIdentifier;
+			try {
+				HttpHeaders headers = this.getAuthHeaders();
+				HttpEntity entity = new HttpEntity(headers);
+				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+				log.info("Unclose RightHolder " + eppn + " with identifier " + crousIdentifier + " OK");
+			} catch (HttpClientErrorException clientEx) {
+				throw new CrousHttpClientErrorException(clientEx, eppn, null, CrousOperation.DELETE, EsupSgcOperation.UNCLOSE, url);
 			}
 		}
 	}

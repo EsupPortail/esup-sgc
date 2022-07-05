@@ -1,24 +1,11 @@
 package org.esupportail.sgc.web.user;
 
-import java.io.IOException;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.PayBoxForm;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
+import org.esupportail.sgc.domain.PayBoxForm;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
@@ -57,7 +44,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import eu.bitwalker.useragentutils.UserAgent;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @RequestMapping("/user")
 @Controller
@@ -469,6 +465,22 @@ public class UserCardController {
 			redirectAttributes.addFlashAttribute("messageError", ERROR_MSG + "crous");
 			logService.log(null, ACTION.ENABLECROUS, RETCODE.FAILED, "", eppn, null);
 		} 
+		return "redirect:/user";
+	}
+
+	@RequestMapping(value="/unclose", method=RequestMethod.POST)
+	public String unclose(final RedirectAttributes redirectAttributes) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		try {
+			crousService.uncloseAndResync(eppn);
+			redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG.concat("uncloseCrous"));
+			logService.log(null, ACTION.CROUS_UNCLOSE, RETCODE.SUCCESS, "", eppn, "");
+		} catch (Exception e) {
+			logService.log(null, ACTION.CROUS_UNCLOSE, RETCODE.FAILED, e.getMessage(), eppn, null);
+			redirectAttributes.addFlashAttribute("messageError", ERROR_MSG.concat("uncloseCrous"));
+			log.error("Exception lors de la demande de déclôture du compte CROUS de l'utilisateur " + eppn, e);
+		}
 		return "redirect:/user";
 	}
 

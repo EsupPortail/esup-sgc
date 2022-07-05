@@ -1,9 +1,5 @@
 package org.esupportail.sgc.services.crous;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
@@ -11,14 +7,15 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
-import org.esupportail.sgc.services.LogService.ACTION;
-import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 public class CrousService extends ValidateService {
 	
@@ -168,6 +165,34 @@ public class CrousService extends ValidateService {
 		}	
 	}
 
+	public List<CrousRule> getTarifRules(String numeroCrous, String rne) {
+		return authApiCrousService.getTarifRules(numeroCrous, rne);
+	}
+
+	public void uncloseAndResync(String eppn) {
+		this.unclose(eppn, CrousErrorLog.EsupSgcOperation.UNCLOSE);
+		List<Card> cardsEnabled = Card.findCardsByEppnAndEtatEquals(eppn, Card.Etat.ENABLED).getResultList();
+		if (cardsEnabled.isEmpty()) {
+			this.postOrUpdateRightHolder(eppn, EsupSgcOperation.SYNC);
+		} else {
+			Card cardEnabled = cardsEnabled.get(0);
+			this.validate(cardEnabled);
+		}
+	}
+
+	@Transactional
+	protected void unclose(String eppn, EsupSgcOperation esupSgcOperation) {
+		User user = User.findUser(eppn);
+		try {
+			authApiCrousService.unclose(eppn, esupSgcOperation);
+			user.setCrousError("");
+		} catch(CrousHttpClientErrorException clientEx) {
+			crousLogService.logErrorCrousAsync(clientEx);
+			log.warn("Exception calling api crous - crousService.unclose " + clientEx, clientEx);
+			throw new SgcRuntimeException("Exception calling api crous - crousService.unclose " + clientEx, clientEx);
+		}
+	}
+
 	@Transactional
 	public void enableCrous(String eppn) {
 		User user = User.findUser(eppn);
@@ -177,5 +202,9 @@ public class CrousService extends ValidateService {
 		if(enabledCard != null) {
 			this.validate(enabledCard);
 		}
+	}
+
+	public Boolean isEnabled() {
+		return authApiCrousService.isEnabled();
 	}
 }

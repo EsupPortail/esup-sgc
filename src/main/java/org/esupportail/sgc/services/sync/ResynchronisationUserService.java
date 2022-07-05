@@ -1,12 +1,5 @@
 package org.esupportail.sgc.services.sync;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.PhotoFile;
@@ -14,8 +7,8 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.ac.AccessControlService;
-import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
+import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.esc.ApiEscrService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -24,7 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @Transactional
 @Service
@@ -57,7 +57,10 @@ public class ResynchronisationUserService {
 	public void synchronizeUserInfoAsync(String eppn) {
 		synchronizeUserInfo(eppn);
 	}
-	
+
+	// Propagation.REQUIRES_NEW pour que DatabaseUserDetailsService.loadUserByUser puisse catcher une éventuelle exception
+	// et continuer la procédure d'authentification malgré cette  exception (erreur crous ou autre)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public boolean synchronizeUserInfo(String eppn) {
 		boolean updated = false;
 		log.trace("Synchronize of user " + eppn + " called.");
@@ -74,13 +77,17 @@ public class ResynchronisationUserService {
 		dummyUser.setNbCards(user.getNbCards());
 		dummyUser.setRequestFree(user.isRequestFree());
 		dummyUser.setDifPhoto(user.getDifPhoto());
-		boolean syncUserInfoServiceFlag = userInfoService.setAdditionalsInfo(dummyUser, null);
+
+		UserInfoService.SynchroCmd syncUserInfoServiceFlag = userInfoService.setAdditionalsInfo(dummyUser, null);
 		boolean accessControlMustUpdate = false;
 		
-		if(!syncUserInfoServiceFlag) {
+		if(UserInfoService.SynchroCmd.NONE.equals(syncUserInfoServiceFlag)) {
 			log.debug("Flag synchronize false for " + eppn + " -> no synchronize");
+		} else if(UserInfoService.SynchroCmd.JUST_FORCE_CADUC.equals(syncUserInfoServiceFlag)) {
+			log.debug("caducIfEmpty for " + eppn + " -> force dueDate");
+			userInfoService.forceDueDateCaduc(user);
 		} else {
-		
+			// UserInfoService.SynchroCmd.SYNCHRONIZE.equals(syncUserInfoServiceFlag)
 			if(log.isTraceEnabled()) {		
 				log.trace("Flag synchronize true for " + eppn);
 				log.trace("'user' computed from userInfoServices : " + dummyUser);

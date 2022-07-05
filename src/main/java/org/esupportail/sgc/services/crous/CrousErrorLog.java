@@ -1,7 +1,12 @@
 package org.esupportail.sgc.services.crous;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.User;
+import org.springframework.roo.addon.dbre.RooDbManaged;
+import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
+import org.springframework.roo.addon.tostring.RooToString;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -14,15 +19,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.User;
-import org.springframework.roo.addon.dbre.RooDbManaged;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RooToString
 @RooJavaBean
@@ -32,11 +31,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class CrousErrorLog {
 
     public static enum CrousOperation {
-    	GET, PUT, POST, PATCH
+    	GET, PUT, POST, PATCH, DELETE
     };
     
     public static enum EsupSgcOperation {
-    	ACTIVATE, DESACTIVATE, SYNC, PATCH, GET
+    	ACTIVATE, DESACTIVATE, SYNC, PATCH, GET, UNCLOSE
     };
     
 	@OneToOne

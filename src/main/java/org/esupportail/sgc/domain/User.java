@@ -329,6 +329,12 @@ public class User {
         query.select(u.get("address")).distinct(true);
         return em.createQuery(query).getResultList();
 	}
+
+	public static List<String> findDistinctRnecodes() {
+		EntityManager em = User.entityManager();
+		Query q = em.createNativeQuery("select distinct rne_etablissement from user_account where rne_etablissement is not null and rne_etablissement != ''");
+		return q.getResultList();
+	}
 	
 
 	public List<String> getFieldNotEquals(Object obj) {

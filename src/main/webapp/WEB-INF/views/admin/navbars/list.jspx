@@ -21,7 +21,7 @@
 			</li>
 		</ul>   
 	</div>
-			
+
     <page:list id="pl_org_esupportail_sgc_domain_NavBarApp" items="${navbarapps}" z="tcDiglJmJUmrnOfkwC6PPYCkptI=">
         <table:table create="true" data="${navbarapps}" id="l_org_esupportail_sgc_domain_NavBarApp" path="/admin/navbars" z="user-managed">
             <table:column id="c_org_esupportail_sgc_domain_NavBarApp_title" property="title" z="Tp10ZYFXLNe44Iy85yfaCj7uHAs="/>

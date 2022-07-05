@@ -1,19 +1,5 @@
 package org.esupportail.sgc.services.userinfos;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
@@ -34,9 +20,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 @Transactional
 public class UserInfoService {
-	
+
+	public enum SynchroCmd {SYNCHRONIZE, JUST_FORCE_CADUC, NONE}
+
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private final static String DATE_FORMAT = "dd-MM-yyyy";
@@ -95,7 +96,7 @@ public class UserInfoService {
 	 * Get and set userInfos from userInfoservices to user object
 	 * Return false if synchronize is set to false by userInfoservices computing
 	 */
-	public boolean setAdditionalsInfo(User user, HttpServletRequest request) {
+	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request) {
 		Map<String, String> userInfos = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER); 
 		userInfos.put("synchronize", "true");
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
@@ -321,24 +322,34 @@ public class UserInfoService {
 				}
 			}			
 		}	
-		
+
+		boolean forceCaduc = false;
 		if(caducIfEmpty != null && !caducIfEmpty.isEmpty()) {
 			String caducIfEmptyValue = userInfos.get(caducIfEmpty);
 			if((caducIfEmptyValue == null || caducIfEmptyValue.isEmpty()) && user.getDueDate().after(new Date())) {
-				// si plus d'entrée ldap ou similaire -> user.getMustBeCaduc = true -> caduc -> on surcharge la date de fin
-	            Calendar cal = Calendar.getInstance();
-	            cal.setTime(new Date());
-	            cal.add(Calendar.HOUR, - User.DUE_DATE_INCLUDED_DELAY);
-	            Date dueDateIncluded = cal.getTime();
-				user.setDueDate(dueDateIncluded);
+				// si plus d'entrée ldap ou similaire -> user.getMustBeCaduc = true -> caduc
+				forceDueDateCaduc(user);
+				forceCaduc = true;
 			}
 		}
-		
-		
-		return "true".equalsIgnoreCase(userInfos.get("synchronize"));
-		
+
+		boolean synchronize = "true".equalsIgnoreCase(userInfos.get("synchronize"));
+		if(synchronize) {
+			return SynchroCmd.SYNCHRONIZE;
+		} else if(forceCaduc) {
+			return SynchroCmd.JUST_FORCE_CADUC;
+		}
+		return SynchroCmd.NONE;
 	}
-	
+
+	public void forceDueDateCaduc(User user) {
+		//  caduc -> on surcharge la date de fin
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.HOUR, - User.DUE_DATE_INCLUDED_DELAY);
+		Date dueDateIncluded = cal.getTime();
+		user.setDueDate(dueDateIncluded);
+	}
 	
 	public void setPrintedInfo(Card card) {
 		User user = card.getUser();

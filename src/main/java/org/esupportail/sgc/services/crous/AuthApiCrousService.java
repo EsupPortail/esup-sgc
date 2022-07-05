@@ -1,7 +1,5 @@
 package org.esupportail.sgc.services.crous;
 
-import javax.annotation.Resource;
-
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
@@ -9,6 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 
 @Service
@@ -133,9 +135,44 @@ public class AuthApiCrousService {
 		}
 	}
 
-
 	public boolean isEnabled() {
 		return apiCrousService.isEnabled();
+	}
+
+	public List<CrousRule> getTarifRules(String numeroCrous, String rne) {
+		try {
+			return apiCrousService.getTarifRules(numeroCrous, rne);
+		} catch(HttpClientErrorException clientEx) {
+			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
+				log.info("Auth Token of Crous API should be renew, we call an authentication");
+				apiCrousService.authenticate();
+				try {
+					return apiCrousService.getTarifRules(numeroCrous, rne);
+				} catch(HttpClientErrorException clientEx2) {
+					throw clientEx2;
+				}
+			} else {
+				throw clientEx;
+			}
+		}
+	}
+
+	public void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+		try {
+			apiCrousService.unclose(eppn, esupSgcOperation);
+		} catch(CrousHttpClientErrorException clientEx) {
+			if(HttpStatus.UNAUTHORIZED.equals(clientEx.getStatusCode())) {
+				log.info("Auth Token of Crous API should be renew, we call an authentication");
+				apiCrousService.authenticate();
+				try {
+					apiCrousService.unclose(eppn, esupSgcOperation);
+				} catch(CrousHttpClientErrorException clientEx2) {
+					throw clientEx2;
+				}
+			} else {
+				throw clientEx;
+			}
+		}
 	}
 
 }

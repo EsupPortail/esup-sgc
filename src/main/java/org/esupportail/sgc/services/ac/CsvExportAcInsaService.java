@@ -1,15 +1,5 @@
 package org.esupportail.sgc.services.ac;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
@@ -21,6 +11,15 @@ import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 public class CsvExportAcInsaService implements Export2AccessControlService {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -28,7 +27,10 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	private final static String ENCODING = "ISO-8859-1";
 	
 	private final static String CSV_FILENAME =  "insa-ac-from-esup-sgc.csv";
-	
+
+	// 2524518000000 ms == 31/12/2049
+	private final static Date DATE_MAX = new Date(2524518000000L);
+
 	private String eppnFilter = ".*";
 	
 	@Resource
@@ -167,8 +169,12 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	private String formatDate(Date date) {
 		String dateFt = "";
 		if(date!=null) {
+			Date date2print = date;
+			if(date2print.after(DATE_MAX)) {
+				date2print = DATE_MAX;
+			}
 			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-			dateFt = "'"+df.format(date);
+			dateFt = "'"+df.format(date2print);
 		}
 		return dateFt;
 	}

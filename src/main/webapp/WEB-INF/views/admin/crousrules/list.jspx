@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:spring-form="http://www.springframework.org/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <div class="well">
+        Cette page vous permet de resynchroniser et consulter les règles issues du CROUS pour le calcul des tarifs CROUS.
+        <br/>
+        En toute connaissance de cause, vous pouvez également ici ajouter des règles spécifiques pour traiter des cas particuliers comme le calcul des tarifs CNRS.
+        <br/>
+        <a href="https://www.esup-portail.org/wiki/display/SGC/Tarifs+CROUS">Voir la page dédiée sur le wiki ESUP pour plus d'informations.</a>
+    </div>
+    <h2>Configuration des règles tarifaires à récupérer depuis l'API CROUS</h2>
+    <div>Les configurations de règles permettent d'indiquer quelles règles CROUS vous voulez récupérer dans votre SGC depuis l'API CROUS.
+        Usuellement vous configurerez la récupération des règles de tous les établissements des tous les utilisateurs gérés par votre SGC.
+        Si tous vos utilisateurs sont issus d'un seul établissement (cas commun d'un SGC dédié à un seul établissement), vous n'aurez à paramétrer ici qu'une seule configuration de règles.
+        <p class="alert-danger">Attention, si vous supprimez une configuration de règles, cela supprime également les règles liées.</p>
+    </div>
+    <table:table create="true" data="${crousruleconfigs}" id="l_org_esupportail_sgc_services_crous_CrousRuleConfig" path="/admin/crousruleconfigs" update="false" view="false" z="user-managed">
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRuleConfig_rne" property="rne" z="user-managed"/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRuleConfig_numeroCrous" property="numeroCrous" z="user-managed"/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRuleConfig_priority" property="priority" z="user-managed"/>
+    </table:table>
+    <h2>Règles tarifaires</h2>
+    <c:if test="${not empty crousruleconfigs}">
+        <h3>Règles issues de l'API CROUS</h3>
+        <div>
+            <spring:url value="/admin/crousrules/updateCrousRules" var="updateCrousRulesUrl"/>
+            <spring-form:form action="${updateCrousRulesUrl}" method="POST">
+                <button class="btn btn-primary">Mettre à jour les règles depuis l'API CROUS/IZLY</button>
+            </spring-form:form>
+        </div>
+        <table:table create="false" data="${crousrulesApi}" delete="false" id="l_org_esupportail_sgc_services_crous_CrousRule" path="/admin/crousrules" update="false" z="user-managed">
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_rne" property="rne" z="VyJEP/qpoFLodXgHbo1LYdbUtDk="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_referenceStatus" property="referenceStatus" z="V0tNJDBNRI4BGXaFWzJ95TP/J2w="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_indiceMin" property="indiceMin" z="OG8FlQjxu3dt/hB1jSOF0VUrPUM="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_indiceMax" property="indiceMax" z="fgpd759ezGT66uDVwCNIvrX02Q4="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_codeSociete" property="codeSociete" z="HOBEviyKGKfbU+cKTGkJ/zwCs30="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_codeTarif" property="codeTarif" z="dNOJk6uJlfAQSezUXg+K9neAkEA="/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_priority" property="priority"/>
+            <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_updateDate" property="updateDate"/>
+        </table:table>
+    </c:if>
+    <h3>Règles personnalisées</h3>
+    <table:table create="true" data="${crousrulesCustom}" id="l_org_esupportail_sgc_services_crous_CrousRule" path="/admin/crousrules" view="false" z="pkz4FScdcw4Zjs1Fulj/sI4yKMI=">
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_rne" property="rne" z="VyJEP/qpoFLodXgHbo1LYdbUtDk="/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_referenceStatus" property="referenceStatus" z="V0tNJDBNRI4BGXaFWzJ95TP/J2w="/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_indiceMin" property="indiceMin" z="OG8FlQjxu3dt/hB1jSOF0VUrPUM="/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_indiceMax" property="indiceMax" z="fgpd759ezGT66uDVwCNIvrX02Q4="/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_codeSociete" property="codeSociete" z="HOBEviyKGKfbU+cKTGkJ/zwCs30="/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_codeTarif" property="codeTarif" z="dNOJk6uJlfAQSezUXg+K9neAkEA="/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_priority" property="priority"/>
+        <table:column id="c_org_esupportail_sgc_services_crous_CrousRule_updateDate" property="updateDate"/>
+    </table:table>
+    <page:list id="pl_org_esupportail_sgc_services_crous_CrousRule" items="${crousrules}" z="aSxOflArmiaXCMrRKfFyXptRXAk=" render="false"/>
+    <h3>Règles par défaut</h3>
+    <p>
+        A l'ensemble de ces règles qui permettent de calculer le tarif d'un utilisateur (les règles sont analysées les unes à la suite des autres en considérant celles avec la priorité la plus haute en premier),
+        s'ajoute une dernière règle par défaut qui permet de donner un tarif si aucune des règles précédentes ne correspond à l'utilisateur.
+        <dl>
+            <dt>DEFAULT_CNOUS_ID_COMPAGNY_RATE</dt>
+            <dd>${defaultCnousIdCompagnyRate}</dd>
+            <dt>DEFAULT_CNOUS_ID_RATE</dt>
+            <dd>${defaultCnousIdRate}</dd>
+        </dl>
+        <p>
+            <spring:url value="/admin/config?page=1&amp;size=10" var="configUrl"/>
+            Ces 2 paramètres peuvent être modifiés depuis le menu <a href="${configUrl}">Configurations</a>
+        </p>
+    </p>
+
+</div>
