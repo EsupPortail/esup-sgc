@@ -1,10 +1,5 @@
 package org.esupportail.sgc.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -16,11 +11,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
-@Transactional
 public class DatabaseUserDetailsService implements UserDetailsService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());

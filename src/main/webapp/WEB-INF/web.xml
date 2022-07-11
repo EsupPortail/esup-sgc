@@ -82,7 +82,12 @@
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <url-pattern>/wsrest/view/*</url-pattern>
     </filter-mapping>
-    
+
+    <filter-mapping>
+        <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
+        <url-pattern>/j_spring_security_switch_user</url-pattern>
+    </filter-mapping>
+
     <!-- Creates the Spring Container shared by all Servlets and Filters -->
     
     <listener>
