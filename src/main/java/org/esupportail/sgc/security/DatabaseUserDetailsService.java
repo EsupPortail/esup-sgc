@@ -6,14 +6,12 @@ import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -46,18 +44,14 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUser(User targetUser)
 			throws UsernameNotFoundException {
 
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		
 		try {
 			resynchronisationUserService.synchronizeUserInfo(targetUser.getEppn());
 		} catch(Exception e) {
 			log.error("Error when synchronizeUserInfo " + targetUser.getEppn(), e);
 		}
 		ldapGroup2UserRoleService.syncUser(targetUser.getEppn());
-		
-		for(String role : targetUser.getReachableRoles()) {
-			authorities.add(new SimpleGrantedAuthority(role));
-		}		
+
+		List<GrantedAuthority> authorities = ldapGroup2UserRoleService.getReachableRoles(targetUser.getEppn());
 
 		return new org.springframework.security.core.userdetails.User(targetUser.getEppn(), "dummy", 
 				true, // enabled

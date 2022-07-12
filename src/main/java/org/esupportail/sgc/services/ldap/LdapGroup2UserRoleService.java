@@ -1,19 +1,20 @@
 package org.esupportail.sgc.services.ldap;
 
+import org.esupportail.sgc.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.esupportail.sgc.domain.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StopWatch;
 
 public class LdapGroup2UserRoleService {
 	
@@ -51,7 +52,17 @@ public class LdapGroup2UserRoleService {
 		}
 		return roles;
 	}
-	
+
+	@Transactional
+	public List<GrantedAuthority> getReachableRoles(String eppn) {
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		User user = User.findUser(eppn);
+		for(String role : user.getReachableRoles()) {
+			authorities.add(new SimpleGrantedAuthority(role));
+		}
+		return authorities;
+	}
+
 	@Transactional
 	public void syncUser(String eppn) {
 		User user = User.findUser(eppn);
@@ -66,7 +77,6 @@ public class LdapGroup2UserRoleService {
 		for(String role : roles2Remove) {
 			ldapGroup2OneUserRoleService.removeRole(eppn, role);
 		}
-
 	}
 	
 	public void syncAllGroupsOnDb() {
