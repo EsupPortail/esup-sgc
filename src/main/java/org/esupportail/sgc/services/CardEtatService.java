@@ -169,7 +169,7 @@ public class CardEtatService {
 			}	
 		}
 		
-		if(Etat.DISABLED.equals(etat) || Etat.CADUC.equals(etat)) {
+		if((Etat.DISABLED.equals(etat) || Etat.CADUC.equals(etat)) && !(Etat.DISABLED.equals(etatInitial) || Etat.CADUC.equals(etatInitial))) {
 			for(ValidateService validateService : validateServices) {
 				validateService.invalidate(card);
 			}

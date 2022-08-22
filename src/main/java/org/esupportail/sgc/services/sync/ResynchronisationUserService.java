@@ -62,6 +62,10 @@ public class ResynchronisationUserService {
 	// et continuer la procédure d'authentification malgré cette  exception (erreur crous ou autre)
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public boolean synchronizeUserInfo(String eppn) {
+		return synchronizeUserInfoNoTx(eppn);
+	}
+
+	public boolean synchronizeUserInfoNoTx(String eppn) {
 		boolean updated = false;
 		log.trace("Synchronize of user " + eppn + " called.");
 		User user = User.findUser(eppn);
