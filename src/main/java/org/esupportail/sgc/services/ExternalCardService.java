@@ -1,10 +1,5 @@
 package org.esupportail.sgc.services;
 
-import java.util.Date;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -13,6 +8,10 @@ import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 @Service
 @Transactional
@@ -54,7 +53,7 @@ public class ExternalCardService {
 		if(externalCard == null) {
 			externalCard = initExternalCard(user);
 		}
-		resynchronisationUserService.synchronizeUserInfo(eppn);
+		resynchronisationUserService.synchronizeUserInfoNoTx(eppn);
 		if(externalCard.getCsn() == null || externalCard.getCsn().isEmpty()) {
 			throw new SgcRuntimeException("external card for " + eppn + " can't be imported becaus no csn found", null);
 		}

@@ -1,11 +1,5 @@
 package org.esupportail.sgc.security;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -16,6 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Transactional
 public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
@@ -54,11 +53,11 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 	    }
 	    try {
 	    	resynchronisationUserService.synchronizeUserInfo(eppn);
+			userInfoService.updateUser(eppn, request);
+			ldapGroup2UserRoleService.syncUser(eppn);
 	    } catch(Exception e) {
 			log.error("Error when synchronizeUserInfo " + eppn, e);
 		}
-        userInfoService.updateUser(eppn, request);
-        ldapGroup2UserRoleService.syncUser(eppn);
         
         log.info("User " + eppn + " authenticated");
     }

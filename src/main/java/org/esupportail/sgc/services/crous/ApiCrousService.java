@@ -630,8 +630,12 @@ public class ApiCrousService {
 			String sturl = webUrl + String.format("/beforeizly/v1/crous/%s/organization/%s", numeroCrous, rne);
 			ResponseEntity<List<CrousRule>> s = restTemplate.exchange(sturl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<CrousRule>>() {
 			});
-			log.info(s.getBody().toString());
-			return s.getBody();
+			List<CrousRule>  crousRules = s.getBody();
+			log.info(crousRules.toString());
+			for(CrousRule crousRule : crousRules) {
+				crousRule.setRne(rne);
+			}
+			return crousRules;
 		}
 		return new ArrayList<CrousRule>();
 	}
