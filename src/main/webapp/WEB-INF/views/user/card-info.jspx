@@ -50,10 +50,8 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 						<c:if test="${not empty user.crousError}">
 	                      <dt class="fieldWs"><span class="badge alert-danger">!</span> Erreur Crous/Izly :</dt>
 	                      <dd class="fieldWs">
-	                         ${user.crousError} 
-	                         <c:if test="${user.crous}">
-	                        	<button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#disableCrousCollapse">Voir plus</button>
-							 </c:if>
+	                         ${user.crousError}
+							<button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#disableCrousCollapse">Voir plus</button>
 	                      </dd>
                         </c:if>
 						<c:if test="${displayFormParts['displayEuropeanCard'] or user.europeanStudentCard}">
@@ -132,15 +130,22 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 								<br/>
 								Aussi
 								<ul>
+									<c:if test="${!user.crous}">
+										<li>Vous pouvez retenter de réactiver le crous via <button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#crousCollapse">cette même interface</button></li>
+									</c:if>
 									<li>Si vous n'utilisez pas les services Crous/Izly, cette erreur peut ne pas vous poser de problème.</li>
 									<li>Si cette situation pose problème car vous souhaitez utiliser les services Crous/Izly avec votre compte et votre carte, vous pouvez contacter le Crous/Izly via <a href="https://help.izly.fr">https://help.izly.fr</a></li>
-									<li>Si elle empêche l'activation/désactivation des autres services de la carte, vous pouvez désactiver cette synchronisation avec la plateforme Crous/Izly via le bouton ci-dessous (vous pourrez réactiver l'option Crous/Izly par la suite via cette même interface).</li>
-								</ul>							 
+									<c:if test="${user.crous}">
+										<li>Si elle empêche l'activation/désactivation des autres services de la carte, vous pouvez désactiver cette synchronisation avec la plateforme Crous/Izly via le bouton ci-dessous (vous pourrez réactiver l'option Crous/Izly par la suite via cette même interface).</li>
+									</c:if>
+								</ul>
 							</div>
-							<spring:url value="/user/disableCrous" var="crousUrl" />
-							<form action="${crousUrl}" method="post" id="crousForm">
-								<input type="submit" class="btn btn-danger" value="Désactiver l'option Crous/Izly"/>
-							</form>
+							<c:if test="${user.crous}">
+								<spring:url value="/user/disableCrous" var="crousUrl" />
+								<form action="${crousUrl}" method="post" id="crousForm">
+									<input type="submit" class="btn btn-danger" value="Désactiver l'option Crous/Izly"/>
+								</form>
+							</c:if>
 							<c:if test="${user.crousError eq 'Le compte est cloturé'
                                                 or user.crousError eq 'Account is closed'
                                                 or user.crousError eq 'Le compte est cloturé sur izly'}">
@@ -149,7 +154,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 								<spring:url value="/user/unclose" var="uncloseUrl" />
 								<form class="form-horizontal" action="${uncloseUrl}" method="POST"
 										onsubmit="return confirm('Vous confirmez vouloir voir votre compte CROUS/IZLY être déclôturé ?');">
-									<button type="submit" class="btn btn-warning" >Déclôturer mon compte CROUS/IZLY</button>
+									<button type="submit" class="btn btn-warning">Déclôturer mon compte CROUS/IZLY</button>
 								</form>
 							</c:if>
 						</div>
