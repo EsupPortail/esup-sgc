@@ -1,14 +1,13 @@
 package org.esupportail.sgc.security;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
-import org.esupportail.sgc.services.userinfos.UserInfoService;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class PermissionService {
@@ -27,6 +26,7 @@ public class PermissionService {
 				filteredTypes.add(type);
 			}
 		}
+		Collections.sort(filteredTypes);
 		return filteredTypes;
 	}
 

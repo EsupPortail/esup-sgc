@@ -41,6 +41,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 						<!-- <dt>Statut : </dt><dd>${user.cnousReferenceStatut}</dd> -->
 						<dt>Email : </dt><dd>${user.email}</dd>
 						<c:if test="${!user.hasExternalCard}">
+							<c:if test="${displayFormParts['displayCrous']}">
 						<dt>Services Crous/Izly <a href="#" data-toggle="tooltip" title="" data-original-title="Restauration CROUS, machines à café Izly ...">*</a> :</dt>
 						<dd>${user.crous  ? 'Oui' : 'Non'} &amp;nbsp
 							<c:if test="${!user.crous}">
@@ -54,6 +55,7 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 							<button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#disableCrousCollapse">Voir plus</button>
 	                      </dd>
                         </c:if>
+							</c:if>
 						<c:if test="${displayFormParts['displayEuropeanCard'] or user.europeanStudentCard}">
 							<dt>Carte européenne :</dt>
 							<dd>${user.europeanStudentCard ? 'Oui' : 'non'} &amp;nbsp

@@ -19,10 +19,8 @@ import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.PreferencesService;
-import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.ie.ImportExportService;
-import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
@@ -89,9 +87,6 @@ public class ManagerCardController {
 
 	@Resource 
 	UserInfoService userInfoService;
-	
-	@Resource
-	LdapPersonService ldapPersonService;
 
 	@Resource
 	CardService cardService;
@@ -116,10 +111,7 @@ public class ManagerCardController {
 	
 	@Resource 
 	CardActionMessageService cardActionMessageService;
-	
-	@Resource
-	TemplateCardService templateCardService;
-	
+
 	@Resource
 	FormService formService;
 	

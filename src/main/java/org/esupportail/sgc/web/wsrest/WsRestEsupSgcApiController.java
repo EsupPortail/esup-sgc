@@ -34,6 +34,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -316,7 +317,22 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	public void getCsvFromSearch(@Valid  CardSearchBean searchBean, @RequestParam List<String> fields, HttpServletResponse response) throws IOException {
 		managerCardController.getCsvFromSearch(searchBean, fields, null, response);
 	}
-	
+
+	/*
+	* Example to use it :
+	* curl -X POST https://esup-sgc.univ-ville.fr/wsrest/api/renew/1818864
+	*/
+	@Transactional
+	@RequestMapping(value="/renew/{cardId}", method = RequestMethod.POST)
+	public ResponseEntity<Long> requestRenewalCard(@PathVariable("cardId") Long cardId) {
+		Card card = Card.findCard(cardId);
+		Card newCard = cardService.requestRenewalCard(card);
+		if(newCard != null) {
+			return new ResponseEntity<Long>(newCard.getId(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Long>(-1L, HttpStatus.NOT_ACCEPTABLE);
+		}
+	}
 	
 }
 
