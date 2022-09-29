@@ -1,19 +1,12 @@
 package org.esupportail.sgc.services;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.svggen.SVGGraphics2DIOException;
@@ -38,14 +31,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-
-import eu.bitwalker.useragentutils.UserAgent;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -122,26 +118,11 @@ public class CardService {
 	}
 	
 	public boolean displayFormCrous (User user){
-		
-		boolean displayCrous = false;
-		
-		// When crous is accepted ones, we can't unaccept it
-		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.userTypes2displayFormCrous().contains(user.getUserType())){
-			displayCrous = true;
-		}
-		
-		return displayCrous;
+		return appliConfigService.userTypes2displayFormCrous().contains(user.getUserType());
 	}
 	
 	public boolean isCrousEnabled (User user){
-		
-		boolean enableCrous = false;
-		
-		if((user==null || !user.getCrous()) && user.getUserType()!=null && appliConfigService.userTypes4isCrousEnabled().contains(user.getUserType())){
-			enableCrous = true;
-		}
-		
-		return enableCrous;
+		return appliConfigService.userTypes4isCrousEnabled().contains(user.getUserType());
 	}
 	
 	public boolean displayFormEuropeanCardEnabled(User user){

@@ -1,16 +1,5 @@
 package org.esupportail.sgc.services.ac;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
@@ -21,6 +10,16 @@ import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 public class CsvExportSynchronicService implements Export2AccessControlService {
 	
@@ -86,8 +85,10 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		
         for(Card card : cards) {
         	if(card.getEtat().equals(Etat.ENABLED) || card.getEtat().equals(Etat.DISABLED) || card.getEtat().equals(Etat.CADUC)) {
-	        	sBuffer.append(sgc2csv(card));
-	        	sBuffer.append("\r\n");
+				if (card.getEnnabledDate() != null) {
+					sBuffer.append(sgc2csv(card));
+					sBuffer.append("\r\n");
+				}
         	}
 		}
         

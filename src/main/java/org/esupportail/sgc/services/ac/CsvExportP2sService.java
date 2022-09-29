@@ -1,17 +1,5 @@
 package org.esupportail.sgc.services.ac;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
@@ -25,6 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CsvExportP2sService implements Export2AccessControlService, SmartLifecycle {
 	
@@ -149,8 +148,10 @@ public class CsvExportP2sService implements Export2AccessControlService, SmartLi
 		
         for(Card card : cards) {
         	if(card.getEtat().equals(Etat.ENABLED) || card.getEtat().equals(Etat.DISABLED) || card.getEtat().equals(Etat.CADUC)) {
-        		sBuffer.append(sgcId2csv(card));
-        		sBuffer.append("\n");
+				if (card.getEnnabledDate() != null) {
+					sBuffer.append(sgcId2csv(card));
+					sBuffer.append("\n");
+				}
         	}
 		}
         

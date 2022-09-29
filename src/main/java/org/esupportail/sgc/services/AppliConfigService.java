@@ -1,14 +1,14 @@
 package org.esupportail.sgc.services;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
 import org.esupportail.sgc.domain.AppliVersion;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -28,7 +28,7 @@ public class AppliConfigService {
 	
 
 	private List<String> splitConfigValues(AppliConfig appliConfig) {
-		String userTypeAsString = appliConfig.getValue();
+		String userTypeAsString = appliConfig.getValue().trim();
 		List<String> userTypes = Arrays.asList(userTypeAsString.split(""));
 		if(userTypeAsString.contains(DELIMITER_MULTIPLE_VALUES)) {
 			userTypes = Arrays.asList(userTypeAsString.split(DELIMITER_MULTIPLE_VALUES));
