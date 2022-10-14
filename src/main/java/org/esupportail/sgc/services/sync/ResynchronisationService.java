@@ -60,7 +60,7 @@ public class ResynchronisationService {
 		}
 		stopWatch.stop();
 		log.debug(stopWatch.prettyPrint());
-		log.info("Sync users ok - %s - nb updated (needed) : %s - nb no updated (no need) : %s - errors : %s", stopWatch.shortSummary(), nbUpdate, nbNoUpdate, nbError);
+		log.info("Sync users ok - {} - nb updated (needed) : {} - nb no updated (no need) : {} - errors : {}", stopWatch.shortSummary(), nbUpdate, nbNoUpdate, nbError);
 	}
 
 }
