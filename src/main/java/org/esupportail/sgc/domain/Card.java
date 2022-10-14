@@ -57,6 +57,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 		@Index(name = "card_user_account_request_date_id", columnList = "user_account, requestDate desc"),
 		@Index(name = "card_etat_desc_id", columnList = "dateEtat desc, id desc"),
 		@Index(name = "card_nb_rejets_id", columnList = "nbRejets"),
+        @Index(name = "card_etat", columnList = "etat"),
+        @Index(name = "card_eppn_id", columnList = "eppn")
 })
 public class Card {
 	
@@ -885,7 +887,7 @@ public class Card {
 
     public static List<String> findDistinctEtats() {
         EntityManager em = Card.entityManager();
-        Query q = em.createNativeQuery("SELECT DISTINCT etat FROM Card");
+        Query q = em.createNativeQuery(User.selectDistinctWithLooseIndex("card", "etat"));
         return q.getResultList();
     }
     
@@ -920,9 +922,10 @@ public class Card {
 
     public static List<BigInteger> getDistinctNbRejets() {
         EntityManager em = Card.entityManager();
-        Query q = em.createNativeQuery("SELECT DISTINCT(nb_rejets) FROM card where nb_rejets <> 0 ORDER BY nb_rejets");
-        List<BigInteger> distinctNbCards = q.getResultList();
-        return distinctNbCards;
+        Query q = em.createNativeQuery(User.selectDistinctWithLooseIndex("card", "nb_rejets"));
+        List<BigInteger> distinctNbRejets = q.getResultList();
+        distinctNbRejets.remove(BigInteger.valueOf(0));
+        return distinctNbRejets;
     }
 
     public static List<Object[]> countBrowserStats(String userType) {

@@ -17,12 +17,18 @@ import org.esupportail.sgc.domain.ldap.PersonLdap;
 import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.tools.DateUtils;
+import org.esupportail.sgc.tools.PrettyStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 
 @Service
 public class UserService {
-	
+
+	public final Logger log = LoggerFactory.getLogger(getClass());
+
 	@Resource
 	CardService cardService;
 	
@@ -61,12 +67,9 @@ public class UserService {
 		return isPaidRenewal;
 	}
 	
-	public boolean displayRenewalForm(User user){
-		boolean displayRenewalForm = false;
-		
-		if(isFreeRenewal(user) || isPaidRenewal(user)){
-			displayRenewalForm = true;
-		}
+	public boolean displayRenewalForm(User user, boolean isFreeRenewal, boolean isPaidRenewal) {
+
+		boolean displayRenewalForm = isFreeRenewal || isPaidRenewal;
 		
 		if(user != null && user.getHasExternalCard()) {
 			displayRenewalForm = false;
@@ -76,9 +79,9 @@ public class UserService {
 		return displayRenewalForm;
 	}
 
-	public boolean displayForm(User user, boolean requestUserIsManager){
-		boolean displayForm = displayRenewalForm(user);
-		if(isFirstRequest(user)){
+	public boolean displayForm(User user, boolean requestUserIsManager, boolean displayRenewalForm, boolean isFirstRequest){
+		boolean displayForm = displayRenewalForm;
+		if(isFirstRequest){
 			displayForm = ((isEsupSgcUser(user) && !isOutOfDueDate(user))) ;
 		} 
 		return displayForm || requestUserIsManager;
@@ -161,23 +164,42 @@ public class UserService {
 	}
 	
 	public Map<String,Boolean> displayFormParts(User user, boolean requestUserIsManager){
-		
 		Map<String,Boolean> displayFormParts = new HashMap<String, Boolean>();
-		
+		StopWatch stopWatch = new PrettyStopWatch();
+		stopWatch.start("displayCnil");
 		displayFormParts.put("displayCnil", cardService.displayFormCnil(user.getUserType()));
+		stopWatch.start("displayCrous");
 		displayFormParts.put("displayCrous", cardService.displayFormCrous(user));
+		stopWatch.start("enableCrous");
 		displayFormParts.put("enableCrous", cardService.isCrousEnabled(user));
+		stopWatch.start("displayRules");
 		displayFormParts.put("displayRules", cardService.displayFormRules(user.getUserType()));
-		displayFormParts.put("displayAdresse", cardService.displayFormAdresse(user.getUserType()));		
-		displayFormParts.put("isFirstRequest", this.isFirstRequest(user));
-		displayFormParts.put("displayForm",  this.displayForm(user, requestUserIsManager));
-		displayFormParts.put("displayRenewalForm",  this.displayRenewalForm(user));
-		displayFormParts.put("isFreeRenewal",  this.isFreeRenewal(user));
-		displayFormParts.put("isPaidRenewal",  this.isPaidRenewal(user));
+		stopWatch.start("displayAdresse");
+		displayFormParts.put("displayAdresse", cardService.displayFormAdresse(user.getUserType()));
+		stopWatch.start("isPaidRenewal");
+		boolean isPaidRenewal = this.isPaidRenewal(user);
+		displayFormParts.put("isPaidRenewal",  isPaidRenewal);
+		stopWatch.start("isFreeRenewal");
+		boolean isFreeRenewal = this.isFreeRenewal(user);
+		displayFormParts.put("isFreeRenewal",  isFreeRenewal);
+		stopWatch.start("isFirstRequest");
+		boolean isFirstRequest = this.isFirstRequest(user);
+		displayFormParts.put("isFirstRequest", isFirstRequest);
+		stopWatch.start("displayRenewalForm");
+		boolean displayRenewalForm = this.displayRenewalForm(user, isFreeRenewal, isPaidRenewal);
+		displayFormParts.put("displayRenewalForm",  displayRenewalForm);
+		stopWatch.start("displayForm");
+		displayFormParts.put("displayForm",  this.displayForm(user, requestUserIsManager, displayRenewalForm, isFirstRequest));
+		stopWatch.start("canPaidRenewal");
 		displayFormParts.put("canPaidRenewal",  this.canPaidRenewal(user));
+		stopWatch.start("hasDeliveredCard");
 		displayFormParts.put("hasDeliveredCard",  this.hasDeliveredCard(user));
+		stopWatch.start("enableEuropeanCard");
 		displayFormParts.put("enableEuropeanCard",  cardService.isEuropeanCardEnabled(user));
+		stopWatch.start("displayEuropeanCard");
 		displayFormParts.put("displayEuropeanCard",  cardService.displayFormEuropeanCardEnabled(user));
+		stopWatch.stop();
+		log.trace(stopWatch.prettyPrint());
 		return displayFormParts;
 		
 	}

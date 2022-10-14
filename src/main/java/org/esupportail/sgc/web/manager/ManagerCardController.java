@@ -24,6 +24,7 @@ import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
+import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +38,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -373,11 +375,15 @@ public class ManagerCardController {
     		@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 
     		@RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, 
     		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request) {
-		
+
+		StopWatch stopWatch = new PrettyStopWatch();
+
+		stopWatch.start("auth");
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
-		
+
+		stopWatch.start("base");
 		Long cardsInprintCount = Card.countfindCardsByEtatEppnEqualsAndEtatEquals(eppn, Etat.IN_PRINT);
 		uiModel.addAttribute("cardsInprintCount", cardsInprintCount);
 		
@@ -399,7 +405,8 @@ public class ManagerCardController {
     	if(searchBean.getLastTemplateCardPrinted()!=null && searchBean.getLastTemplateCardPrinted().getId()==null) {
     		searchBean.setLastTemplateCardPrinted(null);
     	}
-    	
+
+		stopWatch.start("freefields");
     	if(searchBean.getFreeFieldValue()!= null && !searchBean.getFreeFieldValue().isEmpty()){
     		SortedMap<Integer, List<String>> noEmptyFreeFieldValue = new TreeMap<Integer, List<String>>(searchBean.getFreeFieldValue());
     		noEmptyFreeFieldValue.values().removeAll(Collections.singleton(""));
@@ -430,13 +437,15 @@ public class ManagerCardController {
     	} else {
     		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
     	}
-    	
+
+		stopWatch.start("cards search");
     	sizeNo = size == null ? 10 : size.intValue();
     	firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
     	long countCards = Card.countFindCards(searchBean, eppn);
     	List<Card> cards = Card.findCards(searchBean, eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
         float nrOfPages = (float) countCards / sizeNo;
-        
+
+		stopWatch.start("filters");
     	uiModel.addAttribute("types", permissionService.getTypesTabs(roles));
     	uiModel.addAttribute("etats", cardEtatService.getDistinctEtats());
     	uiModel.addAttribute("lastTemplateCardsPrinted", userInfoService.getDistinctLastTemplateCardsPrinted());
@@ -453,18 +462,17 @@ public class ManagerCardController {
     	uiModel.addAttribute("freeFields",  formService.getFieldsList());
     	uiModel.addAttribute("nbFields", new String[formService.getNbFields()]);
     	uiModel.addAttribute("size",  size);
-    	List<String> addresses = null;
-    	if(searchBean.getEtat()!=null){
-    		addresses = getFilteredAdresses(searchBean.getType(), searchBean.getEtat());
-    	}else{
-    		addresses = userInfoService.getListAdresses(searchBean.getType(), null);
-    	}
+		stopWatch.start("addresses filter");
+    	List<String> addresses = userInfoService.getListAddresses(searchBean.getType(), searchBean.getEtat());
     	Map<String, String> addressesMap = formService.getMapWithUrlEncodedString(addresses);
     	uiModel.addAttribute("addresses", MapUtils.sortByValue(addressesMap, false));
     	searchBean.setAddress(formService.encodeUrlString(searchBean.getAddress()));
 		uiModel.addAttribute("eppn", eppn);
     	addDateTimeFormatPatterns(uiModel);
-    	
+		stopWatch.stop();
+
+		log.trace(stopWatch.prettyPrint());
+
     	return "manager/list";
     }
 
@@ -644,13 +652,6 @@ public class ManagerCardController {
 		return new ResponseEntity<String>(response, headers, HttpStatus.OK);
 	}
 
-
-	public List<String> getFilteredAdresses(String tabType, Etat etat){
-		List<String> adresses = userInfoService.getListAdresses(tabType, etat);	
-		return adresses;
-	}
-
-	
 	@PreAuthorize("hasRole('ROLE_MANAGER')")
 	@RequestMapping(value="/csvSearch", method = RequestMethod.GET)
 	public void getCsvSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, @RequestParam(value="fields",required=false) List<String> fields, HttpServletResponse response) throws IOException {

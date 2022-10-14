@@ -44,8 +44,9 @@ public class FormService {
 	}
 	
 	public String encodeUrlString(String string2encode) {
-		if(string2encode==null)
+		if(string2encode==null) {
 			return "";
+		}
 		String encPath = String.valueOf(string2encode.hashCode());
 		if(!idsMap.containsKey(encPath)) {
 			idsMap.put(encPath, string2encode);

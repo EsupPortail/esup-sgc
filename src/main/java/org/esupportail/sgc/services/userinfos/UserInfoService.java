@@ -430,8 +430,7 @@ public class UserInfoService {
 		return listTypes;	
 	}
 	
-	public List<String> getListAdresses(String userType, Etat etat) {
-		
+	public List<String> getListAddresses(String userType, Etat etat) {
 		List<String> adresses = User.findDistinctAddresses(userType, etat);
 		return adresses;
 	}

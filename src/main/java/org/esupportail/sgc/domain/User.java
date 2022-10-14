@@ -58,7 +58,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @Table(name = "UserAccount", indexes = {
 		@Index(name = "user_account_nb_cards_id", columnList = "nbCards"),
 		@Index(name = "user_account_user_type_id", columnList = "userType"),
-		@Index(name = "user_account_address_id", columnList = "address asc")
+		@Index(name = "user_account_address_id", columnList = "address asc"),
+		@Index(name = "user_account_last_card_template_printed", columnList = "last_card_template_printed"),
 })
 public class User {
 	
@@ -311,6 +312,9 @@ public class User {
 	}
 	
 	public static List<String> findDistinctAddresses(String userType, Etat etat) {
+		if(etat==null && (userType==null || userType.isEmpty() || "All".equals(userType))) {
+			return findDistinctAddresses();
+		}
 		EntityManager em = User.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<String> query = criteriaBuilder.createQuery(String.class);
@@ -326,7 +330,7 @@ public class User {
         }
         query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
         query.orderBy(criteriaBuilder.asc(u.get("address")));
-        query.select(u.get("address")).distinct(true);
+        query.select(u.get("address")).groupBy(u.get("address"));
         return em.createQuery(query).getResultList();
 	}
 
@@ -524,9 +528,10 @@ public class User {
 
 	public static List<BigInteger> getDistinctNbCards() {
 		EntityManager em = Card.entityManager();
-		Query q = em.createNativeQuery("SELECT DISTINCT(nb_cards) FROM user_account where nb_cards <> 0 ORDER BY nb_cards");
-		 List<BigInteger> distinctNbCards = q.getResultList();
-		 return distinctNbCards;
+		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account", "nb_cards"));
+		List<BigInteger> distinctNbCards = q.getResultList();
+		distinctNbCards.remove(BigInteger.valueOf(0));
+		return distinctNbCards;
 	}
 	
 	public static List<Object[]> countNbCardsByuser(String userType) {
@@ -558,8 +563,17 @@ public class User {
     
 	public static List<String> findDistinctUserType() {
 		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery("SELECT DISTINCT user_type FROM user_account where user_type is not null");
+		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account", "user_type"));
 		return q.getResultList();
+	}
+
+	public static List<String> findDistinctAddresses() {
+		EntityManager em = User.entityManager();
+		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account", "address"));
+		List<String> addresses = q.getResultList();
+		addresses.remove(null);
+		addresses.remove("");
+		return addresses;
 	}
 
     /**
@@ -644,7 +658,7 @@ public class User {
 	public static List<TemplateCard> findDistinctLastTemplateCardsPrinted() {
 		List<TemplateCard> templateCards = new ArrayList<TemplateCard>();
 		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery("SELECT DISTINCT last_card_template_printed FROM user_account");
+		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account" , "last_card_template_printed"));
 		List<BigInteger> last_card_template_ids = q.getResultList();
 		for(BigInteger id : last_card_template_ids) {
 			if(id != null) {
@@ -729,6 +743,20 @@ public class User {
     	EntityManager em = User.entityManager();
         return em.createQuery("SELECT o FROM User o", User.class);
     }
-    
+
+	/* Hack - optimisation distinct - cf https://wiki.postgresql.org/wiki/Loose_indexscan */
+	public static String selectDistinctWithLooseIndex(String tbl, String col) {
+		// String sql = String.format("SELECT DISTINCT col FROM tbl where col is not null");
+		String sql = String.format("WITH RECURSIVE t AS ( " +
+				"(SELECT col FROM tbl ORDER BY col LIMIT 1) " +
+				"UNION ALL " +
+				"SELECT (SELECT col FROM tbl WHERE col > t.col ORDER BY col LIMIT 1) " +
+				"FROM t WHERE t.col IS NOT NULL" +
+				") SELECT col FROM t WHERE col IS NOT NULL;");
+		sql = sql.replaceAll("tbl", tbl).replaceAll("col", col);
+		log.trace("distinct sql request opimized", sql);
+		return sql;
+	}
+
 }
 

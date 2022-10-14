@@ -26,6 +26,7 @@ import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.StopWatch;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -292,14 +294,22 @@ public class UserCardController {
 	}
 	
 	public String viewCardInfo(Locale locale, Model uiModel, HttpServletRequest request) {
+		StopWatch stopWatch = new PrettyStopWatch();
+		stopWatch.start("auth");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = User.findUser(eppn);		
+		User user = User.findUser(eppn);
+		stopWatch.start("steps");
 		uiModel.addAttribute("steps", cardEtatService.getTrackingSteps());
 		uiModel.addAttribute("user", user);
+		stopWatch.start("payboxList");
 		uiModel.addAttribute("payboxList", PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
+		stopWatch.start("montant");
 		uiModel.addAttribute("montant", appliConfigService.getMontantRenouvellement());
+		stopWatch.start("displayFormParts");
 		uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
+		stopWatch.stop();
+		log.trace(stopWatch.prettyPrint());
 		return "user/card-info";
 	}
 

@@ -1,6 +1,7 @@
 package org.esupportail.sgc.services.ldap;
 
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -82,7 +83,7 @@ public class LdapGroup2UserRoleService {
 	public void syncAllGroupsOnDb() {
 		long membersAdded = 0;
 		long membersRemoved = 0;
-		StopWatch stopWatch = new StopWatch();
+		StopWatch stopWatch = new PrettyStopWatch();
 		Set<String> allEppnUsers = new HashSet<String>(User.findAllEppns());
 		Map<String, List<String>> groups4RoleMap = new HashMap<String, List<String>>();
 		
@@ -106,24 +107,23 @@ public class LdapGroup2UserRoleService {
 					ldapGroupMembers.addAll(new HashSet<String>(groupService.getMembers(groupName)));
 				}
 				
-				stopWatch.stop();
+
 				stopWatch.start("copy " + role);
 				Set<String> eppnMembersUsers2Add = new HashSet<String>(ldapGroupMembers);
-				stopWatch.stop();
+
 				stopWatch.start("removeAll " + role);
 				eppnMembersUsers2Add.removeAll(eppnUsersWithRole);
-				stopWatch.stop();
+
 				stopWatch.start("retainAll " + role);
 				eppnMembersUsers2Add.retainAll(allEppnUsers);
-				stopWatch.stop();
+
 				stopWatch.start("add sync " + role);
 				for(String eppn : eppnMembersUsers2Add) {
 					if(ldapGroup2OneUserRoleService.addRole(eppn, role)) {
 						membersAdded++;
 					} 
 				}
-	
-				stopWatch.stop();
+
 				stopWatch.start("remove sync " + role);
 				Set<String> eppnMembersUsers2Remove = new HashSet<String>(allEppnUsers);	
 				eppnMembersUsers2Remove.removeAll(ldapGroupMembers);
