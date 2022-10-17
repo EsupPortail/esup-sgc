@@ -60,6 +60,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 		@Index(name = "user_account_user_type_id", columnList = "userType"),
 		@Index(name = "user_account_address_id", columnList = "address asc"),
 		@Index(name = "user_account_last_card_template_printed", columnList = "last_card_template_printed"),
+		@Index(name = "editable_id", columnList = "editable")
 })
 public class User {
 	
@@ -318,11 +319,11 @@ public class User {
 		EntityManager em = User.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<String> query = criteriaBuilder.createQuery(String.class);
-        Root<Card> c = query.from(Card.class);
-        Join<Card, User> u = c.join("userAccount");
+        Root<User> u = query.from(User.class);
         List<Predicate> predicates = new ArrayList<Predicate>();
         predicates.add(criteriaBuilder.notEqual(u.get("address"), ""));
         if(etat!=null) {
+			Join<User, Card> c = u.join("cards");
         	predicates.add(criteriaBuilder.equal(c.get("etat"), etat));
         }
         if(userType != null && !userType.isEmpty() && !"All".equals(userType)) {
@@ -754,7 +755,7 @@ public class User {
 				"FROM t WHERE t.col IS NOT NULL" +
 				") SELECT col FROM t WHERE col IS NOT NULL;");
 		sql = sql.replaceAll("tbl", tbl).replaceAll("col", col);
-		log.trace("distinct sql request opimized", sql);
+		log.trace("distinct sql request opimized : {}", sql);
 		return sql;
 	}
 

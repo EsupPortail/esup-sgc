@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
@@ -23,22 +24,23 @@ public class LdapUserInfoServiceTest {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Resource
-	LdapUserInfoService ldapUserInfoService;
+	List<LdapUserInfoService> ldapUserInfoServices;
 	
 	@Resource
 	EsupSgcTestUtilsService esupSgcTestUtilsService;
 
     @Test
     public void testGetUserInfos() {
-		Assume.assumeTrue(ldapUserInfoService != null);
 		String eppn2test = esupSgcTestUtilsService.getEppnFromLdap();
 		Assume.assumeTrue(eppn2test != null);
-	    User dummyUser = new User();
+		User dummyUser = new User();
 		dummyUser.setEppn(eppn2test);
-		Map<String,String> ldapUserInfos = ldapUserInfoService.getUserInfos(dummyUser, null, null);
-		String testDetails = String.format("userInfos on %s gives user %s : %s",
-				eppn2test, dummyUser, ldapUserInfos);
-		log.info(testDetails);
+		for(LdapUserInfoService ldapUserInfoService: ldapUserInfoServices) {
+			Map<String, String> ldapUserInfos = ldapUserInfoService.getUserInfos(dummyUser, null, null);
+			String testDetails = String.format("userInfos on %s gives user %s : %s",
+					eppn2test, dummyUser, ldapUserInfos);
+			log.info(testDetails);
+		}
     }
 
 }

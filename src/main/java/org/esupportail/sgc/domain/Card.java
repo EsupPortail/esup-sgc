@@ -613,7 +613,7 @@ public class Card {
         	// hack : use distinct because of join on desfireIds
         	query.select(criteriaBuilder.countDistinct(c));
         } else {
-        	query.select(criteriaBuilder.count(c));
+        	query.select(countStar(criteriaBuilder));
         }
         return em.createQuery(query).getSingleResult();
     }
@@ -692,7 +692,7 @@ public class Card {
         if (searchBean.getOwnOrFreeCard() != null && searchBean.getOwnOrFreeCard()) {
             predicates.add(criteriaBuilder.or(criteriaBuilder.equal(c.get("etatEppn"), eppn), criteriaBuilder.isNull(c.get("etatEppn")), criteriaBuilder.equal(c.get("etatEppn"), "")));
         }
-        if (searchBean.getEditable() != null) {
+        if ("true".equals(searchBean.getEditable()) || "false".equals(searchBean.getEditable())) {
             Join<Card, User> u = c.join("userAccount");
             Expression<Boolean> editableExpr = u.get("editable");
             if ("true".equals(searchBean.getEditable())) {
@@ -738,6 +738,10 @@ public class Card {
 
     private static Expression<Double> getFullTestSearchRanking(CriteriaBuilder cb, String searchString) {
         return cb.function("ts_rank", Double.class, cb.literal(searchString));
+    }
+
+    private static Expression<Long> countStar(CriteriaBuilder cb) {
+        return cb.function("count_star", Long.class);
     }
 
     /***Stats****/

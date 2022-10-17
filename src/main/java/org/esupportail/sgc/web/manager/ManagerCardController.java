@@ -438,10 +438,11 @@ public class ManagerCardController {
     		uiModel.addAttribute("collapse", searchBean.getFreeFieldValue() == null ? "" : "in");
     	}
 
-		stopWatch.start("cards search");
+		stopWatch.start("cards search count");
     	sizeNo = size == null ? 10 : size.intValue();
     	firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
     	long countCards = Card.countFindCards(searchBean, eppn);
+		stopWatch.start("cards search");
     	List<Card> cards = Card.findCards(searchBean, eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
         float nrOfPages = (float) countCards / sizeNo;
 
