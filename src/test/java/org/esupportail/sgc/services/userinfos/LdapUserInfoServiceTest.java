@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -23,7 +24,7 @@ public class LdapUserInfoServiceTest {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
-	@Resource
+	@Autowired(required = false)
 	List<LdapUserInfoService> ldapUserInfoServices;
 	
 	@Resource
@@ -31,6 +32,7 @@ public class LdapUserInfoServiceTest {
 
     @Test
     public void testGetUserInfos() {
+		Assume.assumeNotNull(ldapUserInfoServices);
 		String eppn2test = esupSgcTestUtilsService.getEppnFromLdap();
 		Assume.assumeTrue(eppn2test != null);
 		User dummyUser = new User();
