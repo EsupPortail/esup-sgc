@@ -30,7 +30,7 @@ public class PgCountStarFunction implements SQLFunction {
     @SuppressWarnings("rawtypes")
     @Override
     public String render(Type type, List args, SessionFactoryImplementor factory) throws QueryException {
-        return "count('*')";
+        return "count(*)";
     }
     
 }
