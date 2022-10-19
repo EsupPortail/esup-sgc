@@ -41,6 +41,10 @@
 		<put-attribute name="body"
 			value="/WEB-INF/views/manager/print-card.jspx" />
 	</definition>
+	<definition extends="print-card" name="manager/print-card-b64">
+		<put-attribute name="body"
+					   value="/WEB-INF/views/manager/print-card-b64.jspx" />
+	</definition>
 	<definition extends="default" name="manager/su">
         <put-attribute name="body" value="/WEB-INF/views/manager/su.jspx"/>
     </definition>

@@ -10,6 +10,10 @@ import org.hibernate.type.Type;
 
 import java.util.List;
 
+/*
+    With PostgreSQL, count(*) is faster than count(id)
+    This class PgCountStarFunction let to force count(*) on JPA Query
+ */
 public class PgCountStarFunction implements SQLFunction {
 
     @Override
