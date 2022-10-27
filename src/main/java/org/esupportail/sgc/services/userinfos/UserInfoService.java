@@ -24,6 +24,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -85,10 +88,10 @@ public class UserInfoService {
 	}
 	
 	
-	private SimpleDateFormat dateUTCsecFormatter = new SimpleDateFormat(DATE_FORMAT_UTCSEC_LDAP);
+	private DateTimeFormatter dateTimeUTCsecFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT_UTCSEC_LDAP);
 	
-	protected SimpleDateFormat getDateUTCsecFormatter() {
-		return dateUTCsecFormatter;
+	protected DateTimeFormatter getDateTimeUTCsecFormatter() {
+		return dateTimeUTCsecFormatter;
 	}
 
 	
@@ -396,7 +399,7 @@ public class UserInfoService {
 		if(dateString!=null && !dateString.isEmpty()) {
 			log.trace("parsing of date : " + dateString);
 			try {
-				date = getDateUTCsecFormatter().parse(dateString);
+				date = Date.from(LocalDateTime.parse(dateString, getDateTimeUTCsecFormatter()).atZone(ZoneId.systemDefault()).toInstant());
 			} catch (Exception e) {
 				log.warn("parsing of date " + dateString + " failed", e);
 			}
