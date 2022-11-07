@@ -81,9 +81,16 @@ public class WsRestHtmlController {
 	/**
 	 * Example to use it :
 	 * curl https://esup-sgc.univ-ville.fr/wsrest/view/{cardId}/card-b64.html"
+	 *
+	 * wget -4 'http://localhost:8080/wsrest/view/3083564/card-b64.html?type=black' -O card-black-b64.html
+	 * wget -4 'http://localhost:8080/wsrest/view/3083564/card-b64.html?type=color' -O card-color-b64.html
+	 * google-chrome --headless --disable-gpu --print-to-pdf=card-black.pdf card-black-b64.html
+	 * google-chrome --headless --disable-gpu --print-to-pdf=card-color.pdf card-color-b64.html
+	 * convert -resize 1016x648 -gravity center -extent 1016x648 -density 600 card-black.pdf card-black.bmp
+	 * convert -resize 1016x648 -gravity center -extent 1016x648 -density 600 card-color.pdf card-color.bmp
 	 */
 	@RequestMapping(value="/{cardId}/card-b64.html", method = RequestMethod.GET)
-	public String cardPdf(@PathVariable Long cardId, Model uiModel) throws SQLException, IOException, WriterException {
+	public String cardHtml(@PathVariable Long cardId, @RequestParam(required = false) String type, Model uiModel) throws SQLException, IOException, WriterException {
 		Card card = Card.findCard(cardId);
 
 		byte[] photoBytes = card.getPhotoFile().getBigFile().getBinaryFileasBytes();
@@ -116,6 +123,7 @@ public class WsRestHtmlController {
 		uiModel.addAttribute("masqueBase64", masqueBase64);
 		uiModel.addAttribute("qrcodeBase64", qrcodeBase64);
 		uiModel.addAttribute("card", card);
+		uiModel.addAttribute("type", type);
 		return "manager/print-card-b64";
 	}
 
