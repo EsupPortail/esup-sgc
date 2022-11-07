@@ -25,6 +25,8 @@ public class PapercutService extends ValidateService implements InitializingBean
 	
 	String papercutUidFromEppnRegex = "(.*)";
 	
+	boolean useReverseCsn = false;
+
     ServerCommandProxy serverProxy;    
 
 	public void setAuthToken(String authToken) {
@@ -55,6 +57,10 @@ public class PapercutService extends ValidateService implements InitializingBean
 		this.papercutUidFromEppnRegex = papercutUidFromEppnRegex;
 	}
 
+	public void setUseReverseCsn(boolean useReverseCsn) {
+		this.useReverseCsn = useReverseCsn;
+	}
+
 	public void afterPropertiesSet() {
 		serverProxy = new ServerCommandProxy(server, scheme, port, authToken);
 	}
@@ -63,8 +69,9 @@ public class PapercutService extends ValidateService implements InitializingBean
 	public void validateInternal(Card card) {
 		String uid = getPapercutUid4User(card.getUser());
 		if(serverProxy.isUserExists(uid)) {
-			serverProxy.setUserProperty(uid, cardNumberAttribute, card.getCsn());
-			log.debug("Carte papercut de " + uid + " -> " + card.getCsn());
+			String cardNumber = (useReverseCsn ? card.getReverseCsn() : card.getCsn());
+			serverProxy.setUserProperty(uid, cardNumberAttribute, cardNumber);
+			log.debug("Carte papercut de " + uid + " -> " + cardNumber);
 		} else {
 			log.debug("Validation papercut : utilisateur " + uid + " non trouvé dans papercut");
 		}
