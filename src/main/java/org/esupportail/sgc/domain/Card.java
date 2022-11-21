@@ -1,12 +1,19 @@
 package org.esupportail.sgc.domain;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.web.manager.CardSearchBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.roo.addon.dbre.RooDbManaged;
+import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
+import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,22 +38,14 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
-import org.esupportail.sgc.services.CardEtatService;
-import org.esupportail.sgc.web.manager.CardSearchBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.dbre.RooDbManaged;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RooJavaBean
 @RooToString
@@ -71,7 +70,7 @@ public class Card {
     };
 
     public static enum Etat {
-        NEW, REQUEST_CHECKED, CANCELED, IN_PRINT, PRINTED, IN_ENCODE, ENCODED, ENABLED, REJECTED, DISABLED, CADUC, DESTROYED, RENEWED
+        NEW, REQUEST_CHECKED, CANCELED, IN_PRINT, TO_PRINT_ENCODING, IN_PRINT_ENCODING, PRINTED, IN_ENCODE, ENCODED, ENABLED, REJECTED, DISABLED, CADUC, DESTROYED, RENEWED
     };
 
     public static enum MotifDisable {
@@ -326,7 +325,12 @@ public class Card {
     public String getEmail() {
     	return getUserAccount().getEmail();
     }
-    
+
+    public void removeEtatAvailable(Etat etat) {
+        List<Etat> etatsAvailable = new ArrayList<Etat>(getEtatsAvailable());
+        etatsAvailable.remove(etat);
+        setEtatsAvailable(etatsAvailable);
+    }
     @Transactional
     public void persist() {
         if (this.entityManager == null) this.entityManager = entityManager();
@@ -396,7 +400,15 @@ public class Card {
         q.setParameter("etats", etats);
         return ((Long) q.getSingleResult());
     }
-    
+
+    public static TypedQuery<Card> findCardsByEtatEppnEqualsAndEtatEquals(String etatEppn, Etat etat) {
+        EntityManager em = Card.entityManager();
+        TypedQuery q = em.createQuery("SELECT o FROM Card AS o WHERE o.etatEppn = :etatEppn AND o.etat = :etat ORDER BY o.dateEtat asc", Card.class);
+        q.setParameter("etatEppn", etatEppn);
+        q.setParameter("etat", etat);
+        return  q;
+    }
+
     public static Long countfindCardsByEtatEppnEqualsAndEtatEquals(String etatEppn, Etat etat) {
         EntityManager em = Card.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.etatEppn = :etatEppn AND o.etat = :etat", Long.class);

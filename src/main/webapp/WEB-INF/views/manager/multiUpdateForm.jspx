@@ -111,7 +111,7 @@
 									</c:choose>
 								</form>
 							</c:forEach>
-						    <c:if test = "${fn:contains(etatsAvailable, 'REQUEST_CHECKED')}">
+						    <c:if test="${etatInit == 'NEW' || etatInit == 'RENEWED'}">
 								<spring:url value="/manager/retouche" var="retouche_url" />
 								<form action="${retouche_url}"
 									id="retouche}Form" method="POST">

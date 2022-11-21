@@ -1,14 +1,4 @@
 package org.esupportail.sgc.web.wsrest;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.util.*;
-
-import javax.annotation.Resource;
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
@@ -17,6 +7,7 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.security.ShibAuthenticatedUserDetailsService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.EncodeAndPringLongPollService;
 import org.esupportail.sgc.services.EsupNfcTagService;
 import org.esupportail.sgc.services.IpService;
 import org.esupportail.sgc.services.LogService;
@@ -27,15 +18,16 @@ import org.esupportail.sgc.services.crous.CrousSmartCardService;
 import org.esupportail.sgc.services.esc.DamService;
 import org.esupportail.sgc.services.esc.EscDeuInfoMetaService;
 import org.esupportail.sgc.services.ldap.GroupService;
+import org.esupportail.sgc.tools.EsupSgcBmpAsBase64Util;
 import org.esupportail.sgc.web.manager.ClientJWSController;
 import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +37,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.Resource;
+import javax.persistence.NoResultException;
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -102,6 +110,9 @@ public class WsRestEsupNfcController {
 
 	@Resource
 	DamService damService;
+
+	@Resource
+	EncodeAndPringLongPollService encodeAndPringLongPollService;
 	/**
 	 * Example :
 	 * curl -v -H "Content-Type: application/json" http://localhost:8080/wsrest/nfc/locations?eppn=joe@univ-ville.fr
@@ -552,10 +563,57 @@ public class WsRestEsupNfcController {
 		
 		return new ResponseEntity<Long>(Long.valueOf(cnousCardId), responseHeaders, HttpStatus.OK);	
 	}
+
+	@RequestMapping(value = "/card-bmp-b64", method = RequestMethod.GET, produces =  MediaType.TEXT_PLAIN_VALUE)
+	@ResponseBody
+	public ResponseEntity<String> getCardBmpB64(@RequestParam String authToken, @RequestParam String qrcode, @RequestParam String type) {
+		log.debug("getCardBmpB64 with qrcode = " + qrcode);
+		HttpHeaders responseHeaders = new HttpHeaders();
+		String eppnInit = clientJWSController.getEppnInit(authToken);
+		// eppnInit = "bonamvin@univ-rouen.fr";
+		if(eppnInit == null) {
+			log.info("Bad authotoken : " + authToken);
+			return new ResponseEntity<String>("", responseHeaders, HttpStatus.FORBIDDEN);
+		}
+
+		String bmpAsBase64 = "";
+		List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.TO_PRINT_ENCODING, Etat.IN_PRINT_ENCODING})).getResultList();
+		if(!cards.isEmpty()) {
+			Card card = cards.get(0);
+			if(Etat.TO_PRINT_ENCODING.equals(card.getEtat())) {
+				card.setEtat(Etat.IN_PRINT_ENCODING);
+			}
+			bmpAsBase64 = EsupSgcBmpAsBase64Util.getBmpCard(card.getId(), type);
+		}
+		return new ResponseEntity<String>(bmpAsBase64, responseHeaders, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/qrcode2edit", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+	@ResponseBody
+	public DeferredResult<String> qrcode2edit(@RequestParam String authToken) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		String eppnInit = clientJWSController.getEppnInit(authToken);
+		// eppnInit = "bonamvin@univ-rouen.fr";
+		if(eppnInit == null) {
+			log.info("Bad authotoken : " + authToken);
+			DeferredResult emptyResult = new DeferredResult();
+			emptyResult.setResult("");
+			return emptyResult;
+		}
+		List<Card> cards = Card.findCardsByEtatEppnEqualsAndEtatEquals(eppnInit, Etat.TO_PRINT_ENCODING).getResultList();
+		if(cards.size() > 0 ) {
+			log.info("qrcode2edit from DB : " + cards.get(0).getQrcode());
+			DeferredResult dbResult = new DeferredResult();
+			dbResult.setResult(cards.get(0).getQrcode());
+			return dbResult;
+		}
+		return encodeAndPringLongPollService.qrcode2edit(eppnInit);
+	}
 	
 	/**
 	 * Exemple :
 	 * curl -v -X POST -H "Content-Type: application/json" -d '{"qrcode":"joe@univ-ville.fr", "csn":"802ee92a4c8e04"}' 'http://localhost:8080/wsrest/nfc/check4encode'
+	 * TODO : use authToken
 	 */
 	@RequestMapping(value="/check4encode",  method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -563,7 +621,7 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try{
         	log.info("try to find card to encode with : " + qrcodeAndCsn);
-			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE})).getResultList();
+			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.IN_PRINT_ENCODING})).getResultList();
 			if(cards.size() > 0 ){
 				String csn = qrcodeAndCsn.get("csn");
 				Card cardWithThisCsn = Card.findCardByCsn(csn);

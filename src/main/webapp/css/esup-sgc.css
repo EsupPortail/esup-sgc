@@ -371,6 +371,12 @@ h2 .btn{
 .label-canceled{
 	 background-color: #999966;
 }
+.label-to_print_encoding{
+	background-color: #9932CC;
+}
+.label-in_print_encoding{
+	background-color: #800080;
+}
 #requestDiv .thumbnail{
 	width: 150px;
 	padding: 0;
