@@ -1,33 +1,44 @@
-package org.esupportail.sgc.tools;
+package org.esupportail.sgc.services;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-public class EsupSgcBmpAsBase64Util {
+@Service
+public class EsupSgcBmpAsBase64Service {
 
-	static Logger log = LoggerFactory.getLogger(EsupSgcBmpAsBase64Util.class);
+	static Logger log = LoggerFactory.getLogger(EsupSgcBmpAsBase64Service.class);
 
-    public static String getBmpCard(Long cardId, String type) {
+    @Resource
+    AppliConfigService appliConfigService;
+
+    public String getBmpCard(Long cardId, String type) {
         StopWatch stopWatch = new PrettyStopWatch();
         stopWatch.start("getBmpCard for card " + cardId + " / " + type);
         String bmpCard = "";
+        File tmpdirFile = null;
         try {
-            String tmpdir = Files.createTempDirectory(cardId.toString() + "-" + type).toFile().getAbsolutePath();
-            String command = "cd " + tmpdir + " " +
-                    "&& wget -4 'http://localhost:8080/wsrest/view/" + cardId + "/card-b64.html?type=" + type + "' -O card-b64.html " +
-                    "&& google-chrome --headless --disable-gpu --print-to-pdf=card.pdf card-b64.html " +
-                    "&& convert -resize 1016x648 -gravity center -extent 1016x648 -density 600 card.pdf card.bmp";
+            String bmpCardCommand = appliConfigService.getBmpCardCommandColor4printer();
+            if("black".equals(type)) {
+                bmpCardCommand = appliConfigService.getBmpCardCommandBlack4printer();
+            }
+            tmpdirFile = Files.createTempDirectory(cardId.toString() + "-" + type).toFile();
+            tmpdirFile.deleteOnExit();
+            String tmpdir = tmpdirFile.getAbsolutePath();
+            String command =  "cd " + tmpdir + " && " +  String.format(bmpCardCommand, cardId);
             log.info("Convertion command to get BMP for card {} / {} : {}", cardId, type, command);
             ProcessBuilder processBuilder = new ProcessBuilder();
             if (SystemUtils.IS_OS_WINDOWS) {
@@ -56,6 +67,10 @@ public class EsupSgcBmpAsBase64Util {
             }
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException("cmd launch error : check installation", e);
+        } finally {
+            if(tmpdirFile!=null) {
+                tmpdirFile.delete();
+            }
         }
         return bmpCard;
     }

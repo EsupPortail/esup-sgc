@@ -18,7 +18,7 @@ import org.esupportail.sgc.services.crous.CrousSmartCardService;
 import org.esupportail.sgc.services.esc.DamService;
 import org.esupportail.sgc.services.esc.EscDeuInfoMetaService;
 import org.esupportail.sgc.services.ldap.GroupService;
-import org.esupportail.sgc.tools.EsupSgcBmpAsBase64Util;
+import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
 import org.esupportail.sgc.web.manager.ClientJWSController;
 import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
@@ -113,6 +113,10 @@ public class WsRestEsupNfcController {
 
 	@Resource
 	EncodeAndPringLongPollService encodeAndPringLongPollService;
+
+	@Resource
+	EsupSgcBmpAsBase64Service esupSgcBmpAsBase64Service;
+
 	/**
 	 * Example :
 	 * curl -v -H "Content-Type: application/json" http://localhost:8080/wsrest/nfc/locations?eppn=joe@univ-ville.fr
@@ -583,7 +587,7 @@ public class WsRestEsupNfcController {
 			if(Etat.TO_PRINT_ENCODING.equals(card.getEtat())) {
 				card.setEtat(Etat.IN_PRINT_ENCODING);
 			}
-			bmpAsBase64 = EsupSgcBmpAsBase64Util.getBmpCard(card.getId(), type);
+			bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), type);
 		}
 		return new ResponseEntity<String>(bmpAsBase64, responseHeaders, HttpStatus.OK);
 	}

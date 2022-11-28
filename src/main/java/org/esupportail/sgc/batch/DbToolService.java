@@ -1,15 +1,5 @@
 package org.esupportail.sgc.batch;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
 import org.esupportail.sgc.domain.AppliVersion;
@@ -25,13 +15,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 
 @Service
 public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "1.9.x";
+	final static String currentEsupSgcVersion = "2.0.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -360,6 +359,17 @@ public class DbToolService {
             if("1.8.x".equals(esupSgcVersion)) {
                 esupSgcVersion = "1.9.x";
             }
+			if("1.9.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'BMP_COMMAND_COLOR_PRINTER', 'wget -4 ''http://localhost:8080/wsrest/view/%s/card-b64.html?type=color'' -O card-b64.html && google-chrome --headless --disable-gpu --print-to-pdf=card.pdf card-b64.html && convert -resize 1016x648 -gravity center -extent 1016x648 -density 600 card.pdf card.bmp', 'Commande permettant de récupérer un fichier card.bmp présentant le BMP couleur de la carte à imprimer. Utilisé lors de l''impression+encodage en 1 temps. Cette commande est exécutée dans un répertoire temporaire créé à la demande et à chaque appel par esup-sgc', 'TEXT');";
+				sqlUpdate += "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'BMP_COMMAND_BLACK_PRINTER', 'wget -4 ''http://localhost:8080/wsrest/view/%s/card-b64.html?type=black'' -O card-b64.html && google-chrome --headless --disable-gpu --print-to-pdf=card.pdf card-b64.html && convert -resize 1016x648 -gravity center -extent 1016x648 -density 600 card.pdf card.bmp', 'Commande permettant de récupérer un fichier card.bmp présentant le BMP noir et blanc de la carte à imprimer. Utilisé lors de l''impression+encodage en 1 temps. Cette commande est exécutée dans un répertoire temporaire créé à la demande et à chaque appel par esup-sgc', 'TEXT');";
+
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				esupSgcVersion = "2.0.x";
+			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
 			log.warn("\n\n#####\n\t" +
