@@ -625,7 +625,7 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try{
         	log.info("try to find card to encode with : " + qrcodeAndCsn);
-			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.IN_PRINT_ENCODING})).getResultList();
+			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.TO_PRINT_ENCODING, Etat.IN_PRINT_ENCODING})).getResultList();
 			if(cards.size() > 0 ){
 				String csn = qrcodeAndCsn.get("csn");
 				Card cardWithThisCsn = Card.findCardByCsn(csn);
