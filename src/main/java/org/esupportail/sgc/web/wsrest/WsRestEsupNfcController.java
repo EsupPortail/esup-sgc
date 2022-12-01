@@ -580,14 +580,13 @@ public class WsRestEsupNfcController {
 		log.debug("getCardBmpB64 with qrcode = " + qrcode);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
-		// eppnInit = "bonamvin@univ-rouen.fr";
 		if(eppnInit == null) {
 			log.info("Bad authotoken : " + authToken);
 			return new ResponseEntity<String>("", responseHeaders, HttpStatus.FORBIDDEN);
 		}
 
 		String bmpAsBase64 = "";
-		List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.ENCODED_IN_PRINT})).getResultList();
+		List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.TO_ENCODE_PRINT, Etat.ENCODED_IN_PRINT})).getResultList();
 		if(!cards.isEmpty()) {
 			Card card = cards.get(0);
 			bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), type);
@@ -625,7 +624,6 @@ public class WsRestEsupNfcController {
 	public DeferredResult<String> qrcode2edit(@RequestParam String authToken) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
-		// eppnInit = "bonamvin@univ-rouen.fr";
 		if(eppnInit == null) {
 			log.info("Bad authotoken : " + authToken);
 			DeferredResult emptyResult = new DeferredResult();
