@@ -50,13 +50,13 @@ public class CardEtatService {
 	static {
 		workflow.put(Etat.NEW, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED, Etat.CANCELED}));
 		workflow.put(Etat.RENEWED, Arrays.asList(new Etat[]{Etat.REJECTED, Etat.REQUEST_CHECKED, Etat.CANCELED}));
-		workflow.put(Etat.REQUEST_CHECKED, Arrays.asList(new Etat[]{Etat.IN_PRINT, Etat.CANCELED, Etat.TO_PRINT_ENCODING}));
+		workflow.put(Etat.REQUEST_CHECKED, Arrays.asList(new Etat[]{Etat.IN_PRINT, Etat.CANCELED, Etat.TO_ENCODE_PRINT}));
 		workflow.put(Etat.IN_PRINT, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED, Etat.IN_PRINT, Etat.PRINTED}));
 		// workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{Etat.IN_ENCODE}));
 		workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{}));
 		workflow.put(Etat.IN_ENCODE, Arrays.asList(new Etat[]{Etat.PRINTED})); // IN_ENCODE -> ENCODED is not an action made via the gui
-		workflow.put(Etat.TO_PRINT_ENCODING, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED}));
-		workflow.put(Etat.IN_PRINT_ENCODING, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED}));
+		workflow.put(Etat.TO_ENCODE_PRINT, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED}));
+		workflow.put(Etat.ENCODED_IN_PRINT, Arrays.asList(new Etat[]{Etat.REQUEST_CHECKED}));
 		workflow.put(Etat.ENCODED, Arrays.asList(new Etat[]{Etat.ENABLED}));
 		workflow.put(Etat.ENABLED, Arrays.asList(new Etat[]{Etat.DISABLED, Etat.RENEWED}));
 		workflow.put(Etat.DISABLED, Arrays.asList(new Etat[]{Etat.ENABLED, Etat.DESTROYED}));
@@ -125,7 +125,7 @@ public class CardEtatService {
 		}
 		
 		updateEtatsAvailable4Card(card);
-		if(!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat) && !Etat.TO_PRINT_ENCODING.equals(etat)) {
+		if(!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat) && !Etat.TO_ENCODE_PRINT.equals(etat)) {
 			return false;
 		}
 
@@ -139,18 +139,18 @@ public class CardEtatService {
 			}
 		}
 		
-		if((Etat.IN_PRINT.equals(etat) || Etat.TO_PRINT_ENCODING.equals(etat)) && cardIdsService!=null) {
+		if((Etat.IN_PRINT.equals(etat) || Etat.TO_ENCODE_PRINT.equals(etat)) && cardIdsService!=null) {
 			// be sure that card have qrcode : 
 			if(card.getQrcode() == null || card.getQrcode().isEmpty()) {
 				cardIdsService.generateQrcode4Card(card);
 			}
 		}
 		
-		if((Etat.IN_PRINT.equals(card.getEtat()) || Etat.IN_PRINT_ENCODING.equals(card.getEtat())) && (Etat.PRINTED.equals(etat) || Etat.ENCODED.equals(etat))) {
+		if((Etat.IN_PRINT.equals(card.getEtat()) || Etat.ENCODED_IN_PRINT.equals(card.getEtat())) && (Etat.PRINTED.equals(etat) || Etat.ENCODED.equals(etat))) {
 			userInfoService.setPrintedInfo(card);
 		}
 
-		if(Etat.TO_PRINT_ENCODING.equals(etat)) {
+		if(Etat.TO_ENCODE_PRINT.equals(etat)) {
 			encodeAndPringLongPollService.handleCard(eppn, card.getQrcode());
 		}
 			
@@ -205,14 +205,14 @@ public class CardEtatService {
 			eppn = auth.getName();
 		}
 		card.setEtatsAvailable(workflow.get(card.getEtat()));
-		if(Etat.IN_PRINT.equals(card.getEtat()) || Etat.IN_ENCODE.equals(card.getEtat())  || Etat.IN_PRINT_ENCODING.equals(card.getEtat())) {
+		if(Etat.IN_PRINT.equals(card.getEtat()) || Etat.IN_ENCODE.equals(card.getEtat())  || Etat.ENCODED_IN_PRINT.equals(card.getEtat())) {
 			if(!eppn.equals(card.getEtatEppn())) {
 				card.setEtatsAvailable(new ArrayList<Etat>());
 			}
 		}
 		if(Etat.REQUEST_CHECKED.equals(card.getEtat())) {
 			if(!encodeAndPringLongPollService.canHandleCard(eppn)) {
-				card.removeEtatAvailable( Etat.TO_PRINT_ENCODING);
+				card.removeEtatAvailable( Etat.TO_ENCODE_PRINT);
 			}
 		}
 		if((Etat.NEW.equals(card.getEtat()) || Etat.RENEWED.equals(card.getEtat())) && card.getUser()!=null && !card.getUser().isEditable()) {
