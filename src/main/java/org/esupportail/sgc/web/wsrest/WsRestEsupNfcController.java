@@ -130,6 +130,7 @@ public class WsRestEsupNfcController {
 		for(String managerGroup : managerGroups) {
 			if(userGroups.contains(managerGroup)) {
 				locations.add(EsupNfcTagLog.SALLE_ENCODAGE);
+				locations.add(EsupNfcTagLog.SALLE_DESTROY);
 				break;
 			}
 		}
@@ -361,6 +362,16 @@ public class WsRestEsupNfcController {
 				log.warn(eppn + ", " + csn + " déjà livrée");
 				return new ResponseEntity<String>("Carte déjà livrée", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+		} else if(EsupNfcTagLog.SALLE_DESTROY.equals(esupNfcTagLog.getLocation())){
+			log.info("isTagable for destroy " + eppn + ", " + csn);
+			cardEtatService.updateEtatsAvailable4Card(card);
+			if(card.getEtatsAvailable().contains(Etat.DESTROYED)){
+				log.info(eppn + ", " + csn + " destruction possible");
+				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+			} else {
+				log.warn(eppn + ", " + csn + " destruction impossible depuis l'état " + card.getEtat());
+				return new ResponseEntity<String>("Destruction impossible", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} else {
 			log.error("Salle " + esupNfcTagLog.getLocation() + " inconnue !");
 		}
@@ -423,9 +434,13 @@ public class WsRestEsupNfcController {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.VERSO_CARTE.equals(esupNfcTagLog.getLocation())) {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-		}else if(EsupNfcTagLog.SECONDARY_ID.equals(esupNfcTagLog.getLocation())) {
+		} else if(EsupNfcTagLog.SECONDARY_ID.equals(esupNfcTagLog.getLocation())) {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-		} else {
+		} else if(EsupNfcTagLog.SALLE_DESTROY.equals(esupNfcTagLog.getLocation())) {
+			Card card = Card.findCardsByCsn(csn).getSingleResult();
+			cardEtatService.setCardEtat(card, Etat.DESTROYED, "Carte marquée comme détruite via badgeage.", null, false, false);
+			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
+		}  else {
 			log.error("Salle " + esupNfcTagLog.getLocation() + " inconnue !");
 		}
 		return new ResponseEntity<String>("KO", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
