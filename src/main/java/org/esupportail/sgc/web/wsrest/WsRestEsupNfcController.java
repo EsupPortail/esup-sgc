@@ -130,6 +130,25 @@ public class WsRestEsupNfcController {
 		for(String managerGroup : managerGroups) {
 			if(userGroups.contains(managerGroup)) {
 				locations.add(EsupNfcTagLog.SALLE_ENCODAGE);
+				break;
+			}
+		}
+		log.info("locations for " + eppn + " -> locations");
+		return locations;
+	}
+
+	/**
+	 * Example :
+	 * curl -v -H "Content-Type: application/json" http://localhost:8080/wsrest/nfc/locationsDestroy?eppn=joe@univ-ville.fr
+	 */
+	@RequestMapping(value="/locationsDestroy",  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public List<String> getLocationsDestroy(@RequestParam String eppn) {
+		List<String> locations = new ArrayList<String>();
+		List<String> managerGroups = shibAuthenticatedUserDetailsService.getManagerGroups();
+		List<String> userGroups = groupService.getGroupsForEppn(eppn);
+		for(String managerGroup : managerGroups) {
+			if(userGroups.contains(managerGroup)) {
 				locations.add(EsupNfcTagLog.SALLE_DESTROY);
 				break;
 			}
