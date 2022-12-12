@@ -653,6 +653,9 @@ public class WsRestEsupNfcController {
 		return new ResponseEntity<String>("No card found", responseHeaders, HttpStatus.NOT_FOUND);
 	}
 
+	/*
+		Long poll requesting card to encode and print
+	 */
 	@RequestMapping(value = "/qrcode2edit", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public DeferredResult<String> qrcode2edit(@RequestParam String authToken) {
@@ -672,6 +675,23 @@ public class WsRestEsupNfcController {
 			return dbResult;
 		}
 		return encodeAndPringLongPollService.qrcode2edit(eppnInit);
+	}
+
+	/*
+		Long poll to notify client is ok to encode and print
+	 */
+	@RequestMapping(value = "/encodePrintHeartbeat", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+	@ResponseBody
+	public DeferredResult<String> encodePrintHeartbeat(@RequestParam String authToken) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		String eppnInit = clientJWSController.getEppnInit(authToken);
+		if(eppnInit == null) {
+			log.info("Bad authotoken : " + authToken);
+			DeferredResult emptyResult = new DeferredResult();
+			emptyResult.setResult("");
+			return emptyResult;
+		}
+		return encodeAndPringLongPollService.encodePrintHeartbeat(eppnInit);
 	}
 	
 	/**

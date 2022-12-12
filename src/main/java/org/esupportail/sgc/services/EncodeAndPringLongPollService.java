@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 
 @Service
@@ -20,6 +22,9 @@ public class EncodeAndPringLongPollService {
 
 	// Map avec en clef l'eppn de l'utilisateur manager potentiel éditeur de carte via imprimante+encodeur (evolis)
 	private Map<String, DeferredResult<String>> suspendedEncodPrintCardPollRequests = new ConcurrentHashMap<String, DeferredResult<String>>();
+
+	// List des eppn de l'utilisateur manager potentiel éditeur de carte via imprimante+encodeur (heartbeat)
+	private Set<String> managersPrintEncodeEppns = new ConcurrentSkipListSet<>();
 
 	public DeferredResult<String> qrcode2edit(String eppn) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -60,6 +65,19 @@ public class EncodeAndPringLongPollService {
 	}
 
 	public boolean canHandleCard(String eppnInit) {
-		return this.suspendedEncodPrintCardPollRequests.containsKey(eppnInit);
+		return this.managersPrintEncodeEppns.contains(eppnInit);
+	}
+
+	public DeferredResult<String> encodePrintHeartbeat(String eppnInit) {
+		final DeferredResult<String> okResult = new DeferredResult<String>(null, "ok");
+		this.managersPrintEncodeEppns.add(eppnInit);
+		okResult.onCompletion(new Runnable() {
+			public void run() {
+				synchronized (eppnInit) {
+					managersPrintEncodeEppns.remove(eppnInit);
+				}
+			}
+		});
+		return okResult;
 	}
 }

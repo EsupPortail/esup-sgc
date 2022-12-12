@@ -24,6 +24,7 @@
         <intercept-url pattern="/wsrest/nfc/qrcode2edit" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/card-bmp-b64" access="permitAll" />
         <intercept-url pattern="/wsrest/nfc/card-encoded-printed" access="permitAll" />
+        <intercept-url pattern="/wsrest/nfc/encodePrintHeartbeat" access="permitAll" />        
 		<intercept-url pattern="/wsrest/nfc/getVersoText" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/getSecondaryId" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/**" access="hasIpAddress('127.0.0.1')" /> <!-- Esup-Nfc-Tag IP Address -->

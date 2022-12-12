@@ -7,6 +7,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -27,6 +28,9 @@ public class EsupSgcBmpAsBase64Service {
 
     public String getBmpCard(Long cardId, String type) {
         StopWatch stopWatch = new PrettyStopWatch();
+        if("overlay".equals(type)) {
+            return defaultFullOverlayBmp();
+        }
         stopWatch.start("getBmpCard for card " + cardId + " / " + type);
         String bmpCard = "";
         File tmpdirFile = null;
@@ -71,6 +75,19 @@ public class EsupSgcBmpAsBase64Service {
             if(tmpdirFile!=null) {
                 tmpdirFile.delete();
             }
+        }
+        return bmpCard;
+    }
+
+    String defaultFullOverlayBmp() {
+        String bmpCard = "";
+        try {
+            org.springframework.core.io.Resource derPayboxPublicKeyRessource = new ClassPathResource("/media/default-overlay.bmp");
+            File bmpFile = derPayboxPublicKeyRessource.getFile();
+            byte[] encodedBmp = Base64.encodeBase64(FileUtils.readFileToByteArray(bmpFile));
+            bmpCard = new String(encodedBmp, StandardCharsets.US_ASCII);
+        } catch (IOException e) {
+            throw new RuntimeException("Exception getting BMP /media/default-overlay.bmp as base64  : check installation", e);
         }
         return bmpCard;
     }
