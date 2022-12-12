@@ -375,9 +375,6 @@ public class CardEtatService {
 		List<String> steps = new ArrayList<String>();
 		steps.add(Etat.NEW.name());
 		steps.add(Etat.REQUEST_CHECKED.name());
-		steps.add(Etat.IN_PRINT.name());
-		steps.add(Etat.PRINTED.name());
-		steps.add(Etat.IN_ENCODE.name());
 		steps.add(Etat.ENCODED.name());
 		steps.add(Etat.ENABLED.name());
 		return steps;
