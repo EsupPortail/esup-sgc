@@ -10,9 +10,11 @@ import org.esupportail.sgc.domain.CrousPatchIdentifier;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.EsupNfcSgcJwsDevice;
 import org.esupportail.sgc.domain.Log;
+import org.esupportail.sgc.domain.LogMail;
 import org.esupportail.sgc.domain.NavBarApp;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.Prefs;
+import org.esupportail.sgc.domain.Printer;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.services.crous.CrousErrorLog;
 import org.esupportail.sgc.services.crous.CrousRule;
@@ -194,6 +196,30 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<LogMail, String> ApplicationConversionServiceFactoryBean.getLogMailToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.LogMail, java.lang.String>() {
+            public String convert(LogMail logMail) {
+                return new StringBuilder().append(logMail.getLogDate()).append(' ').append(logMail.getEppn()).append(' ').append(logMail.getSubject()).append(' ').append(logMail.getMailTo()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, LogMail> ApplicationConversionServiceFactoryBean.getIdToLogMailConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.esupportail.sgc.domain.LogMail>() {
+            public org.esupportail.sgc.domain.LogMail convert(java.lang.Long id) {
+                return LogMail.findLogMail(id);
+            }
+        };
+    }
+    
+    public Converter<String, LogMail> ApplicationConversionServiceFactoryBean.getStringToLogMailConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.domain.LogMail>() {
+            public org.esupportail.sgc.domain.LogMail convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), LogMail.class);
+            }
+        };
+    }
+    
     public Converter<NavBarApp, String> ApplicationConversionServiceFactoryBean.getNavBarAppToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.NavBarApp, java.lang.String>() {
             public String convert(NavBarApp navBarApp) {
@@ -262,6 +288,30 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.domain.Prefs>() {
             public org.esupportail.sgc.domain.Prefs convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), Prefs.class);
+            }
+        };
+    }
+    
+    public Converter<Printer, String> ApplicationConversionServiceFactoryBean.getPrinterToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<org.esupportail.sgc.domain.Printer, java.lang.String>() {
+            public String convert(Printer printer) {
+                return new StringBuilder().append(printer.getLabel()).append(' ').append(printer.getEppn()).append(' ').append(printer.getIp()).append(' ').append(printer.getMaintenanceInfo()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Printer> ApplicationConversionServiceFactoryBean.getIdToPrinterConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, org.esupportail.sgc.domain.Printer>() {
+            public org.esupportail.sgc.domain.Printer convert(java.lang.Long id) {
+                return Printer.findPrinter(id);
+            }
+        };
+    }
+    
+    public Converter<String, Printer> ApplicationConversionServiceFactoryBean.getStringToPrinterConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, org.esupportail.sgc.domain.Printer>() {
+            public org.esupportail.sgc.domain.Printer convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Printer.class);
             }
         };
     }
@@ -384,6 +434,9 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getLogToStringConverter());
         registry.addConverter(getIdToLogConverter());
         registry.addConverter(getStringToLogConverter());
+        registry.addConverter(getLogMailToStringConverter());
+        registry.addConverter(getIdToLogMailConverter());
+        registry.addConverter(getStringToLogMailConverter());
         registry.addConverter(getNavBarAppToStringConverter());
         registry.addConverter(getIdToNavBarAppConverter());
         registry.addConverter(getStringToNavBarAppConverter());
@@ -393,6 +446,9 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         registry.addConverter(getPrefsToStringConverter());
         registry.addConverter(getIdToPrefsConverter());
         registry.addConverter(getStringToPrefsConverter());
+        registry.addConverter(getPrinterToStringConverter());
+        registry.addConverter(getIdToPrinterConverter());
+        registry.addConverter(getStringToPrinterConverter());
         registry.addConverter(getTemplateCardToStringConverter());
         registry.addConverter(getIdToTemplateCardConverter());
         registry.addConverter(getStringToTemplateCardConverter());

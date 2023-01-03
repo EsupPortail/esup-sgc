@@ -54,5 +54,10 @@
         <field:checkbox field="defaut" id="c_org_esupportail_sgc_domain_CardActionMessage_defaut" z="D/6nqYn+OJvVu7AYlwt/NZqnE3o="/>
         <field:input field="etatInitial" id="c_org_esupportail_sgc_domain_CardActionMessage_etatInitial" render="false" z="user-managed"/>
         <field:select field="userTypes" id="c_org_esupportail_sgc_domain_CardActionMessage_userTypes" items="${userTypes}" multiple="true" path="userTypes" z="user-managed"/>
+        <div class="dateDelay4PreventCaduc">
+            <p class="well">Le champ ci dessous permet de faire envoyer un mail n jours avant la date de fin d'un compte ayant une carte activée qui deviendra caduque</p>
+            <i>En dehors de cet usage il ne sert pas</i>
+            <field:input field="dateDelay4PreventCaduc" id="c_org_esupportail_sgc_domain_CardActionMessage_dateDelay4PreventCaduc" render="true" z="user-managed"/>
+        </div>
     </form:update>
 </div>

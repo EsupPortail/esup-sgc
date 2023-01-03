@@ -47,7 +47,7 @@
         		c'est à dire le message correspondant à la dernière transition effectuée par la carte)</li>
                 <li>Auto permet de préciser un message/mail à envoyer de manière automatique : si auto est à false, le message ne sera envoyé que si c'est le gestionnaire qui opère une transition sur la carte et que 
         		celui-ci sélectionne et valide l'envoi du message (qu'il peut modifier au moment de la validation de la transition).</li>
-                <li>mailTo permet d'en voyer le mail à cette adresse ainsi donnée plutôt qu'à l'adresse mail de l'utilisateur détenteur de la carte ; celà pêut ainsi permettre d'informer par mail un gestionnaire d'une demande de carte.</li>
+                <li>mailTo permet d'envoyer le mail à cette adresse ainsi donnée plutôt qu'à l'adresse mail de l'utilisateur détenteur de la carte ; celà peut ainsi permettre d'informer par mail un gestionnaire d'une demande de carte.</li>
                 <li>Defaut permet de préselectionner ce message/mail pour le gestionnaire parmi tous les autres messages qui peuvent correspondre à la transition alors effectuée.</li>
             </ul>
         </p>
@@ -67,8 +67,19 @@
             </ul>
         </p>
         <p>
+            <h5>Nombre de jours avant la date de fin utilisateur</h5>
+            <ul>
+                <li>Cette option a été développée dans le but de prévenir un utilisateur ayant une carte activée que celle-ci deviendra caduque dans un nombre de jours donné.</li>
+                <li>Cette option n'est prise en compte et ne fonctionne que sur un message avec un état initial sélectionné à 'ACTIVÉ' et un état final sélectionné à 'CADUC'</li>
+                <li>ESUP-SGC envoie ces mails via la tâche sendMails2PreventCaduc configurée dans applicationTasksContext.xml ; il faut que cette tâche soit paramétrée pour être exécutée au moins une fois
+                    toutes les 48H00 (== entre 24H00 avant et après la date de notification calculée par la formule <i>'date de fin de l'utilisateur' - 'nombre de jours avant la date de fin utilisateur')</i></li>
+                <spring:url value="/admin/logmails" var="logmails_url"/>
+                <li>grâce aux <a href="${logmails_url}">mails logués en base</a>, esup-sgc n'envoie qu'une seule fois la notification même si la tâche est appelée très régulièrement.</li>
+            </ul>
+        </p>
+        <p>
             <h5>MAIL_LISTE_PRINCIPALE</h5>
-        	Le mail ainsi calculé, en plus d'être envoyé à l'utilisateur (ou à mailTo), est envoyé (en copie) à la liste donnée dans la configuration MAIL_LISTE_PRINCIPALE.
+            Les mails ainsi calculés, en plus d'être envoyés à l'utilisateur (ou à mailTo), sont envoyés (en copie) à la liste donnée dans la configuration MAIL_LISTE_PRINCIPALE.
         </p>
     </div>
     <page:list id="pl_org_esupportail_sgc_domain_CardActionMessage" items="${cardactionmessages}" z="user-managed">

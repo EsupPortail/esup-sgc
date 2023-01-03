@@ -1,5 +1,4 @@
 package org.esupportail.sgc.web.wsrest;
-import javax.annotation.Resource;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -15,9 +14,6 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.hibernate.Hibernate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -26,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 @Transactional

@@ -14,6 +14,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.CardActionMessage;
+import org.esupportail.sgc.domain.LogMail;
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
@@ -201,12 +203,20 @@ public class CardService {
 		
 	}
 
-	public void sendMailCard(String mailFrom, String mailTo, String sendCC, String subject, String mailMessage){
+	public void sendMailCard(User user, CardActionMessage cardActionMessage, String mailFrom, String mailTo, String sendCC, String subject, String mailMessage){
 		if(!sendCC.isEmpty()){
-				emailService.sendMessageCc(mailFrom, mailTo, sendCC, subject, mailMessage);
-		}else{
+			emailService.sendMessageCc(mailFrom, mailTo, sendCC, subject, mailMessage);
+		} else {
 			emailService.sendMessage(mailFrom, mailTo, subject, mailMessage);
 		}
+		LogMail logMail = new LogMail();
+		logMail.setCardActionMessage(cardActionMessage);
+		logMail.setEppn(user.getEppn());
+		logMail.setMailTo(mailTo);
+		logMail.setMessage(mailMessage);
+		logMail.setSubject(subject);
+		logMail.setLogDate(new Date());
+		logMail.persist();
 	}
 	
 	public String getQrCodeSvg(String value) throws SVGGraphics2DIOException, WriterException{

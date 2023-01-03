@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Log;
+import org.esupportail.sgc.domain.LogMail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -105,9 +106,14 @@ public class LogService {
 		for(Log log: logs2purge) {
 			log.remove();
 		}
-		
 		log.info(logs2purge.size() + " logs en base vieux de " + daysNb  + " jours purgés");
-		
+
+		List<LogMail> logmails2purge = LogMail.findLogMailsByLogDateLessThan(datePurge).getResultList();
+		for(LogMail log: logmails2purge) {
+			log.remove();
+		}
+		log.info(logmails2purge.size() + " logs mails en base vieux de " + daysNb  + " jours purgés");
+
 	}
 
 }

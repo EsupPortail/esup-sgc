@@ -410,7 +410,7 @@ public class UserCardController {
  			String eppn = SecurityContextHolder.getContext().getAuthentication().getName();
  			User user = User.findUser(eppn);
  			try {
- 				cardService.sendMailCard(appliConfigService.getNoReplyMsg(),user.getEmail() ,appliConfigService.getListePpale(), 
+ 				cardService.sendMailCard(user, null, appliConfigService.getNoReplyMsg(),user.getEmail() ,appliConfigService.getListePpale(),
  						appliConfigService.getSubjectAutoCard().concat(" -- ".concat(user.getEppn())), appliConfigService.getPayboxMessage());
  			} catch (Exception e) {
  					log.error("Erreur lors de l'envoi du mail pour la carte de :" + user.getEppn(), e);

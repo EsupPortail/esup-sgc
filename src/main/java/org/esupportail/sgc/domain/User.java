@@ -759,5 +759,14 @@ public class User {
 		return sql;
 	}
 
+
+	public static TypedQuery<User> findAllUsersWithDueDateBeforeAndDueDateAfterNow(Date date) {
+		EntityManager em = User.entityManager();
+		TypedQuery<User> q = em.createQuery("SELECT o FROM User o WHERE dueDate < :date and dueDate > now()", User.class);
+		q.setParameter("date", date);
+		return q;
+	}
+
+
 }
 

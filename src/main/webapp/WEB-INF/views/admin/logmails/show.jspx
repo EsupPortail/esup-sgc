@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show create="false" delete="false" id="ps_org_esupportail_sgc_domain_LogMail" object="${logmail}" path="/admin/logmails" update="false" z="RW/6sXPiXfAZ0ORf2GO1I4IuUhY=">
+        <field:display field="cardActionMessage" id="s_org_esupportail_sgc_domain_LogMail_cardActionMessage" object="${logmail}" z="IrWKTWWVJCura4Xo3NBSPCLV0HM="/>
+        <field:display date="true" dateTimePattern="${logMail_logdate_date_format}" field="logDate" id="s_org_esupportail_sgc_domain_LogMail_logDate" object="${logmail}" z="mPYNzvmZbr4/IWbET12klFvBTfM="/>
+        <field:display field="eppn" id="s_org_esupportail_sgc_domain_LogMail_eppn" object="${logmail}" z="6XjoDN04m5srnR3hrlCyX9xlZW4="/>
+        <field:display field="subject" id="s_org_esupportail_sgc_domain_LogMail_subject" object="${logmail}" z="wfPQw17lmKiSQVRRPv2+pQqwVZk="/>
+        <field:display field="mailTo" id="s_org_esupportail_sgc_domain_LogMail_mailTo" object="${logmail}" z="yI+xiykv9ToTFNcCqD3QXl0Wxbc="/>
+        <field:display field="message" id="s_org_esupportail_sgc_domain_LogMail_message" object="${logmail}" z="B9qhb/Df7bGQBEnVYEO8HrIX2rI="/>
+    </page:show>
+</div>

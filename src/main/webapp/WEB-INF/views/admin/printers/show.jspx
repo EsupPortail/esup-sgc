@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show create="false" id="ps_org_esupportail_sgc_domain_Printer" object="${printer}" path="/admin/printers" z="05Hr1YnOURBpTsrzUvQ/jIiDVi4=">
+        <field:display field="label" id="s_org_esupportail_sgc_domain_Printer_label" object="${printer}" z="user-managed"/>
+        <field:display field="eppn" id="s_org_esupportail_sgc_domain_Printer_eppn" object="${printer}" z="fXT08aksMfcZE9NzxrCvybyNg1g="/>
+        <field:display field="ip" id="s_org_esupportail_sgc_domain_Printer_ip" object="${printer}" z="hdURVB97ay6FaUw6TPQg1rKK5HA="/>
+        <field:display field="maintenanceInfo" id="s_org_esupportail_sgc_domain_Printer_maintenanceInfo" object="${printer}" z="0GopdEKqkFJjhS1tXfYvhgNCO+0="/>
+        <field:display field="printerUsers" id="s_org_esupportail_sgc_domain_Printer_printerUsers" object="${printer}" z="qsuGmfKEKaLPzi8sgOe8NE+RZag="/>
+        <field:display field="printerGroups" id="s_org_esupportail_sgc_domain_Printer_printerGroups" object="${printer}" z="vtFR4EGX5Tv6ePBlU5dUJ1ku3+M="/>
+    </page:show>
+</div>

@@ -9,16 +9,17 @@ import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.EncodeAndPringLongPollService;
 import org.esupportail.sgc.services.EsupNfcTagService;
+import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
 import org.esupportail.sgc.services.IpService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.services.PrinterService;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
 import org.esupportail.sgc.services.esc.DamService;
 import org.esupportail.sgc.services.esc.EscDeuInfoMetaService;
 import org.esupportail.sgc.services.ldap.GroupService;
-import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
 import org.esupportail.sgc.web.manager.ClientJWSController;
 import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
@@ -116,6 +117,9 @@ public class WsRestEsupNfcController {
 
 	@Resource
 	EsupSgcBmpAsBase64Service esupSgcBmpAsBase64Service;
+
+	@Resource
+	PrinterService printerService;
 
 	/**
 	 * Example :
@@ -679,10 +683,12 @@ public class WsRestEsupNfcController {
 
 	/*
 		Long poll to notify client is ok to encode and print
+		In the same time, we get maintenanceInfo and record the printer exists
+		curl -H 'Content-Type: text/plain' -d 'Warning: 1000 rest -63\r\nAlert:   1200 rest 137' 'http://localhost:8080/wsrest/nfc/encodePrintHeartbeat?authToken=12345'
 	 */
-	@RequestMapping(value = "/encodePrintHeartbeat", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+	@RequestMapping(value = "/encodePrintHeartbeat", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
-	public DeferredResult<String> encodePrintHeartbeat(@RequestParam String authToken) {
+	public DeferredResult<String> encodePrintHeartbeat(@RequestParam String authToken, @RequestBody(required = false) String maintenanceInfo, HttpServletRequest request) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
@@ -691,6 +697,7 @@ public class WsRestEsupNfcController {
 			emptyResult.setResult("");
 			return emptyResult;
 		}
+		printerService.setMaintenanInfo(eppnInit, maintenanceInfo, request.getRemoteAddr());
 		return encodeAndPringLongPollService.encodePrintHeartbeat(eppnInit);
 	}
 	
@@ -824,7 +831,7 @@ public class WsRestEsupNfcController {
 	
 	/**
 	 * Exemple :
-	 * curl http://localhost:8080/wsrest/nfc/generateAuthToken?eppnInit=bonamvin@univ-rouen.fr
+	 * curl http://localhost:8080/wsrest/nfc/generateAuthToken?eppnInit=toto@univ-ville.fr
 	 */
 	@RequestMapping(value = "/generateAuthToken", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody

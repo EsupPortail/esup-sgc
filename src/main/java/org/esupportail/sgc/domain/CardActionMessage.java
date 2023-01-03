@@ -51,6 +51,8 @@ public class CardActionMessage {
     @Column
     @ElementCollection(targetClass=String.class)
     private Set<String> userTypes = new HashSet<String>();
+
+    Integer dateDelay4PreventCaduc = null;
     
     public static List<CardActionMessage> findAllCardActionMessagesAutoWithMailToEmptyOrNull() {
         return entityManager().createQuery("SELECT o FROM CardActionMessage o WHERE auto = true and (o.mailTo IS NULL or o.mailTo = '')", CardActionMessage.class).getResultList();
@@ -96,5 +98,8 @@ public class CardActionMessage {
         query.select(c);
         return em.createQuery(query).getResultList();
     }
-    
+
+    public static List<CardActionMessage> findCardActionMessagesWithDateDelay4PreventCaduc() {
+        return entityManager().createQuery("SELECT o FROM CardActionMessage o WHERE dateDelay4PreventCaduc > 0 AND etatInitial='ENABLED' AND etatFinal='CADUC'", CardActionMessage.class).getResultList();
+    }
 }

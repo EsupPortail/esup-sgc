@@ -44,12 +44,12 @@
 			<c:choose>
 				<c:when test="${date}">
 					<spring:escapeBody>
-						<fmt:formatDate value="${object[field]}" pattern="${fn:escapeXml(dateTimePattern)}" />
+						<fmt:formatDate value="${object[field]}" pattern="${dateTimePattern}"  />
 					</spring:escapeBody>
 				</c:when>
 				<c:when test="${calendar}">
 					<spring:escapeBody>
-						<fmt:formatDate value="${object[field].time}" pattern="${fn:escapeXml(dateTimePattern)}" />
+						<fmt:formatDate value="${object[field].time}" pattern="${dateTimePattern}" />
 					</spring:escapeBody>
 				</c:when>
 				<c:when test="${pre}">

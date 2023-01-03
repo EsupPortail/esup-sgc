@@ -29,6 +29,7 @@
                 <menu:item id="fi_log_typeequals" messageCode="global_menu_find" url="/admin/logs?find=ByTypeEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="x7coza/+jO4/7iKr/RkZjSYiRYw="/>
             </menu:category>
             <menu:item activeMenu="${active=='logs'}" id="i_log_list" label="Logs" url="/admin/logs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+            <menu:item activeMenu="${active=='logmails'}" id="i_logmail_list" label="Logs Mails" url="/admin/logmails?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='paybox'}" id="i_payboxtransactionlog_list" label="Transactions Paybox" url="/admin/payboxtransactions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:category id="c_payboxtransactionlog" render="false" z="user-managed"/>
             <menu:item activeMenu="${active=='import'}" id="i_import" label="Import" url="/admin/import"/>
@@ -41,6 +42,7 @@
             <menu:item activeMenu="${active=='crouspatchids'}" id="i_crouspatchidentifier_list" label="Crous patch identifiants" url="/admin/crouspatchids?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='crousError'}" id="i_crouserrorlog_list" label="Erreurs CROUS" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='purge'}" id="i_purge_list" label="Purge" url="/admin/purge" z="user-managed"/>
+            <menu:item activeMenu="${active=='printers'}" id="i_printer_list" label="Imprimantes" url="/admin/printers" z="user-managed"/>
         </sec:authorize>
         <menu:category id="c_cardactionmessage" render="false" z="user-managed">
             <menu:item id="i_cardactionmessage_new" messageCode="global_menu_new" url="/admin/actionmessages?form" z="pZnZ6jYKfu0DMR+I0O3eDphyeOw="/>
@@ -68,6 +70,12 @@
         <menu:category id="c_crousruleconfig" render="false" z="user-managed">
             <menu:item id="i_crousruleconfig_new" messageCode="global_menu_new" url="/admin/crousruleconfigs?form" z="u+4AVr+lMzPbEr6FT2doBWTBAFQ="/>
             <menu:item id="i_crousruleconfig_list" messageCode="global_menu_list" url="/admin/crousruleconfigs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="+0ee+TI5a0Hkyz0ILZDym7NrDK4="/>
+        </menu:category>
+        <menu:category id="c_logmail" render="false" z="user-managed">
+            <menu:item id="fi_logmail_logdatelessthan" messageCode="global_menu_find" url="/admin/logmails?find=ByLogDateLessThan&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="wEDL2tRaObQ7mo1eFrHkZKmoKk8="/>
+        </menu:category>
+        <menu:category id="c_printer" render="false" z="user-managed">
+            <menu:item id="fi_printer_eppn" messageCode="global_menu_find" url="/admin/printers?find=ByEppn&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="9U+PIAVpFeI4tWbol4n9kfQsL0o="/>
         </menu:category>
     </menu:menu>
 </div>

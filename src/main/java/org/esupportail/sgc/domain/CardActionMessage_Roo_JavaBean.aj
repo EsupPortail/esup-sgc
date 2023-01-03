@@ -65,4 +65,12 @@ privileged aspect CardActionMessage_Roo_JavaBean {
         this.userTypes = userTypes;
     }
     
+    public Integer CardActionMessage.getDateDelay4PreventCaduc() {
+        return this.dateDelay4PreventCaduc;
+    }
+    
+    public void CardActionMessage.setDateDelay4PreventCaduc(Integer dateDelay4PreventCaduc) {
+        this.dateDelay4PreventCaduc = dateDelay4PreventCaduc;
+    }
+    
 }

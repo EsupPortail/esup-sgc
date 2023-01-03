@@ -21,6 +21,7 @@
     	<task:scheduled ref="ldapGroup2UserRoleService" method="syncAllGroupsOnDb" fixed-delay="300000" initial-delay="10000"/>
 		<!-- <task:scheduled ref="resynchronisationService" method="synchronizeAllUsersInfos" cron="01 16 * * * *"/> -->
 		<!-- <task:scheduled ref="esistCrousService" method="updateCrousRules" cron="01 15 * * * *"/> -->
+	    <!-- <task:scheduled ref="caducMailService" method="sendMails2PreventCaduc" cron="01 10 * * * *"/>  -->
 	</task:scheduled-tasks>
 
 	<task:annotation-driven executor="exceptionHandlingTaskExecutor" mode="aspectj"/>

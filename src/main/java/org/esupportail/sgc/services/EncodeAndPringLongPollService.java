@@ -52,20 +52,22 @@ public class EncodeAndPringLongPollService {
 	}
 
 	@Async
-	public void handleCard(String eppnInit, String qrcode) {
-		log.debug("handleCard : " + qrcode + " for " + eppnInit);
+	public void handleCard(String printerEppn, String qrcode) {
+		log.debug("handleCard : " + qrcode + " for " + printerEppn);
 		try {
+			// methode async, on attend 1 seconde pour que l'état de la carte soit bien en TO_ENCODE_PRINT
+			// lorsque esup-sgc-client tentera d'éditer la carte
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			log.debug("Exception when sleeping ...");
 		}
-		if(this.suspendedEncodPrintCardPollRequests.containsKey(eppnInit)) {
-			this.suspendedEncodPrintCardPollRequests.get(eppnInit).setResult(qrcode);
+		if(this.suspendedEncodPrintCardPollRequests.containsKey(printerEppn)) {
+			this.suspendedEncodPrintCardPollRequests.get(printerEppn).setResult(qrcode);
 		}
 	}
 
-	public boolean canHandleCard(String eppnInit) {
-		return this.managersPrintEncodeEppns.contains(eppnInit);
+	public Set<String> getManagersPrintEncodeEppns() {
+		return managersPrintEncodeEppns;
 	}
 
 	public DeferredResult<String> encodePrintHeartbeat(String eppnInit) {

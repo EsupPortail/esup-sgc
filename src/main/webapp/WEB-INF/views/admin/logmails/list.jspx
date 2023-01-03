@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_org_esupportail_sgc_domain_LogMail" items="${logmails}" z="yC4r7sUwHRIFAnHFZxuoY/1e3to=">
+        <table:table data="${logmails}" delete="false" id="l_org_esupportail_sgc_domain_LogMail" path="/admin/logmails" update="false" z="B9KMzWSNcqyiM0oCXdoHUCp5jSc=">
+            <table:column id="c_org_esupportail_sgc_domain_LogMail_cardActionMessage" property="cardActionMessage" z="eoqTFY2VC3TovcMJBvI6gjgfpiY="/>
+            <table:column date="true" dateTimePattern="${logMail_logdate_date_format}" id="c_org_esupportail_sgc_domain_LogMail_logDate" property="logDate" z="1uHvPaGDAKc0SWhz0STNHmKzMwA="/>
+            <table:column id="c_org_esupportail_sgc_domain_LogMail_eppn" property="eppn" z="cEI+FVJC5a/c0CM1kc0oQ1jCthE="/>
+            <table:column id="c_org_esupportail_sgc_domain_LogMail_subject" property="subject" z="HG0k6qxthu+UVxYa0Zso0Y60wYM="/>
+            <table:column id="c_org_esupportail_sgc_domain_LogMail_mailTo" property="mailTo" z="0Fmgg024Nu0zgN8dgrRYIyaDmdI="/>
+        </table:table>
+    </page:list>
+</div>

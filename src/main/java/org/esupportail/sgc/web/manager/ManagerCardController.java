@@ -7,6 +7,7 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CardActionMessage;
+import org.esupportail.sgc.domain.Printer;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcNotFoundException;
 import org.esupportail.sgc.security.PermissionService;
@@ -19,6 +20,7 @@ import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.PreferencesService;
+import org.esupportail.sgc.services.PrinterService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -46,6 +48,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
@@ -70,6 +74,7 @@ import java.util.TreeMap;
 @RequestMapping("/manager")
 @Controller	
 @RooWebScaffold(path = "manager", formBackingObject = Card.class)
+@SessionAttributes("printerEppn")
 public class ManagerCardController {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -122,6 +127,9 @@ public class ManagerCardController {
 
 	@Resource
 	CrousService crousService;
+
+	@Resource
+	PrinterService printerService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -175,6 +183,27 @@ public class ManagerCardController {
 		return mapPrefs;
 	}
 
+	@ModelAttribute("printers")
+	public List<Printer> getPrinters() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		return printerService.getPrinters(eppn);
+	}
+
+	@ModelAttribute("printerEppn")
+	public String getPrinterEppn(@SessionAttribute(required = false) String printerEppn) {
+		if(StringUtils.isEmpty(printerEppn) && getPrinters().size()>0) {
+			printerEppn = getPrinters().get(0).getEppn();
+		}
+		return printerEppn;
+	}
+
+ 	@RequestMapping(value="/setPrinterEppn", params="printerEppn", produces = "text/html")
+	public String setPrinterEppn(@RequestParam String printerEppn, Model uiModel, RedirectAttributes redirectAttrs) {
+		uiModel.addAttribute("printerEppn", printerEppn);
+		return "redirect:/manager";
+	}
+
     @RequestMapping(params="eppn", produces = "text/html")
     @Transactional
     public String show(@RequestParam String eppn, Model uiModel) {
@@ -191,7 +220,7 @@ public class ManagerCardController {
     @RequestMapping(value = "/{id}", produces = "text/html")
     @Transactional
     @PreAuthorize("hasPermission(#id, 'consult')")
-    public String show(@PathVariable("id") Long id, Model uiModel) {
+    public String show(@PathVariable("id") Long id, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
         addDateTimeFormatPatterns(uiModel);
@@ -202,7 +231,7 @@ public class ManagerCardController {
         User user = User.findUser(card.getEppn());
         if(!user.getCards().isEmpty()){
         	for(Card cardItem : user.getCards()){
-        		cardEtatService.updateEtatsAvailable4Card(cardItem);
+        		cardEtatService.updateEtatsAvailable4Card(cardItem, printerEppn);
         		cardActionMessageService.updateCardActionMessages(cardItem);
         		cardItem.setIsPhotoEditable(cardEtatService.isPhotoEditable(cardItem));
         	}
@@ -299,7 +328,8 @@ public class ManagerCardController {
     @PreAuthorize("hasPermission(#cardId, 'manage')")
 	@RequestMapping(value="/action/{cardId}", method=RequestMethod.POST)
 	@Transactional
-	public String actionEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, @RequestParam(value="motif", required=false) MotifDisable motifDisable, Model uiModel) {
+	public String actionEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment,
+							 @RequestParam(value="motif", required=false) MotifDisable motifDisable, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
 		Card card = Card.findCard(cardId);
 		card.merge();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -321,7 +351,7 @@ public class ManagerCardController {
 					return "redirect:/manager/" + card.getId();
 				}
 			} else {
-				cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false);
+				cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false, printerEppn);
 				if(Etat.DISABLED.equals(etatFinal) && motifDisable != null) {
 					card.setMotifDisable(motifDisable);
 				}
@@ -333,7 +363,7 @@ public class ManagerCardController {
     @PreAuthorize("hasPermission(#cardId, 'manage')")
 	@RequestMapping(value="/actionAjax", method=RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<String>  actionAjaxEtat(@RequestParam Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, Model uiModel) {
+	public ResponseEntity<String>  actionAjaxEtat(@RequestParam Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		Card card = Card.findCard(cardId);
@@ -343,7 +373,7 @@ public class ManagerCardController {
 		card.merge();
 		uiModel.asMap().clear();
 		String etatInitial = card.getEtat().name();
-		cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false);
+		cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false, printerEppn);
 		logService.log(card.getId(), ACTION.RETOUCHE_ACTION_IND, RETCODE.SUCCESS, "", eppn,  etatInitial.concat("->").concat(etatFinal.name()));
 		return new ResponseEntity<String>(response, headers, HttpStatus.OK);
 	}
@@ -482,8 +512,8 @@ public class ManagerCardController {
     // No @Transactional here so that exception catching on ManagerController.multiUpdate works well
     public String multiUpdate(@RequestParam(value="comment", defaultValue= "") String comment, 
     		@RequestParam List<Long> listeIds, @RequestParam Etat etatFinal, @RequestParam(value="forcedEtatFinal", required=false) Etat forcedEtatFinal, 
-    		@RequestParam(value="updateEtatAdmin", required=false) String updateEtatAdmin, @RequestHeader("User-Agent") String userAgent, 
-    		final RedirectAttributes redirectAttributes, Model uiModel, HttpServletRequest request) {
+    		@RequestParam(value="updateEtatAdmin", required=false) String updateEtatAdmin, @RequestHeader("User-Agent") String userAgent, @SessionAttribute(required = false) String printerEppn,
+							  final RedirectAttributes redirectAttributes, Model uiModel, HttpServletRequest request) {
 
     	List<Long> listeIdsErrors = new ArrayList<Long>();
     	List<Long> listeIdsOk = new ArrayList<Long>();
@@ -511,7 +541,7 @@ public class ManagerCardController {
     					if(Etat.RENEWED.equals(etatFinal)) {
     						cardService.requestRenewalCard(card);
     					} else {
-	    					if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
+	    					if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false, printerEppn)) {
 	    						log.info("Changement d'etat à " + etatFinal + " pour la carte de " + card.getEppn());
 	    						cards.add(card);
 	    					}
@@ -552,11 +582,11 @@ public class ManagerCardController {
     @PreAuthorize("hasPermission(#cardIds, 'manage')")
 	@RequestMapping(value="/getMultiUpdateForm")
 	@Transactional
-	public String getMultiUpdateForm(@RequestParam List<Long> cardIds, Model uiModel) {
+	public String getMultiUpdateForm(@RequestParam List<Long> cardIds, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
 		if(cardIds.isEmpty()) {
 			uiModel.addAttribute("cardIds", cardIds);
 		} else {
-			List<Etat> etatsAvailable = cardEtatService.getEtatsAvailable4Cards(cardIds);
+			List<Etat> etatsAvailable = cardEtatService.getEtatsAvailable4Cards(cardIds, printerEppn);
 			Map<Etat, List<CardActionMessage>> actionMessages  = cardActionMessageService.getCardActionMessagesForCards(cardIds);
 			uiModel.addAttribute("actionMessages", actionMessages);
 			uiModel.addAttribute("allEtats", Arrays.asList(Etat.values()));

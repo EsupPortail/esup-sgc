@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services;
 
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
@@ -92,6 +93,9 @@ public class CardEtatService {
 	CardIdsService cardIdsService;
 
 	@Resource
+	PrinterService printerService;
+
+	@Resource
 	EncodeAndPringLongPollService encodeAndPringLongPollService;
 	
 	@Transactional
@@ -110,9 +114,14 @@ public class CardEtatService {
 		}	
 		this.setCardEtat(Card.findCard(cardId), etat, comment, mailMessage, actionFromAnAdmin, force);
 	}
-	
+
 	@Transactional
 	public boolean setCardEtat(Card card, Etat etat, String comment, String mailMessage, boolean actionFromAnAdmin, boolean force) {
+		return setCardEtat(card, etat, comment, mailMessage, actionFromAnAdmin, force, null);
+	}
+	
+	@Transactional
+	public boolean setCardEtat(Card card, Etat etat, String comment, String mailMessage, boolean actionFromAnAdmin, boolean force, String printerEppn) {
 		
 		Etat etatInitial = card.getEtat();
 		
@@ -151,13 +160,16 @@ public class CardEtatService {
 		}
 
 		if(Etat.TO_ENCODE_PRINT.equals(etat)) {
-			encodeAndPringLongPollService.handleCard(eppn, card.getQrcode());
+			encodeAndPringLongPollService.handleCard(printerEppn, card.getQrcode());
 		}
 			
 		logService.log(card.getId(), ACTION.ETAT, RETCODE.SUCCESS, card.getEtat() + " -> " + etat, card.getEppn(), null);
 		
 		card.setEtat(etat);
 		card.setEtatEppn(eppn);
+		if(Etat.TO_ENCODE_PRINT.equals(etat) && !StringUtils.isEmpty(printerEppn)) {
+			card.setEtatEppn(printerEppn);
+		}
 		card.setDateEtat(new Date());
 		card.setCommentaire(comment);
 		
@@ -197,8 +209,11 @@ public class CardEtatService {
 		
 		return true;
 	}
-	
+
 	public void updateEtatsAvailable4Card(Card card) {
+		updateEtatsAvailable4Card(card, null);
+	}
+	public void updateEtatsAvailable4Card(Card card, String printerEppn) {
 		String eppn = "system";
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if(auth != null) {
@@ -206,12 +221,12 @@ public class CardEtatService {
 		}
 		card.setEtatsAvailable(workflow.get(card.getEtat()));
 		if(Etat.IN_PRINT.equals(card.getEtat()) || Etat.IN_ENCODE.equals(card.getEtat())  || Etat.ENCODED_IN_PRINT.equals(card.getEtat())) {
-			if(!eppn.equals(card.getEtatEppn())) {
+			if(!eppn.equals(card.getEtatEppn()) && !card.getEtatEppn().equals(printerEppn)) {
 				card.setEtatsAvailable(new ArrayList<Etat>());
 			}
 		}
 		if(Etat.REQUEST_CHECKED.equals(card.getEtat())) {
-			if(!encodeAndPringLongPollService.canHandleCard(eppn)) {
+			if(!printerService.canHandleCard(printerEppn)) {
 				card.removeEtatAvailable( Etat.TO_ENCODE_PRINT);
 			}
 		}
@@ -224,12 +239,12 @@ public class CardEtatService {
 		
 	}
 	
-	public List<Etat> getEtatsAvailable4Cards(List<Long> cardIds) {
+	public List<Etat> getEtatsAvailable4Cards(List<Long> cardIds, String printerEppn) {
 		List<Card> cards = Card.findAllCards(cardIds);
-		updateEtatsAvailable4Card(cards.get(0));
+		updateEtatsAvailable4Card(cards.get(0), printerEppn);
 		Set<Etat> etatsAvailable = new HashSet<Etat>(cards.get(0).getEtatsAvailable());
 		for(Card card : cards) {
-			updateEtatsAvailable4Card(card);
+			updateEtatsAvailable4Card(card, printerEppn);
 			etatsAvailable.retainAll(new HashSet<Etat>(card.getEtatsAvailable()));
 			if(etatsAvailable.isEmpty()) {
 				continue;
@@ -296,18 +311,20 @@ public class CardEtatService {
 	
 	public void sendMailInfo(Etat etatInitial, Etat etatFinal, User user, String mailMessage){
 		if(user.getEmail() != null && !user.getEmail().isEmpty()) {
+			CardActionMessage cardActionMessage = null;
 			if(mailMessage == null || mailMessage.isEmpty()) {
 				List<CardActionMessage> messages = CardActionMessage.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), true);
 				if(messages.size()>0) {
 					if(messages.size()>1) {
 						log.warn(String.format("Multiples messages found for CardActionMessage with auto=true,  etatInitial=%s, etatFinal=%s and user.getUserType()=%s", etatInitial, etatFinal, user.getUserType()));
 					}
-					mailMessage = messages.get(0).getMessage();
+					cardActionMessage = messages.get(0);
+					mailMessage = cardActionMessage.getMessage();
 				}
 			}
 			if(mailMessage != null && !mailMessage.trim().isEmpty()) {
 				try {
-					cardService.sendMailCard(appliConfigService.getNoReplyMsg(), user.getEmail(), appliConfigService.getListePpale(), 
+					cardService.sendMailCard(user, cardActionMessage, appliConfigService.getNoReplyMsg(), user.getEmail(), appliConfigService.getListePpale(),
 					appliConfigService.getSubjectAutoCard().concat(" -- ".concat(user.getEppn())), mailMessage);
 				} catch (Exception e) {
 					log.error("Erreur lors de l'envoi du mail pour la carte de :" + user.getEppn(), e);
@@ -317,7 +334,7 @@ public class CardEtatService {
 		
 		for(CardActionMessage mailToCardActionMessage : CardActionMessage.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), false)) {
 			try {
-				cardService.sendMailCard(appliConfigService.getNoReplyMsg(), mailToCardActionMessage.getMailTo(), appliConfigService.getListePpale(), 
+				cardService.sendMailCard(user, mailToCardActionMessage, appliConfigService.getNoReplyMsg(), mailToCardActionMessage.getMailTo(), appliConfigService.getListePpale(),
 				appliConfigService.getSubjectAutoCard().concat(" -- ".concat(user.getEppn())), mailToCardActionMessage.getMessage());
 			} catch (Exception e) {
 				log.error(String.format("Erreur lors de l'envoi du mail à pour la carte de %s ", mailToCardActionMessage.getMailTo(), user.getEppn()), e);

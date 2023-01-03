@@ -10,5 +10,6 @@
         <field:display field="defaut" id="s_org_esupportail_sgc_domain_CardActionMessage_defaut" object="${cardactionmessage}" z="iYqRpn0Lgo9ni4hfuawsA0WcMEA="/>
         <field:display field="userTypes" id="s_org_esupportail_sgc_domain_CardActionMessage_userTypes" object="${cardactionmessage}" z="75T1KkEsrRf78Wl9zS4jnVyVwQk="/>
         <field:display field="mailTo" id="s_org_esupportail_sgc_domain_CardActionMessage_mailTo" object="${cardactionmessage}" z="j/iIS9d+alm0JIWZ2oj9oUMSUS4="/>
+        <field:display field="dateDelay4PreventCaduc" id="c_org_esupportail_sgc_domain_CardActionMessage_dateDelay4PreventCaduc" object="${cardactionmessage}" render="true" z="user-managed"/>
     </page:show>
 </div>

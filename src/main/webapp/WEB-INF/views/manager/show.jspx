@@ -200,6 +200,7 @@
                         </div>
                     </div>
                     <div class="col-lg-8">
+                        <jsp:include page="includes/printer.jspx"/>
                         <div class="well" id="allCards">
                             <h3>Cartes</h3>
                             <c:if test="${user.cards eq null}">
