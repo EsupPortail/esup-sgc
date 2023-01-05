@@ -338,7 +338,7 @@ public class UserCardController {
 			user.setEppn(eppn);
 		}
 		
-		synchronized (eppn.intern()) {
+		synchronized ((this.getClass().getName() + eppn).intern()) {
 			
 			// check rights  sur String est global - à éviter - TODO ?
 			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn) || userService.isEsupManager(user)) {

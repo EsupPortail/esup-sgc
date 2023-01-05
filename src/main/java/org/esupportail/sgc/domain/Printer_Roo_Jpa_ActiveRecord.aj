@@ -14,7 +14,7 @@ privileged aspect Printer_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager Printer.entityManager;
     
-    public static final List<String> Printer.fieldNames4OrderClauseFilter = java.util.Arrays.asList("label", "eppn", "ip", "maintenanceInfo", "printerUsers", "printerGroups");
+    public static final List<String> Printer.fieldNames4OrderClauseFilter = java.util.Arrays.asList("label", "eppn", "ip", "maintenanceInfo", "printerUsers", "printerGroups", "connectionDate");
     
     public static final EntityManager Printer.entityManager() {
         EntityManager em = new Printer().entityManager;

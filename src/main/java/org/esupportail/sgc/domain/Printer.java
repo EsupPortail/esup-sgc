@@ -1,6 +1,7 @@
 package org.esupportail.sgc.domain;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -8,10 +9,13 @@ import org.springframework.roo.addon.tostring.RooToString;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.EntityManager;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +40,10 @@ public class Printer {
 
     @ElementCollection
     List<String> printerGroups;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd/MM/yyyy - HH:mm")
+    Date connectionDate;
 
     public String getLabel() {
         return StringUtils.isEmpty(this.label) ? this.eppn : this.label;

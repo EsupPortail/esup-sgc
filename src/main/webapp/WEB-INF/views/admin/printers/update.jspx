@@ -9,5 +9,6 @@
         <field:input cssClass="form-control" field="maintenanceInfo" id="c_org_esupportail_sgc_domain_Printer_maintenanceInfo" readonly="true" z="user-managed"/>
         <field:textarea field="printerUsersAsString" id="c_org_esupportail_sgc_domain_Printer_printerUsers" z="user-managed"/>
         <field:textarea field="printerGroupsAsString" id="c_org_esupportail_sgc_domain_Printer_printerGroups" z="user-managed"/>
+        <field:datetime dateTimePattern="${printer_connectiondate_date_format}" field="connectionDate" id="c_org_esupportail_sgc_domain_Printer_connectionDate" z="MLfGWBVHTztenV553ZxWe8qJN6A="/>
     </form:update>
 </div>

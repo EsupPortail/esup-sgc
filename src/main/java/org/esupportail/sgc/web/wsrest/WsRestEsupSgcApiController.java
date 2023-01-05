@@ -117,7 +117,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 
 		String eppn = card.getEppn();
 		
-		synchronized (eppn.intern()) {
+		synchronized ((this.getClass().getName() + eppn).intern()) {
 			
 			User user = User.findUser(eppn);
 			if(user == null) {

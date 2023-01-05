@@ -7,8 +7,11 @@ import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 @RequestMapping("/admin/printers")
 @Controller
@@ -34,4 +37,12 @@ public class PrinterController {
 		return appliConfigService.pageFooter();
 	}
 
+	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+		String enc = httpServletRequest.getCharacterEncoding();
+		if (enc == null) {
+			enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
+		}
+		pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
+		return pathSegment;
+	}
 }

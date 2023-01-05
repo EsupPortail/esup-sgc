@@ -3,7 +3,11 @@
 
 package org.esupportail.sgc.web.admin;
 
+import java.io.UnsupportedEncodingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.esupportail.sgc.domain.Printer;
+import org.esupportail.sgc.web.admin.PrinterController;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,13 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
 privileged aspect PrinterController_Roo_Controller {
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String PrinterController.show(@PathVariable("id") Long id, Model uiModel) {
+        addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("printer", Printer.findPrinter(id));
         uiModel.addAttribute("itemId", id);
         return "admin/printers/show";
@@ -36,6 +38,7 @@ privileged aspect PrinterController_Roo_Controller {
         } else {
             uiModel.addAttribute("printers", Printer.findAllPrinters(sortFieldName, sortOrder));
         }
+        addDateTimeFormatPatterns(uiModel);
         return "admin/printers/list";
     }
     
@@ -66,17 +69,14 @@ privileged aspect PrinterController_Roo_Controller {
         return "redirect:/admin/printers";
     }
     
-    void PrinterController.populateEditForm(Model uiModel, Printer printer) {
-        uiModel.addAttribute("printer", printer);
+    void PrinterController.addDateTimeFormatPatterns(Model uiModel) {
+        uiModel.addAttribute("printer_connectiondate_date_format", "dd/MM/yyyy - HH:mm");
     }
     
-    String PrinterController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-        String enc = httpServletRequest.getCharacterEncoding();
-        if (enc == null) {
-            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-        }
-        pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        return pathSegment;
+    void PrinterController.populateEditForm(Model uiModel, Printer printer) {
+        uiModel.addAttribute("printer", printer);
+        addDateTimeFormatPatterns(uiModel);
     }
+
     
 }

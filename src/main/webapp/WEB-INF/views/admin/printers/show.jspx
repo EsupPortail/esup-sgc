@@ -9,5 +9,6 @@
         <field:display field="maintenanceInfo" id="s_org_esupportail_sgc_domain_Printer_maintenanceInfo" object="${printer}" z="0GopdEKqkFJjhS1tXfYvhgNCO+0="/>
         <field:display field="printerUsers" id="s_org_esupportail_sgc_domain_Printer_printerUsers" object="${printer}" z="qsuGmfKEKaLPzi8sgOe8NE+RZag="/>
         <field:display field="printerGroups" id="s_org_esupportail_sgc_domain_Printer_printerGroups" object="${printer}" z="vtFR4EGX5Tv6ePBlU5dUJ1ku3+M="/>
+        <field:display date="true" dateTimePattern="${printer_connectiondate_date_format}" field="connectionDate" id="s_org_esupportail_sgc_domain_Printer_connectionDate" object="${printer}" z="BwyJb2Mr5xlaMI+C88+uQSDIUkE="/>
     </page:show>
 </div>

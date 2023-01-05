@@ -38,10 +38,8 @@ public class EncodeAndPringLongPollService {
 
 		qrcode.onCompletion(new Runnable() {
 			public void run() {
-				synchronized (qrcode) {
-					if(qrcode.equals(suspendedEncodPrintCardPollRequests.get(eppn))) {
-						suspendedEncodPrintCardPollRequests.remove(eppn);
-					}
+				if(qrcode.equals(suspendedEncodPrintCardPollRequests.get(eppn))) {
+					suspendedEncodPrintCardPollRequests.remove(eppn);
 				}
 			}
 		});
@@ -71,15 +69,30 @@ public class EncodeAndPringLongPollService {
 	}
 
 	public DeferredResult<String> encodePrintHeartbeat(String eppnInit) {
+
 		final DeferredResult<String> okResult = new DeferredResult<String>(null, "ok");
-		this.managersPrintEncodeEppns.add(eppnInit);
-		okResult.onCompletion(new Runnable() {
+
+		Runnable completeCallback = new Runnable() {
 			public void run() {
-				synchronized (eppnInit) {
-					managersPrintEncodeEppns.remove(eppnInit);
-				}
+				log.info("Heartbeat for {} stopped ; remove possibility to encode+print", eppnInit);
+				managersPrintEncodeEppns.remove(eppnInit);
 			}
-		});
+		};
+		okResult.onCompletion(completeCallback);
+
+		while(this.managersPrintEncodeEppns.contains(eppnInit)) {
+			log.trace("{} is already known ... wait 5 sec.", eppnInit);
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				log.debug("Exception sleeping 5 sec ...", e);
+				return okResult;
+			}
+		}
+
+		log.info("Heartbeat for {} started ; add possibility to encode+print", eppnInit);
+		this.managersPrintEncodeEppns.add(eppnInit);
+
 		return okResult;
 	}
 }

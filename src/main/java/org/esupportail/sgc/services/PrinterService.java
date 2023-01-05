@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class PrinterService {
         }
         printer.setIp(ip);
         printer.setMaintenanceInfo(maiuntenanceInfo);
+        printer.setConnectionDate(new Date());
     }
 
     public List<Printer> getPrinters(String eppn) {

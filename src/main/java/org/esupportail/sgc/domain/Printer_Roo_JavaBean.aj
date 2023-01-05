@@ -3,7 +3,9 @@
 
 package org.esupportail.sgc.domain;
 
+import java.util.Date;
 import java.util.List;
+import org.esupportail.sgc.domain.Printer;
 
 privileged aspect Printer_Roo_JavaBean {
     
@@ -49,6 +51,14 @@ privileged aspect Printer_Roo_JavaBean {
     
     public void Printer.setPrinterGroups(List<String> printerGroups) {
         this.printerGroups = printerGroups;
+    }
+    
+    public Date Printer.getConnectionDate() {
+        return this.connectionDate;
+    }
+    
+    public void Printer.setConnectionDate(Date connectionDate) {
+        this.connectionDate = connectionDate;
     }
     
 }
