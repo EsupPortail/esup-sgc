@@ -1,6 +1,11 @@
 package org.esupportail.sgc.web.manager;
 
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -9,10 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.DeferredResult;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 @RequestMapping("/manager/searchPoll")
@@ -40,8 +41,10 @@ public class SearchLongPollController {
 		
 		searchEppn.onCompletion(new Runnable() {
 			public void run() {
-				if(searchEppn.equals(suspendedSearchPollRequests.get(authName))) {
-					suspendedSearchPollRequests.remove(authName);
+				synchronized (searchEppn) {
+					if(searchEppn.equals(suspendedSearchPollRequests.get(authName))) {
+						suspendedSearchPollRequests.remove(authName);
+					}
 				}
 			}
 		});

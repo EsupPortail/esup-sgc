@@ -36,6 +36,17 @@ public class LogMail {
     @Column(columnDefinition = "TEXT")
     private String message;
 
+    public static List<LogMail> findAllLogMailsByCardActionMessage(CardActionMessage cardActionMessage) {
+        EntityManager em = LogMail.entityManager();
+        TypedQuery<LogMail> q = em.createQuery("SELECT o FROM LogMail AS o WHERE o.cardActionMessage = :cardActionMessage", LogMail.class);
+        q.setParameter("cardActionMessage", cardActionMessage);
+        return q.getResultList();
+    }
+
+    public Long getCardActionMessageId() {
+        return getCardActionMessage()!=null ? getCardActionMessage().getId() : null;
+    }
+
     public static Long countFindLogMails(CardActionMessage cardActionMessage, String eppn, Date date1, Date date2) {
         EntityManager em = LogMail.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LogMail AS o WHERE o.cardActionMessage=:cardActionMessage AND o.eppn=:eppn AND o.logDate > :date1 AND o.logDate < :date2", Long.class);
@@ -45,5 +56,6 @@ public class LogMail {
         q.setParameter("date2", date2);
         return ((Long) q.getSingleResult());
     }
+
 
 }

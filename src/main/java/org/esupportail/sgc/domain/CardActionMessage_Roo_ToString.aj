@@ -10,7 +10,7 @@ import org.esupportail.sgc.domain.CardActionMessage;
 privileged aspect CardActionMessage_Roo_ToString {
     
     public String CardActionMessage.toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("message").toString();
     }
     
 }

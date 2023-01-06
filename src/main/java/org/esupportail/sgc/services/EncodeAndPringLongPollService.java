@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +26,12 @@ public class EncodeAndPringLongPollService {
 	private Map<String, DeferredResult<String>> suspendedEncodPrintCardPollRequests = new ConcurrentHashMap<String, DeferredResult<String>>();
 
 	// List des eppn de l'utilisateur manager potentiel éditeur de carte via imprimante+encodeur (heartbeat)
-	private Set<String> managersPrintEncodeEppns = new ConcurrentSkipListSet<>();
+	private Map<String, DeferredResult<String>>  suspendedEncodManagersPrintEncodeEppns = new ConcurrentHashMap<String, DeferredResult<String>>();
+
+	// Hack pour gestion des eppn requêtant un nouveau heartbeat alors que le hertbeat courant n'a pas été finalisé :
+	// Ce Set permet de les préserver en mémoire durant la méthode encodePrintHeartbeat
+	// et donc de leur laisser l'accès au bouton encodage+impression
+	private Set<String> currentEncodManagersPrintEncodeEppns =  Collections.synchronizedSet(new HashSet());
 
 	public DeferredResult<String> qrcode2edit(String eppn) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -65,33 +72,40 @@ public class EncodeAndPringLongPollService {
 	}
 
 	public Set<String> getManagersPrintEncodeEppns() {
+		Set<String> managersPrintEncodeEppns = new HashSet<>(currentEncodManagersPrintEncodeEppns);
+		managersPrintEncodeEppns.addAll(suspendedEncodManagersPrintEncodeEppns.keySet());
 		return managersPrintEncodeEppns;
 	}
 
 	public DeferredResult<String> encodePrintHeartbeat(String eppnInit) {
 
+		currentEncodManagersPrintEncodeEppns.add(eppnInit);
+
 		final DeferredResult<String> okResult = new DeferredResult<String>(null, "ok");
 
-		Runnable completeCallback = new Runnable() {
-			public void run() {
-				log.info("Heartbeat for {} stopped ; remove possibility to encode+print", eppnInit);
-				managersPrintEncodeEppns.remove(eppnInit);
-			}
-		};
-		okResult.onCompletion(completeCallback);
-
-		while(this.managersPrintEncodeEppns.contains(eppnInit)) {
-			log.trace("{} is already known ... wait 5 sec.", eppnInit);
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				log.debug("Exception sleeping 5 sec ...", e);
-				return okResult;
-			}
+		if(this.suspendedEncodManagersPrintEncodeEppns.containsKey(eppnInit)) {
+			this.suspendedEncodManagersPrintEncodeEppns.get(eppnInit).setResult("ok");
 		}
 
+		try {
+			// hack ... sleep 2 sec so that onCompletion with suspendedEncodManagersPrintEncodeEppns.remove is called before adding same eppn ...
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			//
+		}
 		log.info("Heartbeat for {} started ; add possibility to encode+print", eppnInit);
-		this.managersPrintEncodeEppns.add(eppnInit);
+		this.suspendedEncodManagersPrintEncodeEppns.put(eppnInit, okResult);
+
+		okResult.onCompletion(new Runnable() {
+			public void run() {
+				log.info("Heartbeat for {} stopped ; remove possibility to encode+print", eppnInit);
+				suspendedEncodManagersPrintEncodeEppns.remove(eppnInit);
+			}
+		});
+
+		log.info("this.suspendedEncodManagersPrintEncodeEppns.size : " + this.suspendedEncodManagersPrintEncodeEppns.size());
+
+		currentEncodManagersPrintEncodeEppns.remove(eppnInit);
 
 		return okResult;
 	}

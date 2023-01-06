@@ -17,16 +17,21 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.esupportail.sgc.domain.Card.Etat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.dbre.RooDbManaged;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 @RooJavaBean
-@RooToString
+@RooToString(excludeFields={"message"})
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord
 public class CardActionMessage {
+
+    private static final Logger log = LoggerFactory.getLogger(CardActionMessage.class);
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -53,9 +58,21 @@ public class CardActionMessage {
     private Set<String> userTypes = new HashSet<String>();
 
     Integer dateDelay4PreventCaduc = null;
+
+    @Transactional
+    public void remove() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        List<LogMail> logMails = LogMail.findAllLogMailsByCardActionMessage(this);
+        for(LogMail logMail : logMails) {
+            logMail.setCardActionMessage(null);
+        }
+        log.info("Remove reference to this CardActionMessage on LogMails before deleting");
+        this.entityManager.remove(this);
+        log.info("CardActionMessage deleted");
+    }
     
     public static List<CardActionMessage> findAllCardActionMessagesAutoWithMailToEmptyOrNull() {
-        return entityManager().createQuery("SELECT o FROM CardActionMessage o WHERE auto = true and (o.mailTo IS NULL or o.mailTo = '')", CardActionMessage.class).getResultList();
+        return entityManager().createQuery("SELECT o FROM CardActionMessage o WHERE auto = true and (o.mailTo IS NULL or o.mailTo = '') and o.dateDelay4PreventCaduc IS NULL", CardActionMessage.class).getResultList();
     }
 
 
@@ -91,6 +108,7 @@ public class CardActionMessage {
 	        predicates.add(criteriaBuilder.notEqual(c.get("mailTo"), ""));
 	    	predicates.add(criteriaBuilder.isNotNull(c.get("mailTo")));
         }
+        predicates.add(criteriaBuilder.isNull(c.get("dateDelay4PreventCaduc")));
         
         orders.add(criteriaBuilder.desc(c.get("id")));
         query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));

@@ -3,7 +3,7 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <page:show create="false" delete="false" id="ps_org_esupportail_sgc_domain_LogMail" object="${logmail}" path="/admin/logmails" update="false" z="RW/6sXPiXfAZ0ORf2GO1I4IuUhY=">
-        <field:display field="cardActionMessage" id="s_org_esupportail_sgc_domain_LogMail_cardActionMessage" object="${logmail}" z="IrWKTWWVJCura4Xo3NBSPCLV0HM="/>
+        <field:display field="cardActionMessageId" id="s_org_esupportail_sgc_domain_LogMail_cardActionMessage" object="${logmail}" z="IrWKTWWVJCura4Xo3NBSPCLV0HM="/>
         <field:display date="true" dateTimePattern="${logMail_logdate_date_format}" field="logDate" id="s_org_esupportail_sgc_domain_LogMail_logDate" object="${logmail}" z="mPYNzvmZbr4/IWbET12klFvBTfM="/>
         <field:display field="eppn" id="s_org_esupportail_sgc_domain_LogMail_eppn" object="${logmail}" z="6XjoDN04m5srnR3hrlCyX9xlZW4="/>
         <field:display field="subject" id="s_org_esupportail_sgc_domain_LogMail_subject" object="${logmail}" z="wfPQw17lmKiSQVRRPv2+pQqwVZk="/>
