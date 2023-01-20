@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+<div xmlns:spring="http://www.springframework.org/tags" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <h2>Transactions Paybox</h2>
+    <spring:url value="/admin/payboxtransactions" var="urlLogs"/>
+    <div class="alert alert-info" id="searchBar">
+        <div class="row">
+            <div class="col-lg-2">
+                <form action="${urlLogs}" method="get" >
+                    <label for="basic-url">Eppn</label>
+                    <div class="input-group">
+                        <input type="text" name="eppn" class="form-control" value="${param.eppn}"/>
+                        <input name="find" value="ByEppnEquals" type="hidden" />
+                        <input name="sortFieldName" value="transactionDate" type="hidden" />
+                        <input name="sortOrder" value="desc" type="hidden" />
+                        <input name="size" value="10" type="hidden" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-success" type="submit">OK</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <page:list id="pl_org_esupportail_sgc_domain_PayboxTransactionLog" items="${payboxtransactionlogs}" z="hHqBHiZUm1o7RmTBffWxc92yMQw=">
         <table:table data="${payboxtransactionlogs}" delete="false" id="l_org_esupportail_sgc_domain_PayboxTransactionLog" path="/admin/payboxtransactions" update="false" z="do+EOP3FPHbBdMIVLxq2ej0TrN0=">
             <table:column date="true" dateTimePattern="${payboxTransactionLog_transactiondate_date_format}" id="c_org_esupportail_sgc_domain_PayboxTransactionLog_transactionDate" property="transactionDate" z="pDGs9jUIP7DKGe947dim2Pxp3UM="/>
-            <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_eppn" property="eppn" z="mxyJGWAQJDeKIBKUKfdesaZrVn0="/>
+            <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_eppn" property="eppn" link="true" linkPrefix="/manager?eppn=" z="mxyJGWAQJDeKIBKUKfdesaZrVn0="/>
             <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_reference" property="reference" z="fC1od3nfpbfa4Lz2jN9DuMQB5h8="/>
             <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_montant" property="montant" z="4UClpVhbyzGhw+X06CQdSyWgS/o="/>
             <table:column id="c_org_esupportail_sgc_domain_PayboxTransactionLog_auto" property="auto" z="L03XZuQr5WySbPZeAWe6QJ4iTfQ="/>

@@ -31,7 +31,11 @@
             <menu:item activeMenu="${active=='logs'}" id="i_log_list" label="Logs" url="/admin/logs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='logmails'}" id="i_logmail_list" label="Logs Mails" url="/admin/logmails?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='paybox'}" id="i_payboxtransactionlog_list" label="Transactions Paybox" url="/admin/payboxtransactions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
-            <menu:category id="c_payboxtransactionlog" render="false" z="user-managed"/>
+            <menu:category id="c_payboxtransactionlog" render="false" z="user-managed">
+                <menu:item id="fi_payboxtransactionlog_eppnequals" messageCode="global_menu_find" url="/admin/payboxtransactions?find=ByEppnEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="uZwkZ88Mx1KimFE4ZEsXh5qgUGs="/>
+                <menu:item id="fi_payboxtransactionlog_idtransequals" messageCode="global_menu_find" url="/admin/payboxtransactions?find=ByIdtransEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="hGKOF//+1xwiaCjX9TpdxaDF7TI="/>
+                <menu:item id="fi_payboxtransactionlog_referenceequals" messageCode="global_menu_find" url="/admin/payboxtransactions?find=ByReferenceEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="6E3i9OXGjWB3xQOTEhUDtvr+kGY="/>
+            </menu:category>
             <menu:item activeMenu="${active=='import'}" id="i_import" label="Import" url="/admin/import"/>
             <menu:item activeMenu="${active=='tools'}" id="i_tools" label="Tools" url="/admin/tools"/>
             <menu:item activeMenu="${active=='actionmsgs'}" id="i_cardactionmessage_list" label="Messages" url="/admin/actionmessages?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
@@ -72,6 +76,8 @@
             <menu:item id="i_crousruleconfig_list" messageCode="global_menu_list" url="/admin/crousruleconfigs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="+0ee+TI5a0Hkyz0ILZDym7NrDK4="/>
         </menu:category>
         <menu:category id="c_logmail" render="false" z="user-managed">
+            <menu:item id="fi_logmail_cardactionmessage" messageCode="global_menu_find" url="/admin/logmails?find=ByCardActionMessage&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="CjOyQcB8sNJITAhsLB5Nnizp3vs="/>
+            <menu:item id="fi_logmail_eppn" messageCode="global_menu_find" url="/admin/logmails?find=ByEppn&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="QW3S7ubQGusSlYqrcUgODZk6ptk="/>
             <menu:item id="fi_logmail_logdatelessthan" messageCode="global_menu_find" url="/admin/logmails?find=ByLogDateLessThan&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="wEDL2tRaObQ7mo1eFrHkZKmoKk8="/>
         </menu:category>
         <menu:category id="c_printer" render="false" z="user-managed"/>

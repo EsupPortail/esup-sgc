@@ -7,7 +7,7 @@
         <div class="form-group">
             <label class="col-lg-4 control-label">Etat initial</label>
             <div class="col-lg-6">
-                <select class="form-control" name="etatInitial">
+                <select class="form-control" name="etatInitial" id="etatInitial">
                     <option value=""/>
                     <c:forEach items="${etats}" var="etat">
                         <option value="${etat}">
@@ -20,7 +20,7 @@
         <div class="form-group">
             <label class="col-lg-4 control-label">Etat final</label>
             <div class="col-lg-6">
-                <select class="form-control" name="etatFinal">
+                <select class="form-control" name="etatFinal" id="etatFinal">
                     <c:forEach items="${etats}" var="etat">
                         <option value="${etat}">
                             <spring:message code="card.label.${etat}"/>

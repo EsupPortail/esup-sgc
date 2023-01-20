@@ -285,10 +285,10 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 													<c:forEach items="${steps}" var="step" varStatus="i">
 														<c:set var="stepMsg"> <spring:message code="card.step.${step}" htmlEscape="false"/></c:set>
 														<c:choose>
-															<c:when test="${testEtat eq '0' and !(step eq etat or step eq 'REQUEST_CHECKED' and (etat eq 'IN_PRINT' or etat eq 'TO_ENCODE_PRINT' or etat eq 'ENCODED_IN_PRINT' or etat eq 'PRINTED' or etat eq 'IN_ENCODE'))}">
+															<c:when test="${testEtat eq '0' and !(step eq etat or step eq 'REQUEST_CHECKED' and (etat eq 'IN_PRINT' or etat eq 'PRINTED' or etat eq 'IN_ENCODE'))}">
 																<li class="completed"> <span class="bubble" title="${stepMsg}"></span> <span class="textBubble hidden-xs">${stepMsg}</span></li>
 															</c:when>
-															<c:when test="${testEtat eq '0' and (step eq etat or step eq 'REQUEST_CHECKED' and (etat eq 'IN_PRINT' or etat eq 'TO_ENCODE_PRINT' or etat eq 'ENCODED_IN_PRINT' or etat eq 'PRINTED' or etat eq 'IN_ENCODE'))}">
+															<c:when test="${testEtat eq '0' and (step eq etat or step eq 'REQUEST_CHECKED' and (etat eq 'IN_PRINT' or etat eq 'PRINTED' or etat eq 'IN_ENCODE'))}">
 																<li class="active"> <span class="bubble"  title="${stepMsg}"></span> <span class="textBubble ">${stepMsg}</span></li>
 																<c:set var="testEtat" value="1" />
 															</c:when>

@@ -8,7 +8,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.ManyToOne;
-import javax.persistence.Query;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(finders = {"findLogMailsByLogDateLessThan"})
+@RooJpaActiveRecord(finders = {"findLogMailsByLogDateLessThan", "findLogMailsByEppn", "findLogMailsByCardActionMessage"})
 public class LogMail {
 
     @ManyToOne
@@ -35,13 +34,6 @@ public class LogMail {
 
     @Column(columnDefinition = "TEXT")
     private String message;
-
-    public static List<LogMail> findAllLogMailsByCardActionMessage(CardActionMessage cardActionMessage) {
-        EntityManager em = LogMail.entityManager();
-        TypedQuery<LogMail> q = em.createQuery("SELECT o FROM LogMail AS o WHERE o.cardActionMessage = :cardActionMessage", LogMail.class);
-        q.setParameter("cardActionMessage", cardActionMessage);
-        return q.getResultList();
-    }
 
     public Long getCardActionMessageId() {
         return getCardActionMessage()!=null ? getCardActionMessage().getId() : null;

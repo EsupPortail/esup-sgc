@@ -1,6 +1,5 @@
 package org.esupportail.sgc.services;
 
-import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Printer;
 import org.esupportail.sgc.services.ldap.GroupService;
 import org.springframework.scheduling.annotation.Async;
@@ -8,11 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Service
 public class PrinterService {
@@ -40,28 +40,26 @@ public class PrinterService {
         printer.setConnectionDate(new Date());
     }
 
-    public List<Printer> getPrinters(String eppn) {
+    /*
+        Map de printers autorisés pour l'utilisateur : true si en ligne (disponible/connectée)
+     */
+    public SortedMap<Printer, Boolean> getPrinters(String eppn) {
         List<String> groups = groupService.getGroupsForEppn(eppn);
         Set<Printer> printers = new HashSet<>();
         Set<String> connectedEppnPrinters = encodeAndPringLongPollService.getManagersPrintEncodeEppns();
-        if(connectedEppnPrinters.size()>0) {
-            // Récupération des imprimantes enregistrées en base et actuellement connectées
-            if (connectedEppnPrinters.contains(eppn)) {
-                printers.addAll(Printer.findPrintersByEppn(eppn).getResultList());
-            }
-            printers.addAll(Printer.findPrintersByEppnInPrinterUsers(eppn, connectedEppnPrinters).getResultList());
-            printers.addAll(Printer.findPrintersByEppnInPrinterGroups(groups, connectedEppnPrinters).getResultList());
+        printers.addAll(Printer.findPrintersByEppn(eppn).getResultList());
+        printers.addAll(Printer.findPrintersByEppnInPrinterUsers(eppn).getResultList());
+        printers.addAll(Printer.findPrintersByEppnInPrinterGroups(groups).getResultList());
+        SortedMap<Printer, Boolean> printersMap = new TreeMap<Printer, Boolean>((a, b) -> a.getLabel().compareTo(b.getLabel()));
+        for(Printer printer: printers) {
+            printersMap.put(printer, connectedEppnPrinters.contains(printer.getEppn()));
         }
-        List<Printer> printersList = new ArrayList<>(printers);
-        printersList.sort((a, b) -> a.getLabel().compareTo(b.getLabel()));
-        return printersList;
+        return printersMap;
     }
 
-    public boolean canHandleCard(String eppn) {
-        if(StringUtils.isEmpty(eppn)) {
-            return false;
-        }
-        return getPrinters(eppn).size()>0;
+    public boolean isPrinterConnected(String eppn) {
+        Set<String> connectedEppnPrinters = encodeAndPringLongPollService.getManagersPrintEncodeEppns();
+        return connectedEppnPrinters.contains(eppn);
     }
 
 }

@@ -1,9 +1,8 @@
 package org.esupportail.sgc.web.admin;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.services.AppliConfigService;
+import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,9 +10,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 @RequestMapping("/admin/payboxtransactions")
 @Controller
 @RooWebScaffold(path = "admin/payboxtransactions", formBackingObject = PayboxTransactionLog.class, create=false, delete=false, update=false)
+@RooWebFinder
 public class PayboxTransactionLogController {
 	
 	@Resource

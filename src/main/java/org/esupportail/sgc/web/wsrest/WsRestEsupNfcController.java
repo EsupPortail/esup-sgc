@@ -416,13 +416,9 @@ public class WsRestEsupNfcController {
 			log.info("validateTag on "+ EsupNfcTagLog.SALLE_ENCODAGE +" with " + esupNfcTagLog);
 			Card card = Card.findCardsByCsn(csn).getSingleResult();
 			if(!cardIdsService.isCrousEncodeEnabled()){
-				if(Etat.TO_ENCODE_PRINT.equals(card.getEtat())) {
-					cardEtatService.setCardEtat(card, Etat.ENCODED_IN_PRINT, null, null, false, true);
-				} else {
-					cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
-					if (appliConfigService.getEnableAuto()) {
-						cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, null, null, false, false);
-					}
+				cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
+				if (appliConfigService.getEnableAuto()) {
+					cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, null, null, false, false);
 				}
 			}
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
@@ -624,37 +620,12 @@ public class WsRestEsupNfcController {
 		}
 
 		String bmpAsBase64 = "";
-		List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.TO_ENCODE_PRINT, Etat.ENCODED_IN_PRINT})).getResultList();
+		List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.IN_PRINT})).getResultList();
 		if(!cards.isEmpty()) {
 			Card card = cards.get(0);
 			bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), type);
 		}
 		return new ResponseEntity<String>(bmpAsBase64, responseHeaders, HttpStatus.OK);
-	}
-
-	@RequestMapping(value = "/card-encoded-printed", method = RequestMethod.POST, produces =  MediaType.TEXT_PLAIN_VALUE)
-	@ResponseBody
-	public ResponseEntity<String> cardEncodedPrinted(@RequestParam String authToken, @RequestBody Map<String, String> qrcodeAndCsn) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		try{
-			log.info("try to find card to encode with : " + qrcodeAndCsn);
-			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.ENCODED_IN_PRINT})).getResultList();
-			String csn = qrcodeAndCsn.get("csn");
-			if(cards.size()!=1 || !csn.equals(cards.get(0).getCsn())) {
-				String errorMsg = "This card is not well encoded : " + qrcodeAndCsn;
-				return new ResponseEntity<String>(errorMsg, responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
-			} else {
-				Card card = cards.get(0);
-				cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
-				if (appliConfigService.getEnableAuto()) {
-					cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, null, null, false, false);
-				}
-				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
-			}
-		} catch(Exception e){
-			log.error("error to find card to encode with qrcode : " + qrcodeAndCsn.get("qrcode"), e);
-		}
-		return new ResponseEntity<String>("No card found", responseHeaders, HttpStatus.NOT_FOUND);
 	}
 
 	/*
@@ -663,7 +634,6 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/qrcode2edit", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public DeferredResult<String> qrcode2edit(@RequestParam String authToken) {
-		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
 			log.info("Bad authotoken : " + authToken);
@@ -671,14 +641,16 @@ public class WsRestEsupNfcController {
 			emptyResult.setResult("");
 			return emptyResult;
 		}
-		List<Card> cards = Card.findCardsByEtatEppnEqualsAndEtatEquals(eppnInit, Etat.TO_ENCODE_PRINT).getResultList();
+		List<Card> cards = Card.findCardsByEtatEppnEqualsAndEtatEquals(eppnInit, Etat.IN_PRINT).getResultList();
 		if(cards.size() > 0 ) {
 			log.info("qrcode2edit from DB : " + cards.get(0).getQrcode());
 			DeferredResult dbResult = new DeferredResult();
 			dbResult.setResult(cards.get(0).getQrcode());
 			return dbResult;
+		} else {
+			// long poll
+			return encodeAndPringLongPollService.qrcode2edit(eppnInit);
 		}
-		return encodeAndPringLongPollService.qrcode2edit(eppnInit);
 	}
 
 	/*
@@ -712,7 +684,7 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try{
         	log.info("try to find card to encode with : " + qrcodeAndCsn);
-			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE, Etat.TO_ENCODE_PRINT})).getResultList();
+			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE})).getResultList();
 			if(cards.size() > 0 ){
 				String csn = qrcodeAndCsn.get("csn");
 				Card cardWithThisCsn = Card.findCardByCsn(csn);
@@ -776,13 +748,9 @@ public class WsRestEsupNfcController {
 			InputStream stream = new  ByteArrayInputStream(file.getBytes());
 			Card card = Card.findCardByCsn(csn);
 			crousSmartCardService.consumeCsv(stream, false);
-			if(Etat.TO_ENCODE_PRINT.equals(card.getEtat())) {
-				cardEtatService.setCardEtat(card, Etat.ENCODED_IN_PRINT, null, null, false, true);
-			} else {
-				cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
-				if (appliConfigService.getEnableAuto()) {
-					cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, null, null, false, false);
-				}
+			cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
+			if (appliConfigService.getEnableAuto()) {
+				cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, null, null, false, false);
 			}
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		}

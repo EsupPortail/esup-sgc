@@ -1,20 +1,4 @@
 package org.esupportail.sgc.domain;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.esupportail.sgc.domain.Card.Etat;
 import org.slf4j.Logger;
@@ -24,6 +8,21 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.EntityManager;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RooJavaBean
 @RooToString(excludeFields={"message"})
@@ -62,7 +61,7 @@ public class CardActionMessage {
     @Transactional
     public void remove() {
         if (this.entityManager == null) this.entityManager = entityManager();
-        List<LogMail> logMails = LogMail.findAllLogMailsByCardActionMessage(this);
+        List<LogMail> logMails = LogMail.findLogMailsByCardActionMessage(this).getResultList();
         for(LogMail logMail : logMails) {
             logMail.setCardActionMessage(null);
         }

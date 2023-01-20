@@ -6,9 +6,26 @@ package org.esupportail.sgc.domain;
 import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.LogMail;
 
 privileged aspect LogMail_Roo_Finder {
+    
+    public static Long LogMail.countFindLogMailsByCardActionMessage(CardActionMessage cardActionMessage) {
+        if (cardActionMessage == null) throw new IllegalArgumentException("The cardActionMessage argument is required");
+        EntityManager em = LogMail.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LogMail AS o WHERE o.cardActionMessage = :cardActionMessage", Long.class);
+        q.setParameter("cardActionMessage", cardActionMessage);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LogMail.countFindLogMailsByEppn(String eppn) {
+        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
+        EntityManager em = LogMail.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LogMail AS o WHERE o.eppn = :eppn", Long.class);
+        q.setParameter("eppn", eppn);
+        return ((Long) q.getSingleResult());
+    }
     
     public static Long LogMail.countFindLogMailsByLogDateLessThan(Date logDate) {
         if (logDate == null) throw new IllegalArgumentException("The logDate argument is required");
@@ -16,6 +33,52 @@ privileged aspect LogMail_Roo_Finder {
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LogMail AS o WHERE o.logDate < :logDate", Long.class);
         q.setParameter("logDate", logDate);
         return ((Long) q.getSingleResult());
+    }
+    
+    public static TypedQuery<LogMail> LogMail.findLogMailsByCardActionMessage(CardActionMessage cardActionMessage) {
+        if (cardActionMessage == null) throw new IllegalArgumentException("The cardActionMessage argument is required");
+        EntityManager em = LogMail.entityManager();
+        TypedQuery<LogMail> q = em.createQuery("SELECT o FROM LogMail AS o WHERE o.cardActionMessage = :cardActionMessage", LogMail.class);
+        q.setParameter("cardActionMessage", cardActionMessage);
+        return q;
+    }
+    
+    public static TypedQuery<LogMail> LogMail.findLogMailsByCardActionMessage(CardActionMessage cardActionMessage, String sortFieldName, String sortOrder) {
+        if (cardActionMessage == null) throw new IllegalArgumentException("The cardActionMessage argument is required");
+        EntityManager em = LogMail.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LogMail AS o WHERE o.cardActionMessage = :cardActionMessage");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LogMail> q = em.createQuery(queryBuilder.toString(), LogMail.class);
+        q.setParameter("cardActionMessage", cardActionMessage);
+        return q;
+    }
+    
+    public static TypedQuery<LogMail> LogMail.findLogMailsByEppn(String eppn) {
+        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
+        EntityManager em = LogMail.entityManager();
+        TypedQuery<LogMail> q = em.createQuery("SELECT o FROM LogMail AS o WHERE o.eppn = :eppn", LogMail.class);
+        q.setParameter("eppn", eppn);
+        return q;
+    }
+    
+    public static TypedQuery<LogMail> LogMail.findLogMailsByEppn(String eppn, String sortFieldName, String sortOrder) {
+        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
+        EntityManager em = LogMail.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LogMail AS o WHERE o.eppn = :eppn");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LogMail> q = em.createQuery(queryBuilder.toString(), LogMail.class);
+        q.setParameter("eppn", eppn);
+        return q;
     }
     
     public static TypedQuery<LogMail> LogMail.findLogMailsByLogDateLessThan(Date logDate) {

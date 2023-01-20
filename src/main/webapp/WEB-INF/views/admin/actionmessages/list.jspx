@@ -91,6 +91,7 @@
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_defaut" property="defaut" sort="true" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_mailTo" property="mailTo" z="fDgPOfaJ1oDf/9gC+2WMRbyAYak="/>
             <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_userTypes" property="userTypes" z="user-managed"/>
+            <table:column id="c_org_esupportail_sgc_domain_CardActionMessage_logs" property="id" label="Logs" link="true" linkPrefix="/admin/logmails?sortFieldName=logDate&amp;sortOrder=desc&amp;find=ByCardActionMessage&amp;cardActionMessage=" z="user-managed"/>
         </table:table>
     </page:list>
 </div>

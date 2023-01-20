@@ -10,6 +10,7 @@
 		var photorUrl = '${photoRootUrl}';
 		getCrousRightHolderUrl = '${getCrousRightHolderUrl}';
 		getEscrStudentUrl = '${getEscrStudentUrl}';
+        printerEppn = '${printerEppn}';
 	</script>
     <h2>Utilisateur
 		<a class="btn btn-primary pull-right" href="${listeUrl}" type="button">
@@ -33,6 +34,16 @@
                             <spring:url htmlEscape="false" value="/admin/logs?find=ByEppnCibleEquals&amp;eppnCible=${user.eppn}&amp;page=1&amp;size=10&amp;sortFieldName=logDate&amp;sortOrder=desc" var="urlLogs"/>
                             <a class=" btn btn-info pull-right" href="${urlLogs}">
                                 <span class="glyphicon glyphicon-time"/>
+                            </a>
+                            <span class="pull-right">&amp;nbsp;</span>
+                            <spring:url htmlEscape="false" value="/admin/logmails?find=ByEppn&amp;eppn=${user.eppn}&amp;page=1&amp;size=10&amp;sortFieldName=logDate&amp;sortOrder=desc" var="urlLogs"/>
+                            <a class=" btn btn-info pull-right" href="${urlLogs}">
+                                <span class="glyphicon glyphicon-envelope"/>
+                            </a>
+                            <span class="pull-right">&amp;nbsp;</span>
+                            <spring:url htmlEscape="false" value="/admin/payboxtransactions?find=ByEppnEquals&amp;eppn=${user.eppn}&amp;page=1&amp;size=10&amp;sortFieldName=transactionDate&amp;sortOrder=desc" var="urlLogs"/>
+                            <a class=" btn btn-info pull-right" href="${urlLogs}">
+                                <span class="glyphicon glyphicon-euro"/>
                             </a>
                         </sec:authorize>
                     </h5>

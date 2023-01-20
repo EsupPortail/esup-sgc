@@ -1,12 +1,5 @@
 package org.esupportail.sgc.services;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.LogMail;
 import org.slf4j.Logger;
@@ -16,6 +9,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class LogService {
@@ -42,8 +40,12 @@ public class LogService {
 	
 	@Resource
 	AppliConfigService appliConfigService;
-	
+
 	public void log(Long cardId, ACTION action, RETCODE success, String comment, String eppnCible, String ip) {
+		log(cardId, action, success, comment, eppnCible, ip, null);
+	}
+
+	public void log(Long cardId, ACTION action, RETCODE success, String comment, String eppnCible, String ip, String printerEppn) {
 
 		TYPE type = TYPE.SYSTEM;
 		String eppn = "system";
@@ -72,7 +74,11 @@ public class LogService {
 					remoteAddress = webAuth.getRemoteAddress();
 				}
 			}
-		} 
+		}
+
+		if(auth == null && printerEppn != null) {
+			eppn = printerEppn;
+		}
 
 		Date logDate = new Date();
 

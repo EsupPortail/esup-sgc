@@ -10,7 +10,7 @@
 					<form action="${urlLogs}" method="get" >
 						<label for="basic-url">Eppn cible</label>
 					   	<div class="input-group">
-					      	<input type="text" name="eppnCible" class="form-control" />
+					      	<input type="text" name="eppnCible" class="form-control" value="${param.eppnCible}"/>
 					    	<input name="find" value="ByEppnCibleLike" type="hidden" />
 							<input name="sortFieldName" value="logDate" type="hidden" />
 							<input name="sortOrder" value="desc" type="hidden" />
@@ -25,7 +25,7 @@
 					<form action="${urlLogs}" method="get" >
 						<label for="basic-url">Modificateur</label>
 					   	<div class="input-group">
-					      	<input type="text" name="eppn" class="form-control" />
+					      	<input type="text" name="eppn" class="form-control" value="${param.eppn}"/>
 					    	<input name="find" value="ByEppnLike" type="hidden" />
 							<input name="sortFieldName" value="logDate" type="hidden" />
 							<input name="sortOrder" value="desc" type="hidden" />
@@ -122,7 +122,7 @@
     <page:list id="pl_org_esupportail_sgc_domain_Log" items="${logs}" z="oXLIOgBnYjuwvO8JYrciF0fOtbk=">
         <table:table data="${logs}" delete="false" id="l_org_esupportail_sgc_domain_Log" path="/admin/logs" update="false" view="false" z="user-managed">
             <table:column date="true" dateTimePattern="${log_logdate_date_format}" id="c_org_esupportail_sgc_domain_Log_logDate" property="logDate" z="2DWDsbl+WMzlmrdw+oOe34u5xeg="/>
-            <table:column id="c_org_esupportail_sgc_domain_Log_eppnCible" property="eppnCible" z="user-managed" label="Cible"/>
+            <table:column id="c_org_esupportail_sgc_domain_Log_eppnCible" property="eppnCible" link="true" linkPrefix="/manager?eppn=" z="user-managed" label="Cible"/>
             <table:column id="c_org_esupportail_sgc_domain_Log_eppn" property="eppn" z="user-managed" label="Modificateur"/>
             <table:column id="c_org_esupportail_sgc_domain_Log_type" property="type" z="9EhS13/ArBV6YDWE6Wn6hL4LAjs="/>
             <table:column id="c_org_esupportail_sgc_domain_Log_cardId" link="true" linkPrefix="/manager/" property="cardId" z="user-managed"/>

@@ -7,7 +7,7 @@ window.alert = function(message) {
 		document.getElementsByTagName("body")[0].insertAdjacentHTML('beforeend', blankTemplate);
     	message = message != "undefined" ? message : "";
     	var myModal = document.getElementById('modalID');
-    	var myModalInstance = new Modal(myModal, 
+    	var myModalInstance = new Modal(myModal,
     	{ // options object
     	  content: '<div class="modal-header" style="min-height:40px;">\
     	      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
@@ -44,12 +44,12 @@ function createSunEditor(){
          ['link'],
          ['fullScreen', 'codeView']
      ]
-   	});	
+   	});
 }
 
 //Même hauteur pour les éléments sel
 function equalize(sel) {
-  var els = Array.prototype.slice.call(document.querySelectorAll(sel));  
+  var els = Array.prototype.slice.call(document.querySelectorAll(sel));
   var row = [];
   var max;
   var top;
@@ -66,7 +66,7 @@ function equalize(sel) {
     if (el.offsetTop !== top) {
       // new row detected
       setHeights();
-      top = el.offsetTop;      
+      top = el.offsetTop;
       max = 0;
       row = [];
     }
@@ -91,7 +91,7 @@ function displayFormconfig(val,col,valeur){
 				+'</label><label class="radio-inline"><input type="radio" name="value" id="boolFalse" value="false" ' + checkFalse +' /> False</label></div>';
 
 	var areaEditor = document.getElementById("areaEditor");
-	
+
     switch(val) {
 	    case 'HTML':
 	   	 	remove("boolGroup");
@@ -228,18 +228,18 @@ function loadImages(sources, callback) {
     var slider = document.getElementById('brighten');
     function sliderChange() {
     	lion.brightness(slider.value);
-    	layer.batchDraw();   
+    	layer.batchDraw();
     }
     slider.addEventListener('input', sliderChange);
-    //Enhance 
+    //Enhance
     var slider1 = document.getElementById('enhance');
     function sliderChange1() {
         lion.enhance(slider1.value);
-        layer.batchDraw(); 
+        layer.batchDraw();
     }
     slider1.addEventListener('input', sliderChange1);
     //Rotation
-    var slider2 = document.getElementById('rotate'); 
+    var slider2 = document.getElementById('rotate');
     function sliderChange2() {
     	degrees = this.value;
     	lion.setRotation(degrees);
@@ -255,7 +255,7 @@ function loadImages(sources, callback) {
     }
     slider3.addEventListener('input', sliderChange3);
   }
-  
+
 //Freefield select
 function displayResultFreefield(selectedField, fieldsValue, indice){
 	if(typeof freeUrl != "undefined"){
@@ -267,9 +267,9 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 				if(this.response!='{}') {
 				  var data = JSON.parse(this.response);
 				  empty("freeFieldValue" + indice);
-				  var freeFieldValue = document.getElementById("freeFieldValue" + indice); 
+				  var freeFieldValue = document.getElementById("freeFieldValue" + indice);
 				  if(data.length>1){
-						freeFieldValue.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");  
+						freeFieldValue.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");
 				  }
 				  for(let key in data){
 					  var selected = "";
@@ -277,8 +277,8 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 				      if(typeof fieldsValue4thisField != "undefined" && fieldsValue4thisField.split(",").includes(key.substring(1, key.length))){
 		        		selected ="selected='selected'";
 				      }
-			      	  freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ key.substring(1, key.length) + "' " + selected +  ">" + data[key] + "</option>");  
-		          };         
+			      	  freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ key.substring(1, key.length) + "' " + selected +  ">" + data[key] + "</option>");
+		          };
 				 } else if(fieldsValue != '' && selectedField != '') {
                      var fieldsValue4thisField = fieldsValue.split(';')[indice];
                      if(fieldsValue4thisField!=undefined) {
@@ -297,7 +297,7 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 		request.send();
 	}
 }
-  
+
 //Traitement par lot des cartes
 function multiUpdateForm(idArray) {
 	if(typeof multiUpdateFormUrl != "undefined"){
@@ -328,7 +328,7 @@ function multiUpdateForm(idArray) {
 		    		        	evt.preventDefault();
 		    		        }
 			    		}
-			     	}); 
+			     	});
 			    }
 			    //Renouvellement
 			    var renewedForm = document.getElementById("RENEWEDForm");
@@ -342,31 +342,31 @@ function multiUpdateForm(idArray) {
 				}
 			  //Actions
 			  var inprintForm = document.getElementById("IN_PRINTForm");
-			  if(inprintForm != null){
+			  if(inprintForm != null && !printerEppn){
 				  inprintForm.addEventListener('submit', function(e) {
 			   	    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
 			   	    	this.target = 'formprint';
-			  	  }); 
+			  	  });
 			  }else if(document.getElementById("REJECTEDForm") !=null){
 					var myButton = document.getElementById('REJECTEDBtn');
-					var myModalInstance = new Modal(myButton); 
+					var myModalInstance = new Modal(myButton);
 			  }else if(document.getElementById("ENABLEDForm") !=null){
 					var myButton = document.getElementById('ENABLEDBtn');
-					var myModalInstance = new Modal(myButton); 
+					var myModalInstance = new Modal(myButton);
 			  }else if(document.getElementById("DISABLEDForm") !=null){
 					var myButton = document.getElementById('DISABLEDBtn');
-					var myModalInstance = new Modal(myButton); 
+					var myModalInstance = new Modal(myButton);
 			  }
 			  if(document.getElementById("validationBtn") !=null){
 					var myButton2 = document.getElementById('validationBtn');
-					var myModalInstance2 = new Modal(myButton2); 
+					var myModalInstance2 = new Modal(myButton2);
 			  }
 			  // Choix message
 			  if(document.getElementById("editActions") !=null){
 					var editActions = document.getElementById('editActions');
 					editActions.querySelectorAll("a.accordion-toggle").forEach(function(collapseLink) {
 						var myCollapseInit = new Collapse(collapseLink);
-				    }, false); 
+				    }, false);
 			  }
 		  }
 		};
@@ -382,12 +382,12 @@ function previewFileInput(idInputFile, targetImg, preview) {
 	            empty(targetImg);
 	            var reader = new FileReader();
 	            reader.onload = function (e) {
-	                image_holder.insertAdjacentHTML('beforeend',"<img src='" + e.target.result + "' class = 'thumb-image'/>");  
+	                image_holder.insertAdjacentHTML('beforeend',"<img src='" + e.target.result + "' class = 'thumb-image'/>");
 	                //Live preview
 	                if(preview == "masque"){
 	                	var mask = document.getElementById("specimenCarte");
 	                	if(mask != null){
-	                		mask.style.backgroundImage = 'url(' + e.target.result + ')'; 
+	                		mask.style.backgroundImage = 'url(' + e.target.result + ')';
 	                	}
 	                }else{
 	                	var notMask = document.getElementById(preview);
@@ -418,7 +418,7 @@ for(var k = 0; k < 100; k++) {
 	var color = Math.floor(random()*256) + ',' + Math.floor(random()*256) + ',' + Math.floor(random()*256);
 	generateColors.push('rgba(' + color + ', 0.6)');
 	generateStackColors.push('rgba(' + color + ', 0.6)');
-	generateBorderColors.push('rgba(' + color + ', 1)'); 
+	generateBorderColors.push('rgba(' + color + ', 1)');
 }
 
 //Format Dat String
@@ -465,7 +465,7 @@ function searchEppnAutocomplete(id, url, field, param2) {
 		 		      }
 			 		  list.push(labelValue);
 		 		    });
-		 		    awesomplete.list = list;		    
+		 		    awesomplete.list = list;
 				  } else {
 				    // We reached our target server, but it returned an error
 					  console.log("erreur du serveur!");
@@ -514,7 +514,7 @@ function displaySpinner(c,j) {
 	if(c!=null){
 	    var context=c.getContext("2d");
 	    var start = new Date();
-	    var lines = 16,  
+	    var lines = 16,
 	        cW = context.canvas.width,
 	        cH = context.canvas.height;
 	    var draw = function() {
@@ -573,7 +573,7 @@ function multiChartStackBar(allData, id, start, transTooltip, formatDate, scaleT
 	if(document.getElementById(id) != null){
 		var dataSets = [];
     	var k = 0;
-    	for(key in allData[1]) { 	
+    	for(key in allData[1]) {
 	        dataSets.push({
 	        	label: key,
 	        	data: allData[1][key],
@@ -601,7 +601,7 @@ function multiChartStackBar(allData, id, start, transTooltip, formatDate, scaleT
     	            yAxes: [{
     	                ticks: {
     	                    beginAtZero:true
-    	                    
+
     	                },
     	                type: scaleType,
     	                stacked: true
@@ -633,7 +633,7 @@ function multiChartStackBar(allData, id, start, transTooltip, formatDate, scaleT
                 }
     	   }
     	});
-	}	
+	}
 }
 
 function chartPieorDoughnut(data, id, type, option, datalabels){
@@ -655,7 +655,7 @@ function chartPieorDoughnut(data, id, type, option, datalabels){
     	var doughnutDataArray={
 		   labels: data[0],
 		   datasets: dataSets
-        }; 	        	
+        };
      	var ctx3 = document.getElementById(id).getContext("2d");
      	var myDoughnutChart2 = new Chart(ctx3, {
     		type: type,
@@ -717,12 +717,12 @@ function chartPieorDoughnut(data, id, type, option, datalabels){
     							innerHtml += '<tr><th>' + title + '</th></tr>';
     						});
     						innerHtml += '</thead><tbody>';
-    						
+
     						bodyLines.forEach(function(body, i) {
     							var colors = tooltip.labelColors[i];
     							var style = 'background:' +  rgb2hex(colors.backgroundColor);
     							style += '; border-color:' +  rgb2hex(colors.borderColor);
-    							style += '; border-width: 2px'; 
+    							style += '; border-width: 2px';
     							var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
     							innerHtml += '<tr><td>' + span + body + '</td></tr>';
     						});
@@ -750,21 +750,21 @@ function chartPieorDoughnut(data, id, type, option, datalabels){
 	                           return previousValue + currentValue;
 	                         });
 	                         var currentValue = dataset.data[tooltipItem.index];
-	                         var percentage = Math.floor(((currentValue/total) * 100)+0.5);         
+	                         var percentage = Math.floor(((currentValue/total) * 100)+0.5);
 	                         return data.labels[tooltipItem.index] + " : " + percentage + "% (" + currentValue + ")";
 	                       }
 	                   }
 
     			}
     		}
-    	});   
- 	} 	
+    	});
+ 	}
 }
 function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
 	if(document.getElementById(id) != null){
     	var listLabels = [];
     	var listValeurs = [];
-    	var listTooltipLabels = [];     	
+    	var listTooltipLabels = [];
     	var datasets = [{
 	            label: label1,
     			backgroundColor: generateColors[3],
@@ -777,7 +777,7 @@ function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
     	}];
     	if(data2 !=null){
     		var listValeurs2 = [];
-    		for (var idx2 in data2){ 
+    		for (var idx2 in data2){
     			listValeurs2.push(data2[idx2]);
     		};
     		datasets.push({
@@ -813,7 +813,7 @@ function chartBar(data1, label1, id, transTooltip, formatDate, data2, label2){
     	        }
     		}
     	});
-	}	
+	}
 }
 function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
  	if(document.getElementById(id) != null){
@@ -824,8 +824,8 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
     	var xValues = [];
     	var dates = arrayDates;
     	//Hack : on enlève le '_'
-    	for (var idx in data[1]){ 
-			if(!byMonth){			
+    	for (var idx in data[1]){
+			if(!byMonth){
 				xValues= Object.keys(data[idx]).filter(function (propertyName) {
 				    return propertyName.substr(1, propertyName.length);
 				});
@@ -834,7 +834,7 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
 		        		inlineValeurs.push(data[idx][dates[ind]]);
 	    			}else{
 		        		inlineValeurs.push(null);
-	    			}	
+	    			}
 				};
 			}else{
 		        inlineValeurs = data[1][idx];
@@ -866,7 +866,7 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
      	var dataMois = {
  		    labels: dateLabels,
  		    datasets: inlineDatasets
- 		};      
+ 		};
      	var ctx3 = document.getElementById(id).getContext("2d");
      	console.log(dataMois);
      	var myLineChart = new Chart(ctx3, {
@@ -887,7 +887,7 @@ function lineChart(data, id, fill, arrayDates, byMonth, formatDate){
 	                	bodyFontSize: 25
 	                }
     		}
-    	});     
+    	});
  	}
 }
 
@@ -929,7 +929,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				searchLdapForm.submit();
 		 });
     }
-    
+
     //stats
     if(typeof (statsRootUrl) != "undefined"){
     	//getStats(id, chartType, dateFin, selectedType, spinner, option, transTooltip, formatDate, label1, data2, label2, fill, arrayDates, byMonth)
@@ -976,12 +976,12 @@ document.addEventListener('DOMContentLoaded', function() {
     	    });
     	});
     }
-    
+
 	//preview template
 	previewFileInput("templateMasque", "image-holder-masque", "masque");
 	previewFileInput("templateLogo", "image-holder-logo","logo-ur");
 	previewFileInput("templateQrCode", "image-holder-qrCode", "qrcode");
-	
+
    	//Traitement par lot  cartes
   	var idArray = [];
    	var currentEtat = "";
@@ -994,7 +994,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			for(var i=0, n=checkboxes.length;i<n;i++){
 				checkboxes[i].checked = this.checked;
 			}
-	
+
 			const values = Array.from(document.querySelectorAll('input[type="checkbox"]')).
 			filter(function(checkbox) {
 				  return checkbox.checked;
@@ -1014,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				listeIds.innerHTML = idArray;
 			}
 		});
-	
+
 	   	Array.from(checkboxes).forEach(function(link) {
 	   		return link.addEventListener('click', function(event) {
 	   			if(idArray.indexOf(this.value)< 0){
@@ -1024,15 +1024,15 @@ document.addEventListener('DOMContentLoaded', function() {
 	   			}
 	   	    	if(!this.checked){
 	   	    		selectAll.checked = false;
-	   	    	}		
+	   	    	}
 	   			multiUpdateForm(idArray);
 				if(listeIds != null){
 					listeIds.innerHTML = idArray;
 				}
-	   	    }); 
+	   	    });
 	   	});
-	
-	   	window.onload = function(e){ 
+
+	   	window.onload = function(e){
 			selectAll.checked = false;
 			for(var i=0, n=checkboxes.length;i<n;i++){
 				checkboxes[i].checked = false;
@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	if(document.getElementById("sessionsUsers")!=null){
 		insertBefore(document.getElementById("sessionsdiv"), document.getElementById("sessionsUsers"))
 	}
-	
+
 	//choix champs import csv recherche
 	var selectAllFields = document.getElementById("selectAllFields");
 	if(selectAllFields!=null){
@@ -1058,18 +1058,18 @@ document.addEventListener('DOMContentLoaded', function() {
 		selectAllFields.addEventListener("click", function () {
 			for(var i=0, n=caseFields.length;i<n;i++){
 				caseFields[i].checked = this.checked;
-			}			
+			}
 		});
-		
+
 	   	Array.from(caseFields).forEach(function(link) {
 	   		return link.addEventListener('click', function(event) {
 	   	    	if(!this.checked){
 	   	    		selectAllFields.checked = false;
-	   	    	}		
+	   	    	}
 	   	    });
 	   	});
 	}
-	
+
     //Onglets Cartes
 	var tabsCard = document.querySelectorAll('#cardList .nav-tabs li a');
 	if(tabsCard != null){
@@ -1089,7 +1089,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    });
 		}
 	}
-	
+
 	/* clear form to have only select used */
 	var searchEppnForm =  document.getElementById("searchEppnForm");
 	if(searchEppnForm!=null) {
@@ -1100,9 +1100,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				 }
 			});
 			searchEppnForm.submit();
-	    }, false); 
+	    }, false);
 	}
-	
+
     //Tabs Stats Leo
 	var tabsStats = document.querySelectorAll('#statsManager .nav-tabs li a');
 	if(tabsStats != null){
@@ -1114,7 +1114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	if(type == 0){
 		        	if(typeof statsRootUrl != "undefined"){
 		        		window.location.href = 	statsRootUrl;
-		        	};	
+		        	};
 		    	}else{
 			    	if(typeof tabsUrl != "undefined"){
 			    		window.location.href = 	tabsUrl + type;
@@ -1123,7 +1123,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    });
 		}
 	}
-	
+
     //Formulaire paybox
     if(typeof displayPayboxForm != "undefined"){
 	    if(displayPayboxForm){
@@ -1140,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    });
 		}
 	}
-    
+
     //Mise en page libre stats
     if (typeof statsRootUrl != "undefined") {
     	if(userAgent=="COMPUTER"){
@@ -1156,13 +1156,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	    	}
 	    	setPrefStats(statsArray, "STATS");
 	   	}
-	
+
 	    function setPrefStats(statsArray, key) {
 			var request = new XMLHttpRequest();
 			request.open('POST', statsRootUrl + "/prefs?values=" + statsArray.toString() + "&key=" + key, true);
 			request.send();
 	    }
-	    
+
 	    if(prefsStats!=null && prefsStats !=""){
 	    	for(var idx in prefsStatsRm) {
     			remove(prefsStatsRm[idx]);
@@ -1174,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    		}
 	        });
 	    }
-	    
+
 	    //Remove stats
 		var removeClass = document.querySelectorAll('.remove');
 		for (var i = 0; i < removeClass.length; i++) {
@@ -1239,7 +1239,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    }
 	    }
     }
-    
+
  	//Bouton imprimer bordereau
     var printPage = document.querySelectorAll('.printPage')
     if(printPage != null){
@@ -1250,7 +1250,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	   	    });
 	   	});
 	}
-    
+
     //Récupération des résultats du select champ libre
     if(typeof freeUrl != "undefined"){
     	var selectedField = document.querySelectorAll('.freeSelect');
@@ -1258,7 +1258,7 @@ document.addEventListener('DOMContentLoaded', function() {
     		var indice = element.id.replace("fields","");
     		displayResultFreefield(element.value, fieldsValue, indice);
     	});
-    	
+
         var freeSelect = document.querySelectorAll('.freeSelect')
         if(freeSelect != null){
     	   	Array.from(freeSelect).forEach(function(link) {
@@ -1286,10 +1286,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	    				  var data = JSON.parse(this.response);
 							empty("searchBeanAdress");
 							if(Object.keys(data).length>1){
-								searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");  
+								searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");
 							}
 							for(let key in data) {
-				        		searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='"+ key + "'>" + data[key] + "</option>");  
+				        		searchBeanAdress.insertAdjacentHTML('beforeend',"<option value='"+ key + "'>" + data[key] + "</option>");
 				        	};
 	    			  }
 	    			  catch(e){
@@ -1301,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
     }
-    
+
 	//EZCROP
 	var imageCropper = document.getElementById('image-cropper');
 	if(imageCropper!=null){
@@ -1338,7 +1338,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	  maxZoom:1.8,
 		    	  minZoom: 'fit'
 	        });
-		
+
 		function changeMsg(){
 			if(confirmPreview != null){
 			    confirmPreview.value = "false";
@@ -1347,28 +1347,28 @@ document.addEventListener('DOMContentLoaded', function() {
 			    alertPreview.innerHTML = "<span class='glyphicon glyphicon-warning-sign'><!----></span> " + messages['alertPreview'];
 			}
 		}
-	
+
 		if(typeof defaultPhotoMd5 != "undefined" && isRejected.length ==0){
 			cropper.img.src = defaultPhotoUrl;
 		}
-	
-		
+
+
 		ezcropPreview.addEventListener('dragover', function() {
 			ezcropPreview.style.border = "2px dashed #ccc";
 		});
-		
+
 	    document.getElementById('rotate-ccw').addEventListener('click', function() {
 	        cropper.rotateCCW();
 	        cropper.options.exportZoom = 2;
 	        changeMsg();
 	      });
-	
+
 		  document.getElementById('rotate-cw').addEventListener('click', function() {
 		    cropper.rotateCW();
 		    cropper.options.exportZoom = 2;
 		    changeMsg();
 		  });
-		  
+
 		  var imageInput = document.querySelectorAll('.ezcrop-image-input')
 		  if(imageInput != null){
 			Array.from(imageInput).forEach(function(link) {
@@ -1378,7 +1378,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    });
 			});
 		  }
-		    
+
 		  document.querySelectorAll(".ezcrop-image-zoom-input")[0].addEventListener('change', function() {
 			  cropper.options.exportZoom = 2;
 			  changeMsg();
@@ -1387,7 +1387,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			  document.getElementById('preview').addEventListener('click', function() {
 		    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
 		    	if(currentImg.src == ""){
-		          	 alert(messages['fileRequired']);      	 
+		          	 alert(messages['fileRequired']);
 		          	 return false;
 		        }
 		    	currentImg.setAttribute("id","image-preview");
@@ -1397,7 +1397,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    		cropper.rotateCW();
 		    	}
 		    	cropper.options.exportZoom = photoExportZoom;
-		
+
 		    	var image = cropper.getCroppedImageData();
 		    	document.querySelector('#specimenCarte img#photo').setAttribute("src", image);
 		    	document.querySelectorAll('.ezcrop-image-data')[0].value=image;
@@ -1407,7 +1407,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	}
 			 });
 		 }
-		 if(document.getElementById('confirmPhoto') != null){   
+		 if(document.getElementById('confirmPhoto') != null){
 			 document.getElementById('confirmPhoto').addEventListener('click', function() {
 		    	confirmPreview.value = "true";
 			    alertPreview.classList.remove("alert-danger");
@@ -1420,7 +1420,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    }
 			 });
 		 }
-		   
+
 		//EZCROP RETOUCHE
 			if(document.getElementById('btnRetouche') != null){
 				document.getElementById('btnRetouche').addEventListener('click', function() {
@@ -1431,13 +1431,13 @@ document.addEventListener('DOMContentLoaded', function() {
 					cropper.previewSize = {width: 150, height: 188};
 				});
 			}
-			
+
 			if(document.getElementById('exportAdmin') != null){
 				document.getElementById('exportAdmin').addEventListener('click', function() {
 			    	if(document.querySelector("#container canvas")==null){
 				    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
 				    	if(currentImg.src == ""){
-				          	 alert(messages['fileRequired']);      	 
+				          	 alert(messages['fileRequired']);
 				          	 return false;
 				        }
 				    	cropper.options.exportZoom = photoExportZoom;
@@ -1450,8 +1450,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			       		document.querySelectorAll('.ezcrop-image-data')[0].value=data64;
 			       	}
 			     });
-			}		
-			
+			}
+
 			//KONVA
 		    if(document.getElementById('btnColors') != null){
 				document.getElementById('btnColors').addEventListener('click', function() {
@@ -1460,7 +1460,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	container.style.display = "block";
 		    	var currentImg =  document.querySelectorAll('.ezcrop-preview-image')[0];
 		    	if(currentImg.src == ""){
-		          	 alert(messages['fileRequired']);      	 
+		          	 alert(messages['fileRequired']);
 		          	 return false;
 		        }
 		    	cropper.options.exportZoom = photoExportZoom;
@@ -1477,7 +1477,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	}
 			    });
 			}
-		    
+
 		    if(document.getElementById('resetBtn') != null){
 				document.getElementById('resetBtn').addEventListener('click', function() {
 					cropper.options.exportZoom = photoExportZoom;
@@ -1486,7 +1486,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    	filterSliders.style.display = "none";
 			    	ezcropInfo.style.display = "block";
 			    	ezcropPreview.style.display = "block";
-			    	empty("container"); 
+			    	empty("container");
 			        var sliders = document.querySelectorAll('#filterSliders input');
 			        if(sliders != null){
 			    	   	Array.from(sliders).forEach(function(link) {
@@ -1497,7 +1497,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    });
 			}
 		    if(document.getElementById('scaleBtn') != null){
-				document.getElementById('scaleBtn').addEventListener('click', function() {	    
+				document.getElementById('scaleBtn').addEventListener('click', function() {
 			    	canvas = document.getElementById("container").querySelector("canvas");
 			    	if(canvas !=null){
 				   		var data64 = canvas.toDataURL('image/jpeg', 0.9);
@@ -1505,12 +1505,12 @@ document.addEventListener('DOMContentLoaded', function() {
 				    	filterSliders.style.display = "none";
 				    	ezcropInfo.style.display = "block";
 				    	ezcropPreview.style.display = "block";
-				    	empty("container"); 
+				    	empty("container");
 			    	}
 			    	document.querySelectorAll(".ezcrop-image-zoom-input")[0].removeAttribute("disabled");
 			    });
-			} 
-		    
+			}
+
 		   	//retouche par lot
 			var deleteClass = document.querySelectorAll('.photoNail');
 		   	if(deleteClass!=null){
@@ -1519,12 +1519,12 @@ document.addEventListener('DOMContentLoaded', function() {
 			   		link.addEventListener('click', function(e) {
 			   			var thumbnail = document.querySelectorAll('.thumbnail');
 			   			Array.from(thumbnail).forEach(function(thumb) {
-			   				thumb.style.border =  "none"; 
+			   				thumb.style.border =  "none";
 			   			});
-			   			this.parentElement.style.border =  "2px solid red"; 
+			   			this.parentElement.style.border =  "2px solid red";
 			   			document.getElementById('cardId').value=  this.id;
 						var url = photorUrl +  this.id;
-						
+
 						//on réinitialise
 			   			var sliders = document.getElementById('filterSliders');
 						sliders.style.display = "none";
@@ -1534,22 +1534,22 @@ document.addEventListener('DOMContentLoaded', function() {
 				    	filterSliders.style.display = "none";
 				    	ezcropInfo.style.display = "block";
 				    	ezcropPreview.style.display = "block";
-				    	empty("container"); 
+				    	empty("container");
 				        var sliders = document.querySelectorAll('#filterSliders input');
 				        if(sliders != null){
 				    	   	Array.from(sliders).forEach(function(link) {
 				    	   		return link.value = 0;
 				    	   	});
 				    	}
-				        
+
 						cropper.img.src = url;
 						cropper.previewSize = {width: 150, height: 188};
 				    	cropper.options.exportZoom = photoExportZoom;
 			   		});
 				});
-			   	
+
 			   	if(typeof updatePhototUrl != "undefined"){
-			   		retouchePhoto.addEventListener('submit', function(e) {	  
+			   		retouchePhoto.addEventListener('submit', function(e) {
 			   			e.preventDefault();
 						var request = new XMLHttpRequest();
 						request.open('POST', updatePhototUrl, true);
@@ -1561,7 +1561,7 @@ document.addEventListener('DOMContentLoaded', function() {
 								  document.querySelectorAll('.ezcrop-preview-image')[0].removeAttribute("src");
 								  document.getElementById("cardId").value="";
 								  document.querySelectorAll('.ezcrop-image-data')[0].value="";
-								  empty("container"); 
+								  empty("container");
 							  } catch(e){
 								  console.log(e);
 							  }
@@ -1573,7 +1573,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			   	if(typeof actionUrl != "undefined"){
 			   		var retoucheAction = document.querySelectorAll('.retoucheAction');
 			   		Array.from(retoucheAction).forEach(function(link) {
-			   			link.addEventListener('submit', function(e) {	 
+			   			link.addEventListener('submit', function(e) {
 			   				var etatFinal = this[2].value;
 			   				e.preventDefault();
 							var request = new XMLHttpRequest();
@@ -1595,9 +1595,9 @@ document.addEventListener('DOMContentLoaded', function() {
 							request.send(new FormData(this));
 				   		});
 			   		});
-				}			   	
+				}
 		   	}
-		    
+
 	}
 	//WEBCAM formulaire de demande
 	var webcam = document.getElementById('webCam');
@@ -1627,7 +1627,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    })
 	    }
 	 }
-	 
+
 	//Popover image Template interface
 	var templateCardsListPopover = document.querySelectorAll('#templateCardsList .photo img');
 	if(templateCardsListPopover != null){
@@ -1639,11 +1639,11 @@ document.addEventListener('DOMContentLoaded', function() {
 				});
 		}
 	}
-	 
+
     if(document.getElementById('_cssStyle_id') != null){
 	    document.getElementById('_cssStyle_id').addEventListener('keyup', function() {
 	    	remove("mainStyle");
-	    	document.getElementById('specimenCarte').insertAdjacentHTML('beforeend','<style id="mainStyle">'+ this.value + '</style>');  
+	    	document.getElementById('specimenCarte').insertAdjacentHTML('beforeend','<style id="mainStyle">'+ this.value + '</style>');
 	    });
     }
     if(document.getElementById('_cssMobileStyle_id') != null){
@@ -1661,8 +1661,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	        }
 	    });
     }
-    
-    //Validation formulaire demande de carte 
+
+    //Validation formulaire demande de carte
 	var radio1 = document.getElementById("radio1");
 	var radio2 = document.getElementById("radio2");
 	var radio3 = document.getElementById("radio3");
@@ -1681,7 +1681,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	      	if(document.getElementById('confirmPreview').value == "false"){
 	    		alert (messages['alertPreview']);
 	    		e.preventDefault();
-	    	}    
+	    	}
 	     	if(radio1 != null && !radio1.checked && !radio2.checked){
 	    		alert (messages['alertCrous']);
 	    		e.preventDefault();
@@ -1689,11 +1689,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	     	if(radioEurope1 != null && !radioEurope1.checked  && !radioEurope2.checked){
 	    		alert (messages['alertEurope']);
 	    		e.preventDefault();
-	    	}      	
+	    	}
 	     	if(radioCnil1!= null && !radioCnil1.checked && !radioCnil2.checked){
 	    		alert (messages['alertCnil']);
 	    		e.preventDefault();
-	    	}   
+	    	}
 	     	if(reglement!= null && !reglement.checked){
 	    		alert (messages['alertRules']);
 	    		e.preventDefault();
@@ -1704,7 +1704,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	     	}
 	    });
 	}
-	
+
 	/* CROUS RightHolder API View*/
 	var crousRighHolder  = document.getElementById("getCrousRighHolder");
 	if(crousRighHolder != null){
@@ -1743,7 +1743,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			request.send();
 		});
 	});
-	
+
 	/* ESCR Student API View*/
 	var escrStudent  = document.getElementById("getEscrStudent");
 	if(escrStudent != null){
@@ -1782,7 +1782,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			request.send();
 		});
 	});
-	
+
     //Cartes : sélection du message à envoyer
 	document.addEventListener('click', function(e) {
 	  if (e.target && /^msg_/.test(e.target.id)){
@@ -1791,7 +1791,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.getElementById(e.target.id.replace(/^msg((_\d)+)_(\d)/, "comment$1")).value = comment;
 	  }
 	})
-	
+
     //Tabs Configs
 	var tabsConfig = document.querySelectorAll('#configList .nav-tabs li a');
    	Array.from(tabsConfig).forEach(function(link) {
@@ -1807,10 +1807,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	    	}
 	    });
 	});
-   	
+
    	//configs
    	var appliConfig = document.getElementById('appliConfig');
-   	if(appliConfig != null){ 
+   	if(appliConfig != null){
    		appliConfig.addEventListener('submit', function(e) {
    			document.getElementById("valeur").value = document.querySelectorAll(".input_editor")[0].contentDocument.body.innerHTML;
    		});
@@ -1828,11 +1828,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			document.getElementById("searchCsvForm").submit();
 		});
    	}
-   	
+
    	//Configs
    	var boolGroup = document.getElementById("boolGroup");
    	if(boolGroup != null){
-   	   	boolGroup.style.display = "none";	
+   	   	boolGroup.style.display = "none";
    	}
 	var valeur = document.getElementById("hiddenValeur");
 	if(valeur != null){
@@ -1841,7 +1841,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if(typeConfig != null){
 			displayFormconfig(typeConfig.value,12, valeur.value);
 		}
-		
+
 		var radioType = document.querySelectorAll('input[type=radio][name=type]');
 	   	Array.from(radioType).forEach(function(link) {
 	   		return link.addEventListener('click', function(event) {
@@ -1862,13 +1862,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	// impression des cartes - popup
     var inprintForm = document.getElementById("IN_PRINTForm");
-    if(inprintForm != null){
+    if(inprintForm != null && !printerEppn){
    	 inprintForm.addEventListener('submit', function(e) {
    	    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
    	   	    this.target = 'formprint';
-  		}); 
+  		});
     }
-    
+
     //Messages modal
     var dialogMsg = document.querySelector('#messageModal #dialog');
     if(dialogMsg != null){
@@ -1876,8 +1876,8 @@ document.addEventListener('DOMContentLoaded', function() {
     	var myModalInstance = new Modal(messageModal);
     	myModalInstance.show();
     }
-    
-    /* SEARCH LONG POLL */	
+
+    /* SEARCH LONG POLL */
 	var searchLongPoll = {
 			debug : false,
 			run : false,
@@ -1901,7 +1901,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (this.run && this.timer != null) {
 			clearTimeout(this.timer);
 		}
-		run = false;		
+		run = false;
 	}
 
 	searchLongPoll.load = function() {
@@ -1919,10 +1919,10 @@ document.addEventListener('DOMContentLoaded', function() {
 						setTimeout(function(){
 							searchLongPoll.timer = searchLongPoll.poll();
 						}, 2000);
-					}		    
+					}
 			  }
 			};
-			request.onerror = function(){  
+			request.onerror = function(){
 				 // Plus de session (et redirection CAS) ou erreur autre ... on stoppe pour ne pas boucler
 				console.log("searchLongPoll stoppé ");
 				};
@@ -1933,14 +1933,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (this.timer != null) {
 			clearTimeout(this.timer);
 		}
-		//return $(this).delay(1000).load(); 
-		setTimeout(searchLongPoll.load(), 1000);    
+		//return $(this).delay(1000).load();
+		setTimeout(searchLongPoll.load(), 1000);
 	}
 	if(typeof sgcRootUrl != "undefined") {
 		searchLongPoll.start();
 	}
 	/* SEARCH LONG POLL - END*/
-	
+
 	//Popover image liste carte
 	var cardListPopover = document.querySelectorAll('#cardList .photo img');
 	if(cardListPopover != null){
@@ -1952,7 +1952,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				});
 		}
 	}
-	
+
 	//Footer
 	var footer =  document.querySelector('#footer span');
 	if(footer != null){
@@ -1985,19 +1985,19 @@ document.addEventListener('DOMContentLoaded', function() {
 				 }
 			});
    			searchEppnForm.submit();
-   	    }); 
+   	    });
    	})
    	//Message d'attente lors de la désactivaction/réactivation de carte
  	var edActionForm = document.querySelectorAll('.edActionForm');
    	Array.from(edActionForm).forEach(function(link) {
    		link.addEventListener('submit', function(evt) {
 	   		//evt.preventDefault();
-	   		this.insertAdjacentHTML('beforeend',"<br /><br /<div class='well'><img src='" + loader_url + "'/><strong id='strongText' class='text-danger'> Veuillez patienter ...</strong></div>");  
-	   		document.getElementById('strongText').style.fontSize = "large"; 
+	   		this.insertAdjacentHTML('beforeend',"<br /><br /<div class='well'><img src='" + loader_url + "'/><strong id='strongText' class='text-danger'> Veuillez patienter ...</strong></div>");
+	   		document.getElementById('strongText').style.fontSize = "large";
 		});
    	});
-   	
-   	
+
+
    	// /admin/actionmessages/update.jspx
     var mailToInput = document.getElementById("mailTo");
     if(mailToInput != null){
@@ -2007,7 +2007,27 @@ document.addEventListener('DOMContentLoaded', function() {
     		    }
     	});
     }
-   	
+
+	// cardActionMessage : Nombre de jours avant la date de fin utilisateur uniquement pour ENABLED -> CADUC
+	var cardActionMessageForm = document.getElementById("cardActionMessage");
+	if(cardActionMessageForm!=null) {
+		var etatInitial = document.getElementById("etatInitial");
+		var etatFinal = document.getElementById("etatFinal");
+		etatInitial.addEventListener('change', updateDateDelay4PreventCaducDisabled);
+		etatFinal.addEventListener('change', updateDateDelay4PreventCaducDisabled);
+		function updateDateDelay4PreventCaducDisabled(e) {
+			var dateDelay4PreventCaduc = document.getElementById("dateDelay4PreventCaduc");
+			if (etatInitial.value == 'ENABLED' && etatFinal.value == 'CADUC') {
+				dateDelay4PreventCaduc.removeAttribute("disabled");
+			} else {
+				dateDelay4PreventCaduc.setAttribute("value", "");
+				dateDelay4PreventCaduc.setAttribute("disabled", "disabled");
+			}
+		}
+		updateDateDelay4PreventCaducDisabled();
+	}
+
+
 })
 
 window.onload = window.onresize = function() {

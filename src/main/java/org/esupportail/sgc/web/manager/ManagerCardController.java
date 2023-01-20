@@ -184,16 +184,27 @@ public class ManagerCardController {
 	}
 
 	@ModelAttribute("printers")
-	public List<Printer> getPrinters() {
+	public SortedMap<Printer, Boolean> getPrinters() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		return printerService.getPrinters(eppn);
 	}
 
+	@ModelAttribute("currentPrinter")
+	public Printer getCurrentPrinter(@SessionAttribute(required = false) String printerEppn) {
+		if(!StringUtils.isEmpty(printerEppn)) {
+			return Printer.findPrintersByEppn(printerEppn).getSingleResult();
+		}
+		return null;
+	}
+
 	@ModelAttribute("printerEppn")
 	public String getPrinterEppn(@SessionAttribute(required = false) String printerEppn) {
-		if(StringUtils.isEmpty(printerEppn) && getPrinters().size()>0) {
-			printerEppn = getPrinters().get(0).getEppn();
+		if(StringUtils.isEmpty(printerEppn)) {
+			SortedMap<Printer, Boolean> printers = getPrinters();
+			if(printers.size()>0) {
+				printerEppn = printers.firstKey().getEppn();
+			}
 		}
 		return printerEppn;
 	}
@@ -335,7 +346,7 @@ public class ManagerCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 
-		if(Etat.IN_PRINT.equals(etatFinal) && (Etat.REQUEST_CHECKED.equals(card.getEtat()) || eppn.equals(card.getEtatEppn()))) {
+		if(Etat.IN_PRINT.equals(etatFinal) && (Etat.REQUEST_CHECKED.equals(card.getEtat()) || eppn.equals(card.getEtatEppn())) && StringUtils.isEmpty(printerEppn)) {
 			if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
 				uiModel.addAttribute("cards", Arrays.asList(new Card[]{card}));
 			}
@@ -563,7 +574,7 @@ public class ManagerCardController {
     		log.error("Erreur lors de la mise à jour des demandes de carte pour les ids suivant : " + listeIdsErrors);
     	}
 
-    	if(Etat.IN_PRINT.equals(etatFinal)) {
+    	if(Etat.IN_PRINT.equals(etatFinal) && StringUtils.isEmpty(printerEppn)) {
     		uiModel.addAttribute("cards", cards);
     		return "manager/print-card";
     	}

@@ -13,7 +13,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -87,20 +86,18 @@ public class Printer {
         return q;
     }
 
-    public static TypedQuery<Printer> findPrintersByEppnInPrinterUsers(String eppn, Collection<String> eppns) {
+    public static TypedQuery<Printer> findPrintersByEppnInPrinterUsers(String eppn) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         EntityManager em = Printer.entityManager();
-        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o WHERE :eppn MEMBER OF o.printerUsers AND o.eppn IN (:eppns)", Printer.class);
+        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o WHERE :eppn MEMBER OF o.printerUsers", Printer.class);
         q.setParameter("eppn", eppn);
-        q.setParameter("eppns", eppns);
         return q;
     }
 
-    public static TypedQuery<Printer> findPrintersByEppnInPrinterGroups(List<String> groups, Collection<String> eppns) {
+    public static TypedQuery<Printer> findPrintersByEppnInPrinterGroups(List<String> groups) {
         EntityManager em = Printer.entityManager();
-        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o JOIN o.printerGroups g WHERE g IN (:groups) AND o.eppn IN (:eppns)", Printer.class);
+        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o JOIN o.printerGroups g WHERE g IN (:groups)", Printer.class);
         q.setParameter("groups", groups);
-        q.setParameter("eppns", eppns);
         return q;
     }
 

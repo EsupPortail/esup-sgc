@@ -10,4 +10,10 @@
 <definition extends="default" name="admin/logmails/findLogMailsByLogDateLessThan">
         <put-attribute name="body" value="/WEB-INF/views/admin/logmails/findLogMailsByLogDateLessThan.jspx"/>
     </definition>
+<definition extends="default" name="admin/logmails/findLogMailsByEppn">
+        <put-attribute name="body" value="/WEB-INF/views/admin/logmails/findLogMailsByEppn.jspx"/>
+    </definition>
+<definition extends="default" name="admin/logmails/findLogMailsByCardActionMessage">
+        <put-attribute name="body" value="/WEB-INF/views/admin/logmails/findLogMailsByCardActionMessage.jspx"/>
+    </definition>
 </tiles-definitions>
