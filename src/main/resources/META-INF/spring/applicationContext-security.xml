@@ -23,7 +23,6 @@
 		<intercept-url pattern="/wsrest/nfc/check4encode" access="permitAll" />
         <intercept-url pattern="/wsrest/nfc/qrcode2edit" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/card-bmp-b64" access="permitAll" />
-        <intercept-url pattern="/wsrest/nfc/card-encoded-printed" access="permitAll" />
         <intercept-url pattern="/wsrest/nfc/encodePrintHeartbeat" access="permitAll" />        
 		<intercept-url pattern="/wsrest/nfc/getVersoText" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/getSecondaryId" access="permitAll" />
