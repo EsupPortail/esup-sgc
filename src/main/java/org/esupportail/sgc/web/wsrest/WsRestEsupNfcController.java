@@ -634,14 +634,14 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/qrcode2edit", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public DeferredResult<String> qrcode2edit(@RequestParam String authToken) {
-		String eppnInit = clientJWSController.getEppnInit(authToken);
-		if(eppnInit == null) {
+		String printerEppn = clientJWSController.getEppnInit(authToken);
+		if(printerEppn == null) {
 			log.info("Bad authotoken : " + authToken);
 			DeferredResult emptyResult = new DeferredResult();
 			emptyResult.setResult("");
 			return emptyResult;
 		}
-		List<Card> cards = Card.findCardsByEtatEppnEqualsAndEtatEquals(eppnInit, Etat.IN_PRINT).getResultList();
+		List<Card> cards = Card.findCardsByEtatEppnEqualsAndEtatEquals(printerEppn, Etat.IN_PRINT).getResultList();
 		if(cards.size() > 0 ) {
 			log.info("qrcode2edit from DB : " + cards.get(0).getQrcode());
 			DeferredResult dbResult = new DeferredResult();
@@ -649,7 +649,7 @@ public class WsRestEsupNfcController {
 			return dbResult;
 		} else {
 			// long poll
-			return encodeAndPringLongPollService.qrcode2edit(eppnInit);
+			return encodeAndPringLongPollService.qrcode2edit(printerEppn);
 		}
 	}
 

@@ -220,6 +220,9 @@ public class Card {
 
     @Column
     public String diversDamBaseKey;
+
+    @Column
+    private String printerEppn;
 	
 	@PreUpdate
 	@PrePersist
@@ -326,6 +329,14 @@ public class Card {
     	return getUserAccount().getEmail();
     }
 
+    public String getPrinterEppn() {
+        return printerEppn;
+    }
+
+    public void setPrinterEppn(String printerEppn) {
+        this.printerEppn = printerEppn;
+    }
+
     public void removeEtatAvailable(Etat etat) {
         List<Etat> etatsAvailable = new ArrayList<Etat>(getEtatsAvailable());
         etatsAvailable.remove(etat);
@@ -401,10 +412,10 @@ public class Card {
         return ((Long) q.getSingleResult());
     }
 
-    public static TypedQuery<Card> findCardsByEtatEppnEqualsAndEtatEquals(String etatEppn, Etat etat) {
+    public static TypedQuery<Card> findCardsByEtatEppnEqualsAndEtatEquals(String printerEppn, Etat etat) {
         EntityManager em = Card.entityManager();
-        TypedQuery q = em.createQuery("SELECT o FROM Card AS o WHERE o.etatEppn = :etatEppn AND o.etat = :etat ORDER BY o.dateEtat asc", Card.class);
-        q.setParameter("etatEppn", etatEppn);
+        TypedQuery q = em.createQuery("SELECT o FROM Card AS o WHERE o.printerEppn = :printerEppn AND o.etat = :etat ORDER BY o.dateEtat asc", Card.class);
+        q.setParameter("printerEppn", printerEppn);
         q.setParameter("etat", etat);
         return  q;
     }
