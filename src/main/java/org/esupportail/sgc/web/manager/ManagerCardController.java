@@ -346,10 +346,6 @@ public class ManagerCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 
-		if(!StringUtils.isEmpty(printerEppn)) {
-			card.setPrinterEppn(printerEppn);
-		}
-
 		if(Etat.IN_PRINT.equals(etatFinal) && (Etat.REQUEST_CHECKED.equals(card.getEtat()) || eppn.equals(card.getEtatEppn())) && StringUtils.isEmpty(printerEppn)) {
 			if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
 				uiModel.addAttribute("cards", Arrays.asList(new Card[]{card}));

@@ -166,8 +166,8 @@ public class CardEtatService {
 		
 		card.setEtat(etat);
 		card.setEtatEppn(eppn);
-		if(Etat.ENCODED.equals(etat) && !StringUtils.isEmpty(printerEppn)) {
-			card.setEtatEppn(printerEppn);
+		if(!StringUtils.isEmpty(printerEppn)) {
+			card.setPrinterEppn(printerEppn);
 		}
 		card.setDateEtat(new Date());
 		card.setCommentaire(comment);
@@ -220,7 +220,7 @@ public class CardEtatService {
 		}
 		card.setEtatsAvailable(workflow.get(card.getEtat()));
 		if(Etat.IN_PRINT.equals(card.getEtat()) || Etat.IN_ENCODE.equals(card.getEtat())) {
-			if(!eppn.equals(card.getEtatEppn()) && !card.getEtatEppn().equals(printerEppn)) {
+			if(!(eppn.equals(card.getEtatEppn()) || printerEppn!=null && card.getPrinterEppn()!=null && card.getPrinterEppn().equals(printerEppn))) {
 				card.setEtatsAvailable(new ArrayList<Etat>());
 			}
 		}
