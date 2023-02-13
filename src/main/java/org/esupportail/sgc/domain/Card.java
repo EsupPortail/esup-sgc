@@ -1200,5 +1200,12 @@ public class Card {
 		return String.format("%s-%s-%s-%s-%s", escnHexa.substring(0, 8), escnHexa.substring(8, 12), escnHexa.substring(12, 16), escnHexa.substring(16, 20), escnHexa.substring(20, 32));
 	}
 
+    public static TypedQuery<Card> findCardsByTemplate(TemplateCard templateCard) {
+        EntityManager em = Card.entityManager();
+        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.templateCard=:templateCard", Card.class);
+        q.setParameter("templateCard", templateCard);
+        return q;
+    }
+
 }
 

@@ -3,23 +3,31 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,6 +68,9 @@ public class TemplateCardController {
 	
 	@Resource	
 	TemplateCardService templateCardService;
+
+	@Resource
+	EsupSgcBmpAsBase64Service esupSgcBmpAsBase64Service;
 	
   @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String create(@Valid TemplateCard templateCard, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) throws IOException {
@@ -239,6 +250,22 @@ public class TemplateCardController {
 		}
 		
     	return jsonInString;
+	}
+
+
+	@RequestMapping(value="/bmp")
+	@Transactional
+	public @ResponseBody byte[] getBmp4test(@RequestParam Long templateId, @RequestParam EsupSgcBmpAsBase64Service.BmpType type, HttpServletResponse response) throws IOException, SQLException {
+		TemplateCard templateCard = TemplateCard.findTemplateCard(templateId);
+		if(templateCard != null) {
+			List<Card> cards = Card.findCardsByTemplate(templateCard).getResultList();
+			if (!cards.isEmpty()) {
+				Card card = cards.get(0);
+				String bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), type);
+				return Base64.decodeBase64(bmpAsBase64);
+			}
+		}
+		return null;
 	}
     
 }

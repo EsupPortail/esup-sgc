@@ -5,6 +5,7 @@
     <spring:url value="/admin/templatecards/photo/" var="photoLocalPrefix"/>
     <spring:url value="/manager/searchEppn" var="searchEppnUrl"/>
     <spring:url value="/admin/templatecards/fillTemplate" var="submitUrl"/>
+    <spring:url value="/admin/templatecards/bmp" var="bmpUrl"/>
     <script type="text/javascript">
 		var searchEppnUrl = '${searchEppnUrl}';
 		var submitUrl = '${submitUrl}';
@@ -114,6 +115,19 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h5>Prévisualisation BMP - édition en 1 temps</h5>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-6">
+                    <img src="${bmpUrl}?templateId=${templatecard.id}&amp;type=black" class="img-thumbnail"/>
+                </div>
+                <div class="col-lg-6">
+                    <img src="${bmpUrl}?templateId=${templatecard.id}&amp;type=color" class="img-thumbnail"/>
                 </div>
             </div>
         </div>

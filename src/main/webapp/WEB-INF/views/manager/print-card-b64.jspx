@@ -44,8 +44,6 @@
 		</style>
 	</c:if>
 
-	 	<c:set var="cssId" value="specimenCarte" />
-		<c:set var="css" value = "${fn:replace(card.user.templateCard.cssStyle, 'specimenCarte', cssId)}" />
 		<style>
 			@media screen {
 				#specimenCarte {

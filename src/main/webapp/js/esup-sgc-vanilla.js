@@ -342,11 +342,16 @@ function multiUpdateForm(idArray) {
 				}
 			  //Actions
 			  var inprintForm = document.getElementById("IN_PRINTForm");
-			  if(inprintForm != null && !printerEppn){
-				  inprintForm.addEventListener('submit', function(e) {
-			   	    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
-			   	    	this.target = 'formprint';
-			  	  });
+			  if(inprintForm != null){
+				  if(printerEppn) {
+					  var inprintBtn = inprintForm.querySelector('button');
+					  inprintBtn.textContent = "Imprimer et encoder";
+				  } else {
+					  inprintForm.addEventListener('submit', function(e) {
+						  window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
+						  this.target = 'formprint';
+					  });
+				  }
 			  }else if(document.getElementById("REJECTEDForm") !=null){
 					var myButton = document.getElementById('REJECTEDBtn');
 					var myModalInstance = new Modal(myButton);
@@ -1862,12 +1867,17 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	// impression des cartes - popup
     var inprintForm = document.getElementById("IN_PRINTForm");
-    if(inprintForm != null && !printerEppn){
-   	 inprintForm.addEventListener('submit', function(e) {
-   	    	window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
-   	   	    this.target = 'formprint';
-  		});
-    }
+	if(inprintForm != null){
+		if(printerEppn) {
+			var inprintBtn = inprintForm.querySelector('button');
+			inprintBtn.textContent = "Imprimer et encoder";
+		} else {
+			inprintForm.addEventListener('submit', function(e) {
+				window.open('', 'formprint', 'width=800,height=600,resizeable,scrollbars,menubar');
+				this.target = 'formprint';
+			});
+		}
+	}
 
     //Messages modal
     var dialogMsg = document.querySelector('#messageModal #dialog');

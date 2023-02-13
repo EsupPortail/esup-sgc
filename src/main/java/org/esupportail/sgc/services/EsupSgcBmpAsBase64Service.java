@@ -21,12 +21,14 @@ import java.nio.file.Files;
 @Service
 public class EsupSgcBmpAsBase64Service {
 
+    public enum BmpType {black, color};
+
 	static Logger log = LoggerFactory.getLogger(EsupSgcBmpAsBase64Service.class);
 
     @Resource
     AppliConfigService appliConfigService;
 
-    public String getBmpCard(Long cardId, String type) {
+    public String getBmpCard(Long cardId, BmpType type) {
         StopWatch stopWatch = new PrettyStopWatch();
         if("overlay".equals(type)) {
             return defaultFullOverlayBmp();
@@ -36,7 +38,7 @@ public class EsupSgcBmpAsBase64Service {
         File tmpdirFile = null;
         try {
             String bmpCardCommand = appliConfigService.getBmpCardCommandColor4printer();
-            if("black".equals(type)) {
+            if(BmpType.black.equals(type)) {
                 bmpCardCommand = appliConfigService.getBmpCardCommandBlack4printer();
             }
             tmpdirFile = Files.createTempDirectory(cardId.toString() + "-" + type).toFile();
@@ -73,7 +75,11 @@ public class EsupSgcBmpAsBase64Service {
             throw new RuntimeException("cmd launch error : check installation", e);
         } finally {
             if(tmpdirFile!=null) {
-                tmpdirFile.delete();
+                try {
+                    FileUtils.deleteDirectory(tmpdirFile);
+                } catch (IOException e) {
+                   log.warn("Can't delete " + tmpdirFile.getPath(), e);
+                }
             }
         }
         return bmpCard;

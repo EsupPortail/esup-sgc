@@ -610,7 +610,7 @@ public class WsRestEsupNfcController {
 
 	@RequestMapping(value = "/card-bmp-b64", method = RequestMethod.GET, produces =  MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
-	public ResponseEntity<String> getCardBmpB64(@RequestParam String authToken, @RequestParam String qrcode, @RequestParam String type) {
+	public ResponseEntity<String> getCardBmpB64(@RequestParam String authToken, @RequestParam String qrcode, @RequestParam EsupSgcBmpAsBase64Service.BmpType type) {
 		log.debug("getCardBmpB64 with qrcode = " + qrcode);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);

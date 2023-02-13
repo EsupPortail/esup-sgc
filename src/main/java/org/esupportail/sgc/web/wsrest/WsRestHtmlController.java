@@ -120,6 +120,7 @@ public class WsRestHtmlController {
 		uiModel.addAttribute("qrcodeBase64", qrcodeBase64);
 		uiModel.addAttribute("card", card);
 		uiModel.addAttribute("type", type);
+		uiModel.addAttribute("css", templateCard.getCssStyle());
 		return "manager/print-card-b64";
 	}
 

@@ -5,6 +5,9 @@
     <spring:url value="/manager/photo/" var="photoLocalPrefix"/>
     <spring:url value="/manager/stats" var="statsPage"/>
     <spring:url value="/manager/ldapSearch" var="ldapUrl"/>
+    <script type="text/javascript">
+        printerEppn = '${printerEppn}';
+    </script>
     <h2>Gestion des cartes 
 	    <a class="btn btn-warning navbar-btn navbar-right" href="${statsPage}" id="btnStats" title="Statistiques">
             <span class="glyphicon glyphicon-stats"/>
