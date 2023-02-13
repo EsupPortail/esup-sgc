@@ -5,9 +5,10 @@
 			<div class="nav navbar-nav navbar-right">
 				<spring:url value="/manager/setPrinterEppn" var="setPrinterEppnUrl"/>
 				<form action="${setPrinterEppnUrl}">
+					<span class="glyphicon ${printers[currentPrinter] ? 'text-success glyphicon-ok-sign' : 'text-danger glyphicon-minus-sign'}"><!-- --></span>
 					<select name="printerEppn" class="btn ${printers[currentPrinter] ? 'text-success' : 'text-danger'}" onchange="this.form.submit()">
+						<option value="">Aucune imprimante sélectionnée</option>
 						<c:forEach items="${printers}" var="printer">
-							<option value="">Aucune imprimante sélectionnée</option>
 							<c:choose>
 								<c:when test="${printerEppn == printer.key.eppn}">
 									<option value="${printer.key.eppn}" selected="selected">${printer.key.label}</option>

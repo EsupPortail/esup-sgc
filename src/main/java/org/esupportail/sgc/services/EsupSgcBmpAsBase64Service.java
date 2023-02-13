@@ -21,7 +21,7 @@ import java.nio.file.Files;
 @Service
 public class EsupSgcBmpAsBase64Service {
 
-    public enum BmpType {black, color};
+    public enum BmpType {black, overlay, color};
 
 	static Logger log = LoggerFactory.getLogger(EsupSgcBmpAsBase64Service.class);
 
@@ -30,7 +30,7 @@ public class EsupSgcBmpAsBase64Service {
 
     public String getBmpCard(Long cardId, BmpType type) {
         StopWatch stopWatch = new PrettyStopWatch();
-        if("overlay".equals(type)) {
+        if(BmpType.overlay.equals(type)) {
             return defaultFullOverlayBmp();
         }
         stopWatch.start("getBmpCard for card " + cardId + " / " + type);
