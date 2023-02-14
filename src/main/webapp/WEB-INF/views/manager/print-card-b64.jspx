@@ -15,8 +15,14 @@
 	</script>
 					
 	<style>
+
+	  html, body {
+	  /*changing width to 100% causes huge overflow and wrap*/
+	  height:100%; 
+	  overflow: hidden;
+	  }
+
 		@page {
-            height: 100%;
 			margin: 0;
 			padding: 0;
 			size: 8.57cm 5.403cm;
