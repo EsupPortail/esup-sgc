@@ -14,38 +14,36 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class CsvExportPcPassService implements Export2AccessControlService, SmartLifecycle {
+public class CsvExportPcPassService implements Export2AccessControlService {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	final static String ENCODING_PCPASS = "UTF-8";
 	
 	private final static String CSV_FILENAME =  "pcpass.csv";
-	
-	private boolean isRunning = false;
-	
+
 	private String eppnFilter = ".*";
 	
 	AccessService accessService;
 	
 	@Resource
 	CardEtatService cardEtatService;
-	
-	@Resource
-	AppliConfigService appliConfigService;
 
-	private Set<String> queueEppns2Update = new HashSet<String>();
-	
+	Map<String, String> queueEppns2Update = new HashMap<>();
 
 	public String getEppnFilter() {
 		return eppnFilter;
@@ -60,14 +58,19 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 	}
 	
 	public void sync(List<String> eppns) throws IOException {
-		synchronized (queueEppns2Update) {
-			log.info("Ajout de " + eppns + " à la liste des eppns à mettre à jour dans PCPASS - maj par paquet tous les jours");
-			queueEppns2Update.addAll(eppns);
+		log.info("Ajout de " + eppns + " à la liste des eppns à mettre à jour dans PCPASS - maj par paquet tous les jours");
+		for(String eppn : eppns) {
+			queueEppns2Update.put(eppn, sgc2csv(Arrays.asList(eppn)).toString());
 		}
-	} 
-	
-	public boolean syncNow(List<String> eppns) throws IOException {
-		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_PCPASS);
+	}
+
+	synchronized boolean flush() throws IOException {
+		log.info("Maj PCPASS par paquet pour les eppns : " + queueEppns2Update.keySet());
+		String csvString = "nom;prenom;CSN;type population;Leocode;date début validité; date fin validité;uid\r\n";
+		for(String csv : queueEppns2Update.values()) {
+			csvString += csv;
+		}
+		InputStream csv = IOUtils.toInputStream(csvString, ENCODING_PCPASS);
 		String filename = CSV_FILENAME;
 		return accessService.putFile(null, filename, csv, false);
 	} 
@@ -77,30 +80,21 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 	 * Majs sur PCPASS par paquets - tous les jours
 	 */
 	public void sync(String eppn) throws IOException {
-		synchronized (queueEppns2Update) {
-			log.info("Ajout de " + eppn + " à la liste des eppns à mettre à jour dans PCPASS - maj par paquet tous les jours");
-			queueEppns2Update.add(eppn);
-		}
+		sync(Arrays.asList(eppn));
 	}
 	
 	@Transactional
 	@Scheduled(cron="0 0 10 * * *")
-	private void export2PcPassSqueue() throws IOException {
-		synchronized (queueEppns2Update) {
-			if(!queueEppns2Update.isEmpty()) {
-				List<String> eppns = new ArrayList<String>(queueEppns2Update);
-				log.info("Maj PCPASS par paquet pour les eppns : " + eppns);
-				if(this.syncNow(eppns)) {
-					queueEppns2Update = new HashSet<String>();
-				}
+	void export2PcPassSqueue() throws IOException {
+		if(!queueEppns2Update.isEmpty()) {
+			if(this.flush()) {
+				queueEppns2Update = new HashMap<>();
 			}
 		}
 	}
 	
 	private StringBuffer sgc2csv(List<String> eppn4Update) {
-
 		StringBuffer sBuffer = new StringBuffer();
-		sBuffer.append("nom;prenom;CSN;type population;Leocode;date début validité; date fin validité;uid\r\n");
 		List<Card> cards = cardEtatService.getAllEncodedCards(eppn4Update);
         for(Card card : cards) {
         	if(card.getEtat().equals(Etat.ENABLED) || card.getEtat().equals(Etat.DISABLED) || card.getEtat().equals(Etat.CADUC)) {
@@ -110,7 +104,6 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 				}
         	}
 		}
-        
         return sBuffer;
 	}
 
@@ -119,7 +112,7 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 	 * @return nom;prenom;CSN;type population;Leocode;date début validité; date fin validité;uid
 	 */
 	private String sgcId2csv(Card card) {
-		
+
 		ArrayList<String> fields = new ArrayList<String>();
 		
 		User user = card.getUser();
@@ -157,46 +150,20 @@ public class CsvExportPcPassService implements Export2AccessControlService, Smar
 		}
 		return dateFt;
 	}
-	
 
-	@Override
-	public void start() {
-		isRunning = true;
-	}
-
-	@Override
+	@PreDestroy
 	public void stop() {
+		// Hack : @PostConstruct / @PreDestroy : pas d'entitymanager dans les beans
+		// et log4j HS
 		try {
-			log.info("Serveur stoppé ... maj PCPASS par paquet appellé si besoin");
-			export2PcPassSqueue();
-		} catch (IOException e) {
-			log.error("Error during export2PcPassSqueue", e);
+			System.out.println("Serveur stoppé ... maj PCPASS par paquet appellé si besoin");
+			if(!queueEppns2Update.isEmpty()) {
+				System.out.println("Maj PCPASS par paquet pour les eppns : " + queueEppns2Update);
+				this.flush();
+			}
+		} catch (Exception e) {
+			System.err.println("Error during export2PcPassSqueue : " + e.getMessage());
 		}
-		isRunning = false;
 	}
-	
-
-	@Override
-	public void stop(Runnable callback) {
-		stop();
-		callback.run();
-	}
-
-	@Override
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	/** Run as early as possible so the shutdown method can still use transactions. */
-	@Override
-	public int getPhase() {
-		return Integer.MIN_VALUE;
-	}
-
-	@Override
-	public boolean isAutoStartup() {
-		return true;
-	}
-
 
 }
