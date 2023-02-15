@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.security.core.Authentication;
@@ -255,17 +256,18 @@ public class TemplateCardController {
 
 	@RequestMapping(value="/bmp")
 	@Transactional
-	public @ResponseBody byte[] getBmp4test(@RequestParam Long templateId, @RequestParam EsupSgcBmpAsBase64Service.BmpType type, HttpServletResponse response) throws IOException, SQLException {
+	public ResponseEntity<byte[]> getBmp4test(@RequestParam Long templateId, @RequestParam EsupSgcBmpAsBase64Service.BmpType type, HttpServletResponse response) throws IOException, SQLException {
 		TemplateCard templateCard = TemplateCard.findTemplateCard(templateId);
 		if(templateCard != null) {
-			List<Card> cards = Card.findCardsByTemplate(templateCard).getResultList();
-			if (!cards.isEmpty()) {
-				Card card = cards.get(0);
+			Card card =  Card.findOneCardForTemplate(templateCard);
+			if (card != null) {
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.parseMediaType("image/bmp"));
 				String bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), type);
-				return Base64.decodeBase64(bmpAsBase64);
+				return new ResponseEntity(Base64.decodeBase64(bmpAsBase64), headers, HttpStatus.OK);
 			}
 		}
-		return null;
+		return new ResponseEntity(null, null, HttpStatus.NOT_FOUND);
 	}
     
 }
