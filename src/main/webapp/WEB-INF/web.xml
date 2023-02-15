@@ -88,21 +88,11 @@
         <url-pattern>/j_spring_security_switch_user</url-pattern>
     </filter-mapping>
 
-    <!-- Creates the Spring Container shared by all Servlets and Filters -->
-    
-    <listener>
-		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-	</listener>
-    
+
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-    
 
 		
     <!-- Handles Spring requests -->
@@ -145,8 +135,12 @@
         <error-code>404</error-code>
         <location>/resourceNotFound</location>
     </error-page>
-    
-	<listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <listener>
 	  <listener-class>
 	    org.springframework.security.web.session.HttpSessionEventPublisher
 	  </listener-class>
