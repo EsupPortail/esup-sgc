@@ -157,8 +157,11 @@ public class CardEtatService {
 			userInfoService.setPrintedInfo(card);
 		}
 
-		if(Etat.IN_PRINT.equals(etat) && !StringUtils.isEmpty(printerEppn)) {
-		       encodeAndPringLongPollService.handleCard(printerEppn, card.getQrcode());
+		if(Etat.IN_PRINT.equals(etat)) {
+			if(!StringUtils.isEmpty(printerEppn)) {
+				encodeAndPringLongPollService.handleCard(printerEppn, card.getQrcode());
+			}
+			card.setPrinterEppn(printerEppn);
 		}
 
 
@@ -166,9 +169,6 @@ public class CardEtatService {
 		
 		card.setEtat(etat);
 		card.setEtatEppn(eppn);
-		if(!StringUtils.isEmpty(printerEppn)) {
-			card.setPrinterEppn(printerEppn);
-		}
 		card.setDateEtat(new Date());
 		card.setCommentaire(comment);
 		

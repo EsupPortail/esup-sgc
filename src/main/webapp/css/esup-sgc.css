@@ -504,9 +504,10 @@ span.icon-flipped{
     box-sizing: border-box;
 
 }
-.sun-editor .sun-editor-container{
+.sun-editor .se-container{
 	height: auto!important;
  }
+
  #searchLdapForm input{
  	margin: 10px 10px;
  }

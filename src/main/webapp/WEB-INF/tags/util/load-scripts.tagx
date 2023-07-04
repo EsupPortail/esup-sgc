@@ -1,5 +1,5 @@
-<jsp:root xmlns:c="http://java.sun.com/jsp/jstl/core" 
-          xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+<jsp:root xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:fn="http://java.sun.com/jsp/jstl/functions"
           xmlns:jsp="http://java.sun.com/JSP/Page"
           xmlns:sec="http://www.springframework.org/security/tags"
           xmlns:spring="http://www.springframework.org/tags" version="2.0">
@@ -9,7 +9,9 @@
 	<spring:url value="/webjars/bootstrap/css/bootstrap.min.css" var="bootstrap_css_url" />
 	<spring:url value="/webjars/awesomplete/awesomplete.css" var="awesome_css_url" />
 	<spring:url value="/resources/css/progress-wizard.min.css" var="progress_css_url" />
-	<spring:url value="/resources/css/suneditor.css" var="suneditor_css_url" />
+	<sec:authorize access="hasRole('ROLE_ADMIN')">
+		<spring:url value="/resources/css/suneditor.min.css" var="suneditor_css_url" />
+	</sec:authorize>
 	<spring:url value="/webjars/dragula/dist/dragula.min.css" var="dragula_css_url" />
 	<spring:url value="/webjars/slim-select/dist/slimselect.min.css" var="slimselect_css_url" />
 	<spring:url value="/resources/css/esup-sgc.css" var="esupSgc_css_url" />
@@ -19,7 +21,7 @@
 	<spring:url value="/webjars/konva/konva.min.js" var="konva_js_url" />
 	<spring:url value="/webjars/chartjs/Chart.min.js" var="chart_js_url" />
 	<spring:url value="/resources/js/esup-sgc_msg_fr.js" var="esup_sgc_msg_fr_url" />
-	
+
 	<spring:url value="/webjars/awesomplete/awesomplete.min.js" var="awesome_js_url" />
 	<spring:url value="/resources/js/suneditor.min.js" var="suneditor_js_url" />
 	<spring:url value="/webjars/exif-js/exif.js" var="exif_js_url" />
@@ -30,15 +32,15 @@
 	<spring:url value="/resources/js/chartjs-plugin-datalabels.min.js" var="chartjs_labels_url" />
 	<spring:url value="/resources/js/esup-sgc-vanilla.js" var="esupSgcVanilla_js_url" />
 	<spring:url value="/resources/images/favicon.png" var="favicon" />
-	
+
 	<link rel="SHORTCUT ICON" href="${favicon}" />
-	
+
 	<link rel="icon" type="image/png" href="/resources/images/favicon.png" />
 	<link rel="manifest" href="/resources/images/manifest.json" />
 	<meta name="msapplication-TileColor" content="#da532c" />
 	<meta name="msapplication-TileImage" content="/mstile-144x144.png" />
 	<meta name="theme-color" content="#ffffff" />
-  
+
 	<link rel="stylesheet" type="text/css" href="${bootstrap_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${slimselect_css_url}" />
 	<link rel="stylesheet" type="text/css" href="${esupSgc_css_url}" />
@@ -55,7 +57,9 @@
 	<script src="${konva_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${chart_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${awesome_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
-	<script src="${suneditor_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	<sec:authorize access="hasRole('ROLE_ADMIN')">
+		<script src="${suneditor_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
+	</sec:authorize>
 	<script src="${esup_sgc_msg_fr_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${dragula_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${exif_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
@@ -64,14 +68,14 @@
 	<script src="${equalDiv_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${chartjs_labels_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
 	<script src="${esupSgcVanilla_js_url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
-	
-	
+
+
 	<script type="text/javascript">
 		<sec:authorize access="hasRole('ROLE_MANAGER') || hasRole('ROLE_CONSULT')">
 		 	var sgcRootUrl = '<spring:url value="/"/>';
 		</sec:authorize>
 	</script>
-	
+
 </jsp:root>
 
 

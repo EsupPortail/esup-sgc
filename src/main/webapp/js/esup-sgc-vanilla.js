@@ -25,26 +25,20 @@ var suneditor = null;
 
 //Configs
 function createSunEditor(){
-  	SUNEDITOR.create('valeur',{
-   		 // new CSS font properties
-   	addFont: null,
-
-   	  // height/width of the editor
-   	width : '100%',
-    height : '150px',
-
-   	  // show/hide toolbar icons
-   	 buttonList : [
-         ['undo', 'redo'],
-         ['font', 'fontSize', 'formats'],
-         ['bold', 'underline', 'italic', 'strike', 'removeFormat'],
-         ['fontColor', 'hiliteColor'],
-         ['indent', 'outdent'],
-         ['align', 'line', 'list', 'table'],
-         ['link'],
-         ['fullScreen', 'codeView']
-     ]
+  	const editor = SUNEDITOR.create('valeur',{
+		// height/width of the editor
+		width: '100%',
+		height: '150px',
+		// show/hide toolbar icons
+		buttonList: [
+			['font', 'fontSize', 'formatBlock'],
+			['bold', 'underline', 'italic'],
+			['fontColor', 'hiliteColor'],
+			['align', 'horizontalRule', 'list', 'link'],
+			['codeView']
+		]
    	});
+	  return editor;
 }
 
 //Même hauteur pour les éléments sel
@@ -91,14 +85,17 @@ function displayFormconfig(val,col,valeur){
 				+'</label><label class="radio-inline"><input type="radio" name="value" id="boolFalse" value="false" ' + checkFalse +' /> False</label></div>';
 
 	var areaEditor = document.getElementById("areaEditor");
+	let textareaDiv;
 
     switch(val) {
-	    case 'HTML':
+		case 'HTML':
 	   	 	remove("boolGroup");
 	   	 	remove("valeur");
 	   	 	remove("suneditor_valeur");
-	   	 	areaEditor.insertAdjacentHTML('afterend', "<div class='col-md-" + col +"'><textarea class='form-control' id='valeur' name='value'>" + valeur + "</textarea></div>");
+			textareaDiv = document.createRange().createContextualFragment("<div class='col-md-" + col + "'><textarea class='form-control' id='valeur' name='value'></textarea></div>");
+	   	 	areaEditor.closest("div").after(textareaDiv);
 	   	 	suneditor = createSunEditor();
+			suneditor.setContents(valeur);
 	        break;
 	    case 'TEXT':
 	   	 	if(suneditor != null){
@@ -107,7 +104,8 @@ function displayFormconfig(val,col,valeur){
 	   	 	remove("suneditor_valeur");
 	   	 	remove("boolGroup");
 	   	 	remove("valeur");
-	   	 	areaEditor.insertAdjacentHTML('afterend', "<div class='col-md-" + col +"'><textarea class='form-control' id='valeur' name='value'>" + valeur + "</textarea></div>");
+			textareaDiv = document.createRange().createContextualFragment("<div class='col-md-" + col +"'><textarea class='form-control' id='valeur' name='value'>" + valeur + "</textarea></div>");
+	   	 	areaEditor.closest("div").after( textareaDiv);
 	        break;
 	    case 'BOOLEAN':
 	   	 	if(suneditor != null){
@@ -115,7 +113,7 @@ function displayFormconfig(val,col,valeur){
 	   	 	}
 	   	 	remove("suneditor_valeur");
 	   	 	remove("valeur");
-	   	 	areaEditor.insertAdjacentHTML('afterend', bool);
+	   	 	areaEditor.closest("div").after( document.createRange().createContextualFragment(bool));
 	        break;
     }
 }
@@ -211,6 +209,7 @@ function loadImages(sources, callback) {
     var lion = new Konva.Image({
       image: images.lion,
       x: 150,
+      y: 188,
       y: 188,
       width: 300,
       height: 376,
@@ -1817,7 +1816,7 @@ document.addEventListener('DOMContentLoaded', function() {
    	var appliConfig = document.getElementById('appliConfig');
    	if(appliConfig != null){
    		appliConfig.addEventListener('submit', function(e) {
-   			document.getElementById("valeur").value = document.querySelectorAll(".input_editor")[0].contentDocument.body.innerHTML;
+   			document.getElementById("valeur").value = suneditor.getContents();
    		});
    	}
 

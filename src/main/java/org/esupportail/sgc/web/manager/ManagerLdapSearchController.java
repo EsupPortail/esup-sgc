@@ -152,7 +152,7 @@ public class ManagerLdapSearchController {
 	
 	
 	@RequestMapping(value="/ldapUserExtForm", method=RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_SUPER_MANAGER')")
+	@PreAuthorize("hasPermission(#eppn, 'manage-user')")
 	public String ldapUserExtForm(@RequestParam(value="eppn") String eppn, Model uiModel) {
 
 		Card externalCard = externalCardService.importExternalCard(eppn, null);

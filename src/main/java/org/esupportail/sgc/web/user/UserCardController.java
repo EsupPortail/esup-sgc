@@ -10,6 +10,7 @@ import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.security.ShibAuthenticatedUserDetailsService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
@@ -327,10 +328,18 @@ public class UserCardController {
 		String redirect = "redirect:/user";
 		
 		User user = User.findUser(eppn);
-		
-		if(card.getEppn() != null && userService.isEsupManager(user) && requestUserIsManager){
-			eppn = card.getEppn();
-			redirect = "redirect:/manager?index=first";
+
+		if(requestUserIsManager) {
+			// requestUserIsManager=true
+			// -> carte demandée par un manager pour un utilisateur donné
+			if(card.getEppn() == null) {
+				throw new SgcRuntimeException("Tentative de demande de carte mais eppn cible null.", null);
+			} else if(!userService.isEsupManager(user)) {
+				throw new SgcRuntimeException(String.format("Tentative de demande de carte pour %s mais % n'a pas les droits de manager.", card.getEppn(), user.getEppn()), null);
+			} else {
+				eppn = card.getEppn();
+				redirect = "redirect:/manager?index=first";
+			}
 		}
 
 		if(user == null ){

@@ -42,7 +42,7 @@
             <menu:item activeMenu="${active=='prefs'}" id="i_prefs_list" label="Préférences" url="/admin/prefses?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='template'}" id="i_templatecard_list" label="Thèmes cartes" url="/admin/templatecards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='crousrules'}" id="i_crousrule_list" label="Tarifs Crous" url="/admin/crousrules?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
-            <menu:item activeMenu="${active=='crous'}" id="i_croussmartcard_list" label="Cartes Crous" url="/admin/crouscards?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+            <menu:item activeMenu="${active=='crous'}" id="i_croussmartcard_list" label="Cartes Crous" url="/admin/crouscards?sortOrder=desc&amp;sortFieldName=zdcCreationDate&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='crouspatchids'}" id="i_crouspatchidentifier_list" label="Crous patch identifiants" url="/admin/crouspatchids?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='crousError'}" id="i_crouserrorlog_list" label="Erreurs CROUS" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='purge'}" id="i_purge_list" label="Purge" url="/admin/purge" z="user-managed"/>

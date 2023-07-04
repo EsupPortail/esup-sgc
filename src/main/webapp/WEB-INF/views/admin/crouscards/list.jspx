@@ -20,9 +20,9 @@
 	</c:choose>
     <page:list id="pl_org_esupportail_sgc_domain_CrousSmartCard" items="${croussmartcards}" z="39GL4MTnDwaXjZwvosyCeRy8Atg=">
         <table:table data="${croussmartcards}" delete="false" id="l_org_esupportail_sgc_domain_CrousSmartCard" path="/admin/crouscards" update="false" z="cQWmL66R7Ah/obUk652zsj79Kk8=">
-        <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_uid" property="uid" label="CSN"/>
-            <table:column date="true" dateTimePattern="${crousSmartCard_zdccreationdate_date_format}" id="c_org_esupportail_sgc_domain_CrousSmartCard_zdcCreationDate" property="zdcCreationDate" z="51+qQVy8mOaQ3ZNJZd5M+NaWrVI="/>
-            <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_idTransmitter" property="idTransmitter" z="q40UCvNetzmFr+nlVzTVwTKBE58="/>
+        <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_uid" property="uid" label="CSN"  sort="true"/>
+            <table:column date="true" dateTimePattern="${crousSmartCard_zdccreationdate_date_format}" id="c_org_esupportail_sgc_domain_CrousSmartCard_zdcCreationDate" property="zdcCreationDate" z="51+qQVy8mOaQ3ZNJZd5M+NaWrVI=" sort="true"/>
+            <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_idTransmitter" property="idTransmitter" z="q40UCvNetzmFr+nlVzTVwTKBE58=" sort="true"/>
             <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_idMapping" property="idMapping" z="4DHnXYaCgpsB9HnqE6MXeYkqa10="/>
             <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_idZdc" property="idZdc" z="OV8smwgLdzqtJDBQIedwVvEKrl0="/>
             <table:column id="c_org_esupportail_sgc_domain_CrousSmartCard_pixSs" property="pixSs" z="R46k9yINxqWggcJv6ts8dUXAQCE="/>
