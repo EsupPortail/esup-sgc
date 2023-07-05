@@ -1,6 +1,7 @@
 package org.esupportail.sgc.web.user;
 
 import eu.bitwalker.useragentutils.UserAgent;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
@@ -15,6 +16,7 @@ import org.esupportail.sgc.security.ShibAuthenticatedUserDetailsService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.CardService;
+import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
 import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
@@ -32,12 +34,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StopWatch;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
@@ -53,6 +61,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -134,6 +143,9 @@ public class UserCardController {
 	
 	@Resource
 	ApiEscrService apiEscrService;
+
+	@Resource
+	EsupSgcBmpAsBase64Service esupSgcBmpAsBase64Service;
 	
 	@RequestMapping
 	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
@@ -310,6 +322,7 @@ public class UserCardController {
 		stopWatch.start("displayFormParts");
 		uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
 		stopWatch.stop();
+		uiModel.addAttribute("displayVirtualCard", StringUtils.hasLength(appliConfigService.getBmpCardCommandVirtual()));
 		log.trace(stopWatch.prettyPrint());
 		return "user/card-info";
 	}
@@ -570,6 +583,19 @@ public class UserCardController {
 			response.setContentLength(size.intValue());
 			IOUtils.copy(photoFile.getBigFile().getBinaryFile().getBinaryStream(), response.getOutputStream());
 		}
+	}
+
+	@RequestMapping(value = "/card-bmp-b64", method = RequestMethod.GET)
+	public String getCardBmpB64(@RequestParam Long cardId, Model uiModel) {
+		log.debug("getCardBmpB64 with cardId = " + cardId);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String eppn = auth.getName();
+		Card card = Card.findCard(cardId);
+		if(eppn.equals(card.getEppn())) {
+			String bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), EsupSgcBmpAsBase64Service.BmpType.virtual);
+			uiModel.addAttribute("bmpAsBase64", bmpAsBase64);
+		}
+		return "user/card-b64";
 	}
 }
 

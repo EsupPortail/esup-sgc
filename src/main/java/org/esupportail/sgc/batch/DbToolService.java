@@ -30,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "2.0.x";
+	final static String currentEsupSgcVersion = "2.1.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -369,6 +369,15 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				esupSgcVersion = "2.0.x";
+			}
+			if("2.0.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'BMP_COMMAND_VIRTUAL', 'wget -4 ''http://localhost:8080/wsrest/view/%s/card-b64.html?type=virtual'' -O card-b64.html && chromium --headless --disable-gpu --print-to-pdf=card.pdf card-b64.html && convert -resize 1016x648 -gravity center -extent 1016x648 -density 600 -alpha off card.pdf card.bmp', 'Commande permettant de récupérer un fichier card.bmp présentant le BMP complet de la carte. Utilisé par l''utilisateur pour afficher sa carte sur mobile par exemple.', 'TEXT');";
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				esupSgcVersion = "2.1.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

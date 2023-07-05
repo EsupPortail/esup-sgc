@@ -528,3 +528,7 @@ span.icon-flipped{
  	padding-left:10px;
  	padding-right:10px;
  }
+
+#allCards .preview {
+	margin-left: 5px;
+}

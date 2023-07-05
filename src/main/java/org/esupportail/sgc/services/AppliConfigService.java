@@ -4,6 +4,8 @@ import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
 import org.esupportail.sgc.domain.AppliVersion;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -16,6 +18,8 @@ public class AppliConfigService {
 	
 	private static final String DELIMITER_MULTIPLE_VALUES = ";";
 
+	private final Logger log = LoggerFactory.getLogger(getClass());
+
     enum AppliConfigKey {
 		DISPLAY_FORM_CNIL, DISPLAY_FORM_CROUS, DISPLAY_FORM_ADRESSE, DISPLAY_FORM_RULES, MONTANT_RENOUVELLEMENT, MAIL_LISTE_PRINCIPALE, MAIL_SUBJECT_AUTO,
 		MAIL_NO_REPLY, PAYBOX_MSG_SUCCESS, USER_MSG_HELP, USER_MSG_FREE_RENEWAL, USER_MSG_PAID_RENEWAL, USER_MSG_CAN_PAID_RENEWAL, USER_MSG_NEW_CARD, USER_MSG_CHECKED_OR_ENCODED_CARD,
@@ -23,7 +27,7 @@ public class AppliConfigService {
 		USER_TIP_MSG, ENABLE_AUTO, HELP_MANAGER, HELP_USER, HELP_ADMIN, QRCODE_ESC_ENABLED, QRCODE_FORMAT, MODE_LIVRAISON, ENABLE_CROUS, 
 		ENABLE_EUROPEAN_CARD, DISPLAY_FORM_EUROPEAN_CARD, PAGE_FOOTER, EXT_USER_EPPN_REGEXP, RETENTION_LOGS_DB_DAYS, P2S_EXPORT_CSV_FILE_NAME, P2S_EXPORT_CSV_NB_LINES_PER_FILE,
 		SYNCHRONIC_EXPORT_CSV_FILE_NAME, TIL_EXPORT_CSV_FILE_NAME, DEFAULT_CNOUS_ID_COMPAGNY_RATE, DEFAULT_CNOUS_ID_RATE, DEFAULT_DATE_FIN_DROITS, PHOTO_SIZE_MAX, PHOTO_BORDEREAU, 
-		PAIEMENT_ALERT_MAILTO, PAIEMENT_ALERT_MAILBODY, CROUS_INE_AS_IDENTIFIER, BMP_COMMAND_COLOR_PRINTER, BMP_COMMAND_BLACK_PRINTER, ESUP_SGC_ETABLISSEMENT_NAME
+		PAIEMENT_ALERT_MAILTO, PAIEMENT_ALERT_MAILBODY, CROUS_INE_AS_IDENTIFIER, BMP_COMMAND_COLOR_PRINTER, BMP_COMMAND_BLACK_PRINTER, BMP_COMMAND_VIRTUAL, ESUP_SGC_ETABLISSEMENT_NAME
 	}
 	
 
@@ -346,6 +350,16 @@ public class AppliConfigService {
 
 	public String getBmpCardCommandBlack4printer() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.BMP_COMMAND_BLACK_PRINTER);
+		return appliConfig==null ? "" : appliConfig.getValue();
+	}
+
+	public String getBmpCardCommandVirtual() {
+		AppliConfig appliConfig = null;
+		try {
+			appliConfig = getAppliConfigByKey(AppliConfigKey.BMP_COMMAND_VIRTUAL);
+		} catch(Exception e) {
+			log.warn("Config BMP_COMMAND_VIRTUAL not found", e);
+		}
 		return appliConfig==null ? "" : appliConfig.getValue();
 	}
 	

@@ -318,6 +318,10 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 	                                            <button class="preview btn btn-warning" data-target="#previewCarte${i.index}" data-toggle="modal" type="button">
 														Voir carte</button>
 											</c:if>
+											<c:if test="${displayVirtualCard and not empty card.qrcode and (card.etat eq 'REQUEST_CHECKED' or card.etat eq 'ENCODED' or card.etat eq 'ENABLED' or card.etat eq 'DISABLED')}">
+												<spring:url value="/user/card-bmp-b64?cardId=${card.id}" var="cardBmpUrl" />
+												<a class="preview btn btn-success" href="${cardBmpUrl}"><span class="glyphicon glyphicon-fullscreen"/></a>
+											</c:if>
 
 											<dt>Csn : </dt><dd>${card.csn}</dd>
                                              <div class="modal fade" id="previewCarte${i.index}">

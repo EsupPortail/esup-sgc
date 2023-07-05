@@ -21,7 +21,7 @@ import java.nio.file.Files;
 @Service
 public class EsupSgcBmpAsBase64Service {
 
-    public enum BmpType {black, overlay, color};
+    public enum BmpType {black, overlay, color, virtual};
 
 	static Logger log = LoggerFactory.getLogger(EsupSgcBmpAsBase64Service.class);
 
@@ -40,6 +40,8 @@ public class EsupSgcBmpAsBase64Service {
             String bmpCardCommand = appliConfigService.getBmpCardCommandColor4printer();
             if(BmpType.black.equals(type)) {
                 bmpCardCommand = appliConfigService.getBmpCardCommandBlack4printer();
+            } else if(BmpType.virtual.equals(type)) {
+                bmpCardCommand = appliConfigService.getBmpCardCommandVirtual();
             }
             tmpdirFile = Files.createTempDirectory(cardId.toString() + "-" + type).toFile();
             tmpdirFile.deleteOnExit();

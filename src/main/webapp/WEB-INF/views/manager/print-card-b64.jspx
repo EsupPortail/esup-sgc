@@ -50,15 +50,23 @@
 			}
 		</style>
 	</c:if>
-
+	<c:if test="${type == 'virtual'}">
+		<style>
+			#specimenCarte {
+				background: url("data:${templateCard.photoFileMasque.contentType};base64, ${masqueBase64}");
+				line-height : 1;
+				background-size: 8.56cm 5.398cm;
+			}
+		</style>
+	</c:if>
 		<style>
 			@media screen {
 				#specimenCarte {
-					background: url("data:image/png;base64, ${masqueBase64}");
+					background: url("data:${templateCard.photoFileMasque.contentType};base64, ${masqueBase64}");
 					line-height : 1;
 				}
-			}	
-			${css}
+			}
+			${templateCard.cssStyle}
 		</style>	
 
 		<div id="specimenCarte${loop.index}">
@@ -73,8 +81,8 @@
                 <img alt="qrcode" src="data:image/png;base64, ${qrcodeBase64}" id="qrcode" />
 			</div>
 			<div id="right">
-				<img src="data:image/png;base64, ${photoBase64}" id="photo" />
-				<img src="data:image/png;base64, ${logoBase64}" id="logo-ur" />
+				<img src="data:${templateCard.photoFileLogo.contentType};base64, ${photoBase64}" id="photo" />
+				<img src="data:${card.photoFile.contentType};base64, ${logoBase64}" id="logo-ur" />
 			</div>
 		</div>
 

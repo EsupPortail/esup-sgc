@@ -15,5 +15,8 @@
 	</definition>
 	<definition extends="user" name="user/card-payment">
 		<put-attribute name="body" value="/WEB-INF/views/user/card-payment.jspx" />
-	</definition>	
+	</definition>
+	<definition extends="print-card" name="user/card-b64">
+		<put-attribute name="body" value="/WEB-INF/views/user/card-b64.jspx" />
+	</definition>
 </tiles-definitions>

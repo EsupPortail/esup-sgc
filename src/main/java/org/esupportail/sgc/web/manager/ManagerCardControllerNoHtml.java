@@ -126,6 +126,10 @@ public class ManagerCardControllerNoHtml {
 
 	protected ResponseEntity<byte[]> getUserPhotoAsResponseEntity(User user) throws IOException, SQLException {
 		PhotoFile photoFile = user.getDefaultPhoto();
+		Card lastCard = cardService.findLastCardByEppnEquals(user.getEppn());
+		if(lastCard !=null){
+			photoFile = lastCard.getPhotoFile();
+		}
 		Long size = photoFile.getFileSize();
 		if(size!=null) {
 			String contentType = photoFile.getContentType();
