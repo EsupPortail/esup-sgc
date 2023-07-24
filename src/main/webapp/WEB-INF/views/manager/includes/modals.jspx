@@ -116,6 +116,26 @@
 							    </c:choose>
 						    </label>
 					  	</div>
+						<div>
+							<label>
+								Onglet par défaut
+							</label>
+							<div class="form-group">
+								<select name="userType">
+									<option value=""/>
+									<c:forEach items="${userTypes}" var="userType">
+										<c:choose>
+											<c:when test="${userPrefs.userType eq userType}">
+												<option value="${userType}" selected="selected"><spring:message code="manager.type.${userType}" htmlEscape="false"/></option>
+											</c:when>
+											<c:otherwise>
+												<option value="${userType}"><spring:message code="manager.type.${userType}" htmlEscape="false" /></option>
+											</c:otherwise>
+										</c:choose>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
 					 <input type="submit" class="btn btn-sm btn-success" value="Valider" />
 					 </form>
 					 <c:if test="${not empty prefsRmList}">

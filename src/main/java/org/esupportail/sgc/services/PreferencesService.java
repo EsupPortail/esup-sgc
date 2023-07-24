@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.esupportail.sgc.domain.Prefs;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -55,9 +56,9 @@ public class PreferencesService {
 		Prefs prefs = this.getPrefs(eppn, key);
 		String value = "";
 		if(prefs == null){
-			if("EDITABLE".equals(key)){
+			if(ManagerCardController.MANAGER_SEARCH_PREF.EDITABLE.name().equals(key)){
 				value = "all";
-			}else if("OWNORFREECARD".equals(key)){
+			}else if(ManagerCardController.MANAGER_SEARCH_PREF.OWNORFREECARD.name().equals(key)){
 				value = "false";
 			}
 		}else{

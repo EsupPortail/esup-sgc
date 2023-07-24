@@ -1234,9 +1234,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			    	  placeholder: selectLabel,
 			    	  allowDeselect: true,
 			    	  addable: function (value) {
+						  var item = this.data.data.find(item => item.innerHTML === value);
 			    	     return {
 			    	      text: value,
-			    	      value: value
+			    	      value: item.value ? item.value : value
 			    	     };
 			    	  }
 			    	})
@@ -1986,15 +1987,18 @@ document.addEventListener('DOMContentLoaded', function() {
    	var megamenu = document.querySelectorAll('.megamenu');
    	Array.from(megamenu).forEach(function(link) {
    		return link.addEventListener('change', function(event) {
-   		 var searchEppnForm = document.getElementById("searchEppnForm");
-			 searchEppnForm.querySelectorAll("select").forEach(function(element) {
-				 // supprime entrées vides - !element.slim.data.searchValue utile pour la partie 'addable' de slim
-				 if(!element.value && !element.slim.data.searchValue) {
-					 element.disabled = true;
-				 }
-			});
-   			searchEppnForm.submit();
-   	    });
+			   // on laisse la priorité à d'autres event (slim-select sur le bouton + notamment)
+			if(event.target.onclick == null) {
+				 var searchEppnForm = document.getElementById("searchEppnForm");
+					 searchEppnForm.querySelectorAll("select").forEach(function(element) {
+						 // supprime entrées vides - !element.slim.data.searchValue utile pour la partie 'addable' de slim
+						 if(!element.value && !element.slim.data.searchValue) {
+							 element.disabled = true;
+						 }
+					});
+					searchEppnForm.submit();
+				}
+		});
    	})
    	//Message d'attente lors de la désactivaction/réactivation de carte
  	var edActionForm = document.querySelectorAll('.edActionForm');

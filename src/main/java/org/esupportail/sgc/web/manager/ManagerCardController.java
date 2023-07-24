@@ -77,6 +77,8 @@ import java.util.TreeMap;
 @SessionAttributes("printerEppn")
 public class ManagerCardController {
 
+	public enum MANAGER_SEARCH_PREF {OWNORFREECARD, EDITABLE, USERTYPE};
+
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public final static String SUCCESS_MSG ="manager.msg.success.";
@@ -178,8 +180,9 @@ public class ManagerCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		HashedMap mapPrefs= new HashedMap();
-    	mapPrefs.put("editable", preferencesService.getPrefValue(eppn, "EDITABLE"));
-    	mapPrefs.put("ownOrFreeCard", preferencesService.getPrefValue(eppn, "OWNORFREECARD"));
+    	mapPrefs.put("editable", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.EDITABLE.name()));
+    	mapPrefs.put("ownOrFreeCard", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.OWNORFREECARD.name()));
+		mapPrefs.put("userType", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.USERTYPE.name()));
 		return mapPrefs;
 	}
 
@@ -423,6 +426,7 @@ public class ManagerCardController {
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
+		List<String> userTypes = permissionService.getTypesTabs(roles);
 
 		stopWatch.start("base");
 		Long cardsInprintCount = Card.countfindCardsByEtatEppnEqualsAndEtatEquals(eppn, Etat.IN_PRINT);
@@ -435,14 +439,24 @@ public class ManagerCardController {
     		size = sizeInSession != null ? (Integer)sizeInSession : 10;
     		page = 1;
     	}
-    	if(!permissionService.getTypesTabs(roles).contains(searchBean.getType())) {
+    	if(!userTypes.contains(searchBean.getType())) {
     		searchBean.setType(permissionService.getDefaultTypeTab(roles));
     	}
     	searchBean.setAddress(formService.decodeUrlString(searchBean.getAddress()));
     	if(index !=null && "first".equals(index)){
-	    	searchBean.setEditable(preferencesService.getPrefValue(eppn, "EDITABLE"));
-	    	searchBean.setOwnOrFreeCard(Boolean.valueOf(preferencesService.getPrefValue(eppn, "OWNORFREECARD")));
+	    	searchBean.setEditable(preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.EDITABLE.name()));
+	    	searchBean.setOwnOrFreeCard(Boolean.valueOf(preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.OWNORFREECARD.name())));
+			String userTypePref = preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.USERTYPE.name());
+			if(StringUtils.isNotEmpty(userTypePref) && userTypes.contains(userTypePref)) {
+				searchBean.setType(userTypePref);
+			}
     	}
+		if (searchBean.getType()==null || !userTypes.contains(searchBean.getType())) {
+			// searchBean.getType obligatoire pour filtrage en fonction des rôles du gestionnaire
+			// searchBean.getType() = null -> aucun résultat
+			log.warn(String.format("Set userType of search to dummy value NOT_AUTHORIZED - %s doesn't have rights to search with userType = %s", eppn, searchBean.getType()));
+			searchBean.setType("NOT_AUTHORIZED");
+		}
     	if(searchBean.getLastTemplateCardPrinted()!=null && searchBean.getLastTemplateCardPrinted().getId()==null) {
     		searchBean.setLastTemplateCardPrinted(null);
     	}
@@ -488,7 +502,9 @@ public class ManagerCardController {
         float nrOfPages = (float) countCards / sizeNo;
 
 		stopWatch.start("filters");
-    	uiModel.addAttribute("types", permissionService.getTypesTabs(roles));
+		// TODO remove used of types (utilisé dans les tags roo/jspx)
+    	uiModel.addAttribute("types", userTypes);
+		uiModel.addAttribute("userTypes", userTypes);
     	uiModel.addAttribute("etats", cardEtatService.getDistinctEtats());
     	uiModel.addAttribute("lastTemplateCardsPrinted", userInfoService.getDistinctLastTemplateCardsPrinted());
     	List<BigInteger> nbCards = User.getDistinctNbCards();
@@ -729,7 +745,8 @@ public class ManagerCardController {
 	}
 	
 	@RequestMapping(value="/savePrefs")
-	public String  savePrefs(@RequestParam(value="editable", required=false) String editable, @RequestParam(value="ownOrFreeCard", required=false) String ownOrFreeCard,  Model uiModel) {
+	public String  savePrefs(@RequestParam(value="editable", required=false) String editable, @RequestParam(value="ownOrFreeCard", required=false) String ownOrFreeCard,
+							 @RequestParam(value="userType", required=false) String userType, Model uiModel) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		
@@ -737,8 +754,10 @@ public class ManagerCardController {
 		ownOrFreeCard = (ownOrFreeCard!= null)? "true" : "false";
 		
 		try {
-			preferencesService.setPrefs(eppn, "EDITABLE", editable);
-			preferencesService.setPrefs(eppn, "OWNORFREECARD", ownOrFreeCard);
+			preferencesService.setPrefs(eppn, MANAGER_SEARCH_PREF.EDITABLE.name(), editable);
+			preferencesService.setPrefs(eppn, MANAGER_SEARCH_PREF.OWNORFREECARD.name(), ownOrFreeCard);
+			preferencesService.setPrefs(eppn, MANAGER_SEARCH_PREF.USERTYPE.name(), userType);
+
 		} catch (Exception e) {
 			log.warn("Impossible de sauvegarder les préférences", e);
 		}

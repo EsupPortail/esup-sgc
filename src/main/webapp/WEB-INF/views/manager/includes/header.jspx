@@ -66,8 +66,8 @@
 		<jsp:include page="printer.jspx"/>
 
 		<ul class="nav nav-tabs" role="tablist" id="tabTypes">
-	    <c:forEach items="${types}" var="type">
-	    	<li role="presentation" class="${selectedType eq type ? 'active' : 'sleep' }"><a href="#${type}" role="tab"><spring:message code="manager.type.${type}" htmlEscape="false" /></a></li>
+	    <c:forEach items="${userTypes}" var="userType">
+	    	<li role="presentation" class="${selectedType eq userType ? 'active' : 'sleep' }"><a href="#${userType}" role="tab"><spring:message code="manager.type.${userType}" htmlEscape="false" /></a></li>
 	    </c:forEach>
   	</ul>
 
