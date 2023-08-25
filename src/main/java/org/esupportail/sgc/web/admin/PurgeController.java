@@ -11,6 +11,7 @@ import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.PurgeService;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,6 +35,9 @@ public class PurgeController {
 	
 	@Resource
 	PurgeService purgeService;
+
+	@Resource
+	UserInfoService userInfoService;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
@@ -53,7 +57,13 @@ public class PurgeController {
 	@ModelAttribute("etatsPurgeable")
 	public List<Etat> getEtatsAvailable4Purge() {
 		return Arrays.asList(new Etat[] {Etat.DESTROYED, Etat.CADUC, Etat.CANCELED, Etat.REJECTED});
-	}  
+	}
+
+	@ModelAttribute("userTypes")
+	public List<String> getUserTypes() {
+		return userInfoService.getListExistingType();
+	}
+
 	
 	@ModelAttribute("datePurge")
 	public Date getDefaultDatePurge() {
@@ -73,16 +83,16 @@ public class PurgeController {
 
 	@RequestMapping(value="/count")
 	@ResponseBody
-	public Long card2purgeCount(@DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat) {
-		return Card.countFindCardsByEtatAndDateEtatLessThan(etat, date);
+	public Long card2purgeCount(@DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
+		return Card.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date);
 	}
 	
 	// @Transactional - pas de transactionnal ici -> purge de chaque carte dans sa propre transaction
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
-	public synchronized String purge(RedirectAttributes redirectAttrs, @DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat) {
+	public synchronized String purge(RedirectAttributes redirectAttrs, @DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
 		long nbCardsRemoved = 0;
-		log.info(Card.countFindCardsByEtatAndDateEtatLessThan(etat, date) + " cartes vont être supprimées/purgées");
-		for(Card card : Card.findCardsByEtatAndDateEtatLessThan(etat, date).getResultList()) {
+		log.info(Card.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date) + " cartes vont être supprimées/purgées");
+		for(Card card : Card.findCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date).getResultList()) {
 			try {
 				purgeService.purge(card);
 				nbCardsRemoved++;

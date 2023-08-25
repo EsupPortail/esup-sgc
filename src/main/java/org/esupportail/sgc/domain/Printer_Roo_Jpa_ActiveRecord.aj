@@ -29,17 +29,7 @@ privileged aspect Printer_Roo_Jpa_ActiveRecord {
     public static List<Printer> Printer.findAllPrinters() {
         return entityManager().createQuery("SELECT o FROM Printer o", Printer.class).getResultList();
     }
-    
-    public static List<Printer> Printer.findAllPrinters(String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM Printer o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager().createQuery(jpaQuery, Printer.class).getResultList();
-    }
+
     
     public static Printer Printer.findPrinter(Long id) {
         if (id == null) return null;

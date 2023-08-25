@@ -101,4 +101,20 @@ public class Printer {
         return q;
     }
 
+    public static List<Printer> findAllPrinters(String sortFieldName, String sortOrder) {
+        if(StringUtils.isEmpty(sortFieldName)) {
+            sortFieldName = "connectionDate";
+            sortOrder = "DESC";
+        }
+        String jpaQuery = "SELECT o FROM Printer o";
+        if (Printer.fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        EntityManager em = Printer.entityManager();
+        return em.createQuery(jpaQuery, Printer.class).getResultList();
+    }
+
 }

@@ -53,16 +53,6 @@ privileged aspect Card_Roo_Finder {
         return ((Long) q.getSingleResult());
     }
     
-    public static Long Card.countFindCardsByEtatAndDateEtatLessThan(Etat etat, Date dateEtat) {
-        if (etat == null) throw new IllegalArgumentException("The etat argument is required");
-        if (dateEtat == null) throw new IllegalArgumentException("The dateEtat argument is required");
-        EntityManager em = Card.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.etat = :etat AND o.dateEtat < :dateEtat", Long.class);
-        q.setParameter("etat", etat);
-        q.setParameter("dateEtat", dateEtat);
-        return ((Long) q.getSingleResult());
-    }
-    
     public static TypedQuery<Card> Card.findCardsByEppnAndEtatEquals(String eppn, Etat etat) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         if (etat == null) throw new IllegalArgumentException("The etat argument is required");
@@ -159,32 +149,6 @@ privileged aspect Card_Roo_Finder {
         q.setParameter("eppn", eppn);
         return q;
     }
-    
-    public static TypedQuery<Card> Card.findCardsByEtatAndDateEtatLessThan(Etat etat, Date dateEtat) {
-        if (etat == null) throw new IllegalArgumentException("The etat argument is required");
-        if (dateEtat == null) throw new IllegalArgumentException("The dateEtat argument is required");
-        EntityManager em = Card.entityManager();
-        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.etat = :etat AND o.dateEtat < :dateEtat", Card.class);
-        q.setParameter("etat", etat);
-        q.setParameter("dateEtat", dateEtat);
-        return q;
-    }
-    
-    public static TypedQuery<Card> Card.findCardsByEtatAndDateEtatLessThan(Etat etat, Date dateEtat, String sortFieldName, String sortOrder) {
-        if (etat == null) throw new IllegalArgumentException("The etat argument is required");
-        if (dateEtat == null) throw new IllegalArgumentException("The dateEtat argument is required");
-        EntityManager em = Card.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE o.etat = :etat AND o.dateEtat < :dateEtat");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("etat", etat);
-        q.setParameter("dateEtat", dateEtat);
-        return q;
-    }
+
     
 }

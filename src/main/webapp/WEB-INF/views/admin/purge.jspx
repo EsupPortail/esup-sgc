@@ -40,6 +40,14 @@
 					  	</c:forEach>
 				    </select>		
 				    <hr/>
+					Pour les utilisateurs du type
+					<select name="userType" id="userTypePurge">
+						<option value="">Tous</option>
+						<c:forEach items="${userTypes}" var="userType">
+							<option value="${userType}"><spring:message code="manager.type.${userType}"/></option>
+						</c:forEach>
+					</select>
+					<hr/>
 				    Avant le <fmt:formatDate pattern="yyyy-MM-dd" value="${datePurge}" var="datePurgeStr"/>
 				    <input type="date" name="date" value="${datePurgeStr}"  id="datePurge"/>		
 				</div>
@@ -71,9 +79,10 @@
 		let purgeUrl = '${purge_url}/count';
 		let updateUserCardsNb = function () {
 			let etatPurge = document.getElementById("etatPurge").value;
+			let userTypePurge = document.getElementById("userTypePurge").value;
 			let datePurge = document.getElementById("datePurge").value;
 			let request = new XMLHttpRequest();		
-			request.open('GET', purgeUrl + "?etat=" + etatPurge + "&amp;date=" + datePurge, true);
+			request.open('GET', purgeUrl + "?etat=" + etatPurge + "&amp;userType=" + userTypePurge + "&amp;date=" + datePurge, true);
             request.onload = function() {
               if (request.status == 200) {
                     let nbCards = this.response;
@@ -85,6 +94,7 @@
         }
 		document.getElementById("etatPurge").addEventListener("change", updateUserCardsNb);
 		document.getElementById("datePurge").addEventListener("change", updateUserCardsNb);
+		document.getElementById("userTypePurge").addEventListener("change", updateUserCardsNb);
 		updateUserCardsNb();
 	</script>
 	

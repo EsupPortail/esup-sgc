@@ -50,7 +50,7 @@ import java.util.Map;
 @RooJavaBean
 @RooToString
 @RooDbManaged(automaticallyDelete = true)
-@RooJpaActiveRecord(versionField = "", table = "Card", finders = { "findCardsByEppnEquals", "findCardsByEppnAndEtatEquals", "findCardsByEppnLike", "findCardsByEtatEqualsAndDateDemandeLessThan", "findCardsByDesfireId", "findCardsByCsn", "findCardsByEppnAndEtatNotEquals",  "findCardsByEtatAndDateEtatLessThan"})
+@RooJpaActiveRecord(versionField = "", table = "Card", finders = { "findCardsByEppnEquals", "findCardsByEppnAndEtatEquals", "findCardsByEppnLike", "findCardsByEtatEqualsAndDateDemandeLessThan", "findCardsByDesfireId", "findCardsByCsn", "findCardsByEppnAndEtatNotEquals",  "findCardsByEtatAndUserTypeAndDateEtatLessThan"})
 @JsonFilter("cardFilter")
 @Table(name = "Card", indexes = {
 		@Index(name = "card_user_account_request_date_id", columnList = "user_account, requestDate desc"),
@@ -1206,6 +1206,40 @@ public class Card {
         q.setParameter("templateCard", templateCard);
         List<Card> cards = q.setMaxResults(1).getResultList();
         return cards.isEmpty() ? null : cards.get(0);
+    }
+
+    public static Long countFindCardsByEtatAndUserTypeAndDateEtatLessThan(Etat etat, String userType, Date dateEtat) {
+        if (etat == null) throw new IllegalArgumentException("The etat argument is required");
+        if (dateEtat == null) throw new IllegalArgumentException("The dateEtat argument is required");
+        EntityManager em = Card.entityManager();
+        String jpql = "SELECT COUNT(o) FROM Card AS o WHERE o.etat = :etat AND o.dateEtat < :dateEtat";
+        if (!userType.isEmpty()) {
+            jpql = "SELECT COUNT(o) FROM Card AS o WHERE o.etat = :etat AND o.dateEtat < :dateEtat AND o.userAccount.userType = :userType";
+        }
+        TypedQuery q = em.createQuery(jpql, Long.class);
+        q.setParameter("etat", etat);
+        q.setParameter("dateEtat", dateEtat);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        return ((Long) q.getSingleResult());
+    }
+
+    public static TypedQuery<Card> findCardsByEtatAndUserTypeAndDateEtatLessThan(Etat etat, String userType, Date dateEtat) {
+        if (etat == null) throw new IllegalArgumentException("The etat argument is required");
+        if (dateEtat == null) throw new IllegalArgumentException("The dateEtat argument is required");
+        EntityManager em = Card.entityManager();
+        String jpql = "SELECT o FROM Card AS o WHERE o.etat = :etat AND o.dateEtat < :dateEtat";
+        if (!userType.isEmpty()) {
+            jpql = "SELECT o FROM Card AS o WHERE o.etat = :etat AND o.dateEtat < :dateEtat AND o.userAccount.userType = :userType";
+        }
+        TypedQuery<Card> q = em.createQuery(jpql, Card.class);
+        if (!userType.isEmpty()) {
+            q.setParameter("userType", userType);
+        }
+        q.setParameter("etat", etat);
+        q.setParameter("dateEtat", dateEtat);
+        return q;
     }
 
 }
