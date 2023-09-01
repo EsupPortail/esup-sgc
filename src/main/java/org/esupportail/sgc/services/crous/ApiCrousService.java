@@ -319,6 +319,11 @@ public class ApiCrousService {
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
+		// hack crous étudiant doit rester étudiant - si on tente de changer - log d'erreur, et on ne met pas à jour
+		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate()) && !Long.valueOf(10).equals(rightHolder.getIdCompanyRate())) {
+			log.error(String.format("%s is student in crous/izly (IdCompagnYRate = 10) - IdCompagnYRate can't be updated to ", rightHolder.getIdCompanyRate()));
+			return false;
+		}
 		// hack crous duedate étudiants 
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
 				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
