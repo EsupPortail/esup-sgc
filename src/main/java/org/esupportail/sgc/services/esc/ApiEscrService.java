@@ -196,6 +196,10 @@ public class ApiEscrService extends ValidateService {
 		EscrStudent escrStudentInESCR = EscrStudent.findEscrStudentsByEppnEquals(eppn).getSingleResult();
 		EscrStudent escrStudentGoal = computeEscrStudent(eppn);
 		if(!escrStudentInESCR.equals(escrStudentGoal) && escrStudentGoal!=null) {
+			if(escrStudentInESCR.getExpiryDate().before(new Date()) && escrStudentGoal.getExpiryDate().before(new Date())) {
+				log.info("Not need to update EscrStudent for " + eppn + " : expiry dates have passed");
+				return;
+			}
 			String europeanStudentIdentifierInESCR =  escrStudentInESCR.getEuropeanStudentIdentifier();
 			escrStudentInESCR.updateWith(escrStudentGoal);
 			String url = webUrl + "/students/" + europeanStudentIdentifierInESCR;

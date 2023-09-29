@@ -710,11 +710,15 @@ public class ManagerCardController {
 		return new ResponseEntity<String>(response, headers, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ROLE_MANAGER')")
 	@RequestMapping(value="/csvSearch", method = RequestMethod.GET)
 	public void getCsvSearch(@ModelAttribute("searchBean") CardSearchBean searchBean, @RequestParam(value="fields",required=false) List<String> fields, HttpServletResponse response) throws IOException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String eppn = auth.getName();	
+		String eppn = auth.getName();
+		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
+		List<String> userTypes = permissionService.getTypesTabs(roles);
+		if(!userTypes.contains(searchBean.getType())) {
+			searchBean.setType(permissionService.getDefaultTypeTab(roles));
+		}
 		getCsvFromSearch(searchBean, fields, eppn, response);
 	}
 	

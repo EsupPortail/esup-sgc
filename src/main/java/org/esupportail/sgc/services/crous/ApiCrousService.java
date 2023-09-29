@@ -206,6 +206,10 @@ public class ApiCrousService {
 					// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore - bis
 					user.setCrousIdentifier(crousIdentifier);
 				}
+				if(oldRightHolder.getDueDate()!=null && oldRightHolder.getDueDate().before(new Date()) && newRightHolder.getDueDate().before(new Date())) {
+					log.info("Not need to update RightHolder for " + crousIdentifier + " : dueDates have passed");
+					return true;
+				}
 				if(!fieldsEqualsOrCanNotBeUpdate(newRightHolder, oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
 					if(!newRightHolder.getIdentifier().equals(oldRightHolder.getIdentifier())) {
 						PatchIdentifier patchIdentifier = new PatchIdentifier();
@@ -249,13 +253,17 @@ public class ApiCrousService {
 	boolean fieldsEqualsOrCanNotBeUpdate(RightHolder newRightHolder, RightHolder oldRightHolder) {
 		// pour les étudiants, pas d'update sur nom/prenom/email/datedenaissance/idRate quelque soit l'état du compte
 		// ces infos sont normalement créés par l'import du fichier de la CVEC et l'api ne peut pas les modifier
+		// de même, si leur date de fin crous/izly est après celle locale, pas de modif
 		if(StringUtils.isNotEmpty(oldRightHolder.getIne()) && StringUtils.isNotEmpty(newRightHolder.getIne())) {
 			// ETUDIANT
 			for(String varStringName : Arrays.asList(new String[] {"identifier", "ine", "rneOrgCode", "idCompanyRate"})) {
 				if(!newRightHolder.checkEqualsVar(varStringName, oldRightHolder)) {
 					return false;
 				}
-			}			
+			}
+			if(oldRightHolder.getDueDate()!=null && oldRightHolder.getDueDate().after(newRightHolder.getDueDate())) {
+				return false;
+			}
 		} else {
 			// NON ETUDIANT
 			if (newRightHolder.getBirthDate() == null) {
@@ -324,17 +332,6 @@ public class ApiCrousService {
 			log.error(String.format("%s is student in crous/izly (IdCompagnYRate = 10) - IdCompagnYRate can't be updated to ", rightHolder.getIdCompanyRate()));
 			return false;
 		}
-		// hack crous duedate étudiants 
-		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
-				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
-				&& oldRightHolder.getDueDate().after(rightHolder.getDueDate())) {
-			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case for %s."
-					+ "Actual dueDate : %s ; wanted dueDate : %s -> we keep the actual dueDate", 
-					oldRightHolder.getIdentifier(),
-					oldRightHolder.getDueDate(), 
-					rightHolder.getDueDate()));
-			rightHolder.setDueDate(oldRightHolder.getDueDate());
-		}
 		// hack crous tarifs spéciaux étudiants ~boursiers
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
 				&& !oldRightHolder.getIdRate().equals(rightHolder.getIdRate())
@@ -346,6 +343,18 @@ public class ApiCrousService {
 					oldRightHolder.getIdRate()));
 			rightHolder.setIdRate(oldRightHolder.getIdRate());
 			user.setIdRate(rightHolder.getIdRate());
+		}
+		// hack crous duedate étudiants
+		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
+				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
+				&& oldRightHolder.getDueDate().after(rightHolder.getDueDate())) {
+			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case for %s."
+							+ "Actual dueDate : %s ; wanted dueDate : %s -> we keep the actual dueDate and others elements - update aborted",
+					oldRightHolder.getIdentifier(),
+					oldRightHolder.getDueDate(),
+					rightHolder.getDueDate()));
+			rightHolder.setDueDate(oldRightHolder.getDueDate());
+			return false;
 		}
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {
@@ -425,6 +434,12 @@ public class ApiCrousService {
 			Date now = new Date();
 			Date duedateCrous = oldRightHolder.getDueDate();
 			Date realDueDate = user.getDueDate();
+			if(StringUtils.isNotEmpty(oldRightHolder.getIne())) {
+				// ETUDIANT : pas de màj si dudate après duedate local (étudiant autre établissement par ex.)
+				if (oldRightHolder.getDueDate() != null && oldRightHolder.getDueDate().after(realDueDate)) {
+					return false;
+				}
+			}
 			if(duedateCrous!=null && realDueDate.before(now) && duedateCrous.before(now)) {
 				return false;
 			}

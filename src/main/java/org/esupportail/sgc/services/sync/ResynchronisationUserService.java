@@ -87,6 +87,8 @@ public class ResynchronisationUserService {
 		
 		if(UserInfoService.SynchroCmd.NONE.equals(syncUserInfoServiceFlag)) {
 			log.debug("Flag synchronize false for " + eppn + " -> no synchronize");
+		} else if(dummyUser.getDueDate()!=null && user.getDueDate()!=null && dummyUser.getDueDate().before(new Date()) && user.getDueDate().before(new Date())) {
+			log.debug("duedates are passed for " + eppn + " -> no synchronize");
 		} else if(UserInfoService.SynchroCmd.JUST_FORCE_CADUC.equals(syncUserInfoServiceFlag)) {
 			log.debug("caducIfEmpty for " + eppn + " -> force dueDate");
 			userInfoService.forceDueDateCaduc(user);

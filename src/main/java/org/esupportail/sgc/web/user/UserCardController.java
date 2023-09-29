@@ -348,7 +348,7 @@ public class UserCardController {
 			if(card.getEppn() == null) {
 				throw new SgcRuntimeException("Tentative de demande de carte mais eppn cible null.", null);
 			} else if(!userService.isEsupManager(user)) {
-				throw new SgcRuntimeException(String.format("Tentative de demande de carte pour %s mais % n'a pas les droits de manager.", card.getEppn(), user.getEppn()), null);
+				throw new SgcRuntimeException(String.format("Tentative de demande de carte pour %s mais %s n'a pas les droits de manager.", card.getEppn(), user.getEppn()), null);
 			} else {
 				eppn = card.getEppn();
 				redirect = "redirect:/manager?index=first";
