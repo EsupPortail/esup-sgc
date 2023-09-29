@@ -343,10 +343,12 @@ public class UserCardController {
 		User user = User.findUser(eppn);
 
 		if(requestUserIsManager) {
-			// requestUserIsManager=true
+			// -> user = manager
 			// -> carte demandée par un manager pour un utilisateur donné
 			if(card.getEppn() == null) {
 				throw new SgcRuntimeException("Tentative de demande de carte mais eppn cible null.", null);
+			} else if(user == null) {
+				throw new SgcRuntimeException(String.format("Tentative de demande de carte par %s en tant que manager mais n'existe pas en base", user.getEppn()), null);
 			} else if(!userService.isEsupManager(user)) {
 				throw new SgcRuntimeException(String.format("Tentative de demande de carte pour %s mais %s n'a pas les droits de manager.", card.getEppn(), user.getEppn()), null);
 			} else {
@@ -360,13 +362,12 @@ public class UserCardController {
 			user.setEppn(eppn);
 		}
 		
-		synchronized (eppn.intern()) {
+		synchronized (card.getEppn().intern()) {
 			
 			// check rights  sur String est global - à éviter - TODO ?
-			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn) || userService.isEsupManager(user)) {
+			if(!requestUserIsManager && (userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn)) || requestUserIsManager) {
 			
 				if(!cardEtatService.hasNewCard(eppn)) {
-					
 					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, requestUserIsManager);
 					
 					if(emptyPhoto) {
@@ -374,6 +375,8 @@ public class UserCardController {
 					} else {
 						redirectAttributes.addFlashAttribute("messageSuccess", "success_leocarte_upload");
 					}
+				} else {
+					log.warn(eppn + " tried to request card but he has already new card." );
 				}
 			} else {
 				log.warn(eppn + " tried to request card but he has no rights to do it." );
