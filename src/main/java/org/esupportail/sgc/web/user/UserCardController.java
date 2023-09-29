@@ -362,12 +362,12 @@ public class UserCardController {
 			user.setEppn(eppn);
 		}
 		
-		synchronized (card.getEppn().intern()) {
+		synchronized (eppn.intern()) {
 			
 			// check rights  sur String est global - à éviter - TODO ?
 			if(!requestUserIsManager && (userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn)) || requestUserIsManager) {
 			
-				if(!cardEtatService.hasNewCard(eppn)) {
+				if(!cardEtatService.hasNewCard(eppn) || requestUserIsManager) {
 					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, requestUserIsManager);
 					
 					if(emptyPhoto) {
