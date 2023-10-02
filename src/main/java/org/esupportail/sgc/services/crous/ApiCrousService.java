@@ -349,12 +349,13 @@ public class ApiCrousService {
 				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
 				&& oldRightHolder.getDueDate().after(rightHolder.getDueDate())) {
 			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case for %s."
-							+ "Actual dueDate : %s ; wanted dueDate : %s -> we keep the actual dueDate and others elements - update aborted",
+							+ "Actual dueDate : %s ; wanted dueDate : %s -> we keep the actual dueDate and others elements - crous update not needed but consider all is ok" +
+							" so that we enable/disable the card in crous",
 					oldRightHolder.getIdentifier(),
 					oldRightHolder.getDueDate(),
 					rightHolder.getDueDate()));
 			rightHolder.setDueDate(oldRightHolder.getDueDate());
-			return false;
+			return true;
 		}
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {
