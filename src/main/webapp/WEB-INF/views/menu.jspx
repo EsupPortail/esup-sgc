@@ -47,6 +47,7 @@
             <menu:item activeMenu="${active=='crousError'}" id="i_crouserrorlog_list" label="Erreurs CROUS" url="/admin/crouserrorlogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
             <menu:item activeMenu="${active=='purge'}" id="i_purge_list" label="Purge" url="/admin/purge" z="user-managed"/>
             <menu:item activeMenu="${active=='printers'}" id="i_printer_list" label="Imprimantes" url="/admin/printers" z="user-managed"/>
+            <menu:item activeMenu="${active=='userinfos'}" id="i_userinfos" label="UserInfos" url="/admin/userinfos" z="user-managed"/>
         </sec:authorize>
         <menu:category id="c_cardactionmessage" render="false" z="user-managed">
             <menu:item id="i_cardactionmessage_new" messageCode="global_menu_new" url="/admin/actionmessages?form" z="pZnZ6jYKfu0DMR+I0O3eDphyeOw="/>

@@ -14,6 +14,18 @@ public class ShibUserInfoService implements ExtUserInfoService {
 	private Long order = Long.valueOf(0);
 
 	private String eppnFilter = ".*";
+
+
+	String beanName;
+
+	@Override
+	public String getBeanName() {
+		return beanName;
+	}
+	@Override
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
 	
 	public Long getOrder() {
 		return order;

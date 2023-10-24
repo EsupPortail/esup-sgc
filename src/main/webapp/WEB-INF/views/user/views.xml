@@ -19,4 +19,7 @@
 	<definition extends="print-card" name="user/card-b64">
 		<put-attribute name="body" value="/WEB-INF/views/user/card-b64.jspx" />
 	</definition>
+	<definition extends="user" name="user/shib">
+		<put-attribute name="body" value="/WEB-INF/views/user/shib.jspx" />
+	</definition>
 </tiles-definitions>

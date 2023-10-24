@@ -23,8 +23,19 @@ public class SpelUserInfoService implements ExtUserInfoService {
 	private String eppnFilter = ".*";
 	
 	@Resource
-	DateUtils dateUtils; 
-	
+	DateUtils dateUtils;
+
+	String beanName;
+
+	@Override
+	public String getBeanName() {
+		return beanName;
+	}
+	@Override
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
 	public Long getOrder() {
 		return order;
 	}
