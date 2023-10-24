@@ -44,13 +44,16 @@ public class LdapGroup2UserRoleService {
 	
 	public Set<String> getRoles(String eppn) {
 		Set<String> roles = new HashSet<String>();
-		for(String groupName : groupService.getGroupsForEppn(eppn)) {
+		List<String> groups = groupService.getGroupsForEppn(eppn);
+		log.trace(String.format("Groups for %s : %s", eppn, groups));
+		for(String groupName : groups) {
 			if(mappingGroupesRoles.containsKey(groupName)) {
 				for(String role : mappingGroupesRoles.get(groupName).split(MULTIPLE_ROLES_DELIMITER)) {
 					roles.add(role);
 				}
 			}
 		}
+		log.trace(String.format("Roles for %s : %s", eppn, roles));
 		return roles;
 	}
 
