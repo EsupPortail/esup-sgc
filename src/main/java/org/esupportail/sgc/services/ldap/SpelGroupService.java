@@ -24,6 +24,18 @@ public class SpelGroupService implements GroupService {
 	
 	private Map<String, String> groups4eppnSpel = new HashMap<String, String>();
 
+	String beanName;
+
+	@Override
+	public String getBeanName() {
+		return beanName;
+	}
+
+	@Override
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
 	public void setGroups4eppnSpel(Map<String, String> groups4eppnSpel) {
 		this.groups4eppnSpel = groups4eppnSpel;
 	}

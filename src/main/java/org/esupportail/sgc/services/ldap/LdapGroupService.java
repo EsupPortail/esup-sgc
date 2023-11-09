@@ -24,6 +24,18 @@ public class LdapGroupService implements GroupService {
 	
 	String memberSearchFilter;
 
+	String beanName;
+
+	@Override
+	public String getBeanName() {
+		return beanName;
+	}
+
+	@Override
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
 	public void setLdapTemplate(LdapTemplate ldapTemplate) {
 		this.ldapTemplate = ldapTemplate;
 	}

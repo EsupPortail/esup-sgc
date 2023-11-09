@@ -24,57 +24,86 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
 	<jsp:output omit-xml-declaration="yes" />
 	    
-    <h2>UserInfos d'un utilisateur (pour test/debug)</h2>
+    <h2>Groupes et rôles</h2>
 
 	<spring:url value="/manager/searchEppn" var="searchEppnUrl" />
 	<script type="text/javascript">
 		var searchEppnUrl = '${searchEppnUrl}';
 	</script>
 
-	<spring:url value="/admin/userinfos" var="userinfos_url"/>
-	<form class="form-horizontal" action="${userinfos_url}" method="GET">
+	<spring:url value="/admin/groupsroles" var="grouproles_url"/>
+	<form class="form-horizontal" action="${grouproles_url}" method="GET">
 		<div class="jumbotron">
 			<div class="from-group">
 				<label for="eppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible : </label>
 				<div class="col-lg-2 col-md-2 col-xs-4">
 					<input type="text" class="form-control"  placeholder="eppn" id="searchEppn"  name="eppn" maxlength="100" value="${eppn}"/>
 				</div>
-				<button type="submit" class="btn btn-success col-lg-1 col-md-1">Test des UserInfos</button>
+				<button type="submit" class="btn btn-success col-lg-1 col-md-1">Test Groupes/Rôles</button>
 			</div>
 		</div>
 	</form>
 
 	<div class="panel-body ">
-		<div class="col-lg-6">
-			<h3>UserInfos successifs</h3>
-			<c:forEach var="beanNameRegexMatch" items="${beanNamesRegexMatch}">
-				<h4>${beanNameRegexMatch.key}
-					<c:if test="${beanNameRegexMatch.value}">
-						<span class="text-success glyphicon glyphicon-ok"></span>
-						${durations[beanNameRegexMatch.key]}ms
-					</c:if>
-					<c:if test="${not beanNameRegexMatch.value}">
-						<span class="text-danger glyphicon glyphicon-remove"></span>
-					</c:if>
+		<div class="col-lg-3">
+			<h3>Groupes de ${eppn}</h3>
+			<c:forEach var="groupsEntry" items="${groupsMap}">
+				<h4>
+					${groupsEntry.key} ${durations[groupsEntry.key]}ms
 				</h4>
 				<ul>
-					<c:forEach var="userInfo" items="${userInfosMap[beanNameRegexMatch.key]}">
-						<c:set var="isBeanNameFinal4UserInfo" value="${beanNameFinal4UserInfo[userInfo.key] eq beanNameRegexMatch.key}"/>
-						<li class="${isBeanNameFinal4UserInfo ? 'bold' : ''}">
-							${userInfo.key} :
-							<span class="${isBeanNameFinal4UserInfo ? 'text-success' : 'text-warning'}">${userInfo.value}</span>
+					<c:forEach var="group" items="${groupsEntry.value}">
+						<li>
+							${group}
 						</li>
 					</c:forEach>
 				</ul>
 			</c:forEach>
 		</div>
-		<div class="col-lg-6">
-			<h3>UserInfos Final/Calculé - ${totalDuration}ms</h3>
+		<div class="col-lg-3">
+			<h3>Rôles de ${eppn} - ${rolesDuration}ms</h3>
 			<ul>
-				<c:forEach var="userInfo" items="${userInfosFinal}">
-					<li class="bold">${userInfo.key} : <span class="text-success">${userInfo.value}</span></li>
+				<c:forEach var="role" items="${roles}">
+					<li class="bold">${role}</li>
 				</c:forEach>
 			</ul>
+			<h3>Rôles Effectifs de ${eppn} (en BD actuellement, et implictes - admin->manager)</h3>
+			<ul>
+				<c:forEach var="role" items="${rolesReachableDb}">
+					<li class="bold">${role}</li>
+				</c:forEach>
+			</ul>
+		</div>
+		<div class="col-lg-3">
+			<h3>Membres des groupes</h3>
+			<c:forEach var="groupsEntry" items="${groupsMembers}">
+				<h4>
+					${groupsEntry.key} ${membersDurations[groupsEntry.key]}ms
+				</h4>
+				<dl>
+					<c:forEach var="group" items="${groupsEntry.value}">
+						<dt>
+							${group.key}
+						</dt>
+						<dd>
+							${group.value} membre(s)
+						</dd>
+					</c:forEach>
+				</dl>
+			</c:forEach>
+		</div>
+		<div class="col-lg-3">
+			<h3>Membres des rôles</h3>
+			<c:forEach var="role" items="${rolesMembers}">
+				<dl>
+					<dt>
+						${role.key}
+					</dt>
+					<dd>
+						${role.value} membre(s)
+					</dd>
+				</dl>
+			</c:forEach>
 		</div>
 	</div>
 

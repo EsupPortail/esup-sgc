@@ -25,7 +25,7 @@
 		<c:when
 			test="${active == 'admin' || active =='sessions'|| active =='paybox'|| active =='logs'|| active =='nfc'  || active =='crousError' || active =='crouspatchids'
 			|| active =='configs' || active =='crous'|| active =='import' || active =='actionmsgs' || active =='tools' || active =='prefs' || active =='template' || active =='navbar' || active =='crousrules'
-			 || active =='logmails' || active =='purge' || active =='printers'}">
+			 || active =='logmails' || active =='purge' || active =='printers' || active =='userinfos' || active =='groupsroles'}">
 			<c:set var="role" value="admin" />
 		</c:when>
 		<c:otherwise>

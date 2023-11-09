@@ -41,7 +41,11 @@ public class LdapGroup2UserRoleService {
 	public void setMappingGroupesRoles(Map<String, String> mappingGroupesRoles) {
 		this.mappingGroupesRoles = mappingGroupesRoles;
 	}
-	
+
+	public Map<String, String> getMappingGroupesRoles() {
+		return mappingGroupesRoles;
+	}
+
 	public Set<String> getRoles(String eppn) {
 		Set<String> roles = new HashSet<String>();
 		List<String> groups = groupService.getGroupsForEppn(eppn);

@@ -56,6 +56,11 @@ public class UserInfosController {
 		this.extUserInfoServices = extUserInfoServices;
 		Collections.sort(this.extUserInfoServices, (p1, p2) -> p1.getOrder().compareTo(p2.getOrder()));
 	}
+
+	@ModelAttribute("active")
+	public String getActiveMenu() {
+		return "userinfos";
+	}
 	
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
 	public String listUserInfos(Model uiModel, @RequestParam(required=false) String eppn, HttpServletRequest request) {
@@ -77,12 +82,16 @@ public class UserInfosController {
 		Map<String, Map<String, String>> userInfosMap = new LinkedHashMap();
 		Map<String, String> beanNameFinal4UserInfo = new HashMap<>();
 		Map<String, Boolean> beanNamesRegexMatch = new LinkedHashMap<>();
+		Map<String, Long> durations = new HashMap<>();
 
+		long totalTime = System.currentTimeMillis();
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
 			String beanNameLabel = extUserInfoService.getBeanName() + " #" + extUserInfoService.getOrder();
 			beanNamesRegexMatch.put(beanNameLabel, eppn.matches(extUserInfoService.getEppnFilter()));
 			if(beanNamesRegexMatch.get(beanNameLabel)) {
+				long time = System.currentTimeMillis();
 				Map<String, String> userInfos = extUserInfoService.getUserInfos(user, useRequest ? request : null, userInfosInComputing);
+				durations.put(beanNameLabel, System.currentTimeMillis()-time);
 				userInfosMap.put(beanNameLabel, userInfos);
 				userInfosInComputing.putAll(userInfos);
 				for(String key : userInfos.keySet()) {
@@ -96,6 +105,8 @@ public class UserInfosController {
 		uiModel.addAttribute("userInfosFinal", userInfosInComputing);
 		uiModel.addAttribute("beanNameFinal4UserInfo", beanNameFinal4UserInfo);
 		uiModel.addAttribute("beanNamesRegexMatch", beanNamesRegexMatch);
+		uiModel.addAttribute("durations", durations);
+		uiModel.addAttribute("totalDuration", System.currentTimeMillis()-totalTime);
 
 		return "admin/userinfos";
 	}

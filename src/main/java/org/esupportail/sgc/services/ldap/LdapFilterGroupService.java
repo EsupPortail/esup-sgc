@@ -22,6 +22,18 @@ public class LdapFilterGroupService implements GroupService {
 	Map<String, String> ldapFiltersGroups;
 	
 	String memberSearchFilter = "(&(eduPersonPrincipalName={0})({1}))";
+
+	String beanName;
+
+	@Override
+	public String getBeanName() {
+		return beanName;
+	}
+
+	@Override
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
 	
 	public void setLdapTemplate(LdapTemplate ldapTemplate) {
 		this.ldapTemplate = ldapTemplate;

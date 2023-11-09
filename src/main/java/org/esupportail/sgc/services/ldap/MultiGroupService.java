@@ -9,6 +9,18 @@ public class MultiGroupService implements GroupService {
 	
 	private List<GroupService> groupServices;
 
+	String beanName;
+
+	@Override
+	public String getBeanName() {
+		return beanName;
+	}
+
+	@Override
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
 	public void setGroupServices(List<GroupService> groupServices) {
 		this.groupServices = groupServices;
 	}

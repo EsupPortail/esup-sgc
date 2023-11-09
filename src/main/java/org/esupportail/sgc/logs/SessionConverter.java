@@ -17,14 +17,13 @@
  */
 package org.esupportail.sgc.logs;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import ch.qos.logback.classic.pattern.ClassicConverter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import ch.qos.logback.classic.pattern.ClassicConverter;
-import ch.qos.logback.classic.spi.ILoggingEvent;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class SessionConverter extends ClassicConverter {
    
@@ -32,10 +31,14 @@ public class SessionConverter extends ClassicConverter {
 	
 	@Override
     public String convert(ILoggingEvent event) {
-		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		HttpSession httpSession = request.getSession(false);
-        if (httpSession != null) {
-            return httpSession.getId();
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            HttpSession httpSession = request.getSession(false);
+            if (httpSession != null) {
+                return httpSession.getId();
+            }
+        } catch (Exception e) {
+     	   // do nothing
         }
         return NO_SESSION;
     }
