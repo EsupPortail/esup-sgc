@@ -15,7 +15,7 @@
     <http disable-url-rewriting="true" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<intercept-url pattern="/j_spring_security_switch_user" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')"/>
 		<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/manager/**" access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_ADMIN') or hasRole('ROLE_LIVREUR')" />
+		<intercept-url pattern="/manager/**" access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_CONSULT_') or hasRole('ROLE_ADMIN') or hasRole('ROLE_LIVREUR')" />
 		<intercept-url pattern="/login" access="isAuthenticated()"/>
 		<intercept-url pattern="/wsrest/nfc/cnousCardId" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/addCrousCsvFile" access="permitAll" />

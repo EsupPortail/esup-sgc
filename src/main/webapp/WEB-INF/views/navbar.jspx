@@ -37,7 +37,7 @@
 	
 		<menu:menu appName="${app_name}" id="_navbar">
 
-          	 <sec:authorize access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_LIVREUR')">
+          	 <sec:authorize access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_CONSULT_') or hasRole('ROLE_LIVREUR')">
           	 	<menu:item id="i_user_list" url="/user" label="Vue Utilisateur" activeMenu="${role=='user'}"/>
           	    <menu:item id="i_card_list" url="/manager?index=first" label="Vue Manager" activeMenu="${role=='manager'}"/>
         	</sec:authorize>

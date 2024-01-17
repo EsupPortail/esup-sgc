@@ -40,6 +40,9 @@ public class SgcRoleHierarchy implements RoleHierarchy {
 	                reachableRoles.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
 	                break;
 	            }
+				if (authority.getAuthority().startsWith("ROLE_CONSULT_")) {
+					reachableRoles.add(new SimpleGrantedAuthority("ROLE_CONSULT_"));
+				}
 	        }
 		 }
         
@@ -69,6 +72,9 @@ public class SgcRoleHierarchy implements RoleHierarchy {
 	                reachableRoles.add("ROLE_MANAGER");
 	                break;
 	            }
+				if (role.startsWith("ROLE_CONSULT_")) {
+					reachableRoles.add("ROLE_CONSULT_");
+				}
 	        }
 		 }		
 		reachableRoles.addAll(roles);
