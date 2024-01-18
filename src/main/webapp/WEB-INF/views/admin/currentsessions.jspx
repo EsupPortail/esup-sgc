@@ -29,7 +29,7 @@
 		<div class="jumbotron" id="sessionsUsers">
 			<ul>
 				<c:forEach items="${allUsers}" var="session">
-					<li class="session session${type}"><a href="${userLinkPrefix}${session.eppn}">${session.eppn}</a></li>
+					<li class="session session${session.userType}"><a href="${userLinkPrefix}${session.eppn}">${session.eppn}</a></li>
 				</c:forEach>
 			</ul>
 		</div>
