@@ -306,17 +306,17 @@ h2 .btn{
 #accordion hr{
 	visibility: hidden;
 }
+.session{
+	margin-right: 5px;
+}
 .sessionP{
 	color:blue;
-	margin-right: 5px;
 }
 .sessionE{
 	color:red;
-	margin-right: 5px;
 }
 .sessionI{
 	color:green;
-	margin-right: 5px;
 }
 #collapseEtat .btn {
 	margin-left: 10px;

@@ -3,13 +3,16 @@ package org.esupportail.sgc.web.admin;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.annotation.Resource;
 
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.session.SessionRegistry;
@@ -25,6 +28,9 @@ public class CurrentSessionsController {
 	
 	@Resource
 	AppliConfigService appliConfigService;
+
+	@Resource
+	UserInfoService userInfoService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -52,7 +58,8 @@ public class CurrentSessionsController {
 		
 		List<String> sessions = new Vector<String>();
 		List<Object> principals = sessionRegistry.getAllPrincipals();
-		List<User> users = new ArrayList<User>();
+		Map<String, List<User>> users = new HashMap<String, List<User>>();
+		List<User> allUsers = new ArrayList<User>();
 		
 		for(Object p: principals) {
 			sessions.add(((UserDetails) p).getUsername());
@@ -61,12 +68,19 @@ public class CurrentSessionsController {
 		Collections.sort(sessions);
 		
 		for(String eppn : sessions){
-			users.add(User.findUser(eppn));
+			User user = User.findUser(eppn);
+			if(!users.containsKey(user.getUserType())) {
+				users.put(user.getUserType(), new ArrayList<User>());
+			}
+			users.get(user.getUserType()).add(user);
+			allUsers.add(user);
 		}
+
 		uiModel.addAttribute("users", users);
-		
 		uiModel.addAttribute("active", "sessions");
-		
+		uiModel.addAttribute("allUsers", allUsers);
+		uiModel.addAttribute("userTypes", userInfoService.getListExistingType());
+
 		return "admin/currentsessions";
 	}
 

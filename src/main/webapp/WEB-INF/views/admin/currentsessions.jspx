@@ -24,38 +24,24 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
 	<jsp:output omit-xml-declaration="yes" />
 	<h2>Sessions</h2>
-		<c:set var="nbP" value="0" /> 
-		<c:set var="nbE" value="0"/>
-		<c:set var="nbI" value="0"/>
-	
+
 		<spring:url value="/manager?eppn=" var="userLinkPrefix"/>
 		<div class="jumbotron" id="sessionsUsers">
 			<ul>
-				<c:forEach items="${users}" var="session">
-					<c:choose>
-					<c:when test="${session.eduPersonPrimaryAffiliation eq 'staff' or session.eduPersonPrimaryAffiliation eq 'teacher'}">
-						<c:set var="nbP" value="${nbP +1}"/><c:set var="type" value="P"/>
-					</c:when>
-					<c:when test="${session.eduPersonPrimaryAffiliation eq 'student'}">
-						<c:set var="nbE" value="${nbE +1}"/><c:set var="type" value="E"/>
-					</c:when>
-					<c:otherwise>
-						<c:set var="nbI" value="${nbI +1}"/><c:set var="type" value="I"/>
-					</c:otherwise>
-					</c:choose>			
-					<li class="session${type}"><a href="${userLinkPrefix}${session.eppn}">${session.eppn}</a></li>
+				<c:forEach items="${allUsers}" var="session">
+					<li class="session session${type}"><a href="${userLinkPrefix}${session.eppn}">${session.eppn}</a></li>
 				</c:forEach>
 			</ul>
 		</div>
 		<div class="alert alert-info" id="sessionsdiv">
 			<h3>Utilisateurs connectés.</h3>
-			<p><strong>${fn:length(users)} session(s) active(s)</strong></p>
+			<p><strong>${fn:length(allUsers)} session(s) active(s)</strong></p>
 			<br />
 			<div class="well">
 				<ul class="list-inline">
-					<li class="sessionP">Personnel : <span class="badge">${nbP}</span></li> 
-					<li class="sessionE">Etudiant : <span class="badge">${nbE}</span></li> 
-					<li class="sessionI">Invité : <span class="badge">${nbI}</span></li>
+					<c:forEach items="${userTypes}" var="userType">
+						<li class="session session${userType}"><spring:message code="manager.type.${userType}" htmlEscape="false" /> : <span class="badge">${fn:length(users[userType])}</span></li>
+					</c:forEach>
 				</ul>
 			</div>
 		</div>
