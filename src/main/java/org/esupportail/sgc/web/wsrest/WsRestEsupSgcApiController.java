@@ -109,7 +109,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	public ResponseEntity<String> cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, @RequestHeader("User-Agent") String userAgent, HttpServletRequest request) throws IOException {	
 		
 		HttpHeaders responseHeaders = new HttpHeaders();
-		
+
 		if (bindingResult.hasErrors()) {
 			log.warn(bindingResult.getAllErrors().toString());
 			return new ResponseEntity<String>(bindingResult.getAllErrors().toString(), responseHeaders, HttpStatus.UNPROCESSABLE_ENTITY);
@@ -200,7 +200,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 					// TODO : use cardEtatService.setCardEtat !
 					cardEtatService.sendMailInfo(null, Etat.NEW, user, null);
 					
-					return new ResponseEntity<String>(eppn + " request OK.", responseHeaders, HttpStatus.OK);
+					return new ResponseEntity<String>(card.getId().toString(), responseHeaders, HttpStatus.OK);
 				}
 			} else {
 				return new ResponseEntity<String>(eppn + " tried to request card but he has no rights to do it.", responseHeaders, HttpStatus.FORBIDDEN);
@@ -332,6 +332,20 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 		} else {
 			return new ResponseEntity<Long>(-1L, HttpStatus.NOT_ACCEPTABLE);
 		}
+	}
+
+
+	/*
+	 * Example to use it :
+	 * curl -d "etat=REQUEST_CHECKED" https://esup-sgc.univ-ville.fr/wsrest/api/setCardEtat/1818864
+	 */
+	@Transactional
+	@RequestMapping(value="/setCardEtat/{cardId}", method = RequestMethod.POST)
+	public ResponseEntity<Boolean> setCardEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etat, @RequestParam(required = false) String comment, HttpServletRequest request) {
+		Card card = Card.findCard(cardId);
+		Boolean r = cardEtatService.setCardEtat(card, etat, comment, null, false, false);
+		log.info("Changement d'état de la carte %s (%s) à %s via WS depuis l'IP %s -> %s", card.getId(), card.getEppn(), etat, request.getRemoteAddr(), r);
+		return new ResponseEntity<Boolean>(r, HttpStatus.OK);
 	}
 	
 }
