@@ -69,10 +69,11 @@ public class PermissionService {
 	}
 
 	public Boolean hasConsultPermission(Set<String> roles, String userType) {
-		if(roles.contains("ROLE_CONSULT") || roles.contains("ROLE_CONSULT_" + userType)) {
-			return true;
+		if(roles.contains("ROLE_RESTRICTED_CONSULT")) {
+			return false;
 		}
-		return false;
+
+		return roles.contains("ROLE_CONSULT") || roles.contains("ROLE_CONSULT_" + userType) || roles.contains("ROLE_SUPER_MANAGER") || roles.contains("ROLE_MANAGER_" + userType);
 	}
 	
 }

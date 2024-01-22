@@ -35,13 +35,13 @@
     <jsp:include page="includes/header.jspx"/>
     <c:set value="${managePermission}" var="displayCheckbox"/>
     <page:list id="pl_org_esupportail_sgc_domain_Card" items="${cards}" z="BJPyWcDg3O3cxcyUVzdb93Qn9gQ=">
-        <table:table checkbox="${displayCheckbox}" create="false" data="${cards}" delete="false" id="l_org_esupportail_sgc_domain_Card" path="/manager" update="false" z="user-managed">
+        <table:table checkbox="${displayCheckbox}" create="false" data="${cards}" delete="false" id="l_org_esupportail_sgc_domain_Card" path="/manager" update="false" z="user-managed" view="${consultPermission}">
             <table:column cssClass="hidden" id="c_org_esupportail_sgc_domain_Card_id" label="id" property="id" z="user-managed"/>
             <table:column btLabel="card.label" cssClass="etat centerCell" id="c_org_esupportail_sgc_domain_Card_etat" property="etat" sort="true" translation="true" z="user-managed"/>
             <table:column breakpoints="xs" id="c_org_esupportail_sgc_domain_Card_eppn" cssClass="hidden-xs" property="eppn" sort="true" z="user-managed"/>
             <table:column breakpoints="sm" id="c_org_esupportail_sgc_domain_Card_name" cssClass="hidden-xs" label="Nom" property="displayName" sort="true"/>
             <table:column breakpoints="xs" btLabel="card.label/badge" cssClass="type centerCell hidden-xs hidden-sm" id="c_org_esupportail_sgc_domain_Card_userType" property="userType"/>
-            <table:column cssClass="photo centerCell" id="c_org_esupportail_sgc_domain_Card_photo" image="true" imagePrefix="${photoLocalPrefix}" label="Photo" property="id" z="user-managed"/>
+            <table:column cssClass="photo centerCell ${consultPermission ? 'link' : ''}" id="c_org_esupportail_sgc_domain_Card_photo" image="true" imagePrefix="${photoLocalPrefix}" label="Photo" property="id" z="user-managed"/>
             <table:column breakpoints="md" cssClass="crous centerCell  hidden-xs hidden-sm hidden-md" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_crous" property="crous" z="user-managed"/>
             <table:column breakpoints="md" cssClass="cnil centerCell  hidden-xs hidden-sm hidden-md" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_cnil" property="difPhoto" z="user-managed"/>
             <table:column breakpoints="md" cssClass="europeanStudentCard centerCell  hidden-xs hidden-sm hidden-md" glyphCheck="/true/ok/false/remove" id="c_org_esupportail_sgc_domain_Card_europeanStudentCard" property="europeanStudentCard" z="user-managed"/>

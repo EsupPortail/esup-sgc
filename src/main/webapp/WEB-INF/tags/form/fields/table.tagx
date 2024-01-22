@@ -297,8 +297,15 @@
 									</c:when>
 									<c:when test="${columnType eq 'image'}">
 										<c:set var="colTxt">
-										<spring:url value="${path}/${itemId}" var="view_url" />
-											<a href="${view_url}"><img  width="40" height="50" src="${columnImagePrefixe}${item[column]}"/></a>
+											<c:choose>
+												<c:when test="${columnCssClass.contains('link')}">
+													<spring:url value="${path}/${itemId}" var="view_url" />
+													<a href="${view_url}"><img  width="40" height="50" src="${columnImagePrefixe}${item[column]}"/></a>
+												</c:when>
+												<c:otherwise>
+													<img  width="40" height="50" src="${columnImagePrefixe}${item[column]}"/>
+												</c:otherwise>
+											</c:choose>
 										</c:set>
 									</c:when>
 									<c:otherwise>

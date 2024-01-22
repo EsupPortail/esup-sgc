@@ -516,6 +516,7 @@ public class ManagerCardController {
     	uiModel.addAttribute("cards", cards);
     	uiModel.addAttribute("countCards",  countCards);
     	uiModel.addAttribute("managePermission",  permissionService.hasManagePermission(roles, searchBean.getType()));
+		uiModel.addAttribute("consultPermission",  permissionService.hasConsultPermission(roles, searchBean.getType()));
     	uiModel.addAttribute("selectedType",  searchBean.getType());
     	uiModel.addAttribute("freeFields",  formService.getFieldsList());
     	uiModel.addAttribute("nbFields", new String[formService.getNbFields()]);

@@ -43,12 +43,15 @@ public class SgcPermissionEvaluator implements PermissionEvaluator {
 		}
 		
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
-		
+		String permissionKey = (String) permission;
+
+		if("consult".equals(permissionKey) && roles.contains("ROLE_RESTRICTED_CONSULT")) {
+			return false;
+		}
+
 		if(roles.contains("ROLE_ADMIN") || roles.contains("ROLE_SUPER_MANAGER")) {
 			return true;
 		}
-		
-		String permissionKey = (String) permission;
 		
 		if("consult".equals(permissionKey) && roles.contains("ROLE_CONSULT")) {
 			return true;

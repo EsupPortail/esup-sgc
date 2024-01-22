@@ -97,7 +97,7 @@ public class ManagerLdapSearchController {
 			Collections.sort(users, (u1, u2) -> u1.getEppn().compareTo(u2.getEppn()));
 			for(User user : users) {
 				userInfoService.setAdditionalsInfo(user, null);
-				user.setViewRight(permissionService.hasConsultPermission(roles, user.getUserType()) || permissionService.hasManagePermission(roles, user.getUserType()));
+				user.setViewRight(permissionService.hasConsultPermission(roles, user.getUserType()));
 			    user.setImportExtCardRight(permissionService.hasManagePermission(roles, user.getUserType()));
 			    user.setNewCardRight(permissionService.hasManagePermission(roles, user.getUserType()));
 			}
