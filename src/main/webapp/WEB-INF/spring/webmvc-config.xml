@@ -56,7 +56,6 @@
     <mvc:view-controller path="/uncaughtException"/>
     <mvc:view-controller path="/resourceNotFound"/>
     <mvc:view-controller path="/dataAccessFailure"/>
-
   
     <!-- Store preferred language configuration in a cookie -->
     <bean class="org.springframework.web.servlet.i18n.CookieLocaleResolver" id="localeResolver" p:cookieName="locale"/>
@@ -78,7 +77,14 @@
                 <prop key=".TypeMismatchException">resourceNotFound</prop>
                 <prop key=".MissingServletRequestParameterException">resourceNotFound</prop>
                 <prop key=".SgcNotFoundException">resourceNotFound</prop>
+                <prop key=".AccessDeniedException">denied</prop>
             </props>
+        </property>
+        <property name="statusCodes">
+            <map>
+                <entry key="resourceNotFound" value="404"/>
+                <entry key="denied" value="403"/>
+            </map>
         </property>
     </bean>
 
