@@ -70,7 +70,7 @@ public class ImportExportService {
 
 			log.info(i + " users imported !");
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new SgcRuntimeException("Error during parsing csv", e);
 		} finally {
 			inWorking = false;
