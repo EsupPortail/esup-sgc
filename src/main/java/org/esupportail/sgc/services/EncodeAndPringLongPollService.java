@@ -36,7 +36,7 @@ public class EncodeAndPringLongPollService {
 	public DeferredResult<String> qrcode2edit(String eppn) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		final DeferredResult<String> qrcode = new DeferredResult<String>(null, "");
+		final DeferredResult<String> qrcode = new DeferredResult<String>(1200000l, "");
 		
 		if(this.suspendedEncodPrintCardPollRequests.containsKey(eppn)) {
 			this.suspendedEncodPrintCardPollRequests.get(eppn).setResult("stop");
@@ -81,7 +81,7 @@ public class EncodeAndPringLongPollService {
 
 		currentEncodManagersPrintEncodeEppns.add(eppnInit);
 
-		final DeferredResult<String> okResult = new DeferredResult<String>(null, "ok");
+		final DeferredResult<String> okResult = new DeferredResult<String>(1200000l, "ok");
 
 		if(this.suspendedEncodManagersPrintEncodeEppns.containsKey(eppnInit)) {
 			this.suspendedEncodManagersPrintEncodeEppns.get(eppnInit).setResult("ok");

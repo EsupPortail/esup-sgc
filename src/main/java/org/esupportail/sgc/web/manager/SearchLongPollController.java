@@ -32,7 +32,7 @@ public class SearchLongPollController {
 
 		final String authName = auth.getName();
 
-		final DeferredResult<String> searchEppn = new DeferredResult<String>(null, "");
+		final DeferredResult<String> searchEppn = new DeferredResult<String>(1200000l, "");
 		
 		if(this.suspendedSearchPollRequests.containsKey(authName)) {
 			this.suspendedSearchPollRequests.get(authName).setResult("stop");
