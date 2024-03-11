@@ -137,7 +137,7 @@ public class WsRestEsupNfcController {
 				break;
 			}
 		}
-		log.info("locations for " + eppn + " -> locations");
+		log.info("locations for " + eppn + " -> " + locations);
 		return locations;
 	}
 

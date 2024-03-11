@@ -30,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "2.1.x";
+	final static String currentEsupSgcVersion = "2.2.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -378,6 +378,15 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				esupSgcVersion = "2.1.x";
+			}
+			if("2.1.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'PRINTER_ROLE_CONFIG', 'false', 'En plus d''être MANAGER, le ROLE_PRINTER (ou l''affectation à une imprimante via eppn ou groupe pour l''édition en 1 passe) est requis pour pouvoir imprimer une carte.', 'BOOLEAN');";
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				esupSgcVersion = "2.2.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

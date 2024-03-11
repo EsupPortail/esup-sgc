@@ -196,7 +196,10 @@ public class ManagerCardController {
 	@ModelAttribute("currentPrinter")
 	public Printer getCurrentPrinter(@SessionAttribute(required = false) String printerEppn) {
 		if(!StringUtils.isEmpty(printerEppn)) {
-			return Printer.findPrintersByEppn(printerEppn).getSingleResult();
+			List<Printer> printers = Printer.findPrintersByEppn(printerEppn).getResultList();
+			if(printers.size()>0) {
+				return printers.get(0);
+			}
 		}
 		return null;
 	}
@@ -224,7 +227,7 @@ public class ManagerCardController {
         addDateTimeFormatPatterns(uiModel);
         User user = User.findUser(eppn);
         uiModel.asMap().clear();
-        if(!user.getCards().isEmpty()) {
+        if(user!=null && !user.getCards().isEmpty()) {
         	return "redirect:/manager/" + user.getCards().get(0).getId();
         } else {
         	return "redirect:/manager";

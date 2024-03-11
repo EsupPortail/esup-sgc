@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -225,7 +226,8 @@ public class CardEtatService {
 			}
 		}
 		if(Etat.REQUEST_CHECKED.equals(card.getEtat()) || Etat.IN_PRINT.equals(card.getEtat())) {
-			if(!StringUtils.isEmpty(printerEppn) && !printerService.isPrinterConnected(printerEppn)) {
+			Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
+			if(!StringUtils.isEmpty(printerEppn) && !printerService.isPrinterConnected(printerEppn) || StringUtils.isEmpty(printerEppn) && appliConfigService.getPrinterRoleConfig() && !roles.contains("ROLE_PRINTER")) {
 				card.removeEtatAvailable(Etat.IN_PRINT);
 			}
 		}
