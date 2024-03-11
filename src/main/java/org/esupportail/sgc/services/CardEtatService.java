@@ -132,7 +132,7 @@ public class CardEtatService {
 			}
 		}
 		
-		updateEtatsAvailable4Card(card);
+		updateEtatsAvailable4Card(card, printerEppn);
 		if(!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat)) {
 			return false;
 		}
