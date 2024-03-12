@@ -341,9 +341,9 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	 */
 	@Transactional
 	@RequestMapping(value="/setCardEtat/{cardId}", method = RequestMethod.POST)
-	public ResponseEntity<Boolean> setCardEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etat, @RequestParam(required = false) String comment, @RequestParam(required = false) String printerEppn, HttpServletRequest request) {
+	public ResponseEntity<Boolean> setCardEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etat, @RequestParam(required = false) String comment, @RequestParam(required = false) String printerEppn, @RequestParam(required = false) String csn, HttpServletRequest request) {
 		Card card = Card.findCard(cardId);
-		Boolean r = cardEtatService.setCardEtat(card, etat, comment, null, false, false, printerEppn);
+		Boolean r = cardEtatService.setCardEtat(card, etat, comment, null, false, false, printerEppn, csn);
 		log.info("Changement d'état de la carte {} ({}) à {} via WS depuis l'IP {} -> {}", card.getId(), card.getEppn(), etat, request.getRemoteAddr(), r);
 		return new ResponseEntity<Boolean>(r, HttpStatus.OK);
 	}

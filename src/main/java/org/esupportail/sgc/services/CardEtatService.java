@@ -116,11 +116,16 @@ public class CardEtatService {
 
 	@Transactional
 	public boolean setCardEtat(Card card, Etat etat, String comment, String mailMessage, boolean actionFromAnAdmin, boolean force) {
-		return setCardEtat(card, etat, comment, mailMessage, actionFromAnAdmin, force, null);
+		return setCardEtat(card, etat, comment, mailMessage, actionFromAnAdmin, force, null, null);
+	}
+
+	@Transactional
+	public boolean setCardEtat(Card card, Etat etat, String comment, String mailMessage, boolean actionFromAnAdmin, boolean force, String printerEppn) {
+		return setCardEtat(card, etat, comment, mailMessage, actionFromAnAdmin, force, printerEppn, null);
 	}
 	
 	@Transactional
-	public boolean setCardEtat(Card card, Etat etat, String comment, String mailMessage, boolean actionFromAnAdmin, boolean force, String printerEppn) {
+	public boolean setCardEtat(Card card, Etat etat, String comment, String mailMessage, boolean actionFromAnAdmin, boolean force, String printerEppn, String csn) {
 		
 		Etat etatInitial = card.getEtat();
 		
@@ -131,10 +136,15 @@ public class CardEtatService {
 				eppn = auth.getName();
 			}
 		}
-		
-		updateEtatsAvailable4Card(card, printerEppn);
-		if(!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat)) {
-			return false;
+
+		if(Etat.ENCODED.equals(etat) && StringUtils.isNotEmpty(csn) && StringUtils.isEmpty(card.getCsn())) {
+			log.info("Set card encoded via API : " + card.getId() + " with csn : " + csn);
+			card.setCsn(csn);
+		} else {
+			updateEtatsAvailable4Card(card, printerEppn);
+			if (!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat)) {
+				return false;
+			}
 		}
 
 		// only one card can be enabled at any time for a user
