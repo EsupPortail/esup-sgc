@@ -24,7 +24,7 @@
 		<form action="${bordereauUrl}" id="searchCsvForm" modelAttribute="searchBean">
 		<p class="text-info"><strong>Nb de résultats : ${countCards}</strong>		
 			<input type="hidden" id="address" name="address"
-				value="${searchBean.address eq 0 ? '' : searchBean.address}" />
+				value="${searchBean.address}" />
 			<input type="hidden" id="type" name="type"
 				value="${searchBean.type ne null ? searchBean.type : ''}" />
 			<input type="hidden" id="etat" name="etat"
