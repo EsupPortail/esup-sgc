@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Hex;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
@@ -12,7 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FormService {
-	
+
+
+	private enum HashType {
+		HASH, HEXA
+	}
+
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private Map<String, String> idsMap = new HashMap<String, String>();
@@ -22,6 +28,13 @@ public class FormService {
 	private int nbFields = 3;
 	
 	private int fieldsValuesNbMax = 200;
+
+	// with hexa : no collision, with hash : collision
+	// hexa is a bit more longer than hash (2x), that can be a little problem for url length (2048)
+	// default to hexa now, before it was hash
+	private HashType hashType = HashType.HEXA;
+
+
 	
 	public int getNbFields() {
 		return nbFields;
@@ -42,12 +55,21 @@ public class FormService {
 	public void setFieldsList(Map<String, String> fieldsList) {
 		this.fieldsList = fieldsList;
 	}
+
+	public void setHashType(HashType hashType) {
+		this.hashType = hashType;
+	}
 	
 	public String encodeUrlString(String string2encode) {
 		if(string2encode==null) {
 			return "";
 		}
-		String encPath = String.valueOf(string2encode.hashCode());
+		String encPath = "";
+		if(HashType.HASH.equals(hashType)) {
+			encPath = Integer.toString(string2encode.hashCode());
+		} else if(HashType.HEXA.equals(hashType)) {
+			encPath = new String(Hex.encodeHex(string2encode.getBytes()));
+		}
 		if(!idsMap.containsKey(encPath)) {
 			idsMap.put(encPath, string2encode);
 		}
