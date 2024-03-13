@@ -27,7 +27,7 @@ public class FormService {
 	
 	private int nbFields = 3;
 	
-	private int fieldsValuesNbMax = 200;
+	private int fieldsValuesNbMax = 10000;
 
 	// with hexa : no collision, with hash : collision
 	// hexa is a bit more longer than hash (2x), that can be a little problem for url length (2048)
