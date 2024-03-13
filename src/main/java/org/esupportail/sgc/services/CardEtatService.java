@@ -137,6 +137,7 @@ public class CardEtatService {
 			}
 		}
 
+		// API hack : if card is encoded via API, we can set the card to encoded only if csn is provided and card.csn is empty
 		if(Etat.ENCODED.equals(etat) && StringUtils.isNotEmpty(csn) && StringUtils.isEmpty(card.getCsn())) {
 			log.info("Set card encoded via API : " + card.getId() + " with csn : " + csn);
 			card.setCsn(csn);
