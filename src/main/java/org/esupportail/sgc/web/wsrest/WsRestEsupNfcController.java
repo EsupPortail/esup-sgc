@@ -33,11 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,7 +64,7 @@ import java.util.Map;
  */
 @Transactional
 @RequestMapping("/wsrest/nfc")
-@Controller 
+@RestController
 public class WsRestEsupNfcController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
