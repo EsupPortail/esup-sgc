@@ -1,5 +1,7 @@
 package org.esupportail.sgc.services;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +18,7 @@ public class FormService {
 
 
 	private enum HashType {
-		HASH, HEXA
+		HASH, HEXA, URL
 	}
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -31,8 +33,9 @@ public class FormService {
 
 	// with hexa : no collision, with hash : collision
 	// hexa is a bit more longer than hash (2x), that can be a little problem for url length (2048)
-	// default to hexa now, before it was hash
-	private HashType hashType = HashType.HEXA;
+	// url is shorty, but can be a problem with special characters
+	// default to url now, before it was hash
+	private HashType hashType = HashType.URL;
 
 
 	
@@ -69,7 +72,14 @@ public class FormService {
 			encPath = Integer.toString(string2encode.hashCode());
 		} else if(HashType.HEXA.equals(hashType)) {
 			encPath = new String(Hex.encodeHex(string2encode.getBytes()));
-		}
+		} else if(HashType.URL.equals(hashType)) {
+            try {
+                encPath = URLEncoder.encode(string2encode, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+				log.trace("UnsupportedEncodingException for " + string2encode + " fallback to hexa");
+				encPath = new String(Hex.encodeHex(string2encode.getBytes()));
+            }
+        }
 		if(!idsMap.containsKey(encPath)) {
 			idsMap.put(encPath, string2encode);
 		}
