@@ -89,7 +89,7 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
 		Object principal = super.getPreAuthenticatedPrincipal(request);
-		if (principal == null && request.getServletPath().matches("^/user.*|^/manager.*|^/admin.*")) {
+		if (principal == null && request.getServletPath().matches("^/user.*|^/manager.*|^/admin.*") && !request.getServletPath().equals("/user/shib")) {
 			throw new PreAuthenticatedCredentialsNotFoundException("principalRequestHeader (REMOTE_USER ?) header not found in request. Pb with Shibboleth Provider setup ?");
 		} else {
 			return principal;
