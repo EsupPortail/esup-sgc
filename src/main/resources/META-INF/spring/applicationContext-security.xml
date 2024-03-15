@@ -10,13 +10,8 @@
     <http security="none" pattern="/resources/**" />
 
     <http security="none" pattern="/webjars/**" />
-    
-    <!-- HTTP security configurations -->
-    <http disable-url-rewriting="true" use-expressions="true" entry-point-ref="http403EntryPoint">
-		<intercept-url pattern="/j_spring_security_switch_user" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')"/>
-		<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/manager/**" access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_CONSULT_') or hasRole('ROLE_ADMIN') or hasRole('ROLE_LIVREUR')" />
-		<intercept-url pattern="/login" access="isAuthenticated()"/>
+
+	<http pattern="/wsrest/**" entry-point-ref="http403EntryPoint">
 		<intercept-url pattern="/wsrest/nfc/cnousCardId" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/addCrousCsvFile" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/eppnAndNumeroId" access="permitAll" />
@@ -29,7 +24,20 @@
 		<intercept-url pattern="/wsrest/nfc/**" access="hasIpAddress('127.0.0.1')" /> <!-- Esup-Nfc-Tag IP Address -->
 		<intercept-url pattern="/wsrest/photo/**" access="${accessRestrictionWSRestPhoto}" />
 		<intercept-url pattern="/wsrest/**" access="${accessRestrictionWSRestApi}"/>
-                <intercept-url pattern="/wsescr/**" access="${accessRestrictionWSescr}"/>
+		<csrf disabled="true"/>
+	</http>
+
+	<http pattern="/wsescr/**" entry-point-ref="http403EntryPoint">
+		<intercept-url pattern="/wsescr/**" access="${accessRestrictionWSescr}"/>
+		<csrf disabled="true"/>
+	</http>
+    
+    <!-- HTTP security configurations -->
+    <http disable-url-rewriting="true" use-expressions="true" entry-point-ref="http403EntryPoint">
+		<intercept-url pattern="/j_spring_security_switch_user" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')"/>
+		<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/manager/**" access="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_CONSULT_') or hasRole('ROLE_ADMIN') or hasRole('ROLE_LIVREUR')" />
+		<intercept-url pattern="/login" access="isAuthenticated()"/>
 		<intercept-url pattern="/**" access="permitAll" />
 		<access-denied-handler error-page="/denied" />
 		<session-management session-authentication-strategy-ref="sas" />
