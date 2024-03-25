@@ -18,6 +18,7 @@ import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.crous.CrousService;
+import org.esupportail.sgc.services.crous.CrousSmartCardService;
 import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -40,12 +41,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -98,8 +103,10 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	
 	@Resource
 	CrousService crousService;
-	
-	
+
+	@Resource
+	CrousSmartCardService crousSmartCardService;
+
 	/**
 	 * Example to use it :
 	 * curl   -F "eppn=toto@univ-ville.fr" -F "difPhotoTransient=true" -F "crousTransient=true" -F "europeanTransient=true" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
@@ -346,6 +353,23 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 		Boolean r = cardEtatService.setCardEtat(card, etat, comment, null, false, false, printerEppn, csn);
 		log.info("Changement d'état de la carte {} ({}) à {} via WS depuis l'IP {} -> {}", card.getId(), card.getEppn(), etat, request.getRemoteAddr(), r);
 		return new ResponseEntity<Boolean>(r, HttpStatus.OK);
+	}
+
+
+	/**
+	 * Exemple :
+	 * curl --form "file=@/tmp/le-csv.txt" http://localhost:8080/wsrest/api/addCrousCsvFile
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/addCrousCsvFile", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public ResponseEntity<String> addCrousCsvFile(@RequestParam MultipartFile file) throws IOException {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		String filename = file.getOriginalFilename();
+		log.info("CrousSmartCardController retrieving file from rest call " + filename);
+		InputStream stream = new ByteArrayInputStream(file.getBytes());
+		crousSmartCardService.consumeCsv(stream, false);
+		return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 	}
 	
 }
