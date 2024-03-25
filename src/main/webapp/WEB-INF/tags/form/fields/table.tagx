@@ -183,7 +183,7 @@
 										<c:forEach items="${paramValues}" var="p">
 											<c:if test="${p.key ne 'sortFieldName' and p.key ne 'sortOrder'}">
 												<c:forEach var='value' items='${p.value}'>
-													<spring:param name="${p.key}" value="${value}" />
+													<spring:param name="${p.key}" value="${value}"  />
 												</c:forEach>
 											</c:if>
 											<c:if test="${p.key eq 'sortOrder' and paramValues['sortFieldName'][0] eq columnProperty}">

@@ -18,7 +18,7 @@ public class FormService {
 
 
 	private enum HashType {
-		HASH, HEXA, URL
+		HASH, HEXA, URL, NONE
 	}
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -34,8 +34,9 @@ public class FormService {
 	// with hexa : no collision, with hash : collision
 	// hexa is a bit more longer than hash (2x), that can be a little problem for url length (2048)
 	// url is shorty, but can be a problem with special characters
-	// default to url now, before it was hash
-	private HashType hashType = HashType.URL;
+	// NONE is for no encoding
+	// default to none now, before it was hash
+	private HashType hashType = HashType.NONE;
 
 
 	
@@ -67,7 +68,7 @@ public class FormService {
 		if(string2encode==null) {
 			return "";
 		}
-		String encPath = "";
+		String encPath = string2encode;
 		if(HashType.HASH.equals(hashType)) {
 			encPath = Integer.toString(string2encode.hashCode());
 		} else if(HashType.HEXA.equals(hashType)) {
