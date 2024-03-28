@@ -137,10 +137,14 @@ public class CardEtatService {
 			}
 		}
 
-		// API hack : if card is encoded via API, we can set the card to encoded only if csn is provided and card.csn is empty
-		if(Etat.ENCODED.equals(etat) && StringUtils.isNotEmpty(csn) && StringUtils.isEmpty(card.getCsn())) {
-			log.info("Set card encoded via API : " + card.getId() + " with csn : " + csn);
-			card.setCsn(csn);
+		// API hack : if card is encoded via API, we can set the card to encoded only if csn is provided ord card.csn is not empty
+		if(Etat.ENCODED.equals(etat) && (StringUtils.isNotEmpty(csn) || StringUtils.isNotEmpty(card.getCsn()))) {
+			if(StringUtils.isNotEmpty(csn)) {
+				log.info("Set card encoded via API : " + card.getId() + " with csn : " + csn);
+				card.setCsn(csn);
+			} else {
+				log.info("Set card encoded via API : " + card.getId() + " with csn : " + card.getCsn());
+			}
 		} else {
 			updateEtatsAvailable4Card(card, printerEppn);
 			if (!card.getEtatsAvailable().contains(etat) && !force && !Etat.NEW.equals(etat) && !Etat.RENEWED.equals(etat)) {
