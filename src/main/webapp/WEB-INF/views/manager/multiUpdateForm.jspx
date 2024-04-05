@@ -33,11 +33,11 @@
 									<c:choose>
 										<c:when test="${not empty actionMessages[etatAvailable] and etatAvailable ne 'REQUEST_CHECKED' and etatAvailable ne 'PRINTED' and etatAvailable ne 'IN_PRINT' and etatAvailable ne 'DESTROYED'}">
 											<button class="btn btn-success btn-block"
-												data-target="#commentEtat" data-toggle="modal" type="button" id="${etatAvailable}Btn">
+												data-target="#commentEtat_${j.index}" data-toggle="modal" type="button" id="${etatAvailable}Btn">
 												<spring:message
 													code="manager.action.${etatInit}-${etatAvailable}" />
 											</button>
-											<div class="modal fade" id="commentEtat">
+											<div class="modal fade" id="commentEtat_${j.index}">
 												<div class="modal-dialog">
 													<div class="modal-content">
 														<div class="modal-header">
