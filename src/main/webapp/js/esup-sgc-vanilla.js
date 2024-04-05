@@ -329,19 +329,8 @@ function multiUpdateForm(idArray) {
 			    		}
 			     	});
 			    }
-			    //Renouvellement
-			    var renewedForm = document.getElementById("RENEWEDForm");
-				if (renewedForm != null) {
-					renewedForm.addEventListener('submit', function(evt) {
-						evt.preventDefault();
-						if (confirm("Confirmer l'action de renouvellement")) {
-							renewedForm.submit();
-						}
-					});
-				}
-			  //Actions
-			  var inprintForm = document.getElementById("IN_PRINTForm");
-			  if(inprintForm != null){
+				if(document.getElementById("IN_PRINTForm") != null){
+				  var inprintForm = document.getElementById("IN_PRINTForm");
 				  if(printerEppn) {
 					  var inprintBtn = inprintForm.querySelector('button');
 					  inprintBtn.textContent = "Imprimer et encoder";
@@ -351,25 +340,26 @@ function multiUpdateForm(idArray) {
 						  this.target = 'formprint';
 					  });
 				  }
-			  }else if(document.getElementById("REJECTEDForm") !=null){
-					var myButton = document.getElementById('REJECTEDBtn');
-					var myModalInstance = new Modal(myButton);
-			  }else if(document.getElementById("ENABLEDForm") !=null){
-					var myButton = document.getElementById('ENABLEDBtn');
-					var myModalInstance = new Modal(myButton);
-			  }else if(document.getElementById("DISABLEDForm") !=null){
-					var myButton = document.getElementById('DISABLEDBtn');
-					var myModalInstance = new Modal(myButton);
+			  }
+			  if (document.getElementById("RENEWEDForm") != null) {
+				  new Modal(document.getElementById('RENEWEDBtn'));
+			  }
+			  if(document.getElementById("REJECTEDForm") !=null){
+				  new Modal(document.getElementById('REJECTEDBtn'));
+			  }
+			  if(document.getElementById("ENABLEDForm") !=null){
+				  new Modal(document.getElementById('ENABLEDBtn'));
+			  }
+			  if(document.getElementById("DISABLEDForm") !=null){
+				  new Modal(document.getElementById('DISABLEDBtn'));
 			  }
 			  if(document.getElementById("validationBtn") !=null){
-					var myButton2 = document.getElementById('validationBtn');
-					var myModalInstance2 = new Modal(myButton2);
+				  new Modal(document.getElementById('validationBtn'));
 			  }
 			  // Choix message
 			  if(document.getElementById("editActions") !=null){
-					var editActions = document.getElementById('editActions');
-					editActions.querySelectorAll("a.accordion-toggle").forEach(function(collapseLink) {
-						var myCollapseInit = new Collapse(collapseLink);
+					document.getElementById('editActions').querySelectorAll("a.accordion-toggle").forEach(function(collapseLink) {
+						new Collapse(collapseLink);
 				    }, false);
 			  }
 		  }
