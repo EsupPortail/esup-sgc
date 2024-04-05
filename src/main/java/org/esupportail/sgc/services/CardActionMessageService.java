@@ -96,6 +96,19 @@ public class CardActionMessageService {
         }
         return cardActionsMessagesAutoInConflict;
 	}
-	
+
+	public Map<String, Set<CardActionMessage>> getCardActionMessagesUnreachable() {
+		Map<String, Set<CardActionMessage>> cardActionsMessagesUnreachable = new HashMap<String, Set<CardActionMessage>>();
+		for(CardActionMessage cardActionMessage : CardActionMessage.findAllCardActionMessages()) {
+			if(CardEtatService.workflow4messages.get(cardActionMessage.getEtatInitial())!=null && !CardEtatService.workflow4messages.get(cardActionMessage.getEtatInitial()).contains(cardActionMessage.getEtatFinal())) {
+				String idMap = String.format("%s/%s", cardActionMessage.getEtatInitial(), cardActionMessage.getEtatFinal());
+				if(cardActionsMessagesUnreachable.get(idMap) == null) {
+					cardActionsMessagesUnreachable.put(idMap, new HashSet<CardActionMessage>());
+				}
+				cardActionsMessagesUnreachable.get(idMap).add(cardActionMessage);
+			}
+		}
+		return cardActionsMessagesUnreachable;
+	}
 
 }

@@ -32,6 +32,21 @@
             </ul>
         </div>
     </c:if>
+    <c:if test="${not empty cardActionsMessagesUnreachableList}">
+        <div class="alert alert-warningr">
+            <b>Problème détecté sur les messages suivants - ces messages ne sont pas cohérents avec le cycle de vie de la carte et ne seront jamais proposés / utilisés : </b>
+            <ul>
+                <c:forEach items="${cardActionsMessagesUnreachableList}" var="cardActionsMessagesUnreachable">
+                    <li>Transition impossible - ${cardActionsMessagesUnreachable.key} :
+                        <c:forEach items="${cardActionsMessagesUnreachable.value}" var="cardActionMessage">
+                            <spring:url value="/admin/actionmessages/${cardActionMessage.id}" var="message_url"/>
+                            <a href="${message_url}">${cardActionMessage.id}</a>,
+                        </c:forEach>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+    </c:if>
     <div class="panel-collapse collapse well" id="actionMessagesHelp">
         <p>Vous pouvez ici paramétrer des messages mails qui seront envoyés à l'utilisateur lors des changements d'état de la carte.</p>
         <p>Lors du passage d'une carte d'un état à un autre - voir le  descriptif du workflow ici :  

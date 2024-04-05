@@ -370,6 +370,8 @@ public class CardService {
 				User user = User.findUser(card.getEppn());
 				copyCard.setUserAccount(user);
 				copyCard.setDueDate(user.getDueDate());
+				// on initialise l'état de la carte avec l'état de la carte source pour permettre l'usage de messages de type ENABLED->RENEWED ou encore DISABLED->RENEWED
+				copyCard.setEtat(card.getEtat());
 				String messageLog = "Demande de renouvellement de carte pour :  " + card.getEppn() + " effectuée.";
 				cardEtatService.setCardEtat(copyCard, Etat.RENEWED, messageLog, null, false, false);
 				copyCard.persist();

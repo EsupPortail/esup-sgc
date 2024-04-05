@@ -82,6 +82,7 @@ public class CardActionMessageController {
             uiModel.addAttribute("cardactionmessages", CardActionMessage.findAllCardActionMessages(sortFieldName, sortOrder));
         }
         uiModel.addAttribute("cardActionsMessagesConflictsList", cardActionMessageService.getCardActionMessagesAutoInConflict());
+        uiModel.addAttribute("cardActionsMessagesUnreachableList", cardActionMessageService.getCardActionMessagesUnreachable());
         
         return "admin/actionmessages/list";
     }

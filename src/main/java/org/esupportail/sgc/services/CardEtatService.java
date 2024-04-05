@@ -66,6 +66,20 @@ public class CardEtatService {
 		workflow.put(Etat.CANCELED, Arrays.asList(new Etat[]{}));
 	}
 
+	public static Map<Etat, List<Etat>> workflow4messages = new HashMap<Etat, List<Etat>>(workflow);
+	static {
+		workflow4messages.put(Etat.PRINTED, new ArrayList<>(workflow4messages.get(Etat.PRINTED)));
+		workflow4messages.put(Etat.IN_ENCODE, new ArrayList<>(workflow4messages.get(Etat.IN_ENCODE)));
+		workflow4messages.put(Etat.DISABLED, new ArrayList<>(workflow4messages.get(Etat.DISABLED)));
+		workflow4messages.put(Etat.ENABLED, new ArrayList<>(workflow4messages.get(Etat.ENABLED)));
+		workflow4messages.put(Etat.CADUC, new ArrayList<>(workflow4messages.get(Etat.CADUC)));
+		workflow4messages.get(Etat.PRINTED).add(Etat.IN_ENCODE);
+		workflow4messages.get(Etat.IN_ENCODE).add(Etat.ENCODED);
+		workflow4messages.get(Etat.DISABLED).add(Etat.CADUC);
+		workflow4messages.get(Etat.ENABLED).add(Etat.CADUC);
+		workflow4messages.get(Etat.CADUC).add(Etat.DISABLED);
+	}
+
 	@Resource
 	LogService logService;
 	
