@@ -72,8 +72,7 @@ public class LdapGroupBaseService extends LdapGroupService {
 						}
 					});
 		} catch (org.springframework.ldap.NamingException e) {
-			log.warn("Failed to retrieve members of Group: " + groupName + " - " + e.getMessage());
-			log.trace("LDAP Exception retrieving group " + groupName, e);
+			log.trace("Failed to retrieve members of Group: " + groupName + " - " + e.getMessage());
 		}
 		List<String> eppns = new ArrayList<String>();
 		for(List<String> eppnList : eppnsList) {

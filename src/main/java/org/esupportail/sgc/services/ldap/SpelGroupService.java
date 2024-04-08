@@ -32,6 +32,11 @@ public class SpelGroupService implements GroupService {
 	}
 
 	@Override
+	public boolean canManageGroup(String groupName) {
+		return groups4eppnSpel.containsKey(groupName);
+	}
+
+	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
 	}

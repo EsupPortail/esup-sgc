@@ -13,7 +13,9 @@ import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.LdapTemplate;
 
 public class LdapGroupService implements GroupService {
-	
+
+	private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LdapGroupService.class);
+
 	LdapTemplate ldapTemplate;
 	
 	String groupSearchBase;
@@ -29,6 +31,24 @@ public class LdapGroupService implements GroupService {
 	@Override
 	public String getBeanName() {
 		return beanName;
+	}
+
+	@Override
+	public boolean canManageGroup(String groupName) {
+		String groupDn = String.format("cn=%s,%s", groupName, groupSearchBase);
+		if(!groupSearchFilter.contains("memberUid")) {
+			DirContextAdapter dirContextAdapter = (DirContextAdapter) ldapTemplate.lookup("");
+			String dnSuffix = dirContextAdapter.getNameInNamespace();
+			// build groupDn as groupName without dn suffix
+			groupDn = groupName.replaceAll("," + dnSuffix + "$", "");
+		}
+		try {
+			ldapTemplate.lookup(groupDn);
+		} catch (org.springframework.ldap.NamingException e) {
+			log.trace("Exception retrieving group with DN : " + e.getMessage());
+			return false;
+		}
+		return true;
 	}
 
 	@Override

@@ -1,10 +1,7 @@
 package org.esupportail.sgc.web.admin;
 
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.ldap.GroupService;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
-import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
-import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,24 +10,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
 
 @RequestMapping("/admin/groupsroles")
 @Controller
@@ -75,10 +65,14 @@ public class GroupsRolesController {
 			groupsMembers.put(beanNameLabel, new HashMap<String, Long>());
 			long time = System.currentTimeMillis();
 			for(String groupName : mappingGroupesRoles.keySet()) {
-				long l = groupService.getMembers(groupName).stream().filter(m -> !m.isEmpty()).count();
-				groupsMembers.get(beanNameLabel).put(groupName, l);
-				for(String role : mappingGroupesRoles.get(groupName).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
-					rolesMembers.put(role, Optional.ofNullable(rolesMembers.get(role)).orElse(0L) + l);
+				if(groupService.canManageGroup(groupName)) {
+					long l = groupService.getMembers(groupName).stream().filter(m -> !m.isEmpty()).count();
+					groupsMembers.get(beanNameLabel).put(groupName, l);
+					if ("groupService".equals(beanNameLabel)) {
+						for (String role : mappingGroupesRoles.get(groupName).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
+							rolesMembers.put(role, Optional.ofNullable(rolesMembers.get(role)).orElse(0L) + l);
+						}
+					}
 				}
 			}
 			membersDurations.put(groupService.getBeanName(), System.currentTimeMillis()-time);

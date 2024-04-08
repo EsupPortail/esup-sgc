@@ -17,6 +17,11 @@ public class MultiGroupService implements GroupService {
 	}
 
 	@Override
+	public boolean canManageGroup(String groupName) {
+		return groupServices.stream().anyMatch(groupService -> groupService.canManageGroup(groupName));
+	}
+
+	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
 	}

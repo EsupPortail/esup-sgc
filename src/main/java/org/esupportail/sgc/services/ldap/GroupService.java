@@ -12,4 +12,5 @@ public interface GroupService extends BeanNameAware {
 
 	String getBeanName();
 
+	boolean canManageGroup(String groupName);
 }

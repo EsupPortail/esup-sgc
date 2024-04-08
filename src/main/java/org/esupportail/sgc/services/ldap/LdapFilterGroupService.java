@@ -31,6 +31,11 @@ public class LdapFilterGroupService implements GroupService {
 	}
 
 	@Override
+	public boolean canManageGroup(String groupName) {
+		return ldapFiltersGroups.containsValue(groupName);
+	}
+
+	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
 	}
