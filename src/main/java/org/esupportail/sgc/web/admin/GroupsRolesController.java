@@ -1,5 +1,6 @@
 package org.esupportail.sgc.web.admin;
 
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.services.ldap.GroupService;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class GroupsRolesController {
 			long time = System.currentTimeMillis();
 			for(String groupName : mappingGroupesRoles.keySet()) {
 				if(groupService.canManageGroup(groupName)) {
-					long l = groupService.getMembers(groupName).stream().filter(m -> !m.isEmpty()).count();
+					long l = groupService.getMembers(groupName).stream().filter(m -> StringUtils.isNotEmpty(m)).count();
 					groupsMembers.get(beanNameLabel).put(groupName, l);
 					if ("groupService".equals(beanNameLabel)) {
 						for (String role : mappingGroupesRoles.get(groupName).split(LdapGroup2UserRoleService.MULTIPLE_ROLES_DELIMITER)) {
