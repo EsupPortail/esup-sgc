@@ -306,7 +306,7 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 	
-	public String viewCardInfo(Locale locale, Model uiModel, HttpServletRequest request) {
+	protected String viewCardInfo(Locale locale, Model uiModel, HttpServletRequest request) {
 		StopWatch stopWatch = new PrettyStopWatch();
 		stopWatch.start("auth");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();

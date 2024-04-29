@@ -30,7 +30,7 @@ import java.util.Base64;
 import java.util.EnumMap;
 import java.util.Map;
 
-@Transactional
+@Transactional(readOnly = true)
 @RequestMapping("/wsrest/view")
 @Controller
 public class WsRestHtmlController {

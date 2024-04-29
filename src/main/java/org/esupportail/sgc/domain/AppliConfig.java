@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import javax.persistence.TypedQuery;
 
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
@@ -16,6 +18,9 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooToString
 @RooDbManaged(automaticallyDelete = true)
 @RooJpaActiveRecord(versionField = "", table = "AppliConfig", finders = { "findAppliConfigsByKeyEquals", "findAppliConfigsByValueLike", "findAppliConfigsByKeyLike", "findAppliConfigsByType" })
+@Table(name = "AppliConfig", indexes = {
+        @Index(name = "appli_config_key_id", columnList = "key"),
+})
 public class AppliConfig {
 
     @Column(name = "key", length = 120, unique = true)

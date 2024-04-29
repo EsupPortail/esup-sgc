@@ -46,10 +46,8 @@ public class LdapGroup2UserRoleService {
 		return mappingGroupesRoles;
 	}
 
-	public Set<String> getRoles(String eppn) {
+	public Set<String> getRoles(List<String> groups) {
 		Set<String> roles = new HashSet<String>();
-		List<String> groups = groupService.getGroupsForEppn(eppn);
-		log.trace(String.format("Groups for %s : %s", eppn, groups));
 		for(String groupName : groups) {
 			if(mappingGroupesRoles.containsKey(groupName)) {
 				for(String role : mappingGroupesRoles.get(groupName).split(MULTIPLE_ROLES_DELIMITER)) {
@@ -57,8 +55,20 @@ public class LdapGroup2UserRoleService {
 				}
 			}
 		}
+		return roles;
+	}
+	
+	public Set<String> getRoles(String eppn) {
+		Set<String> roles = new HashSet<String>();
+		List<String> groups = getGroupsForEppn(eppn);
+		log.trace(String.format("Groups for %s : %s", eppn, groups));
+		roles.addAll(getRoles(groups));
 		log.trace(String.format("Roles for %s : %s", eppn, roles));
 		return roles;
+	}
+
+	public List<String> getGroupsForEppn(String eppn) {
+		return groupService.getGroupsForEppn(eppn);
 	}
 
 	@Transactional

@@ -4,9 +4,9 @@
 		<c:if test="${printers.size()>0}">
 			<div class="nav navbar-nav navbar-right">
 				<spring:url value="/manager/setPrinterEppn" var="setPrinterEppnUrl"/>
-				<form action="${setPrinterEppnUrl}">
+				<form id="printerEppnForm" action="${setPrinterEppnUrl}">
 					<span class="glyphicon ${printers[currentPrinter] ? 'text-success glyphicon-ok-sign' : 'text-danger glyphicon-minus-sign'}"><!-- --></span>
-					<select name="printerEppn" class="btn ${printers[currentPrinter] ? 'text-success' : 'text-danger'}" onchange="this.form.submit()">
+					<select name="printerEppn" class="btn ${printers[currentPrinter] ? 'text-success' : 'text-danger'}">
 						<option value="">Aucune imprimante sélectionnée</option>
 						<c:forEach items="${printers}" var="printer">
 							<c:choose>
@@ -20,6 +20,24 @@
 						</c:forEach>
 					</select>
 				</form>
+				<script>
+					document.addEventListener('DOMContentLoaded', function() {
+						document.getElementsByName("printerEppn").forEach(function(element) {
+							element.addEventListener('change', function() {
+								var xhr = new XMLHttpRequest();
+								var setPrinterEppnUrl = document.getElementById('printerEppnForm').action;
+								xhr.open('POST', setPrinterEppnUrl, true);
+								xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+								xhr.send('printerEppn=' + element.value);
+								xhr.onreadystatechange = function() {
+									if (xhr.readyState === 4 &amp;&amp; xhr.status === 200) {
+										location.reload();
+									}
+								};
+							});
+						});
+					});
+				</script>
 			</div>
 		</c:if>
 </div>

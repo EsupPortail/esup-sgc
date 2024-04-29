@@ -11,6 +11,7 @@ import org.esupportail.sgc.domain.Printer;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcNotFoundException;
 import org.esupportail.sgc.security.PermissionService;
+import org.esupportail.sgc.security.ShibUser;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
 import org.esupportail.sgc.services.CardEtatService;
@@ -74,7 +75,7 @@ import java.util.TreeMap;
 @RequestMapping("/manager")
 @Controller	
 @RooWebScaffold(path = "manager", formBackingObject = Card.class)
-@SessionAttributes("printerEppn")
+@SessionAttributes({"printerEppn"})
 public class ManagerCardController {
 
 	public enum MANAGER_SEARCH_PREF {OWNORFREECARD, EDITABLE, USERTYPE};
@@ -174,23 +175,31 @@ public class ManagerCardController {
 	public List<String> getValidateServicesNames() {
 		return cardEtatService.getValidateServicesNames();
 	}
-	
-	@ModelAttribute("userPrefs")
+
 	public HashedMap getuserPrefs() {
+		PrettyStopWatch stopWatch = new PrettyStopWatch();
+		stopWatch.start();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		HashedMap mapPrefs= new HashedMap();
     	mapPrefs.put("editable", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.EDITABLE.name()));
     	mapPrefs.put("ownOrFreeCard", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.OWNORFREECARD.name()));
 		mapPrefs.put("userType", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.USERTYPE.name()));
+		stopWatch.stop();
+		log.trace("userPrefs tooks " + stopWatch.shortSummary());
 		return mapPrefs;
 	}
 
 	@ModelAttribute("printers")
-	public SortedMap<Printer, Boolean> getPrinters() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	public SortedMap<Printer, Boolean> getPrinters(Authentication auth) {
+		PrettyStopWatch stopWatch = new PrettyStopWatch();
+		stopWatch.start();
 		String eppn = auth.getName();
-		return printerService.getPrinters(eppn);
+		List<String> ldapGroups = ((ShibUser)(auth.getPrincipal())).getLdapGroups();
+		SortedMap<Printer, Boolean> printers = printerService.getPrinters(eppn, ldapGroups);
+		stopWatch.stop();
+		log.trace("printers tooks " + stopWatch.shortSummary());
+		return printers;
 	}
 
 	@ModelAttribute("currentPrinter")
@@ -205,9 +214,9 @@ public class ManagerCardController {
 	}
 
 	@ModelAttribute("printerEppn")
-	public String getPrinterEppn(@SessionAttribute(required = false) String printerEppn) {
+	public String getPrinterEppn(@SessionAttribute(required = false) String printerEppn, Authentication auth) {
 		if(StringUtils.isEmpty(printerEppn)) {
-			SortedMap<Printer, Boolean> printers = getPrinters();
+			SortedMap<Printer, Boolean> printers = getPrinters(auth);
 			if(printers.size()>0) {
 				printerEppn = printers.firstKey().getEppn();
 			}
@@ -215,14 +224,8 @@ public class ManagerCardController {
 		return printerEppn;
 	}
 
- 	@RequestMapping(value="/setPrinterEppn", params="printerEppn", produces = "text/html")
-	public String setPrinterEppn(@RequestParam String printerEppn, Model uiModel, RedirectAttributes redirectAttrs) {
-		uiModel.addAttribute("printerEppn", printerEppn);
-		return "redirect:/manager";
-	}
-
     @RequestMapping(params="eppn", produces = "text/html")
-    @Transactional
+    @Transactional(readOnly = true)
     public String show(@RequestParam String eppn, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
         User user = User.findUser(eppn);
@@ -235,7 +238,7 @@ public class ManagerCardController {
     }
 
     @RequestMapping(value = "/{id}", produces = "text/html")
-    @Transactional
+    @Transactional(readOnly = true)
     @PreAuthorize("hasPermission(#id, 'consult')")
     public String show(@PathVariable("id") Long id, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -404,32 +407,33 @@ public class ManagerCardController {
 	 * Permet de diriger par défaut le manager sur l'onglet le plus 'intéressant'
 	 */
 	@RequestMapping(produces = "text/html", params={"index=first"})
-	@Transactional
+	@Transactional(readOnly = true)
 	public String defaultSearch(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 
     		@RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, 
-    		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request, Authentication auth) {
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		CardSearchBean searchBean = new CardSearchBean();
 		searchBean.setType(permissionService.getDefaultTypeTab(roles));
-		return search(searchBean, page, size, sortFieldName, sortOrder, index, uiModel, request);
+		return search(searchBean, page, size, sortFieldName, sortOrder, index, uiModel, request, auth);
 	}
 	
 	
     @RequestMapping(produces = "text/html")
-    @Transactional
+    @Transactional(readOnly = true)
     public String search(@Valid CardSearchBean searchBean, 
     		@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 
     		@RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, 
-    		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request) {
+    		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request, Authentication auth) {
 
 		StopWatch stopWatch = new PrettyStopWatch();
 
 		stopWatch.start("auth");
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		List<String> userTypes = permissionService.getTypesTabs(roles);
+
+		stopWatch.start("userPrefs");
+		uiModel.addAttribute("userPrefs", getuserPrefs());
 
 		stopWatch.start("base");
 		Long cardsInprintCount = Card.countfindCardsByEtatEppnEqualsAndEtatEquals(eppn, Etat.IN_PRINT);
@@ -612,7 +616,7 @@ public class ManagerCardController {
 	
     @PreAuthorize("hasPermission(#cardIds, 'manage')")
 	@RequestMapping(value="/getMultiUpdateForm")
-	@Transactional
+	@Transactional(readOnly = true)
 	public String getMultiUpdateForm(@RequestParam List<Long> cardIds, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
 		if(cardIds.isEmpty()) {
 			uiModel.addAttribute("cardIds", cardIds);

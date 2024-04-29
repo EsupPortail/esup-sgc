@@ -28,19 +28,19 @@ import org.springframework.ldap.support.LdapEncoder;
 
 public class LdapValidateService extends ValidateService {
 
-	private String CSN = "%csn%";
+	private final static String CSN = "%csn%";
 	
-	private String CSN_RETURN = "%reverse_csn%";
+	private final static String CSN_RETURN = "%reverse_csn%";
 	
-	private String SECONDARYID = "%secondary_id%";
+	private final static String SECONDARYID = "%secondary_id%";
 	
-	private String EPPN = "%eppn%";
+	private final static String EPPN = "%eppn%";
 	
-	private String PHOTO = "%photo%";
+	private final static String PHOTO = "%photo%";
 	
-	private String ESCN = "%escn%";
+	private final static String ESCN = "%escn%";
 	
-	private String ESI = "%esi%";
+	private final static String ESI = "%esi%";
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	

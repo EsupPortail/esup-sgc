@@ -286,7 +286,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	 * curl 'https://esup-sgc.univ-ville.fr/wsrest/api/get?eppn=toto@univ-ville.fr&eppn=titi@univ-ville.fr'
 	 * @throws JsonProcessingException 
 	 */
-	@Transactional
+	@Transactional(readOnly = true)
 	@RequestMapping(value="/get", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public ResponseEntity<String>  get(@RequestParam(value="eppn") List<String> eppns) throws JsonProcessingException {
 		List<User> users = new ArrayList<User>();
@@ -309,7 +309,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	 * Example to use it :
 	 * curl 'https://esup-sgc.univ-ville.fr/wsrest/api/getCrousRightHolder?eppnOrEmail=toto@univ-ville.fr'
 	 */
-	@Transactional
+	@Transactional(readOnly = true)
 	@ResponseBody
 	@RequestMapping(value="/getCrousRightHolder", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public RightHolder get(@RequestParam String eppnOrEmail) {

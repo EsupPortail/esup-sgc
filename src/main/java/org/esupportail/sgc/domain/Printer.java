@@ -6,12 +6,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.tostring.RooToString;
 
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.EntityManager;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -43,6 +38,7 @@ public class Printer {
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd/MM/yyyy - HH:mm")
     Date connectionDate;
+
 
     public String getLabel() {
         return StringUtils.isEmpty(this.label) ? this.eppn : this.label;
@@ -86,17 +82,10 @@ public class Printer {
         return q;
     }
 
-    public static TypedQuery<Printer> findPrintersByEppnInPrinterUsers(String eppn) {
-        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
+    public static Query findPrintersByEppnOrByEppnInPrinterUsersOryEppnInPrinterGroups(String eppn, List<String> groups) {
         EntityManager em = Printer.entityManager();
-        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o WHERE :eppn MEMBER OF o.printerUsers", Printer.class);
+        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o JOIN o.printerGroups g WHERE o.eppn = :eppn OR :eppn MEMBER OF o.printerUsers OR g IN (:groups)", Printer.class);
         q.setParameter("eppn", eppn);
-        return q;
-    }
-
-    public static TypedQuery<Printer> findPrintersByEppnInPrinterGroups(List<String> groups) {
-        EntityManager em = Printer.entityManager();
-        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o JOIN o.printerGroups g WHERE g IN (:groups)", Printer.class);
         q.setParameter("groups", groups);
         return q;
     }

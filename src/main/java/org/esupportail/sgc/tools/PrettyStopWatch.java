@@ -9,9 +9,12 @@ public class PrettyStopWatch extends StopWatch {
 
     @Override
     public String shortSummary() {
-        Duration duration = Duration.ofNanos(getTotalTimeNanos());
-        String timeInMMSS = DurationFormatUtils.formatDuration(getTotalTimeMillis(), "mm 'min' ss 'sec' SS 'ms'", false);
+        String timeInMMSS = getTimeInMMSS();
         return "StopWatch '" + getId() + "': running time = " + timeInMMSS + "";
+    }
+
+    public String getTimeInMMSS() {
+        return DurationFormatUtils.formatDuration(getTotalTimeMillis(), "mm 'min' ss 'sec' SS 'ms'", false);
     }
 
     @Override

@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.tools.PrettyStopWatch;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.GenericFilterBean;
@@ -22,13 +24,16 @@ import org.springframework.web.filter.GenericFilterBean;
 @Service
 public class DevClientRequestFilter extends GenericFilterBean {
 
+	Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+
 	@Value("${devRemoteUser:}")
 	String devRemoteUser;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-
+		PrettyStopWatch stopWatch = new PrettyStopWatch();
+		stopWatch.start();
 		HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper((HttpServletRequest) request) {
 			@Override
 			public String getHeader(String name) {
@@ -39,7 +44,8 @@ public class DevClientRequestFilter extends GenericFilterBean {
 			}
 		};
 		chain.doFilter(wrapper, response);
-
+		stopWatch.stop();
+		log.trace("Request {} on {} took {}", ((HttpServletRequest) request).getMethod(), ((HttpServletRequest) request).getRequestURL(), stopWatch.getTimeInMMSS());
 	}
 
 }

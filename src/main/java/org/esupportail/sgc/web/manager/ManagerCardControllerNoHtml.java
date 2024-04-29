@@ -61,9 +61,12 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import flexjson.JSONSerializer;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequestMapping("/manager")
-@Controller	
+@Controller
+@SessionAttributes({"printerEppn"})
 public class ManagerCardControllerNoHtml {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -93,7 +96,7 @@ public class ManagerCardControllerNoHtml {
 	PhotoResizeService photoResizeService;
 	
 	@RequestMapping(value="/photo/{cardId}")
-	@Transactional
+	@Transactional(readOnly = true)
 	public ResponseEntity<byte[]> writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
 		Card card = Card.findCard(cardId);
 		PhotoFile photoFile = card.getPhotoFile();
@@ -106,7 +109,7 @@ public class ManagerCardControllerNoHtml {
 	}
 	
 	@RequestMapping(value="/{userId}/photo")
-	@Transactional
+	@Transactional(readOnly = true)
 	public ResponseEntity<byte[]> writeUserPhotoToResponse(@PathVariable Long userId, HttpServletResponse response) throws IOException, SQLException {
 		User user = User.findUser(userId);
 		return getUserPhotoAsResponseEntity(user);
@@ -145,7 +148,7 @@ public class ManagerCardControllerNoHtml {
 	
 	@RequestMapping(value="/vignette/{cardId}")
 	@ResponseBody
-	@Transactional
+	@Transactional(readOnly = true)
 	public ResponseEntity<byte[]> writePhotoVignetteToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
 		Card card = Card.findCard(cardId);
 		PhotoFile photoFile = card.getPhotoFile();
@@ -159,7 +162,7 @@ public class ManagerCardControllerNoHtml {
 	
 	@RequestMapping(value="/QRCode")
 	@ResponseBody
-	@Transactional
+	@Transactional(readOnly = true)
 	public ResponseEntity<String>  getQRCode(@RequestParam Long cardId, HttpServletResponse response) throws WriterException, IOException, SQLException {
 		Card card = Card.findCard(cardId);
 		PhotoFile photoFile = null;
@@ -216,7 +219,7 @@ public class ManagerCardControllerNoHtml {
 
     
 	@RequestMapping(value="/searchEppn")
-	@Transactional
+	@Transactional(readOnly = true)
 	public  ResponseEntity<String> searchEppn(@RequestParam(value="searchString") String searchString) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
@@ -241,7 +244,7 @@ public class ManagerCardControllerNoHtml {
 	
 	@RequestMapping(value="/filterAdress", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody
-	@Transactional
+	@Transactional(readOnly = true)
 	public Map<String, String> filtrerAdresse(@RequestParam(value="etat") String etat, @RequestParam(value="tabType") String tabType) {
 		Map<String, String> adressesMap = new HashMap<String, String>();
 		try {
@@ -256,13 +259,13 @@ public class ManagerCardControllerNoHtml {
 	
 	@RequestMapping(value="/getCrousRightHolder", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody 
-	@Transactional
+	@Transactional(readOnly = true)
     public RightHolder getCrousRightHolder(@RequestParam String eppn) {
 		return crousService.getRightHolder(User.findUser(eppn));
 	}
 	
 	@RequestMapping(value="/getCrousRightHolderHtmlPart")
-	@Transactional
+	@Transactional(readOnly = true)
     public String getCrousRightHolderHtmlPart(@RequestParam String eppn, Model uiModel) {
 		try {
 			RightHolder rightHolder = crousService.getRightHolder(User.findUser(eppn));
@@ -276,7 +279,7 @@ public class ManagerCardControllerNoHtml {
 	
 	
 	@RequestMapping(value="/getCrousSmartCardUrlHtmlPart")
-	@Transactional
+	@Transactional(readOnly = true)
     public String getCrousSmartCardUrlHtmlPart(@RequestParam String csn, Model uiModel) {
 		CrousSmartCard crousSmartCard = crousService.getCrousSmartCard(csn);
 		uiModel.addAttribute("crousSmartCard", crousSmartCard);
@@ -285,7 +288,7 @@ public class ManagerCardControllerNoHtml {
 	
 	
 	@RequestMapping(value="/getEscrStudentHtmlPart")
-	@Transactional
+	@Transactional(readOnly = true)
     public String getEscrStudentHtmlPart(@RequestParam String eppn, Model uiModel) {
 		EscrStudent escrStudent = apiEscrService.getEscrStudent(eppn);
 		uiModel.addAttribute("escrStudent", escrStudent);
@@ -294,7 +297,7 @@ public class ManagerCardControllerNoHtml {
 	
 	
 	@RequestMapping(value="/getEscrCardHtmlPart")
-	@Transactional
+	@Transactional(readOnly = true)
     public String getEscrCardHtmlPart(@RequestParam String eppn, @RequestParam String csn, Model uiModel) {
 		EscrCard escrCard = apiEscrService.getEscrCard(eppn, csn);
 		uiModel.addAttribute("escrCard", escrCard);
@@ -304,7 +307,7 @@ public class ManagerCardControllerNoHtml {
 	
 	
 	@RequestMapping(value="/templatePhoto/{type}/{templateId}")
-	@Transactional
+	@Transactional(readOnly = true)
 	public void getPhoto(@PathVariable String type, @PathVariable Long templateId, HttpServletResponse response) throws IOException, SQLException {
 		
 		TemplateCard templateCard = TemplateCard.findTemplateCard(templateId);
@@ -358,5 +361,13 @@ public class ManagerCardControllerNoHtml {
 		}
 		return ldapList;
    }
+
+	@RequestMapping(value="/setPrinterEppn", params="printerEppn")
+	@ResponseBody
+	public String setPrinterEppn(@RequestParam String printerEppn, Model uiModel, Authentication auth) {
+		uiModel.addAttribute("printerEppn", printerEppn);
+		return String.format("%s has been set as printer eppn in session for %s", printerEppn, auth.getName());
+	}
+
 }
 

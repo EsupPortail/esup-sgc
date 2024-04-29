@@ -43,13 +43,10 @@ public class PrinterService {
     /*
         Map de printers autorisés pour l'utilisateur : true si en ligne (disponible/connectée)
      */
-    public SortedMap<Printer, Boolean> getPrinters(String eppn) {
-        List<String> groups = groupService.getGroupsForEppn(eppn);
+    public SortedMap<Printer, Boolean> getPrinters(String eppn, List<String> groups) {
         Set<Printer> printers = new HashSet<>();
         Set<String> connectedEppnPrinters = encodeAndPringLongPollService.getManagersPrintEncodeEppns();
-        printers.addAll(Printer.findPrintersByEppn(eppn).getResultList());
-        printers.addAll(Printer.findPrintersByEppnInPrinterUsers(eppn).getResultList());
-        printers.addAll(Printer.findPrintersByEppnInPrinterGroups(groups).getResultList());
+        printers.addAll(Printer.findPrintersByEppnOrByEppnInPrinterUsersOryEppnInPrinterGroups(eppn, groups).getResultList());
         SortedMap<Printer, Boolean> printersMap = new TreeMap<Printer, Boolean>((a, b) -> a.getLabel().compareTo(b.getLabel()));
         for(Printer printer: printers) {
             printersMap.put(printer, connectedEppnPrinters.contains(printer.getEppn()));

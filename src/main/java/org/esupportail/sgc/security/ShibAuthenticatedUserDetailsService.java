@@ -53,22 +53,20 @@ implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken>
 				}
 			}
 		}
-		for(String roleFromLdap : ldapGroup2UserRoleService.getRoles(token.getName())) {
+		List <String> ldapGroups = ldapGroup2UserRoleService.getGroupsForEppn(token.getName());
+		for(String roleFromLdap : ldapGroup2UserRoleService.getRoles(ldapGroups)) {
 			authorities.add(new SimpleGrantedAuthority(roleFromLdap));
 		}
 		log.debug("Shib & Ldap Credentials for " + token.getName() + " -> " + authorities);
 		
-		List<GrantedAuthority> reachableAuthorities = new ArrayList<GrantedAuthority>();
-		for(GrantedAuthority authority : sgcRoleHierarchy.getReachableGrantedAuthorities(authorities)) {
-			reachableAuthorities.add(authority);
-		}
+		List<GrantedAuthority> reachableAuthorities = new ArrayList<GrantedAuthority>(sgcRoleHierarchy.getReachableGrantedAuthorities(authorities));
 		log.info("Shib & Ldap Reachable (adding sgcRoleHierarchy) Credentials for " + token.getName() + " -> " + reachableAuthorities);
 		
-		return createUserDetails(token, reachableAuthorities);
+		return createUserDetails(token, ldapGroups, reachableAuthorities);
 	}
 
-	protected UserDetails createUserDetails(Authentication token, Collection<? extends GrantedAuthority> authorities) {
-		return new User(token.getName(), "N/A", true, true, true, true, authorities);
+	protected UserDetails createUserDetails(Authentication token, List <String> ldapGroups,  Collection<? extends GrantedAuthority> authorities) {
+		return new ShibUser(token.getName(), "N/A", true, true, true, true, authorities, ldapGroups);
 	}
 	
 	public List<String> getManagerGroups() {
