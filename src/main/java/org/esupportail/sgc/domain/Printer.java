@@ -84,7 +84,7 @@ public class Printer {
 
     public static Query findPrintersByEppnOrByEppnInPrinterUsersOryEppnInPrinterGroups(String eppn, List<String> groups) {
         EntityManager em = Printer.entityManager();
-        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o JOIN o.printerGroups g WHERE o.eppn = :eppn OR :eppn MEMBER OF o.printerUsers OR g IN (:groups)", Printer.class);
+        TypedQuery<Printer> q = em.createQuery("SELECT o FROM Printer AS o LEFT JOIN o.printerGroups g LEFT JOIN o.printerUsers u WHERE o.eppn = :eppn OR :eppn IN (u) OR g IN (:groups)", Printer.class);
         q.setParameter("eppn", eppn);
         q.setParameter("groups", groups);
         return q;
