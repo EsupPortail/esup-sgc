@@ -30,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "2.2.x";
+	final static String currentEsupSgcVersion = "2.3.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -387,6 +387,16 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				esupSgcVersion = "2.2.x";
+			}
+			if("2.2.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'BMP_COMMAND_BACK_PRINTER', 'wget -4 ''http://localhost:8080/wsrest/view/%s/card-b64.html?type=back'' -O card-b64.html && chromium --headless --disable-gpu --print-to-pdf=card.pdf card-b64.html && gs -o card-resize.pdf -sDEVICE=pdfwrite -dPDFFitPage -g10160x6480 card.pdf && convert -monochrome card-resize.pdf card.bmp', 'Commande permettant de récupérer un fichier card.bmp présentant le BMP noir et blanc du verso de la carte à imprimer. Utilisé lors de l''impression+encodage en 1 temps en recto/verso uniquement. Cette commande est exécutée dans un répertoire temporaire créé à la demande et à chaque appel par esup-sgc', 'TEXT');";
+				sqlUpdate += "UPDATE template_card set back_supported = false;";
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				esupSgcVersion = "2.3.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

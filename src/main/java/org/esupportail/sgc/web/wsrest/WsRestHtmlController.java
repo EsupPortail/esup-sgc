@@ -121,6 +121,9 @@ public class WsRestHtmlController {
 		uiModel.addAttribute("card", card);
 		uiModel.addAttribute("type", type);
 		uiModel.addAttribute("templateCard", templateCard);
+		if("back".equals(type)) {
+			return "manager/print-card-back-b64";
+		}
 		return "manager/print-card-b64";
 	}
 

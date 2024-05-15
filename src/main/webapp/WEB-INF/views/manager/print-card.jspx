@@ -65,6 +65,24 @@
 			</div>
 		</div>
 
+		<c:if test="${card.user.templateCard.backSupported}">
+			<div id="pagebreak"><!--  --></div>
+			<c:set var="cssBackId" value="backCarte${loop.index}" />
+			<c:set var="cssBack" value = "${fn:replace(card.user.templateCard.cssBackStyle, 'backCarte', cssBackId)}" />
+			<style>
+				${cssBack}
+			</style>
+			<div id="backCarte${loop.index}">
+				<p id="verso1">verso1</p>
+				<p id="verso2">verso2</p>
+				<p id="verso3">verso3</p>
+				<p id="verso4">verso4</p>
+				<p id="verso5">verso5</p>
+				<p id="verso6">verso6</p>
+				<p id="verso7">verso7</p>
+			</div>
+		</c:if>
+
 		<c:if test="${!loop.last}"><div id="pagebreak"><!--  --></div></c:if>
 		
 	</c:forEach>

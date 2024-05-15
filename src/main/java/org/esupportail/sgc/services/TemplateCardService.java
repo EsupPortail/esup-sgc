@@ -70,6 +70,7 @@ public class TemplateCardService {
 		TemplateCard templateCard = new TemplateCard();
     	templateCard.setCssStyle(this.readFile("media/defaultTemplateCardCss.txt"));
     	templateCard.setCssMobileStyle(this.readFile("media/defaultTemplateCardMobileCss.txt"));
+		templateCard.setCssBackStyle(this.readFile("media/defaultTemplateCardBackCss.txt"));
     	this.populate(templateCard.getPhotoFileLogo(), "media/defaultTemplateLogo.png", "image/png");
     	this.populate(templateCard.getPhotoFileMasque(), "media/defaultTemplateMasque.png", "image/png");
     	this.populate(templateCard.getPhotoFileQrCode(), "media/defaultTemplateQrCode.png", "image/png");

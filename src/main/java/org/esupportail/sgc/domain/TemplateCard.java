@@ -39,6 +39,12 @@ public class TemplateCard {
     private String cssMobileStyle;
 
     @Column(columnDefinition = "TEXT")
+    private String cssBackStyle;
+
+    @Column
+    private Boolean backSupported = false;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column
@@ -72,7 +78,23 @@ public class TemplateCard {
     public boolean isCodeBarres() {
         return this.codeBarres!=null && this.codeBarres;
     }
-   
+
+    public String getCssBackStyle() {
+        return cssBackStyle;
+    }
+
+    public void setCssBackStyle(String cssBackStyle) {
+        this.cssBackStyle = cssBackStyle;
+    }
+
+    public Boolean getBackSupported() {
+        return backSupported;
+    }
+
+    public void setBackSupported(Boolean backSupported) {
+        this.backSupported = backSupported;
+    }
+
     public static List<Object[]> countTemplateCardByNameVersion() {
         String sql = "SELECT CONCAT(name, ' / V', num_version) as nom, count(*) FROM card,template_card WHERE card.template_card= template_card.id AND etat='ENABLED' GROUP BY nom";
 

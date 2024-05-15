@@ -774,7 +774,9 @@ public class WsRestEsupNfcController {
 		if(card!=null) {
 			User user = User.findUser(card.getEppn());
 			versoText = user.getVersoText();
-			card.setVersoTextPrinted(StringUtils.join(versoText, "\n"));
+			if(!card.getTemplateCard().getBackSupported()) {
+				card.setVersoTextPrinted(StringUtils.join(versoText, "\n"));
+			}
 			String comment = "";
 			if(ipService.getMaps().containsKey(request.getRemoteAddr())) {
 				comment = ipService.getMaps().get(request.getRemoteAddr());

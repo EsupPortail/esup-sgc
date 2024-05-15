@@ -23,6 +23,7 @@
                     <field:textarea colInput="col-md-6" colLabel="col-md-3" cssClass="form-control" field="description" id="c_org_esupportail_sgc_domain_TemplateCard_description" row="3" z="user-managed"/>
                     <field:textarea colInput="col-md-6" colLabel="col-md-3" cssClass="form-control" field="cssStyle" id="c_org_esupportail_sgc_domain_TemplateCard_cssStyle" row="15" z="user-managed"/>
                     <field:textarea colInput="col-md-6" colLabel="col-md-3" cssClass="form-control" field="cssMobileStyle" id="c_org_esupportail_sgc_domain_TemplateCard_cssMobileStyle" row="2" z="user-managed"/>
+                    <field:textarea colInput="col-md-6" colLabel="col-md-3" cssClass="form-control" field="cssBackStyle" id="c_org_esupportail_sgc_domain_TemplateCard_cssBackStyle" row="15" z="user-managed"/>
                     <div class="form-group">
                         <label class="col-md-3 control-label control-label" for="templateMasque">Masque</label>
                         <div class="col-md-3">
@@ -72,6 +73,19 @@
 					 	</c:choose>
 					    </div>
 					 </div>
+                    <div class="form-group">
+                        <label class="col-md-3  control-label control-label">Impression Verso</label>
+                        <div class="col-md-3">
+                            <c:choose>
+                                <c:when test="${!templateCard.backSupported}">
+                                    <input type="checkbox" name="backSupported"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <input type="checkbox" name="backSupported" checked="checked"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+                    </div>
                 </form:create>
             </div>
         </div>
@@ -128,7 +142,50 @@
                             </div>
                         </div>
                     </div>
+                    <div>
+                        <br/><br/>
+                    </div>
+                    <div id="back-preview">
+                        <style>
+                            @media screen {
+                                #backCarte {
+                                    border: 1px solid black;
+                                    border-radius: 20px;
+                                }
+                            }
+                            #backCarte {
+                                -webkit-box-sizing: content-box;
+                                -moz-box-sizing: content-box;
+                                box-sizing: content-box;
+                            }
+                        </style>
+                        <style id="backStyle">
+                            @media screen {
+                                ${templateCard.cssBackStyle}
+                            }
+                        </style>
+                        <div id="backCarte">
+                            <p id="verso1">verso1</p>
+                            <p id="verso2">verso2</p>
+                            <p id="verso3">verso3</p>
+                            <p id="verso4">verso4</p>
+                            <p id="verso5">verso5</p>
+                            <p id="verso6">verso6</p>
+                            <p id="verso7">verso7</p>
+                        </div>
+                    </div>
                 </div>
+                <script type="text/javascript">
+                    backStyle = '${templateCard.backSupported ? "block" : "none"}';
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.getElementById('back-preview').style.display = backStyle;
+                        document.getElementById('_c_org_esupportail_sgc_domain_TemplateCard_cssBackStyle_id').style.display = backStyle;
+                        document.getElementsByName('backSupported')[0].addEventListener('change', function() {
+                            document.getElementById('back-preview').style.display = this.checked ? 'block' : 'none';
+                            document.getElementById('_c_org_esupportail_sgc_domain_TemplateCard_cssBackStyle_id').style.display = this.checked ? 'block' : 'none';
+                        });
+                    });
+                </script>
                 <div class="col-lg-6">
                     <div class="alert alert-info">
 			    		Les champs "recto" seront bien sûr remplacés par les infos de l'utilisateur.

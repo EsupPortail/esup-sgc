@@ -1,0 +1,20 @@
+#backCarte {
+	width: 8.56cm;
+	height: 5.37cm;
+	position: relative;
+	font-family : arial;
+	font-size: 0.32cm;
+	color: black;
+}
+
+#backCarte p {
+      padding: 0cm;
+      margin: 0cm;
+      padding-left: 1cm;
+      padding-top: 0.2cm;
+}
+
+#backCarte p#verso1 {
+ font-weight: bold;
+ padding-top: 0.5cm;
+}

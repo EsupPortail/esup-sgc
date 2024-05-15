@@ -486,6 +486,16 @@ function searchEppnAction(idInputFile) {
 		    document.getElementById("recto5").innerHTML = data.recto5;
 		    document.getElementById("recto6").innerHTML = data.recto6;
 		    document.getElementById("recto7").innerHTML = data.recto7;
+			document.getElementById("verso1").innerHTML = data.verso1;
+			document.getElementById("verso2").innerHTML = data.verso2;
+			document.getElementById("verso3").innerHTML = data.verso3;
+			document.getElementById("verso4").innerHTML = data.verso4;
+			document.getElementById("verso5").innerHTML = data.verso5;
+			document.getElementById("verso6").innerHTML = data.verso6;
+			document.getElementById("verso7").innerHTML = data.verso7;
+			document.getElementById("freeField1").innerHTML = data.freeField1;
+			document.getElementById("freeField2").innerHTML = data.freeField2;
+			document.getElementById("freeField3").innerHTML = data.freeField3;
 		    document.getElementById("photo").setAttribute("src", "/manager/photo/" + data.id);
 		    var existingP = document.getElementById("noResultMsg");
 		    remove("noResultMsg");
@@ -1641,6 +1651,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	    	document.getElementById('specimenCarte').insertAdjacentHTML('beforeend','<style id="mainStyle">'+ this.value + '</style>');
 	    });
     }
+	if(document.getElementById('_cssBackStyle_id') != null){
+		document.getElementById('_cssBackStyle_id').addEventListener('keyup', function() {
+			remove("backStyle");
+			document.getElementById('backCarte').insertAdjacentHTML('beforeend','<style id="backStyle">'+ this.value + '</style>');
+		});
+	}
     if(document.getElementById('_cssMobileStyle_id') != null){
     	document.getElementById('_cssMobileStyle_id').addEventListener('keyup', function() {
 	    	remove("mobileStyle");

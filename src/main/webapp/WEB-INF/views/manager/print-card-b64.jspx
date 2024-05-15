@@ -69,7 +69,7 @@
 			${templateCard.cssStyle}
 		</style>	
 
-		<div id="specimenCarte${loop.index}">
+		<div id="specimenCarte">
 			<div id="left">
 				<p id="recto1">${card.user.recto1}</p>
 				<p id="recto2">${card.user.recto2}</p>

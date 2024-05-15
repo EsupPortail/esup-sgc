@@ -363,6 +363,9 @@ public class UserInfoService {
 		card.setRecto5Printed(user.getRecto5());
 		card.setRecto6Printed(user.getRecto6());
 		card.setRecto7Printed(user.getRecto7());
+		if(user.getTemplateCard().getBackSupported()) {
+			card.setVersoTextPrinted(StringUtils.join(user.getVersoText(), "\n"));
+		}
 		card.setTemplateCard(user.getTemplateCard());
 		if(user.getTemplateCard() != null) {
 			card.getUser().setLastCardTemplatePrinted(user.getTemplateCard());

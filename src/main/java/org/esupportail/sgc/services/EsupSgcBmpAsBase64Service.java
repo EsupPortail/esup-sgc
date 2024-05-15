@@ -4,6 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ import java.nio.file.Files;
 @Service
 public class EsupSgcBmpAsBase64Service {
 
-    public enum BmpType {black, overlay, color, virtual};
+    public enum BmpType {black, overlay, color, virtual, back};
 
 	static Logger log = LoggerFactory.getLogger(EsupSgcBmpAsBase64Service.class);
 
@@ -40,6 +41,12 @@ public class EsupSgcBmpAsBase64Service {
             String bmpCardCommand = appliConfigService.getBmpCardCommandColor4printer();
             if(BmpType.black.equals(type)) {
                 bmpCardCommand = appliConfigService.getBmpCardCommandBlack4printer();
+            } else if(BmpType.back.equals(type)) {
+                Card card = Card.findCard(cardId);
+                if(!card.getUser().getTemplateCard().getBackSupported()) {
+                    return "";
+                }
+                bmpCardCommand = appliConfigService.getBmpCardCommandBack4printer();
             } else if(BmpType.virtual.equals(type)) {
                 bmpCardCommand = appliConfigService.getBmpCardCommandVirtual();
             }

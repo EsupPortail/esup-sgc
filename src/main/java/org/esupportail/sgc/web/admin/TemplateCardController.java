@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
@@ -139,10 +140,12 @@ public class TemplateCardController {
     	beforeMaj.setNumVersion(templateCard.getNumVersion());
     	beforeMaj.setDescription(templateCard.getDescription());
     	beforeMaj.setCssStyle(templateCard.getCssStyle());
+		beforeMaj.setCssBackStyle(templateCard.getCssBackStyle());
     	beforeMaj.setDescription(templateCard.getDescription());
     	beforeMaj.setCssMobileStyle(templateCard.getCssMobileStyle());
     	beforeMaj.setDateModification(currentTime);
     	beforeMaj.setCodeBarres(templateCard.isCodeBarres());
+		beforeMaj.setBackSupported(templateCard.getBackSupported());
     	beforeMaj.setModificateur(eppn);
     	beforeMaj.merge();
     	if(templateCard.getLogo().isEmpty()){
@@ -172,6 +175,26 @@ public class TemplateCardController {
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
+	 	TemplateCard templateCard = TemplateCard.findTemplateCard(id);
+		 // if backCss is null or empty, we set it to default cssStyle
+		if(StringUtils.isEmpty(templateCard.getCssBackStyle())) {
+			templateCard.setCssBackStyle(templateCard.getCssStyle());
+		}
+		populateEditForm(uiModel, templateCard);
+		return "admin/templatecards/update";
+	}
+
+	@RequestMapping(value = "/{id}", params = "form", produces = "text/html", method = RequestMethod.GET)
+	public String updateFormGet(@PathVariable("id") Long id, Model uiModel) {
+	 	TemplateCard templateCard = TemplateCard.findTemplateCard(id);
+		 // if backCss is null or empty, we set it to default cssStyle
+		if(StringUtils.isEmpty(templateCard.getCssBackStyle())) {
+            try {
+                templateCard.setCssBackStyle(templateCardService.getDefaultTemplateCard().getCssBackStyle());
+            } catch (FileNotFoundException e) {
+                log.warn("Impossible de récupérer le css back par défaut", e);
+            }
+        }
         populateEditForm(uiModel, TemplateCard.findTemplateCard(id));
         return "admin/templatecards/update";
     }
@@ -240,6 +263,16 @@ public class TemplateCardController {
 		mapCarte.put("recto5", card.getUserAccount().getRecto5());
 		mapCarte.put("recto6", card.getUserAccount().getRecto6());
 		mapCarte.put("recto7", card.getUserAccount().getRecto7());
+		mapCarte.put("verso1", card.getUserAccount().getVerso1());
+		mapCarte.put("verso2", card.getUserAccount().getVerso2());
+		mapCarte.put("verso3", card.getUserAccount().getVerso3());
+		mapCarte.put("verso4", card.getUserAccount().getVerso4());
+		mapCarte.put("verso5", card.getUserAccount().getVerso5());
+		mapCarte.put("verso6", card.getUserAccount().getVerso6());
+		mapCarte.put("verso7", card.getUserAccount().getVerso7());
+		mapCarte.put("freeField1", card.getUserAccount().getFreeField1());
+		mapCarte.put("freeField2", card.getUserAccount().getFreeField2());
+		mapCarte.put("freeField3", card.getUserAccount().getFreeField3());
 		mapCarte.put("id", card.getId().toString());
 		
 		try {
