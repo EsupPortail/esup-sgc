@@ -55,6 +55,7 @@
                     <field:display field="photoFileQrCode" id="s_org_esupportail_sgc_domain_TemplateCard_photoFileQrCode" object="${templatecard}" render="false" z="user-managed"/>
                     <field:display field="qrCode" id="s_org_esupportail_sgc_domain_TemplateCard_qrCode" object="${templatecard}" render="false" z="user-managed"/>
                     <field:display field="codeBarres" id="s_org_esupportail_sgc_domain_TemplateCard_codeBarres" object="${templatecard}" z="Rw/ejE8hwTEBJsaRXLpZ3xzOPhc="/>
+                    <field:display field="backSupported" id="s_org_esupportail_sgc_domain_TemplateCard_backSupported" object="${templatecard}" />
                 </page:show>
             </div>
         </div>
