@@ -178,17 +178,6 @@ public class TemplateCardController {
 	 	TemplateCard templateCard = TemplateCard.findTemplateCard(id);
 		 // if backCss is null or empty, we set it to default cssStyle
 		if(StringUtils.isEmpty(templateCard.getCssBackStyle())) {
-			templateCard.setCssBackStyle(templateCard.getCssStyle());
-		}
-		populateEditForm(uiModel, templateCard);
-		return "admin/templatecards/update";
-	}
-
-	@RequestMapping(value = "/{id}", params = "form", produces = "text/html", method = RequestMethod.GET)
-	public String updateFormGet(@PathVariable("id") Long id, Model uiModel) {
-	 	TemplateCard templateCard = TemplateCard.findTemplateCard(id);
-		 // if backCss is null or empty, we set it to default cssStyle
-		if(StringUtils.isEmpty(templateCard.getCssBackStyle())) {
             try {
                 templateCard.setCssBackStyle(templateCardService.getDefaultTemplateCard().getCssBackStyle());
             } catch (FileNotFoundException e) {
