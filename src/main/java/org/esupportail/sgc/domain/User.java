@@ -176,7 +176,15 @@ public class User {
 	private String freeField2 = "";
 	
 	private String freeField3 = "";
-	
+
+	private String freeField4 = "";
+
+	private String freeField5 = "";
+
+	private String freeField6 = "";
+
+	private String freeField7 = "";
+
 	private Long nbCards = new Long(0);
 	
 	private String userType;
@@ -241,6 +249,10 @@ public class User {
 		fullText += getFreeField1() + " ";
 		fullText += getFreeField2() + " ";
 		fullText += getFreeField3() + " ";
+		fullText += getFreeField4() + " ";
+		fullText += getFreeField5() + " ";
+		fullText += getFreeField6() + " ";
+		fullText += getFreeField7() + " ";
 	}
 
 	public String getDisplayName() {
@@ -394,7 +406,7 @@ public class User {
 		for(String varStringName : Arrays.asList(new String[] {"address", "externalAddress", "cnousReferenceStatut", "crous", "difPhoto", "editable", "eduPersonPrimaryAffiliation", "email",
 				"eppn", "europeanStudentCard", "firstname", "idCompagnyRate", "indice", "institute", "name", 
 				"recto1", "recto2", "recto3", "recto4", "recto5", "recto6", "recto7", 
-				"freeField1", "freeField2", "freeField3", 
+				"freeField1", "freeField2", "freeField3", "freeField4", "freeField5", "freeField6", "freeField7",
 				"requestFree", "rneEtablissement", "secondaryId", "supannCodeINE", "supannEmpId", "supannEntiteAffectationPrincipale", "supannEtuId", "userType", 
 				"verso1", "verso2", "verso3", "verso4", "verso5", "verso6", "verso7", 
 				"templateKey", "blockUserMsg", "academicLevel", "pic"})) {

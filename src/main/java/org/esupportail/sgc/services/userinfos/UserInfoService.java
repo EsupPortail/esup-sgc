@@ -220,6 +220,18 @@ public class UserInfoService {
 			} else if("freeField3".equalsIgnoreCase(key)) {
 				String freeField3  = userInfos.get(key);
 				user.setFreeField3(freeField3);
+			}  else if("freeField4".equalsIgnoreCase(key)) {
+				String freeField4  = userInfos.get(key);
+				user.setFreeField4(freeField4);
+			} else if("freeField5".equalsIgnoreCase(key)) {
+				String freeField5  = userInfos.get(key);
+				user.setFreeField5(freeField5);
+			} else if("freeField6".equalsIgnoreCase(key)) {
+				String freeField6  = userInfos.get(key);
+				user.setFreeField6(freeField6);
+			} else if("freeField7".equalsIgnoreCase(key)) {
+				String freeField7  = userInfos.get(key);
+				user.setFreeField7(freeField7);
 			} else if("userType".equalsIgnoreCase(key)) {
 				String userType  = userInfos.get(key);
 				user.setUserType(userType);

@@ -262,6 +262,10 @@ public class TemplateCardController {
 		mapCarte.put("freeField1", card.getUserAccount().getFreeField1());
 		mapCarte.put("freeField2", card.getUserAccount().getFreeField2());
 		mapCarte.put("freeField3", card.getUserAccount().getFreeField3());
+		mapCarte.put("freeField4", card.getUserAccount().getFreeField4());
+		mapCarte.put("freeField5", card.getUserAccount().getFreeField5());
+		mapCarte.put("freeField6", card.getUserAccount().getFreeField6());
+		mapCarte.put("freeField7", card.getUserAccount().getFreeField7());
 		mapCarte.put("id", card.getId().toString());
 		
 		try {

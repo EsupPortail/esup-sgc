@@ -372,6 +372,38 @@ privileged aspect User_Roo_JavaBean {
     public void User.setFreeField3(String freeField3) {
         this.freeField3 = freeField3;
     }
+
+    public String User.getFreeField4() {
+        return this.freeField4;
+    }
+
+    public void User.setFreeField4(String freeField4) {
+        this.freeField4 = freeField4;
+    }
+
+    public String User.getFreeField5() {
+        return this.freeField5;
+    }
+
+    public void User.setFreeField5(String freeField5) {
+        this.freeField5 = freeField5;
+    }
+
+    public String User.getFreeField6() {
+        return this.freeField6;
+    }
+
+    public void User.setFreeField6(String freeField6) {
+        this.freeField6 = freeField6;
+    }
+
+    public String User.getFreeField7() {
+        return this.freeField7;
+    }
+
+    public void User.setFreeField7(String freeField7) {
+        this.freeField7 = freeField7;
+    }
     
     public Long User.getNbCards() {
         return this.nbCards;

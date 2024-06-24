@@ -187,6 +187,14 @@
                                 <dd>${user.freeField2}</dd>
                                 <dt>freeField3</dt>
                                 <dd>${user.freeField3}</dd>
+                                <dt>freeField4</dt>
+                                <dd>${user.freeField4}</dd>
+                                <dt>freeField5</dt>
+                                <dd>${user.freeField5}</dd>
+                                <dt>freeField6</dt>
+                                <dd>${user.freeField6}</dd>
+                                <dt>freeField7</dt>
+                                <dd>${user.freeField7}</dd>
                                 <dt>mis à jour :</dt>
                                 <dd>
                                     <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${user.updateDate}"/>

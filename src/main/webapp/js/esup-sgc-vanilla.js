@@ -496,6 +496,10 @@ function searchEppnAction(idInputFile) {
 			document.getElementById("freeField1").innerHTML = data.freeField1;
 			document.getElementById("freeField2").innerHTML = data.freeField2;
 			document.getElementById("freeField3").innerHTML = data.freeField3;
+			document.getElementById("freeField4").innerHTML = data.freeField4;
+			document.getElementById("freeField5").innerHTML = data.freeField5;
+			document.getElementById("freeField6").innerHTML = data.freeField6;
+			document.getElementById("freeField7").innerHTML = data.freeField7;
 		    document.getElementById("photo").setAttribute("src", "/manager/photo/" + data.id);
 		    var existingP = document.getElementById("noResultMsg");
 		    remove("noResultMsg");
