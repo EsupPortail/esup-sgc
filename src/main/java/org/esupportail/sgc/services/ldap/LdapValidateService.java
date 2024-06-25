@@ -31,6 +31,10 @@ public class LdapValidateService extends ValidateService {
 	private final static String CSN = "%csn%";
 	
 	private final static String CSN_RETURN = "%reverse_csn%";
+
+	private final static String CSN_DEC = "%csn_dec%";
+
+	private final static String CSN_RETURN_DEC = "%reverse_csn_dec%";
 	
 	private final static String SECONDARYID = "%secondary_id%";
 	
@@ -157,6 +161,8 @@ public class LdapValidateService extends ValidateService {
 		Object ldapValue = null;
 		ldapValueRef = ldapValueRef.replaceAll(CSN, card.getCsn());
 		ldapValueRef = ldapValueRef.replaceAll(CSN_RETURN, card.getReverseCsn());
+		ldapValueRef = ldapValueRef.replaceAll(CSN_DEC, toDecimal(card.getCsn()));
+		ldapValueRef = ldapValueRef.replaceAll(CSN_RETURN_DEC, toDecimal(card.getReverseCsn()));
 		ldapValueRef = ldapValueRef.replaceAll(EPPN, card.getEppn());
 		if(card.getUser().getSecondaryId() != null) {
 			ldapValueRef = ldapValueRef.replaceAll(SECONDARYID, card.getUser().getSecondaryId());
@@ -222,5 +228,15 @@ public class LdapValidateService extends ValidateService {
 	    
 	    return formattedFilter;
 	}
-	
+
+	String toDecimal(String hex) {
+		if(hex == null) {
+			return null;
+		}
+		if(hex.isEmpty()) {
+			return "";
+		}
+		return Long.toString(Long.parseLong(hex, 16));
+	}
+
 }
