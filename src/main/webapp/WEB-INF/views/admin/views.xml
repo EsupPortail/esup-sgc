@@ -40,4 +40,7 @@
     <definition extends="default" name="admin/groupsroles">
         <put-attribute name="body" value="/WEB-INF/views/admin/groupsroles.jspx"/>
     </definition>
+    <definition extends="default" name="admin/locations">
+        <put-attribute name="body" value="/WEB-INF/views/admin/locations.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -35,7 +35,7 @@
 	<form class="form-horizontal" action="${userinfos_url}" method="GET">
 		<div class="jumbotron">
 			<div class="from-group">
-				<label for="eppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible : </label>
+				<label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible : </label>
 				<div class="col-lg-2 col-md-2 col-xs-4">
 					<input type="text" class="form-control"  placeholder="eppn" id="searchEppn"  name="eppn" maxlength="100" value="${eppn}"/>
 				</div>
