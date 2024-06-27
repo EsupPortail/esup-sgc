@@ -26,6 +26,33 @@
 	    
     <h2>Salles de badgeage potentiellement accessibles depuis esup-nfc pour un utilisateur</h2>
 
+	<div class="row">
+		<div class="well">
+			Esup-SGC propose des salles de badgeage NFC à déclarer dans esup-nfc-tag-server.
+			Ces salles permettent via des périphériques NFC et en passant par ESUP-SGC divers usages :
+			<ul>
+				<li>Encodage de la carte</li>
+				<li>Mise à jour de la carte</li>
+				<li>Recherche d'une carte</li>
+				<li>Affichage du verso</li>
+				<li>...</li>
+			</ul>
+			<p>
+			Pour pouvoir en bénficier, il faut déclarer les salles dans esup-nfc-tag-server.
+			</p>
+			<p>
+			Il faut aussi que l'utilisateur ait les droits d'accès à ces salles dans esup-sgc.
+			</p>
+			<p>
+			Cette page permet de vérifier si un utilisateur a les droits d'accès à ces salles portées par esup-sgc.
+			</p>
+			<p>
+			Merci de consulter la documentation d'esup-sgc et esup-nfc-tag-server à ce propos :
+			<a target="_blank" href="https://esup-portail.org/wiki/pages/viewpage.action?pageId=613384423#ApplicationsESUPSGC/ESUPNFCTAGoptionnelles-LivraisonSGC">https://esup-portail.org/wiki/pages/viewpage.action?pageId=613384423#ApplicationsESUPSGC/ESUPNFCTAGoptionnelles-LivraisonSGC</a>
+			</p>
+		</div>
+	</div>
+
 	<spring:url value="/manager/searchEppn" var="searchEppnUrl" />
 	<script type="text/javascript">
 		var searchEppnUrl = '${searchEppnUrl}';
