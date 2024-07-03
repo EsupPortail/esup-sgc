@@ -198,7 +198,8 @@ public class ManagerCardController {
 		List<String> ldapGroups = ((ShibUser)(auth.getPrincipal())).getLdapGroups();
 		SortedMap<Printer, Boolean> printers = printerService.getPrinters(eppn, ldapGroups);
 		stopWatch.stop();
-		log.trace("printers tooks " + stopWatch.shortSummary());
+		log.trace("getPrinters tooks " + stopWatch.shortSummary() + " -> " + printers.size() + " printers");
+		log.trace("printers : " + printers.keySet().stream().map(Printer::getLabel).reduce((a, b) -> a + ", " + b).orElse(""));
 		return printers;
 	}
 
