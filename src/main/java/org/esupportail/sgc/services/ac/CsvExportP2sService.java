@@ -30,6 +30,7 @@ import javax.persistence.EntityManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,11 +211,21 @@ public class CsvExportP2sService implements Export2AccessControlService, Applica
 	/**
 	 * -> YYYY/MM/DD
 	 */
-	private String formatDate(Date date) {
+	private String formatDate(final Date date) {
 		String dateFt = "";
+		Date date4p2s = date;
 		if(date!=null) {
+			// P2S attend le format YYYY/MM/DD et n'accepte pas les dates supérieures à 2099/12/31
 			SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-			dateFt = df.format(date);
+            try {
+                Date dateMax = df.parse("2099/12/31");
+				if(date.after(dateMax)) {
+					date4p2s = dateMax;
+				}
+            } catch (ParseException e) {
+                log.error("Error during parsing date : " + e.getMessage());
+            }
+            dateFt = df.format(date4p2s);
 		}
 		return dateFt;
 	}
