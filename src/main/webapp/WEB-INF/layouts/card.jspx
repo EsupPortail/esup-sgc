@@ -1,5 +1,4 @@
-<div xmlns:tiles="http://tiles.apache.org/tags-tiles">
-
-		<tiles:insertAttribute name="body" />
-	
+<div xmlns:tiles="http://tiles.apache.org/tags-tiles" xmlns:jsp="http://java.sun.com/JSP/Page">
+	<jsp:directive.page session="false" />
+	<tiles:insertAttribute name="body" />
 </div>
