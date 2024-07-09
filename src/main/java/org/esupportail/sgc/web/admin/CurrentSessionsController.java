@@ -20,6 +20,7 @@ import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -62,15 +63,22 @@ public class CurrentSessionsController {
 	@RequestMapping
 	public String getCurrentSessions(Model uiModel) throws IOException {
 
+		Map<String, SgcHttpSession> allSessions = sgcHttpSessionsListenerService.getSessions();
 		List<String> sessions = new Vector<String>();
 		List<Object> principals = sessionRegistry.getAllPrincipals();
 		Map<String, List<User>> users = new HashMap<String, List<User>>();
 		List<User> allUsers = new ArrayList<User>();
 		
 		for(Object p: principals) {
-			sessions.add(((UserDetails) p).getUsername());
+			String eppn = ((UserDetails) p).getUsername();
+			sessions.add(eppn);
+			for(SessionInformation sessionInformation: sessionRegistry.getAllSessions(p, false)) {
+				if(allSessions.containsKey(sessionInformation.getSessionId())) {
+					allSessions.get(sessionInformation.getSessionId()).setUserEppn(eppn);
+				}
+			}
 		}
-		
+
 		Collections.sort(sessions);
 		
 		for(String eppn : sessions){
@@ -82,13 +90,12 @@ public class CurrentSessionsController {
 			allUsers.add(user);
 		}
 
-		Collection<SgcHttpSession> allSessions = sgcHttpSessionsListenerService.getSessions();
 
 		uiModel.addAttribute("users", users);
 		uiModel.addAttribute("active", "sessions");
 		uiModel.addAttribute("allUsers", allUsers);
 		uiModel.addAttribute("userTypes", userInfoService.getListExistingType());
-		uiModel.addAttribute("allSessions", allSessions);
+		uiModel.addAttribute("allSessions", allSessions.values());
 
 		return "admin/currentsessions";
 	}

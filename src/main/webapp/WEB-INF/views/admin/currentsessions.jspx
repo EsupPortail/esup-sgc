@@ -48,14 +48,20 @@
 		</div>
 
 	<div class="alert alert-info" id="sessionsdiv">
-		<h3>Ensemble des Sessions HTTP (dont clients REST)</h3>
+		<h3>Ensemble des Sessions HTTP</h3>
 		<p><strong>${fn:length(allSessions)} session(s) active(s)</strong></p>
 		<br />
-		<p><strong>sessionId - createdDate - remoteIp - originRequestUri</strong></p>
+		<p><strong>sessionId - createdDate - remoteIp - originRequestUri - eppn</strong></p>
 		<div class="well">
 			<ul class="list">
 				<c:forEach items="${allSessions}" var="session">
-					<li>${session.sessionId} - ${session.createdDate} - ${session.remoteIp} - ${session.originRequestUri}</li>
+					<li class="${session.userEppn == null ? 'alert-danger' : ''}">
+						${session.sessionId}
+						- ${session.createdDate}
+						- ${session.remoteIp}
+						- ${session.originRequestUri}
+						- ${session.userEppn}
+					</li>
 				</c:forEach>
 			</ul>
 		</div>

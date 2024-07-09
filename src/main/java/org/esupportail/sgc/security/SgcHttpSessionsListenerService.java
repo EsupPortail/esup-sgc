@@ -46,8 +46,8 @@ public class SgcHttpSessionsListenerService {
         sessions.remove(event.getSession().getId());
     }
 
-    public Collection<SgcHttpSession> getSessions() {
-        return sessions.values();
+    public Map<String, SgcHttpSession> getSessions() {
+        return sessions;
     }
 
 }

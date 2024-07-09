@@ -11,6 +11,8 @@ public class SgcHttpSession {
 
     String originRequestUri;
 
+    String userEppn;
+
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -41,5 +43,13 @@ public class SgcHttpSession {
 
     public void setOriginRequestUri(String originRequestUri) {
         this.originRequestUri = originRequestUri;
+    }
+
+    public String getUserEppn() {
+        return userEppn;
+    }
+
+    public void setUserEppn(String userEppn) {
+        this.userEppn = userEppn;
     }
 }
