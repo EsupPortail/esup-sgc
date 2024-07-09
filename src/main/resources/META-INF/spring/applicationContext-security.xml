@@ -11,12 +11,12 @@
 
     <http security="none" pattern="/webjars/**" />
 
-	<http pattern="/payboxcallback" entry-point-ref="http403EntryPoint">
+	<http pattern="/payboxcallback" entry-point-ref="http403EntryPoint" create-session="stateless">
 		<intercept-url pattern="/payboxcallback" access="${payboxIpRestriction}" />
 		<csrf disabled="true"/>
 	</http>
 
-	<http pattern="/wsrest/**" entry-point-ref="http403EntryPoint">
+	<http pattern="/wsrest/**" entry-point-ref="http403EntryPoint" create-session="stateless">
 		<intercept-url pattern="/wsrest/nfc/cnousCardId" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/addCrousCsvFile" access="permitAll" />
 		<intercept-url pattern="/wsrest/nfc/eppnAndNumeroId" access="permitAll" />
@@ -32,7 +32,7 @@
 		<csrf disabled="true"/>
 	</http>
 
-	<http pattern="/wsescr/**" entry-point-ref="http403EntryPoint">
+	<http pattern="/wsescr/**" entry-point-ref="http403EntryPoint" create-session="stateless">
 		<intercept-url pattern="/wsescr/**" access="${accessRestrictionWSescr}"/>
 		<csrf disabled="true"/>
 	</http>
