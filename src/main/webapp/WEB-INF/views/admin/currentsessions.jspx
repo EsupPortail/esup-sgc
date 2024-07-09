@@ -23,6 +23,7 @@
 	>
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
 	<jsp:output omit-xml-declaration="yes" />
+
 	<h2>Sessions</h2>
 
 		<spring:url value="/manager?eppn=" var="userLinkPrefix"/>
@@ -34,7 +35,7 @@
 			</ul>
 		</div>
 		<div class="alert alert-info" id="sessionsdiv">
-			<h3>Utilisateurs connectés.</h3>
+			<h3>Utilisateurs connectés (sessions spring).</h3>
 			<p><strong>${fn:length(allUsers)} session(s) active(s)</strong></p>
 			<br />
 			<div class="well">
@@ -45,5 +46,19 @@
 				</ul>
 			</div>
 		</div>
-	
+
+	<div class="alert alert-info" id="sessionsdiv">
+		<h3>Ensemble des Sessions HTTP (dont clients REST)</h3>
+		<p><strong>${fn:length(allSessions)} session(s) active(s)</strong></p>
+		<br />
+		<p><strong>sessionId - createdDate - remoteIp - originRequestUri</strong></p>
+		<div class="well">
+			<ul class="list">
+				<c:forEach items="${allSessions}" var="session">
+					<li>${session.sessionId} - ${session.createdDate} - ${session.remoteIp} - ${session.originRequestUri}</li>
+				</c:forEach>
+			</ul>
+		</div>
+	</div>
+
 </div>
