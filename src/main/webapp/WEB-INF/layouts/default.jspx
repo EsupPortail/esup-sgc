@@ -25,6 +25,7 @@
 		xmlns:util="urn:jsptagdir:/WEB-INF/tags/util">
 
 <jsp:directive.page contentType="text/html;charset=UTF-8" />
+<jsp:directive.page session="false" />
 <jsp:directive.page pageEncoding="UTF-8" />
 
 <head>

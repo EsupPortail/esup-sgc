@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:sec="http://www.springframework.org/security/tags" xmlns:spring="http://www.springframework.org/tags" id="cardShow" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:directive.page session="false" />
     <jsp:output omit-xml-declaration="yes"/>
     <spring:url value="/manager?index=first" var="listeUrl"/>
     <spring:url value="/manager/photo/" var="photoRootUrl"/>
