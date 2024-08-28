@@ -225,7 +225,7 @@ public class ManagerCardController {
 		return printerEppn;
 	}
 
-    @RequestMapping(params="eppn", produces = "text/html")
+    @RequestMapping(params="eppn", produces = "text/html", method = RequestMethod.GET)
     @Transactional(readOnly = true)
     public String show(@RequestParam String eppn, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
@@ -238,7 +238,7 @@ public class ManagerCardController {
         }
     }
 
-    @RequestMapping(value = "/{id}", produces = "text/html")
+    @RequestMapping(value = "/{id}", produces = "text/html", method = RequestMethod.GET)
     @Transactional(readOnly = true)
     @PreAuthorize("hasPermission(#id, 'consult')")
     public String show(@PathVariable("id") Long id, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
