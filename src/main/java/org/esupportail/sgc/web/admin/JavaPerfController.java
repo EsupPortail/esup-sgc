@@ -43,8 +43,8 @@ public class JavaPerfController {
 	@Resource
 	List<BasicDataSource> basicDataSources;
 
-	@Resource
-	List<PoolingContextSource> poolingContextSources;
+	@Autowired(required = false)
+	List<PoolingContextSource> poolingContextSources = new ArrayList<>();
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
