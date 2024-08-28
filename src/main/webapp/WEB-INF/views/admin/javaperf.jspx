@@ -37,7 +37,7 @@
 	</div>
 
 	<div class="alert alert-info">
-		<h3>Databases</h3>
+		<h3>Databases - pool de connexions</h3>
 		<ul class="list">
 			<c:forEach items="${basicDataSources}" var="basicDataSource">
 				<li>${basicDataSource.url} :
