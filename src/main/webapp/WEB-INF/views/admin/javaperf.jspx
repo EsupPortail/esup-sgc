@@ -37,7 +37,7 @@
 	</div>
 
 	<div>
-		<h3>Databases - pool de connexions</h3>
+		<h3>Databases - pools de connexions</h3>
 		<ul class="list">
 			<c:forEach items="${basicDataSources}" var="basicDataSource">
 				<li>${basicDataSource.url} :
@@ -46,6 +46,22 @@
 						<li>idle : ${basicDataSource.numIdle}</li>
 						<li>max active : ${basicDataSource.maxActive}</li>
 						<li>max idle : ${basicDataSource.maxIdle}</li>
+					</ul>
+				</li>
+			</c:forEach>
+		</ul>
+	</div>
+
+	<div>
+		<h3>Ldap - pools de connexions</h3>
+		<ul class="list">
+			<c:forEach items="${ldapContextSources}" var="ldapContextSource">
+				<li>${ldapContextSource.value} / ${ldapContextSource.key.baseLdapPathAsString} :
+					<ul>
+						<li>active : ${ldapContextSource.key.numActive}</li>
+						<li>idle : ${ldapContextSource.key.numIdle}</li>
+						<li>max active : ${ldapContextSource.key.maxActive}</li>
+						<li>max idle : ${ldapContextSource.key.maxIdle}</li>
 					</ul>
 				</li>
 			</c:forEach>

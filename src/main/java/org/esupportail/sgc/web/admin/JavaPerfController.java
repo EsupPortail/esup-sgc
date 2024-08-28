@@ -1,6 +1,7 @@
 package org.esupportail.sgc.web.admin;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.SgcHttpSession;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.security.SgcHttpSessionsListenerService;
@@ -8,6 +9,8 @@ import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.pool.factory.PoolingContextSource;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import javax.naming.ldap.LdapContext;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -38,6 +42,9 @@ public class JavaPerfController {
 
 	@Resource
 	List<BasicDataSource> basicDataSources;
+
+	@Resource
+	List<PoolingContextSource> poolingContextSources;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -69,7 +76,14 @@ public class JavaPerfController {
 		uiModel.addAttribute("usedMemoryInMB", usedMemoryInMB);
 
 		uiModel.addAttribute("basicDataSources", basicDataSources);
-		basicDataSources.get(0).getNumActive();
+
+		Map<PoolingContextSource, String> ldapContextSources = new HashMap<>();
+		for(PoolingContextSource p : poolingContextSources) {
+			LdapContextSource ldapContextSource = (LdapContextSource) p.getContextSource();
+			String urls = StringUtils.join(ldapContextSource.getUrls(), ", ");
+			ldapContextSources.put(p, urls);
+		}
+		uiModel.addAttribute("ldapContextSources", ldapContextSources);
 
 		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 		List<ThreadInfo> threadInfos = Arrays.asList(threadMXBean.dumpAllThreads(true, true));
