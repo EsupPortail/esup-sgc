@@ -1,5 +1,6 @@
 package org.esupportail.sgc.web.admin;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.esupportail.sgc.domain.SgcHttpSession;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.security.SgcHttpSessionsListenerService;
@@ -34,6 +35,9 @@ public class JavaPerfController {
 
 	@Resource
 	AppliConfigService appliConfigService;
+
+	@Resource
+	List<BasicDataSource> basicDataSources;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -64,6 +68,9 @@ public class JavaPerfController {
 		uiModel.addAttribute("freeMemoryInMB", freeMemoryInMB);
 		uiModel.addAttribute("usedMemoryInMB", usedMemoryInMB);
 
+		uiModel.addAttribute("basicDataSources", basicDataSources);
+		basicDataSources.get(0).getNumActive();
+
 		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 		List<ThreadInfo> threadInfos = Arrays.asList(threadMXBean.dumpAllThreads(true, true));
 		Collections.sort(threadInfos, (ThreadInfo o1, ThreadInfo o2) -> o1.getThreadState().compareTo(o2.getThreadState()));
@@ -81,6 +88,8 @@ public class JavaPerfController {
 		uiModel.addAttribute("threadStateCount", threadStateCount);
 		long currentThreadId = Thread.currentThread().getId();
 		uiModel.addAttribute("currentThreadId", currentThreadId);
+
+
 
 		return "admin/javaperf";
 	}
