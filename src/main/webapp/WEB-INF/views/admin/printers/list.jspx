@@ -7,9 +7,9 @@
             <table:column id="c_org_esupportail_sgc_domain_Printer_label" property="label" z="user-managed"/>
             <table:column id="c_org_esupportail_sgc_domain_Printer_eppn" property="eppn" z="M8CBr1b+MtyMUoRyFyYIzayjdvU="/>
             <table:column id="c_org_esupportail_sgc_domain_Printer_ip" property="ip" z="mUy582S+AzQJNqvB2IelLFZREcU="/>
-            <table:column id="c_org_esupportail_sgc_domain_Printer_maintenanceInfo" property="maintenanceInfo" z="XtB4KSkDZCt3Kh1tuEXA8x7+KEI="/>
-            <table:column id="c_org_esupportail_sgc_domain_Printer_printerUsers" property="printerUsers" z="79I3vDcUZ/cbmf16Si5xOQNRGJE="/>
-            <table:column id="c_org_esupportail_sgc_domain_Printer_printerGroups" property="printerGroups" z="HcNL//qCNDArrKJhgKurfaPOV3A="/>
+            <table:column id="c_org_esupportail_sgc_domain_Printer_maintenanceInfo" property="maintenanceInfo" z="XtB4KSkDZCt3Kh1tuEXA8x7+KEI=" maxLength="512"/>
+            <table:column id="c_org_esupportail_sgc_domain_Printer_printerUsers" property="printerUsers" z="79I3vDcUZ/cbmf16Si5xOQNRGJE=" maxLength="512"/>
+            <table:column id="c_org_esupportail_sgc_domain_Printer_printerGroups" property="printerGroups" z="HcNL//qCNDArrKJhgKurfaPOV3A=" maxLength="512"/>
             <table:column dateTimePattern="${printer_connectiondate_date_format}" property="connectionDate" id="c_org_esupportail_sgc_domain_Printer_connectionDate" z="MLfGWBVHTztenV553ZxWe8qJN6A="/>
         </table:table>
     </page:list>
