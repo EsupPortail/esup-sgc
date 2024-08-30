@@ -68,7 +68,11 @@ public class User {
 
 	// @see getDueDateIncluded()
 	public final static int DUE_DATE_INCLUDED_DELAY = +0;
-	
+
+	public static List<String> findAllUsersEppns() {
+		return entityManager().createQuery("SELECT o.eppn FROM User o", String.class).getResultList();
+	}
+
 	public static enum CnousReferenceStatut {
 		psg, etd, prs, hbg, fct, fpa, stg;
 	};

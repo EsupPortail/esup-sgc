@@ -36,15 +36,15 @@ public class ResynchronisationService {
 		long nbUpdate = 0;
 		long nbNoUpdate = 0;
 		long nbError = 0;
-		for(User user : User.findAllUsers()) {
+		for(String eppn : User.findAllUsersEppns()) {
 			try {
-				if(resynchronisationUserService.synchronizeUserInfo(user.getEppn())) {
+				if(resynchronisationUserService.synchronizeUserInfo(eppn)) {
 					nbUpdate++;
 				} else {
 					nbNoUpdate++;
 				}
 			} catch(Exception ex) {
-				log.error("Error during synchronize " + user.getEppn(), ex);
+				log.error("Error during synchronize " + eppn, ex);
 				 nbError++;
 			}
 			if(shutdownCalled) {
