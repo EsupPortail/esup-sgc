@@ -75,7 +75,7 @@ public class EsupSgcBmpAsBase64Service {
                 String encoding = StandardCharsets.UTF_8.name();
                 IOUtils.copy(process.getErrorStream(), errorWriter, encoding);
                 String error = errorWriter.toString();
-                log.error("cmd {} failed : {}", error);
+                log.error("cmd {} failed : {}", command, error);
                 process.getErrorStream();
                 process.destroy();
                 throw new RuntimeException(error);
