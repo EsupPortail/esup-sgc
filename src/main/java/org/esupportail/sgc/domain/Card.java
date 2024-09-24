@@ -63,7 +63,7 @@ public class Card {
 	
 	private static final Logger log = LoggerFactory.getLogger(Card.class);
 
-    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire", "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire", "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate", "dueDate");
 
     public static enum FlagAdresse {
         INT, EXT
