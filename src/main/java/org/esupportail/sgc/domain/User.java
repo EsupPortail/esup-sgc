@@ -74,7 +74,7 @@ public class User {
 	}
 
 	public static enum CnousReferenceStatut {
-		psg, etd, prs, hbg, fct, fpa, stg;
+		psg, etd, prs, hbg, fct, fpa, stg, ctr, hb2, hb3, hb4, hb5, hb6, po, rtr;
 	};
 	
 	public final static List<String> BOOLEAN_FIELDS = Arrays.asList(new String[] {"crous", "europeanStudentCard", "difPhoto", "editable", "requestFree", "hasCardRequestPending"});
