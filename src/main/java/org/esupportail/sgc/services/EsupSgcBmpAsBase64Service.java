@@ -54,7 +54,7 @@ public class EsupSgcBmpAsBase64Service {
             tmpdirFile.deleteOnExit();
             String tmpdir = tmpdirFile.getAbsolutePath();
             String command =  "cd " + tmpdir + " && " +  String.format(bmpCardCommand, cardId);
-            log.info("Convertion command to get BMP for card {} / {} : {}", cardId, type, command);
+            log.info("Conversion command to get BMP for card {} / {} : {}", cardId, type, command);
             ProcessBuilder processBuilder = new ProcessBuilder();
             if (SystemUtils.IS_OS_WINDOWS) {
                 processBuilder.command("cmd", "/C", command);
