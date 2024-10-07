@@ -622,6 +622,9 @@ public class WsRestEsupNfcController {
 		String bmpAsBase64 = "";
 		List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.IN_PRINT})).getResultList();
 		if(!cards.isEmpty()) {
+			if(cards.size() > 1) {
+				throw new RuntimeException("More than one card with qrcode " + qrcode + " in state IN_PRINT !?");
+			}
 			Card card = cards.get(0);
 			bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), type);
 		}
