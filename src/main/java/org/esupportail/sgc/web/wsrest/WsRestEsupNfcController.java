@@ -615,7 +615,7 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
-			log.info("Bad authotoken : " + authToken);
+			log.info("Bad authToken : " + authToken);
 			return new ResponseEntity<String>("", responseHeaders, HttpStatus.FORBIDDEN);
 		}
 
