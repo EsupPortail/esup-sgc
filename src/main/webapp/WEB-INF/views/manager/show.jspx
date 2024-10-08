@@ -571,6 +571,8 @@
                                                     <dd>${card.csn}</dd>
                                                     <dt>Reversed Csn : </dt>
                                                     <dd>${card.reverseCsn}</dd>
+                                                    <dt>Decimal Csn : </dt>
+                                                    <dd>${card.decimalCsn}</dd>
                                                     <dt>Desfire Ids (générés): </dt>
                                                     <dd>
                                                         <c:forEach items="${card.desfireIds}" var="desfireId">

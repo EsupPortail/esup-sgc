@@ -521,6 +521,14 @@ public class Card {
     	}
     }
 
+    public String getDecimalCsn() {
+        if(csn==null) {
+            return null;
+        } else {
+            return new BigInteger(csn, 16).toString();
+        }
+    }
+
     public boolean isEnabled() {
         return etat.equals(Etat.ENABLED);
     }
