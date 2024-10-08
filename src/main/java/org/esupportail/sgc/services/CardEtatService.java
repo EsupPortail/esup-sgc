@@ -57,12 +57,12 @@ public class CardEtatService {
 		// workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{Etat.IN_ENCODE}));
 		workflow.put(Etat.PRINTED, Arrays.asList(new Etat[]{}));
 		workflow.put(Etat.IN_ENCODE, Arrays.asList(new Etat[]{Etat.PRINTED})); // IN_ENCODE -> ENCODED is not an action made via the gui
-		workflow.put(Etat.ENCODED, Arrays.asList(new Etat[]{Etat.ENABLED}));
+		workflow.put(Etat.ENCODED, Arrays.asList(new Etat[]{Etat.ENABLED, Etat.DESTROYED}));
 		workflow.put(Etat.ENABLED, Arrays.asList(new Etat[]{Etat.DISABLED, Etat.RENEWED}));
 		workflow.put(Etat.DISABLED, Arrays.asList(new Etat[]{Etat.ENABLED, Etat.DESTROYED}));
 		workflow.put(Etat.CADUC, Arrays.asList(new Etat[]{Etat.DESTROYED})); // CADUC -> DISABLED is not an action made via the gui
 		workflow.put(Etat.REJECTED, Arrays.asList(new Etat[]{})); 
-		workflow.put(Etat.DESTROYED, Arrays.asList(new Etat[]{}));
+		workflow.put(Etat.DESTROYED, Arrays.asList(new Etat[]{Etat.RENEWED}));
 		workflow.put(Etat.CANCELED, Arrays.asList(new Etat[]{}));
 	}
 
