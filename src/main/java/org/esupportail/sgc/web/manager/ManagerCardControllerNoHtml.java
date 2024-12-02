@@ -1,28 +1,16 @@
 package org.esupportail.sgc.web.manager;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import flexjson.JSONSerializer;
 import org.apache.commons.io.IOUtils;
-import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.domain.Card.Etat;
-import org.esupportail.sgc.domain.CrousSmartCard;
-import org.esupportail.sgc.domain.EscrCard;
-import org.esupportail.sgc.domain.EscrStudent;
-import org.esupportail.sgc.domain.PhotoFile;
-import org.esupportail.sgc.domain.TemplateCard;
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
@@ -31,7 +19,7 @@ import org.esupportail.sgc.services.FormService;
 import org.esupportail.sgc.services.PhotoResizeService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.RightHolder;
-import org.esupportail.sgc.services.esc.ApiEscrService;
+import org.esupportail.sgc.services.esc.ApiEscService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
@@ -47,22 +35,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-
-import flexjson.JSONSerializer;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/manager")
 @Controller
@@ -90,7 +70,7 @@ public class ManagerCardControllerNoHtml {
 	LdapPersonService ldapPersonService;
 	
 	@Resource
-	ApiEscrService apiEscrService;
+	ApiEscService apiEscService;
 	
 	@Resource
 	PhotoResizeService photoResizeService;
@@ -254,7 +234,7 @@ public class ManagerCardControllerNoHtml {
 			log.warn("Impossible de récupérer les données", e);
 		}
 		
-    	return MapUtils.sortByValue(adressesMap, true);
+    	return MapUtils.sortByValue(adressesMap);
 	}
 	
 	@RequestMapping(value="/getCrousRightHolder", headers = "Accept=application/json; charset=utf-8")
@@ -290,8 +270,8 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/getEscrStudentHtmlPart")
 	@Transactional(readOnly = true)
     public String getEscrStudentHtmlPart(@RequestParam String eppn, Model uiModel) {
-		EscrStudent escrStudent = apiEscrService.getEscrStudent(eppn);
-		uiModel.addAttribute("escrStudent", escrStudent);
+		EscPerson escPerson = apiEscService.getEscPerson(eppn);
+		uiModel.addAttribute("escPerson", escPerson);
 		return "manager/escrStudent";
 	}
 	
@@ -299,8 +279,8 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/getEscrCardHtmlPart")
 	@Transactional(readOnly = true)
     public String getEscrCardHtmlPart(@RequestParam String eppn, @RequestParam String csn, Model uiModel) {
-		EscrCard escrCard = apiEscrService.getEscrCard(eppn, csn);
-		uiModel.addAttribute("escrCard", escrCard);
+		EscCard escCard = apiEscService.getEscCard(eppn, csn);
+		uiModel.addAttribute("escCard", escCard);
 		return "manager/escrCard";
 	}
 	
@@ -332,14 +312,21 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/freeFieldResults", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody
 	public String getResultsFreefield(@RequestParam(value="field") String field) {
-		
-		Map<String, String> resultsMap = new HashMap<String, String>();
+
 		String flexJsonString = "{}";
 		try {
 			if(!field.isEmpty()){
 				JSONSerializer serializer = new JSONSerializer();
-				resultsMap = formService.getFieldsValuesMap(field);
-				flexJsonString = serializer.serialize(MapUtils.sortByValue(resultsMap, true));
+				Map<String, String> resultsMap = formService.getFieldsValuesMap(field);
+				Map<String, String> mapSorted = MapUtils.sortByValue(resultsMap);
+				List<Map<String, String>> slimSelectDatas = new ArrayList<>();
+				for(String key : mapSorted.keySet()) {
+					Map<String, String> map = new HashMap<>();
+					map.put("text", mapSorted.get(key));
+					map.put("value", key);
+					slimSelectDatas.add(map);
+				}
+				flexJsonString = serializer.serialize(slimSelectDatas);
 			}
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les données", e);

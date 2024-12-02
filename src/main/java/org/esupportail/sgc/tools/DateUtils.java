@@ -45,5 +45,10 @@ public class DateUtils {
 		}
 		return date;
 	}
-	
+
+	public String getGeneralizedTime(Date date) {
+		if(date == null) return "";
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMddHHmmss'Z'");
+		return dateFormatter.format(date);
+	}
 }

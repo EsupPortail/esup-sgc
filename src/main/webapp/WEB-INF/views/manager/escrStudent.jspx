@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <dl xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields"
-	xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsp="http://java.sun.com/JSP/Page"
-	xmlns:page="urn:jsptagdir:/WEB-INF/tags/form"
-	xmlns:sec="http://www.springframework.org/security/tags"
-	xmlns:spring="http://www.springframework.org/tags" class="dl-horizontal">
+	class="dl-horizontal">
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 		<h4>Données côté ESC</h4>
-		<dt>europeanStudentIdentifier</dt>
-		<dd>${escrStudent.europeanStudentIdentifier}</dd>	
-		<dt>picInstitutionCode</dt>
-		<dd>${escrStudent.picInstitutionCode}</dd>	
-		<dt>emailAddress</dt>
-		<dd>${escrStudent.emailAddress}</dd>	
-		<dt>expiryDate</dt>
-		<dd>${escrStudent.expiryDate}</dd>	
-		<dt>name</dt>
-		<dd>${escrStudent.name}</dd>	
-		<dt>academicLevel</dt>
-		<dd>${escrStudent.academicLevel}</dd>		
+		<dt>europeanIdentifier</dt>
+		<dd>${escPerson.identifier}</dd>
+		<dt>fullName</dt>
+		<dd>${escPerson.fullName}</dd>
 </dl>
 	
 

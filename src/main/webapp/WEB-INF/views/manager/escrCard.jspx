@@ -10,12 +10,14 @@
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
 		<h4>Données côté ESC</h4>
-		<dt>europeanStudentCardNumber</dt>
-		<dd>${escrCard.europeanStudentCardNumber}</dd>	
-		<dt>cardType</dt>
-		<dd>${escrCard.cardType}</dd>	
-		<dt>cardUid</dt>
-		<dd>${escrCard.cardUid}</dd>
+		<dt>europeanCardNumber</dt>
+		<dd>${escCard.cardNumber}</dd>
+		<dt>expiresAt</dt>
+		<dd><fmt:formatDate pattern="dd/MM/yyyy" value="${escCard.expiresAt}"/></dd>
+		<dt>issuedAt</dt>
+		<dd><fmt:formatDate pattern="dd/MM/yyyy" value="${escCard.issuedAt}"/></dd>
+		<dt>issuerIdentifier</dt>
+		<dd>${escCard.issuerIdentifier}</dd>
 </dl>
 	
 

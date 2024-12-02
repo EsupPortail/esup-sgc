@@ -5,7 +5,15 @@
 		xmlns:spring="http://www.springframework.org/tags"
 		xmlns:jsp="http://java.sun.com/JSP/Page"
 		xmlns:form="http://www.springframework.org/tags/form">
-    <spring:url value="/manager/getMultiUpdateForm" var="multiUpdateFormUrl" />
+    <spring:url value="/manager/getMultiUpdateForm" var="multiUpdateFormUrl">
+		<c:forEach items="${paramValues}" var="p">
+			<c:if test="${p.key ne 'page' and p.key ne 'size' and p.key ne 'index' and p.key ne 'etat' and p.key ne 'cardIds'}">
+				<c:forEach var='value' items='${p.value}'>
+					<spring:param name="${p.key}" value="${value}" />
+				</c:forEach>
+			</c:if>
+		</c:forEach>
+	</spring:url>
     <spring:url value="/manager/searchEppn" var="searchEppnUrl" />
     <spring:url value="/manager/filterAdress" var="filterAdressUrl" />
     <spring:url value="/manager/freeFieldResults" var="freeUrl" />
@@ -17,7 +25,7 @@
 		var rootManagerUrl = '${rootManagerUrl}';
 		var filterAdressUrl = '${filterAdressUrl}';
 		var freeUrl = '${freeUrl}';
-		var fieldsValue = '${fieldsValue}';
+		var fieldsValue = '${fn:replace(fieldsValue, "\'", "\\\'")}';
 		var nbFields = '${fn:length(nbFields)}';
 	</script>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -66,10 +74,23 @@
 		<jsp:include page="printer.jspx"/>
 
 		<ul class="nav nav-tabs" role="tablist" id="tabTypes">
-	    <c:forEach items="${userTypes}" var="userType">
-	    	<li role="presentation" class="${selectedType eq userType ? 'active' : 'sleep' }"><a href="#${userType}" role="tab"><spring:message code="manager.type.${userType}" htmlEscape="false" /></a></li>
-	    </c:forEach>
-  	</ul>
-
+			<c:forEach items="${userTypes}" var="userType">
+				<spring:url value="" var="queryUrl" htmlEscape="false">
+					<c:forEach items="${paramValues}" var="p">
+						<c:if test="${p.key ne 'page' and p.key ne 'size' and p.key ne 'type' and p.key ne 'index'}">
+							<c:forEach var='value' items='${p.value}'>
+								<spring:param name="${p.key}" value="${value}" />
+							</c:forEach>
+						</c:if>
+					</c:forEach>
+					<spring:param name="type" value="${userType}" />
+				</spring:url>
+				<li role="presentation" class="${selectedType eq userType ? 'active' : 'sleep' }">
+					<a href="${queryUrl}" role="tab">
+						<spring:message code="manager.type.${userType}" htmlEscape="false" />
+					</a>
+				</li>
+			</c:forEach>
+  		</ul>
   	</div>
 </div>

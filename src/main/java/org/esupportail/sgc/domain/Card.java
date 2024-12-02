@@ -337,6 +337,34 @@ public class Card {
         this.printerEppn = printerEppn;
     }
 
+    public String getFreeField1() {
+        return getUserAccount().getFreeField1();
+    }
+
+    public String getFreeField2() {
+        return getUserAccount().getFreeField2();
+    }
+
+    public String getFreeField3() {
+        return getUserAccount().getFreeField3();
+    }
+
+    public String getFreeField4() {
+        return getUserAccount().getFreeField4();
+    }
+
+    public String getFreeField5() {
+        return getUserAccount().getFreeField5();
+    }
+
+    public String getFreeField6() {
+        return getUserAccount().getFreeField6();
+    }
+
+    public String getFreeField7() {
+        return getUserAccount().getFreeField7();
+    }
+
     public void removeEtatAvailable(Etat etat) {
         List<Etat> etatsAvailable = new ArrayList<Etat>(getEtatsAvailable());
         etatsAvailable.remove(etat);
@@ -559,7 +587,7 @@ public class Card {
     }
     
 	public static String snakeToCamel(String snake){
-		String camelString = "";
+        String camelString = "";
 		camelString = WordUtils.capitalize(snake, "_".toCharArray()).replace("_", "");
         char ch[] = camelString.toCharArray();
         ch[0] = Character.toLowerCase(ch[0]);
@@ -662,7 +690,7 @@ public class Card {
         	if(!searchBean.getFreeField().values().isEmpty() && !searchBean.getFreeFieldValue().isEmpty()){
 	            Join<Card, User> u = c.join("userAccount");
 	            for(Map.Entry<Integer, List<String>> entry : searchBean.getFreeFieldValue().entrySet()){
-	            	if(!entry.getValue().isEmpty()){
+	            	if(!entry.getValue().isEmpty() && searchBean.getFreeField().get(entry.getKey())!=null){
 		            	List<Predicate> orPredicates = new ArrayList<Predicate>();
 	            		String camelString = snakeToCamel(searchBean.getFreeField().get(entry.getKey()));
 	            		for(String v : entry.getValue()){

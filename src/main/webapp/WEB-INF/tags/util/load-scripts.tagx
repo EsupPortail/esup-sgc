@@ -13,7 +13,7 @@
 		<spring:url value="/resources/css/suneditor.min.css" var="suneditor_css_url" />
 	</sec:authorize>
 	<spring:url value="/webjars/dragula/dist/dragula.min.css" var="dragula_css_url" />
-	<spring:url value="/webjars/slim-select/dist/slimselect.min.css" var="slimselect_css_url" />
+	<spring:url value="/webjars/slim-select/dist/slimselect.css" var="slimselect_css_url" />
 	<spring:url value="/resources/css/esup-sgc.css" var="esupSgc_css_url" />
 
 	<spring:url value="/resources/js/bootstrap-native-custom.min.js" var="bootstrap_js_url" />

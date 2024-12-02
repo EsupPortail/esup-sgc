@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
 
@@ -14,7 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.ValidateService;
-import org.esupportail.sgc.services.esc.ApiEscrService;
+import org.esupportail.sgc.services.esc.ApiEscService;
+import org.esupportail.sgc.tools.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,23 +30,31 @@ import org.springframework.ldap.support.LdapEncoder;
 
 public class LdapValidateService extends ValidateService {
 
-	private final static String CSN = "%csn%";
+	final static String CSN = "%csn%";
 	
-	private final static String CSN_RETURN = "%reverse_csn%";
+	final static String CSN_RETURN = "%reverse_csn%";
 
-	private final static String CSN_DEC = "%csn_dec%";
+	final static String CSN_DEC = "%csn_dec%";
 
-	private final static String CSN_RETURN_DEC = "%reverse_csn_dec%";
+	final static String CSN_RETURN_DEC = "%reverse_csn_dec%";
 	
-	private final static String SECONDARYID = "%secondary_id%";
+	final static String SECONDARYID = "%secondary_id%";
 	
-	private final static String EPPN = "%eppn%";
+	final static String EPPN = "%eppn%";
+
+	final static String ENABLED_DATE = "%enabled_date%";
+
+	final static String DUE_DATE = "%due_date%";
+
+	final static String ETAT_DATE = "%etat_date%";
+
+	final static String ETAT = "%etat%";
 	
-	private final static String PHOTO = "%photo%";
+	final static String PHOTO = "%photo%";
 	
-	private final static String ESCN = "%escn%";
+	final static String ESCN = "%escn%";
 	
-	private final static String ESI = "%esi%";
+	final static String ESI = "%esi%";
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -72,8 +82,11 @@ public class LdapValidateService extends ValidateService {
 		this.peopleSearchFilter = peopleSearchFilter;
 	}
 	
-    @Autowired(required=false)  
-	ApiEscrService apiEscrService;
+    @Autowired(required=false)
+	ApiEscService apiEscService;
+
+	@Resource
+	DateUtils dateUtils;
 
 	@Override
 	public void validateInternal(Card card) {
@@ -154,7 +167,7 @@ public class LdapValidateService extends ValidateService {
 	}
 	
 
-	private Object computeLdapValue(Card card, String ldapValueRef) {
+	protected Object computeLdapValue(Card card, String ldapValueRef) {
 		
 		log.trace("ldapValue before computing : " + ldapValueRef);
 		
@@ -164,21 +177,26 @@ public class LdapValidateService extends ValidateService {
 		ldapValueRef = ldapValueRef.replaceAll(CSN_DEC, toDecimal(card.getCsn()));
 		ldapValueRef = ldapValueRef.replaceAll(CSN_RETURN_DEC, toDecimal(card.getReverseCsn()));
 		ldapValueRef = ldapValueRef.replaceAll(EPPN, card.getEppn());
+		ldapValueRef = ldapValueRef.replaceAll(ENABLED_DATE, dateUtils.getGeneralizedTime(card.getEnnabledDate()));
+		ldapValueRef = ldapValueRef.replaceAll(DUE_DATE, dateUtils.getGeneralizedTime(card.getDueDate()));
+		ldapValueRef = ldapValueRef.replaceAll(ETAT_DATE, dateUtils.getGeneralizedTime(card.getDateEtat()));
+		ldapValueRef = ldapValueRef.replaceAll(ETAT, card.getEtat().name());
 		if(card.getUser().getSecondaryId() != null) {
 			ldapValueRef = ldapValueRef.replaceAll(SECONDARYID, card.getUser().getSecondaryId());
 		}
 		if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
 			ldapValueRef = ldapValueRef.replaceAll(ESCN, card.getEscnUid());
 		}
-		if(apiEscrService!=null && ldapValueRef.contains(ESI)) {
-			String esi = apiEscrService.getEuropeanStudentIdentifier(card.getEppn());
+		if(apiEscService !=null && ldapValueRef.contains(ESI)) {
+			String esi = apiEscService.getEuropeanPersonIdentifier(card.getEppn());
 			if(esi != null) {
 				ldapValueRef = ldapValueRef.replaceAll(ESI, esi);
 			}
 		}
+
 		for(String appName : card.getDesfireIds().keySet()) {
 			ldapValueRef = ldapValueRef.replaceAll("%" + appName + "%", card.getDesfireIds().get(appName));
-		}		
+		}
 		
 		if(PHOTO.equals(ldapValueRef)) {
 			InputStream photoStream;
@@ -231,7 +249,7 @@ public class LdapValidateService extends ValidateService {
 
 	String toDecimal(String hex) {
 		if(hex == null) {
-			return null;
+			return "";
 		}
 		if(hex.isEmpty()) {
 			return "";

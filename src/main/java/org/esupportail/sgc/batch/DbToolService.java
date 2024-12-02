@@ -30,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "2.3.x";
+	final static String currentEsupSgcVersion = "2.4.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -397,6 +397,79 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				esupSgcVersion = "2.3.x";
+			}
+			if("2.3.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "INSERT INTO esc_person (id, eppn, identifier, full_name) \n" +
+						"SELECT \n" +
+						"    nextval('hibernate_sequence') AS id, \n" +
+						"    eppn, \n" +
+						"    european_student_identifier AS identifier, \n" +
+						"    name AS full_name \n" +
+						"FROM escr_student;";
+				sqlUpdate += "INSERT INTO esc_person_organisation_update_view (id, email, organisation_identifier, escr_person_id, academic_level)\n" +
+						"SELECT \n" +
+						"    nextval('hibernate_sequence') AS id,\n" +
+						"    s.email_address AS email,\n" +
+						"    s.pic_institution_code::character varying(255) AS organisation_identifier,\n" +
+						"    p.id AS escr_person_id,\n" +
+						"    CASE \n" +
+						"    WHEN s.academic_level = '6' THEN 'BACHELOR'\n" +
+						"    WHEN s.academic_level = '7' THEN 'MASTER'\n" +
+						"    WHEN s.academic_level = '8' THEN 'DOCTORATE'\n" +
+						"	 ELSE null\n" +
+						"    END AS academic_level\n" +
+						"FROM \n" +
+						"    escr_student s\n" +
+						"JOIN \n" +
+						"    esc_person p\n" +
+						"ON \n" +
+						"    s.european_student_identifier = p.identifier;";
+		        sqlUpdate += "INSERT INTO esc_card (\n" +
+						"    id, \n" +
+						"    card_number, \n" +
+						"    card_status_type, \n" +
+						"    card_type, \n" +
+						"    expires_at, \n" +
+						"    issued_at, \n" +
+						"    issuer_identifier, \n" +
+						"    person_identifier\n" +
+						")\n" +
+						"SELECT\n" +
+						"    nextval('hibernate_sequence') AS id, \n" +
+						"    ec.european_student_card_number AS card_number,\n" +
+						"    CASE \n" +
+						"        WHEN c.etat = 'ENABLED' THEN 'ACTIVE'\n" +
+						"        ELSE 'INACTIVE'\n" +
+						"    END AS card_status_type,\n" +
+						"    CASE \n" +
+						"        WHEN ec.card_type = 1 THEN 'PASSIVE'\n" +
+						"        WHEN ec.card_type = 2 THEN 'SMART_NO_CDZ'\n" +
+						"        WHEN ec.card_type = 3 THEN 'SMART_CDZ'\n" +
+						"        WHEN ec.card_type = 4 THEN 'SMART_MAY_SP'\n" +
+						"        ELSE 'UNKNOWN'\n" +
+						"    END AS card_type,\n" +
+						"    c.due_date AS expires_at,\n" +
+						"    c.encoded_date AS issued_at,\n" +
+						"    s.pic_institution_code::character varying(255) AS issuer_identifier,\n" +
+						"    s.european_student_identifier AS person_identifier\n" +
+						"FROM \n" +
+						"    escr_card ec\n" +
+						"LEFT JOIN \n" +
+						"    card c\n" +
+						"ON \n" +
+						"    ec.european_student_card_number = c.escn_uid\n" +
+						"LEFT JOIN \n" +
+						"    escr_student s\n" +
+						"ON \n" +
+						"    c.eppn = s.eppn;";
+				sqlUpdate += "DROP TABLE escr_card;";
+				sqlUpdate += "DROP TABLE escr_student;";
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				esupSgcVersion = "2.4.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();

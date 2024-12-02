@@ -9,7 +9,6 @@
 	xmlns:spring="http://www.springframework.org/tags" id="cardShow">
 	<jsp:directive.page contentType="text/html;charset=UTF-8" />
 	<jsp:output omit-xml-declaration="yes" />
-	<spring:url value="/manager/multiUpdate" var="etatActionUrl" />
 	
 	<spring:url value="/resources/js/bootstrap-native-custom.min.js" var="bootstrap_js__url" />
 	<script src="${bootstrap_js__url}" type="text/javascript"><!-- required for FF3 and Opera --></script>
@@ -25,8 +24,18 @@
 						<div id="btnBlock">
 						<div class="col-lg-6">
 							<c:forEach items="${etatsAvailable}" var="etatAvailable" varStatus="j">
-								<form action="${etatActionUrl}?etatFinal=${etatAvailable}"
+								<spring:url value="/manager/multiUpdate" var="etatActionUrl" htmlEscape="false">
+									<c:forEach items="${paramValues}" var="p">
+										<c:if test="${p.key ne 'page' and p.key ne 'size' and p.key ne 'index' and p.key ne 'cardIds'}">
+											<c:forEach var='value' items='${p.value}'>
+												<spring:param name="${p.key}" value="${value}" />
+											</c:forEach>
+										</c:if>
+									</c:forEach>
+								</spring:url>
+								<form action="${etatActionUrl}"
 									id="${etatAvailable}Form" method="POST">
+									<input type="hidden" name="etatFinal" value="${etatAvailable}" />
 									<c:forEach var="cardId" items="${cardIds}">	
 										<input type="hidden" name="listeIds" id="listeIds" value="${cardId}"/>
 									</c:forEach>
@@ -236,7 +245,17 @@
 		<div class="col-lg-12">
 			<div class="collapse" id="collapseEtat">
 				<div class="alert alert-danger">
-					<form action="${etatActionUrl}?etatFinal=NEW" id="forcedForm" method="POST" class="form-inline">
+					<spring:url value="/manager/multiUpdate" var="etatActionUrl" htmlEscape="false">
+						<c:forEach items="${paramValues}" var="p">
+							<c:if test="${p.key ne 'page' and p.key ne 'size' and p.key and p.key ne 'index'}">
+								<c:forEach var='value' items='${p.value}'>
+									<spring:param name="${p.key}" value="${value}" />
+								</c:forEach>
+							</c:if>
+						</c:forEach>
+						<spring:param name="etatFinal" value="NEW" />
+					</spring:url>
+					<form action="${etatActionUrl}" id="forcedForm" method="POST" class="form-inline">
 					 <div class="input-group">
 					 	<span class="input-group-addon">
 							<input type="checkbox" id="checkAdmin" name="updateEtatAdmin"/>

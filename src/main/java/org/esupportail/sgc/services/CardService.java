@@ -143,7 +143,7 @@ public class CardService {
 		
 		boolean enableEC = false;
 		
-		if(user != null && user.getEuropeanStudentCard() && user.getUserType()!=null && appliConfigService.userTypes4isEuropeanCardEnabled().contains(user.getUserType())){
+		if(user != null && user.getUserType()!=null && appliConfigService.userTypes4isEuropeanCardEnabled().contains(user.getUserType())){
 			enableEC = true;
 		}
 		

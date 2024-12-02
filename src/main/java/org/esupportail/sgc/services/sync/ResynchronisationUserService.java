@@ -9,7 +9,7 @@ import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.esupportail.sgc.services.crous.CrousService;
-import org.esupportail.sgc.services.esc.ApiEscrService;
+import org.esupportail.sgc.services.esc.ApiEscService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class ResynchronisationUserService {
 	CrousService crousService;
 	
 	@Resource
-	ApiEscrService apiEscrService;
+    ApiEscService apiEscService;
 	
 	@Resource
 	CardEtatService cardEtatService;
@@ -189,7 +189,7 @@ public class ResynchronisationUserService {
 						crousService.postOrUpdateRightHolder(user.getEppn(), EsupSgcOperation.SYNC);
 					}
 					if(user.getEuropeanStudentCard()) {
-						apiEscrService.postOrUpdateEscrStudent(user.getEppn());
+						apiEscService.postOrUpdateEscPerson(user.getEppn());
 					}
 				}
 				if(log.isTraceEnabled()) {

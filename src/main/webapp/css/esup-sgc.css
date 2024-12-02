@@ -4,6 +4,18 @@
 	}
 }
 
+@media (min-width: 1145px) and (max-width: 1499px) {
+	.hidden-llg {
+		display: none !important;
+	}
+}
+
+@media (min-width: 1500px) and (max-width: 1799px) {
+	.hidden-xl {
+		display: none !important;
+	}
+}
+
 body{
 	padding-bottom: 30px;
 }

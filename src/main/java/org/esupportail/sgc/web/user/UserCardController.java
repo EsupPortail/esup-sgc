@@ -1,7 +1,6 @@
 package org.esupportail.sgc.web.user;
 
 import eu.bitwalker.useragentutils.UserAgent;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
@@ -24,7 +23,7 @@ import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.TemplateCardService;
 import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.crous.CrousService;
-import org.esupportail.sgc.services.esc.ApiEscrService;
+import org.esupportail.sgc.services.esc.ApiEscService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
 import org.esupportail.sgc.services.paybox.PayBoxService;
 import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
@@ -34,10 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -52,7 +47,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.Resource;
@@ -61,7 +55,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -142,7 +135,7 @@ public class UserCardController {
 	CrousService crousService;
 	
 	@Resource
-	ApiEscrService apiEscrService;
+    ApiEscService apiEscService;
 
 	@Resource
 	EsupSgcBmpAsBase64Service esupSgcBmpAsBase64Service;
@@ -540,12 +533,11 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		User user = User.findUser(eppn);
+		user.setEuropeanStudentCard(true);
 		Card enabledCard = user.getEnabledCard();
 		if(enabledCard != null) {
-			apiEscrService.validate(enabledCard);
+			apiEscService.validate(enabledCard);
 		}
-		user.setEuropeanStudentCard(true);
-		user.merge();
 		logService.log(user.getCards().get(0).getId(), ACTION.ENABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
 		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european");
 		return "redirect:/user";
@@ -556,12 +548,17 @@ public class UserCardController {
 	public String disableEuropeanCard(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		apiEscrService.deleteEscrStudent(eppn);
-		User user = User.findUser(eppn);
-		user.setEuropeanStudentCard(false);
-		user.merge();
-		logService.log(user.getCards().get(0).getId(), ACTION.DISABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
-		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european.disable");
+		if(apiEscService.isEscEnabled()) {
+			apiEscService.deleteEscPerson(eppn);
+			User user = User.findUser(eppn);
+			user.setEuropeanStudentCard(false);
+			user.merge();
+			logService.log(user.getCards().get(0).getId(), ACTION.DISABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
+			redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european.disable");
+		} else {
+			log.warn("Tentative de désactivation de la carte européenne par " + eppn + " mais le service ESCR n'est pas activé");
+			redirectAttributes.addFlashAttribute("messageError", ERROR_MSG + "european.disable");
+		}
 		return "redirect:/user";
 	}
 	

@@ -45,22 +45,23 @@
 	
 	<bean id="europeanStudentCardService" class="org.esupportail.sgc.services.esc.ApiEscrService">
 		<property name="enable" value="false"/>
-		<property name="webUrl" value="http://api-sandbox.europeanstudentcard.eu/v1" />
+		<property name="webUrl" value="https://sandbox.europeanstudentcard.eu/esc-rest/api/v2" />
 		<property name="key" value="key-genertaed-from-router-sandbox.europeanstudentcard.eu" />
 		<property name="restTemplate" ref="restTemplate" />
 		<property name="countryCode" value="FR"/>
 		<property name="picInstitutionCode" value="123456789"/>
 		<!-- 
 		Type of cards. Possibles values are :
-		1 - passive card, with no electronic
-		2 - Smartcard without European common data zone
-		3 - Smartcard with European common data zone
-		4 - Smartcard on which application may be installed by service providers
+		1 - passive card, with no electronic -> PASSIVE 
+		2 - Smartcard without European common data zone -> SMART_NO_CDZ
+		3 - Smartcard with European common data zone -> SMART_CDZ
+		4 - Smartcard on which application may be installed by service providers -> SMART_MAY_SP
 		 -->
- 		<property name="cardType" value="2"/>
+ 		<property name="cardType" value="SMART_NO_CDZ"/>
 		<property name="cardTypes">
                   <map>
-                    <entry key="2050-03-09 16:17:10" value="3"/>
+                    <entry key="2018-01-01 16:17:10" value="SMART_CDZ"/>
+                    <entry key="2024-12-02 16:17:10" value="SMART_NO_CDZ"/>                    
                   </map>
 		</property>
 	</bean>

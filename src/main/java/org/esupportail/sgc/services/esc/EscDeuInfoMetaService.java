@@ -42,7 +42,7 @@ public class EscDeuInfoMetaService  {
 	List<EscDeuInfoService> escDeuInfoServicesList;
 		
 	@Resource
-	ApiEscrService apiEscrService;
+    ApiEscService apiEscService;
 	
 	@Resource
 	EscUidFactoryService escUidFactoryService;
@@ -98,7 +98,7 @@ public class EscDeuInfoMetaService  {
 				}
 				String escn = escnData.substring(0, 32);
 				String picInstitutionCode = escn.substring(23);
-				String chainCertAsHexa = apiEscrService.getCaChainCertAsHexa(picInstitutionCode);
+				String chainCertAsHexa = apiEscService.getCaChainCertAsHexa(picInstitutionCode);
 				log.debug("getChain from pic [" + picInstitutionCode +"] OK");
 				return checkCert(certAsHexa, chainCertAsHexa);
 			}

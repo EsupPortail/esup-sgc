@@ -1,24 +1,13 @@
 package org.esupportail.sgc.web.admin;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.CrousPatchIdentifier;
-import org.esupportail.sgc.domain.EscrCard;
-import org.esupportail.sgc.domain.EscrStudent;
-import org.esupportail.sgc.domain.Log;
-import org.esupportail.sgc.domain.PayboxTransactionLog;
-import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.esupportail.sgc.services.crous.CrousPatchIdentifierService;
 import org.esupportail.sgc.services.crous.CrousService;
-import org.esupportail.sgc.services.esc.ApiEscrService;
+import org.esupportail.sgc.services.esc.ApiEscService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.annotation.Resource;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequestMapping("/admin/tools")
 @Controller
@@ -53,7 +47,7 @@ public class ToolsController {
 	CrousPatchIdentifierService crousPatchIdentifierService;
 	
 	@Resource
-	ApiEscrService apiEscrService;
+    ApiEscService apiEscService;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
@@ -130,9 +124,6 @@ public class ToolsController {
 			for(Log log : Log.findLogsByEppnCibleEquals(oldEppn).getResultList()) {
 				log.setEppnCible(newEppn);
 			}
-			for(EscrStudent  escrStudent: EscrStudent.findEscrStudentsByEppnEquals(oldEppn).getResultList()) {
-				escrStudent.setEppn(newEppn);
-			}
 			redirectAttrs.addFlashAttribute("messageSuccess", "success_patchEsupSgcEppn");
 		}
 		return "redirect:/admin/tools";
@@ -162,7 +153,7 @@ public class ToolsController {
 		int nbCardSendedInEscr = 0;
 		for(User user : User.findUsersByEuropeanStudentCard(true).getResultList()) {
 			try {
-				if(apiEscrService.validateESCenableCard(user.getEppn())) {
+				if(apiEscService.validateESCenableCard(user.getEppn())) {
 					nbCardSendedInEscr++;
 				}		
 			} catch(Exception e) {

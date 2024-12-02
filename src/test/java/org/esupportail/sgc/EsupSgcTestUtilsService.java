@@ -1,14 +1,18 @@
 package org.esupportail.sgc;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.persistence.TypedQuery;
 
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EsupSgcTestUtilsService {
@@ -48,6 +52,14 @@ public class EsupSgcTestUtilsService {
     	if(!eppn2testFromConfig.isEmpty()) {
     		return eppn2testFromConfig;
     	}
+		return null;
+	}
+
+	public Card getEncodedCardFromDb() {
+		TypedQuery<Card> cardQuery = Card.findCardsByEtatIn(Arrays.asList(Card.Etat.ENABLED)).setMaxResults(1);
+		if(cardQuery.getResultList().size()>0) {
+			return cardQuery.getSingleResult();
+		}
 		return null;
 	}
 }

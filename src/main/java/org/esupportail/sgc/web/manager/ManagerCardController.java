@@ -532,7 +532,7 @@ public class ManagerCardController {
 		stopWatch.start("addresses filter");
     	List<String> addresses = userInfoService.getListAddresses(searchBean.getType(), searchBean.getEtat());
     	Map<String, String> addressesMap = formService.getMapWithUrlEncodedString(addresses);
-    	uiModel.addAttribute("addresses", MapUtils.sortByValue(addressesMap, false));
+    	uiModel.addAttribute("addresses", MapUtils.sortByValue(addressesMap));
     	searchBean.setAddress(formService.encodeUrlString(searchBean.getAddress()));
 		uiModel.addAttribute("eppn", eppn);
     	addDateTimeFormatPatterns(uiModel);
@@ -544,7 +544,7 @@ public class ManagerCardController {
     }
 
     @PreAuthorize("hasPermission(#listeIds, 'manage')")
-    @RequestMapping("/multiUpdate")
+    @RequestMapping(value="/multiUpdate", method = RequestMethod.POST)
     // No @Transactional here so that exception catching on ManagerController.multiUpdate works well
     public String multiUpdate(@RequestParam(value="comment", defaultValue= "") String comment, 
     		@RequestParam List<Long> listeIds, @RequestParam Etat etatFinal, @RequestParam(value="forcedEtatFinal", required=false) Etat forcedEtatFinal, 
@@ -612,7 +612,7 @@ public class ManagerCardController {
 
     	return search(searchBean, null, null, "dateEtat", "DESC", uiModel, request);
     	 */
-    	return "redirect:/manager?index=first" ;
+    	return "redirect:/manager?" + request.getQueryString();
     }   
 	
     @PreAuthorize("hasPermission(#cardIds, 'manage')")

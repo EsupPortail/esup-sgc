@@ -267,17 +267,9 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 				  var data = JSON.parse(this.response);
 				  empty("freeFieldValue" + indice);
 				  var freeFieldValue = document.getElementById("freeFieldValue" + indice);
-				  if(data.length>1){
-						freeFieldValue.insertAdjacentHTML('beforeend',"<option value='' data-placeholder='true'></option>");
-				  }
-				  for(let key in data){
-					  var selected = "";
-			      	  var fieldsValue4thisField = fieldsValue.split(';')[indice];
-				      if(typeof fieldsValue4thisField != "undefined" && fieldsValue4thisField.split(",").includes(key.substring(1, key.length))){
-		        		selected ="selected='selected'";
-				      }
-			      	  freeFieldValue.insertAdjacentHTML('beforeend',"<option value='"+ key.substring(1, key.length) + "' " + selected +  ">" + data[key] + "</option>");
-		          };
+				  freeFieldValue.slim.setData(data);
+				  var fieldsValue4thisField = fieldsValue.split(';')[indice].split(',');
+				  freeFieldValue.slim.setSelected(fieldsValue4thisField, false);
 				 } else if(fieldsValue != '' && selectedField != '') {
                      var fieldsValue4thisField = fieldsValue.split(';')[indice];
                      if(fieldsValue4thisField!=undefined) {
@@ -301,7 +293,9 @@ function displayResultFreefield(selectedField, fieldsValue, indice){
 function multiUpdateForm(idArray) {
 	if(typeof multiUpdateFormUrl != "undefined"){
 		var request = new XMLHttpRequest();
-		request.open('POST', multiUpdateFormUrl + "?cardIds=" + idArray.toString(), true);
+		request.open('POST', multiUpdateFormUrl, true);
+		var data = new FormData();
+		data.append('cardIds', idArray.toString());
 		request.onload = function() {
 		  if (request.status >= 200 && request.status < 400) {
 			  document.getElementById("traitementLot").innerHTML = this.response;
@@ -364,7 +358,7 @@ function multiUpdateForm(idArray) {
 			  }
 		  }
 		};
-		request.send();
+		request.send(data);
 	}
 };
 //Preview image d'un file input
@@ -1078,25 +1072,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	   	});
 	}
 
-    //Onglets Cartes
-	var tabsCard = document.querySelectorAll('#cardList .nav-tabs li a');
-	if(tabsCard != null){
-		var searchEppnForm =  document.getElementById("searchEppnForm");
-		for (var i = 0; i < tabsCard.length; i++) {
-		    result = tabsCard[i];
-		    result.addEventListener('click', function() {
-		    	var type = this.hash
-		    	type = type.substr(1,3);
-		    	searchEppnForm.querySelectorAll("select").forEach(function(element) {
-					element.disabled = true;
-				});
-		    	document.getElementById("searchEppn").disabled = true;
-		    	document.getElementById("searchBeanType").value = type;
-		    	document.getElementById("searchBeanType").disabled = false;
-		    	searchEppnForm.submit();
-		    });
-		}
-	}
 
 	/* clear form to have only select used */
 	var searchEppnForm =  document.getElementById("searchEppnForm");
@@ -1215,8 +1190,22 @@ document.addEventListener('DOMContentLoaded', function() {
 		    new SlimSelect({
 		    	  select: '#' + element,
 		    	  showSearch: showSearch,
-		    	  placeholder: selectLabel,
-		    	  allowDeselect: true
+					settings: {
+						allowDeselect: true,
+						placeholderText: selectLabel
+					},
+				  events: {
+					afterChange: (newVal) => {
+							var searchEppnForm = document.getElementById("searchEppnForm");
+							searchEppnForm.querySelectorAll("select").forEach(function(element) {
+								// supprime entrées vides - !element.slim.data.searchValue utile pour la partie 'addable' de slim
+								if(!element.value) {
+									element.disabled = true;
+								}
+							});
+							searchEppnForm.submit();
+						}
+					}
 		    	})
     	}
     });
@@ -1227,23 +1216,39 @@ document.addEventListener('DOMContentLoaded', function() {
 	    		var selectLabel = document.getElementById('fields' + i).previousSibling.innerText;
 			    new SlimSelect({
 			    	  select: '#fields' + i,
-			    	  placeholder: selectLabel,
-			    	  allowDeselect: true
+						settings: {
+							allowDeselect: true,
+							placeholderText: selectLabel
+						},
 			    	})
 	    	}
 		    if(document.getElementById('freeFieldValue' + i) != null ){
 		    	selectLabel = document.getElementById('freeFieldValue' + i).previousSibling.innerText;
 			    new SlimSelect({
 			    	  select: '#freeFieldValue' + i,
-			    	  placeholder: selectLabel,
-			    	  allowDeselect: true,
-			    	  addable: function (value) {
-						  var item = this.data.data.find(item => item.innerHTML === value);
-			    	     return {
-			    	      text: value,
-			    	      value: item.value ? item.value : value
-			    	     };
-			    	  }
+						settings: {
+							allowDeselect: true,
+							placeholderText: selectLabel
+						},
+					events: {
+						afterChange: (newVal) => {
+							var searchEppnForm = document.getElementById("searchEppnForm");
+							searchEppnForm.querySelectorAll("select").forEach(function (element) {
+								// supprime entrées vides - !element.slim.data.searchValue utile pour la partie 'addable' de slim
+								if (!element.value) {
+									element.disabled = true;
+								}
+							});
+							searchEppnForm.submit();
+						},
+						addable: function (value) {
+							var item = this.data.data.find(item => item.innerHTML === value);
+							return {
+								text: value,
+								value: item.value ? item.value : value
+							}
+						}
+					}
 			    	})
 		    }
 	    }
@@ -1265,7 +1270,9 @@ document.addEventListener('DOMContentLoaded', function() {
     	var selectedField = document.querySelectorAll('.freeSelect');
     	selectedField.forEach(function (element, index) {
     		var indice = element.id.replace("fields","");
-    		displayResultFreefield(element.value, fieldsValue, indice);
+			if (indice) {
+				displayResultFreefield(element.value, fieldsValue, indice);
+			}
     	});
 
         var freeSelect = document.querySelectorAll('.freeSelect')
@@ -1993,23 +2000,7 @@ document.addEventListener('DOMContentLoaded', function() {
    			link.appendChild(form);
    		}
 	});
-   	//envoi du formulaire de recherche automatiquement
-   	var megamenu = document.querySelectorAll('.megamenu');
-   	Array.from(megamenu).forEach(function(link) {
-   		return link.addEventListener('change', function(event) {
-			   // on laisse la priorité à d'autres event (slim-select sur le bouton + notamment)
-			if(event.target.onclick == null) {
-				 var searchEppnForm = document.getElementById("searchEppnForm");
-					 searchEppnForm.querySelectorAll("select").forEach(function(element) {
-						 // supprime entrées vides - !element.slim.data.searchValue utile pour la partie 'addable' de slim
-						 if(!element.value && !element.slim.data.searchValue) {
-							 element.disabled = true;
-						 }
-					});
-					searchEppnForm.submit();
-				}
-		});
-   	})
+
    	//Message d'attente lors de la désactivaction/réactivation de carte
  	var edActionForm = document.querySelectorAll('.edActionForm');
    	Array.from(edActionForm).forEach(function(link) {
