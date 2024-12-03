@@ -43,7 +43,7 @@
 	</bean>
 	
 	
-	<bean id="europeanStudentCardService" class="org.esupportail.sgc.services.esc.ApiEscrService">
+	<bean id="europeanStudentCardService" class="org.esupportail.sgc.services.esc.ApiEscService">
 		<property name="enable" value="false"/>
 		<property name="webUrl" value="https://sandbox.europeanstudentcard.eu/esc-rest/api/v2" />
 		<property name="key" value="key-genertaed-from-router-sandbox.europeanstudentcard.eu" />
