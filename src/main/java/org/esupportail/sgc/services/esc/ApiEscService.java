@@ -286,17 +286,20 @@ public class ApiEscService extends ValidateService {
 	protected void postEscCard(Card card) {
 		String url = webUrl + "/cards";
 		HttpHeaders headers = this.getJsonHeaders();			
-		EscCard EscCard = this.computeEscCard(card);
-		HttpEntity entity = new HttpEntity(EscCard, headers);
-		log.debug("Try to post to Esc Card : " + EscCard);
+		EscCard escCard = this.computeEscCard(card);
+		HttpEntity entity = new HttpEntity(escCard, headers);
+		log.debug("Try to post to Esc Card : " + escCard);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-			log.info(card.getCsn() + " sent in Esc as Card -> " + response.getBody());
+			log.info(card.getCsn() + " sent/post in Esc as Card -> " + response.getBody());
 		} catch(HttpClientErrorException clientEx) {
 			try {
 				EscError escError =	(EscError) new ObjectMapper().readValue(clientEx.getResponseBodyAsByteArray(), EscError.class);
 				if("ER-0002".equals(escError.getCode())) {
-					log.warn("ER-0002 : " + escError.getMessage());
+					log.info("ER-0002 : {}, Try to put (update) to Esc Card : {}", escError.getMessage(), escCard);
+					url += "/" + escCard.getCardNumber();
+					ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+					log.info(card.getCsn() + " sent/put in Esc as Card -> " + response.getBody());
 				} else {
 					throw clientEx;
 				}
@@ -305,7 +308,7 @@ public class ApiEscService extends ValidateService {
 				throw clientEx;
 			}
 		}
-		escCardDaoService.persist(EscCard);
+		escCardDaoService.persist(escCard);
 	}
 
 	protected void deleteEscCard(Card card) {
@@ -313,12 +316,12 @@ public class ApiEscService extends ValidateService {
 		if(EscCards.isEmpty()) {
 			log.warn("No EscCard found for this card " + card.getCsn() + " so we can't desactivate it on Esc");
 		} else {
-			EscCard EscCard = EscCards.get(0);			
-			String europeanCardIdentifier = EscCard.getCardNumber();
+			EscCard escCard = EscCards.get(0);
+			String europeanCardIdentifier = escCard.getCardNumber();
 			String url = webUrl + "/cards/" + europeanCardIdentifier;
 			HttpHeaders headers = this.getJsonHeaders();			
 			HttpEntity entity = new HttpEntity(null, headers);
-			log.debug("Try to delete card : " + EscCard); 
+			log.debug("Try to delete card : " + escCard);
 			try {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 				log.info(card.getCsn() + " deleted in Esc -> " + response.getBody());
@@ -329,7 +332,7 @@ public class ApiEscService extends ValidateService {
 					throw clientEx;
 				}
 			}
-			escCardDaoService.remove(EscCard);
+			escCardDaoService.remove(escCard);
 		}
 	}
 
