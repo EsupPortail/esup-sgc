@@ -14,7 +14,6 @@ public class EsupNfcTagLog {
 	public static String SALLE_UPDATE = "Mise à jour ESUP SGC";
 	public static String VERSO_CARTE = "Verso carte";
 	public static String SECONDARY_ID = "Identifiant secondaire";
-	public static String DEUINFO = "DEUINFO";
 	public static String SALLE_DESTROY = "Destruction de la carte";
 	
     String desfireId;

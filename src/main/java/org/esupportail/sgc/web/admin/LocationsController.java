@@ -57,7 +57,6 @@ public class LocationsController {
 		locationsMap.put("locationsUpdater", wsRestEsupNfcController.getLocationsUpdater(eppn));
 		locationsMap.put("locationsVerso", wsRestEsupNfcController.getLocationsVerso(eppn));
 		locationsMap.put("locationsSecondaryId", wsRestEsupNfcController.getLocationsSecondaryId(eppn));
-		locationsMap.put("locationsDeuinfo", wsRestEsupNfcController.getLocationsDeuinfo(eppn));
 
 		uiModel.addAttribute("eppn", eppn);
 		uiModel.addAttribute("locationsMap", locationsMap);
