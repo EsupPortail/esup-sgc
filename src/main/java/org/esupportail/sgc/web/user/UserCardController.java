@@ -222,6 +222,7 @@ public class UserCardController {
 		uiModel.addAttribute("displayFormParts", displayFormParts);
 		uiModel.addAttribute("requestUserIsManager", false);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
+		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
 		return "user/card-request";
 	}
 	
@@ -316,6 +317,7 @@ public class UserCardController {
 		uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
 		stopWatch.stop();
 		uiModel.addAttribute("displayVirtualCard", StringUtils.hasLength(appliConfigService.getBmpCardCommandVirtual()));
+		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
 		log.trace(stopWatch.prettyPrint());
 		return "user/card-info";
 	}

@@ -180,7 +180,8 @@ xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:sec="http://www.springframewor
 									</div>
 								</form>
 							</c:otherwise>
-						</c:choose>	
+						</c:choose>
+						<c:out value="${europeanCardInfo}" escapeXml="false"/>
 					</div>
 					<c:if test="${not empty payboxList}">
 					 <h4>Historique des paiements</h4>

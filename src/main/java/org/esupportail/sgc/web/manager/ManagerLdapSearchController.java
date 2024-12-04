@@ -145,7 +145,7 @@ public class ManagerLdapSearchController {
 		uiModel.addAttribute("requestUserIsManager", true);
 		uiModel.addAttribute("eppn", eppn);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
-		
+		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
 		return "user/card-request";
 
 	}

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-	<fieldset class="scheduler-border">
+	<fieldset class="scheduler-border" xmlns:c="http://java.sun.com/jsp/jstl/core">
 		<legend class="scheduler-border">Carte européenne</legend>
 		<div class="alert alert-info">
-		<p>Souhaitez-vous adhérer au projet de carte étudiante européenne?
-			<a href="https://europeanstudentcard.eu" target="blank"><strong>>> Plus d'informations</strong></a>
-		</p> 
-		</div>		
+			<p>Souhaitez-vous adhérer au projet de carte étudiante européenne ?
+			</p>
+		</div>
 		<div class="radio">
 			<label for="radioEurope1"> <input type="radio"
 				name="europeanTransient" id="radioEurope1" value="true" /> Oui
@@ -16,4 +15,5 @@
 				name="europeanTransient" id="radioEurope2" />Non
 			</label>
 		</div>
+		<c:out value="${europeanCardInfo}" escapeXml="false"/>
 	</fieldset>

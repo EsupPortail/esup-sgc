@@ -30,7 +30,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "2.4.x";
+	final static String currentEsupSgcVersion = "2.5.x";
 		
 	@Resource
 	DataSource dataSource;
@@ -470,6 +470,15 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				esupSgcVersion = "2.4.x";
+			}
+			if("2.4.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "INSERT INTO appli_config (id, key, value, description, type) VALUES (nextval('hibernate_sequence'), 'EUROPEAN_CARD_INFO', '<i>Données transmises au projet de \"Carte Étudiante Européenne\" (ESC) en cas d''adhésion au projet : nom, prénom, INE (via l''ESI - European Studient Identifier), date de fin de validité de la carte, établissement, adresse mail universitaire, et potentiellement le niveau académique décliné en Bachelor, Master, Doctorate.<a href=\"https://erasmus-plus.ec.europa.eu/european-student-card-initiative/card\" target=\"blank\">Plus d''informations sur le projet de Carte Étudiante Européenne et sur le traitement de mes données personnelles.</a></i>', 'HTML affiché à l''étudiant lui permettant d''adhérer ou non au projet ESC en connaissance de cause.', 'HTML');";
+				log.warn("La commande SQL suivante va être exécutée : \n" + sqlUpdate);
+				Connection connection = dataSource.getConnection();
+				CallableStatement statement = connection.prepareCall(sqlUpdate);
+				statement.execute();
+				connection.close();
+				esupSgcVersion = "2.5.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
 			appliVersion.merge();
