@@ -81,9 +81,9 @@ public class LdapValidateService extends ValidateService {
 	public void setPeopleSearchFilter(String peopleSearchFilter) {
 		this.peopleSearchFilter = peopleSearchFilter;
 	}
-	
-    @Autowired(required=false)
-	ApiEscService apiEscService;
+
+	@Autowired
+	List<ApiEscService> apiEscServices;
 
 	@Resource
 	DateUtils dateUtils;
@@ -187,10 +187,12 @@ public class LdapValidateService extends ValidateService {
 		if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
 			ldapValueRef = ldapValueRef.replaceAll(ESCN, card.getEscnUid());
 		}
-		if(apiEscService !=null && ldapValueRef.contains(ESI)) {
-			String esi = apiEscService.getEuropeanPersonIdentifier(card.getEppn());
-			if(esi != null) {
-				ldapValueRef = ldapValueRef.replaceAll(ESI, esi);
+		if(ldapValueRef.contains(ESI)) {
+			for(ApiEscService apiEscService : apiEscServices) {
+				String esi = apiEscService.getEuropeanPersonIdentifier(card.getEppn());
+				if(esi != null) {
+					ldapValueRef = ldapValueRef.replaceAll(ESI, esi);
+				}
 			}
 		}
 

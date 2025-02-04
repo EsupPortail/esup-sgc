@@ -133,9 +133,9 @@ public class UserCardController {
 	
 	@Resource
 	CrousService crousService;
-	
-	@Resource
-    ApiEscService apiEscService;
+
+	@Autowired
+	List<ApiEscService> apiEscServices;
 
 	@Resource
 	EsupSgcBmpAsBase64Service esupSgcBmpAsBase64Service;
@@ -538,7 +538,9 @@ public class UserCardController {
 		user.setEuropeanStudentCard(true);
 		Card enabledCard = user.getEnabledCard();
 		if(enabledCard != null) {
-			apiEscService.validate(enabledCard);
+			for (ApiEscService apiEscService : apiEscServices) {
+				apiEscService.validate(enabledCard);
+			}
 		}
 		logService.log(user.getCards().get(0).getId(), ACTION.ENABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
 		redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european");
@@ -550,16 +552,20 @@ public class UserCardController {
 	public String disableEuropeanCard(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		if(apiEscService.isEscEnabled()) {
-			apiEscService.deleteEscPerson(eppn);
-			User user = User.findUser(eppn);
-			user.setEuropeanStudentCard(false);
-			user.merge();
-			logService.log(user.getCards().get(0).getId(), ACTION.DISABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
-			redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european.disable");
-		} else {
-			log.warn("Tentative de désactivation de la carte européenne par " + eppn + " mais le service ESCR n'est pas activé");
-			redirectAttributes.addFlashAttribute("messageError", ERROR_MSG + "european.disable");
+		for (ApiEscService apiEscService : apiEscServices) {
+			if (apiEscService.isEppnMatches(eppn)) {
+				if (apiEscService.isEscEnabled()) {
+					apiEscService.deleteEscPerson(eppn);
+					User user = User.findUser(eppn);
+					user.setEuropeanStudentCard(false);
+					user.merge();
+					logService.log(user.getCards().get(0).getId(), ACTION.DISABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
+					redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european.disable");
+				} else {
+					log.warn("Tentative de désactivation de la carte européenne par " + eppn + " mais le service ESCR n'est pas activé");
+					redirectAttributes.addFlashAttribute("messageError", ERROR_MSG + "european.disable");
+				}
+			}
 		}
 		return "redirect:/user";
 	}

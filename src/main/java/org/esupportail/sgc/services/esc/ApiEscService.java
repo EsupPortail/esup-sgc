@@ -124,13 +124,15 @@ public class ApiEscService extends ValidateService {
 	}	
 
 	public void postOrUpdateEscPerson(String eppn) {
-		User user = User.findUser(eppn);
-		if(user.getEuropeanStudentCard() && enable) {
-			EscPerson escPerson = getEscPerson(eppn);
-			if(escPerson == null || escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList().isEmpty()) {
-				postEscPerson(eppn);
-			} else {
-				updateEscPerson(eppn);
+		if(eppn.matches(this.getEppnFilter())) {
+			User user = User.findUser(eppn);
+			if (user.getEuropeanStudentCard() && enable) {
+				EscPerson escPerson = getEscPerson(eppn);
+				if (escPerson == null || escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList().isEmpty()) {
+					postEscPerson(eppn);
+				} else {
+					updateEscPerson(eppn);
+				}
 			}
 		}
 	}
@@ -374,20 +376,22 @@ public class ApiEscService extends ValidateService {
 
 	public String getEuropeanPersonIdentifier(String eppn) {
 		String esi = null;
-		List<EscPerson> escPersonsInESCR = escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList();
-		if(!escPersonsInESCR.isEmpty()) {
-			// ESI can't be modified in ESCR
-			// Si/quand l'API permettra de modifier le ESI, il suffira de supprimer ce bloc
-			EscPerson escPersonInESCR = escPersonsInESCR.get(0);
-			esi = escPersonInESCR.getIdentifier();
-		} else {
-			User user = User.findUser(eppn);
-			String supannCodeINE = user.getSupannCodeINE();
-			if (supannCodeINE == null || supannCodeINE.isEmpty()) {
-				log.info(eppn + " has no or empty supannCodeINE and this attribute is required for the European Person Card !");
-				return null;
+		if(eppn.matches(this.getEppnFilter())) {
+			List<EscPerson> escPersonsInESCR = escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList();
+			if (!escPersonsInESCR.isEmpty()) {
+				// ESI can't be modified in ESCR
+				// Si/quand l'API permettra de modifier le ESI, il suffira de supprimer ce bloc
+				EscPerson escPersonInESCR = escPersonsInESCR.get(0);
+				esi = escPersonInESCR.getIdentifier();
+			} else {
+				User user = User.findUser(eppn);
+				String supannCodeINE = user.getSupannCodeINE();
+				if (supannCodeINE == null || supannCodeINE.isEmpty()) {
+					log.info(eppn + " has no or empty supannCodeINE and this attribute is required for the European Person Card !");
+					return null;
+				}
+				esi = String.format("urn:schac:personalUniqueCode:int:esi:%s:%s", countryCode.toLowerCase(), supannCodeINE);
 			}
-			esi = String.format("urn:schac:personalUniqueCode:int:esi:%s:%s", countryCode.toLowerCase(), supannCodeINE);
 		}
 		return esi;
 	}
@@ -420,6 +424,10 @@ public class ApiEscService extends ValidateService {
 
 	public boolean isEscEnabled() {
 		return enable;
+	}
+
+	public boolean isEppnMatches(String eppn) {
+		return eppn.matches(this.getEppnFilter());
 	}
 }
 

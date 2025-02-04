@@ -37,9 +37,9 @@ public class ResynchronisationUserService {
 	
 	@Resource
 	CrousService crousService;
-	
-	@Resource
-    ApiEscService apiEscService;
+
+	@Autowired
+    List<ApiEscService> apiEscServices;
 	
 	@Resource
 	CardEtatService cardEtatService;
@@ -189,7 +189,9 @@ public class ResynchronisationUserService {
 						crousService.postOrUpdateRightHolder(user.getEppn(), EsupSgcOperation.SYNC);
 					}
 					if(user.getEuropeanStudentCard()) {
-						apiEscService.postOrUpdateEscPerson(user.getEppn());
+						for(ApiEscService apiEscService : apiEscServices) {
+							apiEscService.postOrUpdateEscPerson(user.getEppn());
+						}
 					}
 				}
 				if(log.isTraceEnabled()) {

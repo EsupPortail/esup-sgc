@@ -11,6 +11,7 @@ import org.esupportail.sgc.services.esc.ApiEscService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -45,9 +46,9 @@ public class ToolsController {
 	
 	@Resource
 	CrousPatchIdentifierService crousPatchIdentifierService;
-	
-	@Resource
-    ApiEscService apiEscService;
+
+	@Autowired
+	List<ApiEscService> apiEscServices;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
@@ -153,9 +154,11 @@ public class ToolsController {
 		int nbCardSendedInEscr = 0;
 		for(User user : User.findUsersByEuropeanStudentCard(true).getResultList()) {
 			try {
-				if(apiEscService.validateESCenableCard(user.getEppn())) {
-					nbCardSendedInEscr++;
-				}		
+				for (ApiEscService apiEscService : apiEscServices) {
+					if (apiEscService.validateESCenableCard(user.getEppn())) {
+						nbCardSendedInEscr++;
+					}
+				}
 			} catch(Exception e) {
 				log.warn(String.format("Exception on forceSendEscrApiCrous for %s", user.getEppn()), e);
 			}	

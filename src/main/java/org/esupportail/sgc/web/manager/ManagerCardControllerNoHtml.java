@@ -25,6 +25,7 @@ import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -68,9 +69,9 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	LdapPersonService ldapPersonService;
-	
-	@Resource
-	ApiEscService apiEscService;
+
+	@Autowired
+	List<ApiEscService> apiEscServices;
 	
 	@Resource
 	PhotoResizeService photoResizeService;
@@ -270,7 +271,13 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/getEscrStudentHtmlPart")
 	@Transactional(readOnly = true)
     public String getEscrStudentHtmlPart(@RequestParam String eppn, Model uiModel) {
-		EscPerson escPerson = apiEscService.getEscPerson(eppn);
+		EscPerson escPerson = null;
+		for(ApiEscService apiEscService : apiEscServices) {
+			escPerson = apiEscService.getEscPerson(eppn);
+			if(escPerson != null) {
+				break;
+			}
+		}
 		uiModel.addAttribute("escPerson", escPerson);
 		return "manager/escrStudent";
 	}
@@ -279,7 +286,13 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/getEscrCardHtmlPart")
 	@Transactional(readOnly = true)
     public String getEscrCardHtmlPart(@RequestParam String eppn, @RequestParam String csn, Model uiModel) {
-		EscCard escCard = apiEscService.getEscCard(eppn, csn);
+		EscCard escCard = null;
+		for(ApiEscService apiEscService : apiEscServices) {
+			escCard = apiEscService.getEscCard(eppn, csn);
+			if(escCard != null) {
+				break;
+			}
+		}
 		uiModel.addAttribute("escCard", escCard);
 		return "manager/escrCard";
 	}
