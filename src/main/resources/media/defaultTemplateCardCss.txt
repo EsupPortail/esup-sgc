@@ -65,7 +65,13 @@
 }
 
 #specimenCarte #qrcode {
-	position: absolute;	
-	bottom: 0cm;
-	width: 1.2cm;
+    position: absolute;
+    padding-top: 0.4cm;
+    background-repeat: no-repeat;
+    background-position-y: 0cm;
+    background-size: 1.8cm auto;
+    background-image: url(/images/esc-logo/esc-logo-vertical-bw.svg);
+    bottom: 0.1cm;
+    width: 1.8cm;
+    right: 0.1cm;
 }
