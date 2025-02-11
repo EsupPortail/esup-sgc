@@ -159,6 +159,7 @@ public class ApiEscService extends ValidateService {
 				try {
 					EscError escError = (EscError) new ObjectMapper().readValue(clientEx.getResponseBodyAsByteArray(), EscError.class);
 					if("SE-0000".equals(escError.getCode())) {
+						// Access denied
 						log.info("SE-0000 : " + escError.getMessage() + " for " + eppn);
 						return null;
 					} else {
@@ -189,6 +190,7 @@ public class ApiEscService extends ValidateService {
 			try {
 				EscError escError =	(EscError) new ObjectMapper().readValue(clientEx.getResponseBodyAsByteArray(), EscError.class);
 				if("ER-0019".equals(escError.getCode())) {
+					// User already exists for this organisation
 					log.warn("ER-0019 : " + escError.getMessage());
 				} else {
 					throw clientEx;
