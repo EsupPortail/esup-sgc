@@ -156,7 +156,18 @@ public class ApiEscService extends ValidateService {
 				log.info("No Esc Person found on API for " + eppn);
 				return null;
 			} else {
-				throw clientEx;
+				try {
+					EscError escError = (EscError) new ObjectMapper().readValue(clientEx.getResponseBodyAsByteArray(), EscError.class);
+					if("SE-0000".equals(escError.getCode())) {
+						log.info("SE-0000 : " + escError.getMessage() + " for " + eppn);
+						return null;
+					} else {
+						throw clientEx;
+					}
+				} catch (IOException e) {
+					log.trace("Error parsing response body as EscError - " + clientEx.getResponseBodyAsString(), e);
+					throw clientEx;
+				}
 			}
 		}
 	}
