@@ -20,7 +20,9 @@ public class EscPerson {
 	@Column(unique=true)
 	String eppn;
 
-	@Column(unique=true)
+	// Pas de contrainte d'unicité ici pour gérer le cas d'usage d'un esup-sgc multi-établissements
+	// où on retrouverait le même étudiant (même ine) inscrit dans plusieurs établissements (eppn différents)
+	@Column
 	String identifier;
 
 	String fullName;
