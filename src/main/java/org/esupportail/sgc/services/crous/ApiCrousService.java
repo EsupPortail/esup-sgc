@@ -60,10 +60,18 @@ public class ApiCrousService {
 	RestTemplate restTemplate;
 	
 	String webUrl;
-	
+
+	@Deprecated
 	String appId;
-	
+
+	@Deprecated
 	String appSecret;
+
+	String clientId;
+
+	String clientSecret;
+
+	String accessUrl;
 	
 	String authToken = null;
 	
@@ -76,14 +84,27 @@ public class ApiCrousService {
 	public void setWebUrl(String webUrl) {
 		this.webUrl = webUrl;
 	}
-	
 
+	@Deprecated
 	public void setAppId(String appId) {
 		this.appId = appId;
 	}
-	
+
+	@Deprecated
 	public void setAppSecret(String appSecret) {
 		this.appSecret = appSecret;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public void setClientSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
+	}
+
+	public void setAccessUrl(String accessUrl) {
+		this.accessUrl = accessUrl;
 	}
 
 	public void setEnable(Boolean enable) {
@@ -92,34 +113,49 @@ public class ApiCrousService {
 
 	public synchronized void authenticate() {
 		if(enable) {
-			String url = webUrl + "/v1/token";
-			String basicAuthorisation = String.format("%s:%s", appId, appSecret);
-			basicAuthorisation = Base64.encodeBase64String(basicAuthorisation.getBytes());
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("Content-Type", "application/x-www-form-urlencoded");
-			headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
-			headers.set("Authorization", basicAuthorisation);
-			log.trace(String.format("Headers for CROUS API authentication : %s", headers));
-			String body = "grant_type=client_credentials";
-			if("https://api.lescrous.fr".equals(webUrl)) {
-				body += "&env=PRD";
-			} else if("https://api-pp.nuonet.fr".equals(webUrl)) {
-				body += "&env=PPD";
+			if(StringUtils.isBlank(clientId)) {
+				String url = webUrl + "/v1/token";
+				String basicAuthorisation = String.format("%s:%s", appId, appSecret);
+				basicAuthorisation = Base64.encodeBase64String(basicAuthorisation.getBytes());
+				HttpHeaders headers = new HttpHeaders();
+				headers.set("Content-Type", "application/x-www-form-urlencoded");
+				headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+				headers.set("Authorization", basicAuthorisation);
+				log.trace(String.format("Headers for CROUS API authentication : %s", headers));
+				String body = "grant_type=client_credentials";
+				if ("https://api.lescrous.fr".equals(webUrl)) {
+					body += "&env=PRD";
+				} else if ("https://api-pp.nuonet.fr".equals(webUrl)) {
+					body += "&env=PPD";
+				} else {
+					log.error("webUrl should be https://api-pp.nuonet.fr or https://api.lescrous.fr ?!");
+				}
+				log.trace(String.format("Body for CROUS API authentication : %s", body));
+				HttpEntity entity = new HttpEntity(body, headers);
+				HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+				HttpHeaders httpHeadersResponse = response.getHeaders();
+				log.info("Headers response for crous api authentication : " + httpHeadersResponse);
+				List<String> authorizations = httpHeadersResponse.get("authorization");
+				if (authorizations != null && !authorizations.isEmpty()) {
+					authToken = authorizations.get(0);
+					log.info("Auth Token of Crous API is renew : " + authToken);
+				} else {
+					throw new SgcRuntimeException("No authorization header when crous authentication : " + httpHeadersResponse, null);
+				}
 			} else {
-				log.error("webUrl should be https://api-pp.nuonet.fr or https://api.lescrous.fr ?!");
-			}
-			log.trace(String.format("Body for CROUS API authentication : %s", body));
-			HttpEntity entity = new HttpEntity(body, headers);	
-			HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-			HttpHeaders httpHeadersResponse = response.getHeaders();
-			log.info("Headers response for crous api authentication : " + httpHeadersResponse);
-			List<String> authorizations = httpHeadersResponse.get("authorization");
-			if(authorizations!=null && !authorizations.isEmpty()) {
-				authToken = authorizations.get(0);
-				log.info("Auth Token of Crous API is renew : " + authToken);
-				
-			} else {
-				throw new SgcRuntimeException("No authorization header when crous authentication : " + httpHeadersResponse, null);
+				String url = String.format("%s/api/oauth/token?grant_type=client_credentials", accessUrl);
+				String base64Creds = Base64.encodeBase64String(String.format("%s:%s", clientId, clientSecret).getBytes());
+				HttpHeaders headers = new HttpHeaders();
+				headers.set("Authorization", "Basic " + base64Creds);
+				headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+				HttpEntity entity = new HttpEntity(headers);
+				ResponseEntity<Map<String, String>> response = restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<Map<String, String>>() {});
+				authToken = response.getBody().get("access_token");
+				if(authToken != null) {
+					log.info("Auth Token of Crous API is renew : " + authToken);
+				} else {
+					throw new SgcRuntimeException("No access_token when crous authentication : " + response.getBody(), null);
+				}
 			}
 		}
 	}

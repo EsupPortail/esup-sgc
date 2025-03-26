@@ -39,6 +39,9 @@
 		<property name="webUrl" value="https://api-pp.nuonet.fr" />
 		<property name="appId" value="appIdDeApiCrousPourEsupSgc" />
 		<property name="appSecret" value="appSecretDeApiCrousPourEsupSgc" />
+		<property name="clientId" value=""/>
+		<property name="clientSecret" value=""/>
+		<property name="accessUrl" value="https://acces.lescrous.fr"/>
 		<property name="restTemplate" ref="restTemplate" />
 	</bean>
 	
