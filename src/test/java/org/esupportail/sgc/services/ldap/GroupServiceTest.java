@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -36,6 +37,11 @@ public class GroupServiceTest {
 				List<String> members = groupService.getMembers(groupName);
 				if(members.size()>0) {
 					String member = members.get(0);
+					int index = 1;
+					while(StringUtils.isBlank(member) && members.size()>index) {
+						member = members.get(index);
+						index++;
+					}
 					List<String> groups = groupService.getGroupsForEppn(member);
 					String testDetails = String.format("members of %s : %s \n"
 							+ "groups of %s : %s",
