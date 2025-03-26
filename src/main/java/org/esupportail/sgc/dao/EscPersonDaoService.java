@@ -23,8 +23,13 @@ public class EscPersonDaoService {
         entityManager.persist(escPerson);
     }
 
-    public List<EscPerson> findAllEscPersons() {
-        return entityManager.createQuery("SELECT o FROM EscPerson o", EscPerson.class).getResultList();
+    public EscPerson findOneEscPerson4test() {
+        List<EscPerson> escPeopleOne = entityManager.createQuery("SELECT o FROM EscPerson o", EscPerson.class).setMaxResults(1).getResultList();
+        if(escPeopleOne.isEmpty()) {
+            return null;
+        } else {
+            return escPeopleOne.get(0);
+        }
     }
 
     public void remove(EscPerson singleResult) {

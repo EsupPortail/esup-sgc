@@ -30,9 +30,8 @@ public class ApiEscServiceTest {
 	
 	@Test
 	public void getEscrPersonTest() {
-		List<EscPerson> escPeople = escPersonDaoService.findAllEscPersons();
-		Assume.assumeTrue(!escPeople.isEmpty());
-		EscPerson escPersonFromDb = escPeople.get(0);
+		EscPerson escPersonFromDb = escPersonDaoService.findOneEscPerson4test();
+		Assume.assumeTrue(escPersonFromDb!=null);
 		log.info("escPersonFromDb : " + escPersonFromDb);
 		EscPerson escPersonFromEsc = apiEscService.getEscPerson(escPersonFromDb.getEppn());
 		log.info("escPersonFromEscr : " + escPersonFromEsc);
