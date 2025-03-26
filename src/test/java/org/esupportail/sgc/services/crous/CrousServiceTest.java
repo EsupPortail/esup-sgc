@@ -30,7 +30,7 @@ public class CrousServiceTest {
 	
 	@Test
 	public void testGetRightHolder() {
-		List<User> users = User.findUsersByCrous(true).getResultList();
+		List<User> users = User.findUsersByCrous(true).setMaxResults(1000).getResultList();
 		Assume.assumeTrue(!users.isEmpty());
 		for(User user: users) {
 			if((new Date()).before(user.getDueDate())) {
@@ -44,7 +44,7 @@ public class CrousServiceTest {
 
 	@Test
 	public void testfieldWoDueDateEqualsRightHolder() {
-		List<User> users = User.findUsersByCrous(true).getResultList();
+		List<User> users = User.findUsersByCrous(true).setMaxResults(1000).getResultList();
 		Assume.assumeTrue(!users.isEmpty());
 		for(User user: users) {
 			if((new Date()).before(user.getDueDate())) {
