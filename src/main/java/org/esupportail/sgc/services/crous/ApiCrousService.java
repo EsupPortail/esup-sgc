@@ -144,6 +144,10 @@ public class ApiCrousService {
 				}
 			} else {
 				String url = String.format("%s/api/oauth/token?grant_type=client_credentials", accessUrl);
+				if(webUrl.contains("-pp)")) {
+					log.warn("Url de l'API CROUS de preproduction : le token doit être demandé pour le domain Gravitee api-pp et non api");
+					url = String.format("%s/api-pp/oauth/token?grant_type=client_credentials", accessUrl);
+				}
 				String base64Creds = Base64.encodeBase64String(String.format("%s:%s", clientId, clientSecret).getBytes());
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("Authorization", "Basic " + base64Creds);
