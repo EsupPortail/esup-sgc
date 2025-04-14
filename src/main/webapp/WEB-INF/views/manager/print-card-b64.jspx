@@ -33,6 +33,8 @@
 
 	<c:if test="${type == 'black'}">
 		<style>
+			#right::before,
+			#right::after,
 			#right img {
 				display: none !important;
 			}
@@ -41,6 +43,8 @@
 
 	<c:if test="${type == 'color'}">
 		<style>
+			#left::before,
+			#left::after,
 			#left p,
 			#left img {
 				display: none !important;
