@@ -592,7 +592,7 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
-			log.info("Bad authotoken : " + authToken);
+			log.info("Bad authToken : " + authToken);
 			return new ResponseEntity<Long>(new Long(-1), responseHeaders, HttpStatus.FORBIDDEN);
 		}
 		
@@ -634,7 +634,7 @@ public class WsRestEsupNfcController {
 	public DeferredResult<String> qrcode2edit(@RequestParam String authToken) {
 		String printerEppn = clientJWSController.getEppnInit(authToken);
 		if(printerEppn == null) {
-			log.info("Bad authotoken : " + authToken);
+			log.info("Bad authToken : " + authToken);
 			DeferredResult emptyResult = new DeferredResult();
 			emptyResult.setResult("");
 			return emptyResult;
@@ -662,7 +662,7 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
-			log.info("Bad authotoken : " + authToken);
+			log.info("Bad authToken : " + authToken);
 			DeferredResult emptyResult = new DeferredResult();
 			emptyResult.setResult("");
 			return emptyResult;
@@ -736,8 +736,8 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
-			log.info("Bad authotoken : " + authToken);
-			return new ResponseEntity<String>("bad authotoken", responseHeaders, HttpStatus.FORBIDDEN);
+			log.info("Bad authToken : " + authToken);
+			return new ResponseEntity<String>("bad authToken", responseHeaders, HttpStatus.FORBIDDEN);
 		}
 		// sometimes file is null here, but I don't know how to reproduce this issue ... maybe that can occur only with some specifics browsers ?
 		if(file != null) {
@@ -790,7 +790,7 @@ public class WsRestEsupNfcController {
 	public Boolean isCnousEncodeEnabled(@RequestParam String authToken) throws IOException, ParseException {
 		String eppnInit = clientJWSController.getEppnInit(authToken);
 		if(eppnInit == null) {
-			log.info("Bad authotoken : " + authToken);
+			log.info("Bad authToken : " + authToken);
 			return false;
 		}
 		return cardIdsService.isCrousEncodeEnabled();
