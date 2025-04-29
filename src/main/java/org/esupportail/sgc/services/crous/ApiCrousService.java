@@ -156,6 +156,7 @@ public class ApiCrousService {
 				ResponseEntity<Map<String, String>> response = restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<Map<String, String>>() {});
 				authToken = response.getBody().get("access_token");
 				if(authToken != null) {
+					authToken = String.format("Bearer %s", authToken);
 					log.info("Auth Token of Crous API is renew : " + authToken);
 				} else {
 					throw new SgcRuntimeException("No access_token when crous authentication : " + response.getBody(), null);
