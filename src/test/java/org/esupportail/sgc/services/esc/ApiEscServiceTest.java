@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -21,9 +22,9 @@ import java.util.List;
 public class ApiEscServiceTest {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
-	@Resource
-	ApiEscService apiEscService;
+
+	@Autowired
+	List<ApiEscService> apiEscServices;
 	
 	@Resource
 	EscPersonDaoService escPersonDaoService;
@@ -33,16 +34,20 @@ public class ApiEscServiceTest {
 		EscPerson escPersonFromDb = escPersonDaoService.findOneEscPerson4test();
 		Assume.assumeTrue(escPersonFromDb!=null);
 		log.info("escPersonFromDb : " + escPersonFromDb);
-		EscPerson escPersonFromEsc = apiEscService.getEscPerson(escPersonFromDb.getEppn());
-		log.info("escPersonFromEscr : " + escPersonFromEsc);
+		for(ApiEscService apiEscService : apiEscServices) {
+			EscPerson escPersonFromEsc = apiEscService.getEscPerson(escPersonFromDb.getEppn());
+			log.info("escPersonFromEscr : " + escPersonFromEsc);
+		}
 	}
 
 	@Test
 	public void getCardTypeTest() {
 		Card c = new Card();
 		c.setEncodedDate(new Date());
-		EscCard.CardType cardType = apiEscService.getCardType(c);
-		log.info("cardType : " + cardType);
+		for(ApiEscService apiEscService : apiEscServices) {
+			EscCard.CardType cardType = apiEscService.getCardType(c);
+			log.info("cardType : " + cardType);
+		}
 	}
 
 }
