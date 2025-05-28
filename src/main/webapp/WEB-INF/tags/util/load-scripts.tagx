@@ -71,7 +71,7 @@
 
 
 	<script type="text/javascript">
-		<sec:authorize access="hasRole('ROLE_MANAGER') || hasRole('ROLE_CONSULT')">
+		<sec:authorize access="hasRole('ROLE_MANAGER') || hasRole('ROLE_CONSULT') || hasRole('ROLE_CONSULT_')">
 		 	var sgcRootUrl = '<spring:url value="/"/>';
 		</sec:authorize>
 	</script>
