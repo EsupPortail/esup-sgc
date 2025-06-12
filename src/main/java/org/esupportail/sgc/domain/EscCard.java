@@ -37,6 +37,8 @@ public class EscCard {
 
 	String personIdentifier;
 
+	String processorIdentifier;
+
 	public Long getId() {
 		return id;
 	}
@@ -102,6 +104,14 @@ public class EscCard {
 	public void setPersonIdentifier(String personIdentifier) {
 		this.personIdentifier = personIdentifier;
 	}
+
+	public String getProcessorIdentifier() {
+   		return processorIdentifier;
+   	}
+
+    public void setProcessorIdentifier(String processorIdentifier) {
+    		this.processorIdentifier = processorIdentifier;
+   	}
 
 	@Override
 	public String toString() {

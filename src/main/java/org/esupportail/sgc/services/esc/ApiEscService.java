@@ -48,6 +48,8 @@ public class ApiEscService extends ValidateService {
 
 	Long picInstitutionCode;
 
+	String VATProcessorInstitution;
+
 	String cardType;
 
 	Map<Date, String> cardTypes = new HashMap<>();
@@ -77,6 +79,10 @@ public class ApiEscService extends ValidateService {
 	public void setPicInstitutionCode(Long picInstitutionCode) {
 		this.picInstitutionCode = picInstitutionCode;
 	}
+
+	public void setVATProcessorInstitution(String VATProcessorInstitution) {
+    		this.VATProcessorInstitution = VATProcessorInstitution;
+    	}
 
 	public void setCardType(String cardType) {
 		this.cardType = cardType;
@@ -361,7 +367,9 @@ public class ApiEscService extends ValidateService {
 		if(!StringUtils.isEmpty(card.getUser().getPic())) {
 			pic = new Long(card.getUser().getPic());
 		}
+
 		escCard.setIssuerIdentifier(pic.toString());
+		escCard.setProcessorIdentifier(VATProcessorInstitution);
 		escCard.setPersonIdentifier(getEuropeanPersonIdentifier(card.getEppn()));
 		escCard.setCardType(getCardType(card));
 		return escCard;
