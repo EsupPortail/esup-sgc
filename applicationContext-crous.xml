@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd         
+						http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd         
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd         
+						http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd         
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+       <bean id="crousService" class="org.esupportail.sgc.services.crous.CrousService">
+               <property name="use4ExternalCard" value="false"/>
+       </bean>
+
+	<bean id="httpClientFactory"
+		class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
+		<property name="connectTimeout" value="10000" />
+		<property name="readTimeout" value="10000" />
+		<property name="httpClient" ref="httpClient"/>
+	</bean>
+
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+		<constructor-arg ref="httpClientFactory" />
+	</bean>
+	
+	<bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder"
+	    factory-method="create">
+	    <property name="connectionReuseStrategy">
+	    	<bean class="org.apache.http.impl.NoConnectionReuseStrategy"/>
+	    </property>
+	</bean>
+	
+	<bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build" />
+
+
+	<bean id="apiCrousService" class="org.esupportail.sgc.services.crous.ApiCrousService">
+		<property name="enable" value="false"/>
+		<property name="webUrl" value="https://api-pp.nuonet.fr" />
+		<property name="appId" value="appIdDeApiCrousPourEsupSgc" />
+		<property name="appSecret" value="appSecretDeApiCrousPourEsupSgc" />
+		<property name="clientId" value=""/>
+		<property name="clientSecret" value=""/>
+		<property name="accessUrl" value="https://acces.lescrous.fr"/>
+		<property name="restTemplate" ref="restTemplate" />
+	</bean>
+	
+	
+	<bean id="europeanStudentCardService" class="org.esupportail.sgc.services.esc.ApiEscService">
+		<property name="enable" value="false"/>
+		<property name="webUrl" value="https://sandbox.europeanstudentcard.eu/esc-rest/api/v2" />
+		<property name="key" value="key-genertaed-from-router-sandbox.europeanstudentcard.eu" />
+		<property name="restTemplate" ref="restTemplate" />
+		<property name="countryCode" value="FR"/>
+		<property name="picInstitutionCode" value="123456789"/>
+		<property name="VATProcessorInstitution" value="FR00000000000"/>
+		<!-- 
+		Type of cards. Possibles values are :
+		1 - passive card, with no electronic -> PASSIVE 
+		2 - Smartcard without European common data zone -> SMART_NO_CDZ
+		3 - Smartcard with European common data zone -> SMART_CDZ
+		4 - Smartcard on which application may be installed by service providers -> SMART_MAY_SP
+		 -->
+ 		<property name="cardType" value="SMART_NO_CDZ"/>
+		<property name="cardTypes">
+                  <map>
+                    <entry key="2018-01-01 16:17:10" value="SMART_CDZ"/>
+                    <entry key="2024-12-02 16:17:10" value="SMART_NO_CDZ"/>                    
+                  </map>
+		</property>
+	</bean>
+
+
+	<bean id="escUidFactoryService" class="org.esupportail.sgc.services.esc.EscUidFactoryService">
+		<property name="pic" value="123456789"/>
+		<property name="prefixe" value="1 " />
+		<property name="qrCodeUrlPrefixe" value="http://pp.esc.gg/" />
+	</bean>
+
+	
+</beans>
