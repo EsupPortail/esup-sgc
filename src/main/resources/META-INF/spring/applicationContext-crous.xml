@@ -53,7 +53,11 @@
 		<property name="restTemplate" ref="restTemplate" />
 		<property name="countryCode" value="FR"/>
 		<property name="picInstitutionCode" value="123456789"/>
-		<property name="VATProcessorInstitution" value="FR00000000000"/>
+		<!--
+			vatProcessorInstitution : used only when esup-sgc acts as Third Party Processor (3PP)
+		 	if not, leave it empty
+		 -->
+		<property name="vatProcessorInstitution" value=""/>
 		<!-- 
 		Type of cards. Possibles values are :
 		1 - passive card, with no electronic -> PASSIVE 
