@@ -45,6 +45,8 @@
       <property name="dirContextValidator" ref="dirContextValidator"/>
       <property name="testWhileIdle" value="true"/>
       <property name="testOnBorrow" value="true"/>
+      <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+      <property name="minEvictableIdleTimeMillis" value="60000"/>
     </bean>
 
     <bean id="dirContextValidator"
@@ -230,6 +232,8 @@
             <property name="dirContextValidator" ref="dirContextValidator"/>
             <property name="testWhileIdle" value="true"/>
             <property name="testOnBorrow" value="true"/>
+            <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+            <property name="minEvictableIdleTimeMillis" value="60000"/>
         </bean>
                 
 	<bean id="ldapContextSourceWrite"
