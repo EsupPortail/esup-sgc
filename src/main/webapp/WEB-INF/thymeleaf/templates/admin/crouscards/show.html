@@ -1,0 +1,36 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/crouscards/show.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Détail carte CROUS</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Détail carte CROUS</h2>
+    <dl class="dl-horizontal">
+        <dt>Date création</dt>
+        <dd th:text="${#temporals.format(croussmartcard.zdcCreationDate, 'dd/MM/yyyy')}"></dd>
+        <dt>Id Transmitter</dt>
+        <dd th:text="${croussmartcard.idTransmitter}"></dd>
+        <dt>Id Mapping</dt>
+        <dd th:text="${croussmartcard.idMapping}"></dd>
+        <dt>Id Zdc</dt>
+        <dd th:text="${croussmartcard.idZdc}"></dd>
+        <dt>Pix SS</dt>
+        <dd th:text="${croussmartcard.pixSs}"></dd>
+        <dt>Pix NN</dt>
+        <dd th:text="${croussmartcard.pixNn}"></dd>
+        <dt>Appl</dt>
+        <dd th:text="${croussmartcard.appl}"></dd>
+        <dt>CSN (uid)</dt>
+        <dd th:text="${croussmartcard.uid}"></dd>
+        <dt>RID</dt>
+        <dd th:text="${croussmartcard.rid}"></dd>
+    </dl>
+    <a th:href="@{/admin/crouscards}" class="btn btn-default">Retour à la liste</a>
+</div>
+</body>
+</html>

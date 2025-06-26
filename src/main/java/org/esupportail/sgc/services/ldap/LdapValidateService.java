@@ -7,7 +7,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
 

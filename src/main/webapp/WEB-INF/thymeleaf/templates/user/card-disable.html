@@ -1,0 +1,58 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/card-disable.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{./layouts/user.html}">
+<head>
+    <title>Désactivation de votre carte</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>
+        Désactivation de votre carte
+        <a th:href="@{/user}" type="button" class="btn btn-primary pull-right" title="Informations carte">
+            <span class="glyphicon glyphicon-user"></span>
+        </a>
+    </h2>
+
+    <p>
+        Via ce formulaire, votre carte sera déclarée comme désactivée et donc inutilisable dans les différents services tels que :
+        <ul>
+            <li>les services CROUS (restaurants universitaires)</li>
+            <li>les contrôles d'accès aux bâtiments</li>
+            <li>facilité d'emprunt d'ouvrages dans les bibliothèques</li>
+            <li>facilité d'utilisation des copieurs</li>
+            <li>l'opération carte culture</li>
+        </ul>
+    </p>
+
+    <p>
+        Une fois désactivée, votre carte peut être réactivée depuis cette même interface.
+    </p>
+
+    <div class="alert alert-info">
+        <strong>Vous pouvez désactiver votre carte en cochant l'un des motifs suivants :</strong>
+    </div>
+
+    <div class="well">
+        <form th:action="@{/user/disable}" method="post" id="cardDisableForm" class="edActionForm">
+            <div th:each="motif, iStat : ${motifsList}" class="radio">
+                <label th:for="'radio' + ${iStat.index}">
+                    <input type="radio"
+                           name="motif"
+                           th:value="${motif}"
+                           th:id="'radio' + ${iStat.index}"
+                           th:checked="${iStat.index == 0}"/>
+                    <span th:text="#{|user.motif.${motif}|}"></span>
+                </label>
+            </div>
+            <br/>
+            <input type="hidden" th:value="${id}" name="id"/>
+            <div class="form-group">
+                <button class="btn btn-success" type="submit" onclick="return confirm('Confirmez la désactivation');">Désactiver cette carte</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

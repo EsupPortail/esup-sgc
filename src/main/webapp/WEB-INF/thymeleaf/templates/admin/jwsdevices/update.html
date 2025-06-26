@@ -1,0 +1,39 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/jwsdevices/update.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Modifier un appareil JWS</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <form th:action="@{/admin/jwsdevices}" th:object="${esupNfcSgcJwsDevice}" th:method="put" class="form-horizontal well" id="fu_org_esupportail_sgc_domain_EsupNfcSgcJwsDevice">
+        <!-- Eppn Init -->
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="eppnInit">Eppn Init</label>
+            <div class="col-lg-8">
+                <input type="text" th:field="*{eppnInit}" class="form-control" id="eppnInit"/>
+            </div>
+        </div>
+        <!-- Numéro Id -->
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="numeroId">Numéro Id</label>
+            <div class="col-lg-8">
+                <input type="text" th:field="*{numeroId}" class="form-control" id="numeroId"/>
+            </div>
+        </div>
+        <!-- Champs cachés pour id et version si besoin -->
+        <input type="hidden" th:field="*{id}"/>
+        <input type="hidden" th:field="*{version}"/>
+        <!-- Bouton de validation -->
+        <div class="form-group">
+            <div class="col-lg-offset-4 col-lg-8">
+                <button type="submit" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

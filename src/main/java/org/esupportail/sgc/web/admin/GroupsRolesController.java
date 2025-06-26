@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +41,7 @@ public class GroupsRolesController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
-	public String listGroupsRoles(Model uiModel, @RequestParam(required=false) String eppn, HttpServletRequest request) {
+	public String listGroupsRoles(Model uiModel, @RequestParam(required=false) String eppn) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String authEppn = auth.getName();
 		if(eppn == null) {
@@ -99,7 +99,7 @@ public class GroupsRolesController {
 		uiModel.addAttribute("rolesReachableDb", rolesReachableDb);
 		uiModel.addAttribute("rolesMembers", rolesMembers);
 
-		return "admin/groupsroles";
+        return "templates/admin/groupsroles";
 	}
 
 }

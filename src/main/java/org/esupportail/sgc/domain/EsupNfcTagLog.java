@@ -69,7 +69,5 @@ public class EsupNfcTagLog {
 	public String toString() {
 		return "TagLog [csn=" + csn + ", eppn=" + eppn + ", lastname=" + lastname + ", firstname=" + firstname + "]";
 	}
-
-
 	
 }

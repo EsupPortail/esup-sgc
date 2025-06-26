@@ -2,8 +2,10 @@ package org.esupportail.sgc.tools;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -23,32 +25,26 @@ public class DateUtils {
 	
 	private SimpleDateFormat dateFormatterFr = new SimpleDateFormat(DATE_FORMAT_FR);
 
-	
-	public String schadDateOfBirthDay2FrenchDate(String schadDateOfBirthDay) {
-    	Date date = parseSchacDateOfBirth(schadDateOfBirthDay);
-    	String dateFr = "";
-    	if(date != null) {
-    		dateFr = dateFormatterFr.format(date);
-    	}
-    	return dateFr;
-    }
-	
-	public Date parseSchacDateOfBirth(String dateString) {
-		Date date = null;
-		if(dateString!=null && !dateString.isEmpty()) {
-			log.trace("parsing of date : " + dateString);
-			try {
-				date = Date.from(LocalDate.parse(dateString, dateTimeFormatterSchacOfBirth).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-			} catch (Exception e) {
-				log.error("parsing of date " + dateString + " failed " + e.getMessage());
-			}
-		}
-		return date;
-	}
 
-	public String getGeneralizedTime(Date date) {
+    public LocalDateTime parseSchacDateOfBirth(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            return null;
+        }
+
+        log.trace("parsing of date : " + dateString);
+
+        try {
+            LocalDate date = LocalDate.parse(dateString, dateTimeFormatterSchacOfBirth);
+            return date.atStartOfDay(); // transforme la date en LocalDateTime à 00:00
+        } catch (DateTimeParseException e) {
+            log.error("parsing of date " + dateString + " failed: " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+	public String getGeneralizedTime(LocalDateTime date) {
 		if(date == null) return "";
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMddHHmmss'Z'");
-		return dateFormatter.format(date);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'");
+		return date.format(dateFormatter);
 	}
 }

@@ -14,11 +14,13 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -142,11 +144,11 @@ public class CsvExportPcPassService implements Export2AccessControlService {
 	 * -> YYYY/MM/DD
 	 * @return
 	 */
-	private String formatDate(Date date) {
+	private String formatDate(LocalDateTime date) {
 		String dateFt = "";
 		if(date!=null) {
-			SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
-			dateFt = df.format(date);
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
+			dateFt = date.format(df);
 		}
 		return dateFt;
 	}

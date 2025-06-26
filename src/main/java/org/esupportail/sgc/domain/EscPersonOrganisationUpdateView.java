@@ -3,7 +3,7 @@ package org.esupportail.sgc.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"id"})
@@ -13,7 +13,12 @@ public class EscPersonOrganisationUpdateView {
     public enum AcademicLevelEnum {BACHELOR, MASTER, DOCTORATE}
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+@SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
     @Column(name = "id")
     private Long id;
 

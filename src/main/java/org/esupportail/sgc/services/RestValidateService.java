@@ -1,6 +1,6 @@
 package org.esupportail.sgc.services;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.esupportail.sgc.domain.Card;
 import org.slf4j.Logger;

@@ -7,28 +7,28 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.esupportail.sgc.dao.*;
 import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.web.manager.ManagerCardController;
+import org.esupportail.sgc.web.user.StepDisplay;
+import org.esupportail.sgc.web.user.UserCardController;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 @Transactional(readOnly = true)
 @RequestMapping("/wsrest/view")
@@ -40,25 +40,61 @@ public class WsRestHtmlController {
 	
 	@Resource
 	CardEtatService cardEtatService;
-	
-	@RequestMapping(value="/{eppn}/cardInfo", method = RequestMethod.GET)
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    PayboxTransactionLogDaoService payboxTransactionLogDaoService;
+
+    @Resource
+    TemplateCardDaoService templateCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    @Resource
+    CrousSmartCardDaoService crousSmartCardDaoService;
+
+    @Resource
+    UserService userService;
+
+    @Resource
+    AppliConfigService appliConfigService;
+
+    @Resource
+    UserCardController userCardController;
+
+    @RequestMapping(value="/{eppn}/cardInfo", method = RequestMethod.GET)
 	public String viewCardInfo(@PathVariable String eppn, Model uiModel) {
 		
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(user != null){
 			Hibernate.initialize(user.getCards());
 			uiModel.addAttribute("steps", cardEtatService.getTrackingSteps());
 			uiModel.addAttribute("user", user);
-			uiModel.addAttribute("payboxList", PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
+			uiModel.addAttribute("payboxList", payboxTransactionLogDaoService.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
 		}
 		uiModel.addAttribute("user", user);
-		return "user/card-info";
+        uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
+        uiModel.addAttribute("crousSmartCards", crousSmartCardDaoService.getCrousSmartCards(user));
+        uiModel.addAttribute("displayVirtualCard", StringUtils.hasLength(appliConfigService.getBmpCardCommandVirtual()));
+        uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
+        uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
+        uiModel.addAttribute("livraison", appliConfigService.getModeLivraison());
+        Map<Long, List<StepDisplay>> stepsMap = new HashMap<>();
+        for(Card card : user.getCards()) {
+            List<StepDisplay> steps = userCardController.computeSteps(card);
+            stepsMap.put(card.getId(), steps);
+        }
+        uiModel.addAttribute("stepsMap", stepsMap);
+		return "templates/user/card-info";
 	}
 
 	@RequestMapping(value="/{eppn}/userInfo", method = RequestMethod.GET)
 	public String viewUserInfo(@PathVariable String eppn, Model uiModel) {
 		
-        User user = User.findUser(eppn);
+        User user = userDaoService.findUser(eppn);
         if(user != null){
 	        if(!user.getCards().isEmpty()){
 	        	for(Card cardItem : user.getCards()){
@@ -71,7 +107,9 @@ public class WsRestHtmlController {
 	       
         }
         uiModel.addAttribute("user", user);
-		return "manager/show";
+        uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
+        uiModel.addAttribute("crousSmartCards", crousSmartCardDaoService.getCrousSmartCards(user));
+		return "templates/manager/show";
 	}
 
 	/**
@@ -87,14 +125,14 @@ public class WsRestHtmlController {
 	 */
 	@RequestMapping(value="/{cardId}/card-b64.html", method = RequestMethod.GET)
 	public String cardHtml(@PathVariable Long cardId, @RequestParam(required = false) String type, Model uiModel) throws SQLException, IOException, WriterException {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 
 		byte[] photoBytes = card.getPhotoFile().getBigFile().getBinaryFileasBytes();
 		String photoBase64 = Base64.getEncoder().encodeToString(photoBytes);
 
 		TemplateCard templateCard = card.getTemplateCard();
 		if(templateCard == null) {
-			templateCard = card.getUserAccount().getTemplateCard();
+			templateCard = templateCardDaoService.getTemplateCard(card.getUserAccount());
 		}
 
 		byte[] logoBytes = templateCard.getPhotoFileLogo().getBigFile().getBinaryFileasBytes();
@@ -122,9 +160,9 @@ public class WsRestHtmlController {
 		uiModel.addAttribute("type", type);
 		uiModel.addAttribute("templateCard", templateCard);
 		if("back".equals(type)) {
-			return "manager/print-card-back-b64";
+			return "templates/manager/print-card-back-b64";
 		}
-		return "manager/print-card-b64";
+		return "templates/manager/print-card-b64";
 	}
 
 }

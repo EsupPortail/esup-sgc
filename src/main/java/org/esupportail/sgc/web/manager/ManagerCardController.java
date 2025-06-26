@@ -1,27 +1,21 @@
 package org.esupportail.sgc.web.manager;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.dao.*;
+import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
-import org.esupportail.sgc.domain.CardActionMessage;
-import org.esupportail.sgc.domain.Printer;
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcNotFoundException;
 import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.security.ShibUser;
-import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.CardActionMessageService;
-import org.esupportail.sgc.services.CardEtatService;
-import org.esupportail.sgc.services.CardService;
-import org.esupportail.sgc.services.FormService;
-import org.esupportail.sgc.services.LogService;
+import org.esupportail.sgc.services.*;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
-import org.esupportail.sgc.services.PreferencesService;
-import org.esupportail.sgc.services.PrinterService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -30,10 +24,11 @@ import org.esupportail.sgc.tools.MapUtils;
 import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -42,43 +37,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StopWatch;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.WebUtils;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RequestMapping("/manager")
 @Controller	
-@RooWebScaffold(path = "manager", formBackingObject = Card.class)
 @SessionAttributes({"printerEppn"})
 public class ManagerCardController {
 
-	public enum MANAGER_SEARCH_PREF {OWNORFREECARD, EDITABLE, USERTYPE};
+	public enum MANAGER_SEARCH_PREF {OWNORFREECARD, EDITABLE, USERTYPE, LIST_NO_IMG};
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -133,6 +109,27 @@ public class ManagerCardController {
 
 	@Resource
 	PrinterService printerService;
+
+    @Resource
+    BigFileDaoService bigFileDaoService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    PhotoFileDaoService photoFileDaoService;
+
+    @Resource
+    PrinterDaoService printerDaoService;
+
+    @Resource
+    TemplateCardDaoService templateCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    @Resource
+    CrousSmartCardDaoService crousSmartCardDaoService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -176,15 +173,16 @@ public class ManagerCardController {
 		return cardEtatService.getValidateServicesNames();
 	}
 
-	public HashedMap getuserPrefs() {
+	public Map getuserPrefs() {
 		PrettyStopWatch stopWatch = new PrettyStopWatch();
 		stopWatch.start();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		HashedMap mapPrefs= new HashedMap();
+        Map mapPrefs= new HashMap();
     	mapPrefs.put("editable", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.EDITABLE.name()));
     	mapPrefs.put("ownOrFreeCard", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.OWNORFREECARD.name()));
 		mapPrefs.put("userType", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.USERTYPE.name()));
+        mapPrefs.put("listNoImg", preferencesService.getPrefValue(eppn, MANAGER_SEARCH_PREF.LIST_NO_IMG.name()));
 		stopWatch.stop();
 		log.trace("userPrefs tooks " + stopWatch.shortSummary());
 		return mapPrefs;
@@ -206,7 +204,7 @@ public class ManagerCardController {
 	@ModelAttribute("currentPrinter")
 	public Printer getCurrentPrinter(@SessionAttribute(required = false) String printerEppn) {
 		if(!StringUtils.isEmpty(printerEppn)) {
-			List<Printer> printers = Printer.findPrintersByEppn(printerEppn).getResultList();
+			List<Printer> printers = printerDaoService. findPrintersByEppn(printerEppn).getResultList();
 			if(printers.size()>0) {
 				return printers.get(0);
 			}
@@ -229,7 +227,7 @@ public class ManagerCardController {
     @Transactional(readOnly = true)
     public String show(@RequestParam String eppn, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        User user = User.findUser(eppn);
+        User user = userDaoService.findUser(eppn);
         uiModel.asMap().clear();
         if(user!=null && !user.getCards().isEmpty()) {
         	return "redirect:/manager/" + user.getCards().get(0).getId();
@@ -245,11 +243,11 @@ public class ManagerCardController {
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
         addDateTimeFormatPatterns(uiModel);
-        Card card =  Card.findCard(id);
+        Card card =  cardDaoService.findCard(id);
         if(card == null) {
         	throw new SgcNotFoundException(String.format("Card %s not found", id), null);
         }
-        User user = User.findUser(card.getEppn());
+        User user = userDaoService.findUser(card.getEppn());
         if(!user.getCards().isEmpty()){
         	for(Card cardItem : user.getCards()){
         		cardEtatService.updateEtatsAvailable4Card(cardItem, printerEppn);
@@ -262,14 +260,17 @@ public class ManagerCardController {
         uiModel.addAttribute("managePermission",  permissionService.hasManagePermission(roles, user.getUserType()));
         uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
         uiModel.addAttribute("hasRequestCard", cardEtatService.hasRequestCard(user.getEppn()));
-        return "manager/show";
+        uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
+        uiModel.addAttribute("crousSmartCards", crousSmartCardDaoService.getCrousSmartCards(user));
+
+        return "templates/manager/show";
     }
     
     @PreAuthorize("hasPermission(#cardId, 'manage')")
     @RequestMapping(value = "{cardId}/resync-user/{eppn:.+}", produces = "text/html")
     @Transactional
     public String resyncUser(@PathVariable String eppn, @PathVariable Long cardId, Model uiModel) {
-        User user = User.findUser(eppn);
+        User user = userDaoService.findUser(eppn);
         resynchronisationUserService.synchronizeUserInfo(user.getEppn());
         uiModel.asMap().clear();
         return "redirect:/manager/" + cardId;
@@ -279,9 +280,9 @@ public class ManagerCardController {
 	@RequestMapping(value="/deliver/{cardId}", method=RequestMethod.POST)
 	@Transactional
 	public String deliver(@PathVariable("cardId") Long cardId,Model uiModel) {
-		Card card = Card.findCard(cardId);
-		card.setDeliveredDate(new Date());
-		card.merge();
+		Card card = cardDaoService.findCard(cardId);
+		card.setDeliveredDate(LocalDateTime.now());
+		cardDaoService.merge(card);
 		logService.log(card.getId(), ACTION.MANAGER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
 		uiModel.asMap().clear();
 		if(Etat.ENCODED.equals(card.getEtat())) {
@@ -298,10 +299,10 @@ public class ManagerCardController {
 		
 		for(Long id : listeIds){
 			try {
-				Card card = Card.findCard(id);
+				Card card = cardDaoService.findCard(id);
 				if(card.getDeliveredDate() == null) {
-					card.setDeliveredDate(new Date());
-					card.merge();
+					card.setDeliveredDate(LocalDateTime.now());
+					cardDaoService.merge(card);
 					logService.log(card.getId(), ACTION.MANAGER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
 					if(!Etat.ENABLED.equals(card.getEtat())) {
 						log.info("livraison of " + card.getCsn() + " -> activation");
@@ -320,7 +321,7 @@ public class ManagerCardController {
 	@RequestMapping(value="/replayValidationOrInvalidation/{cardId}", method=RequestMethod.POST)
 	@Transactional
 	public String replayValidationOrInvalidation(@PathVariable("cardId") Long cardId, @RequestParam(required=false, defaultValue="") List<String> validateServicesNames, @RequestParam(required=false, defaultValue="false") Boolean resynchro, Model uiModel) {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		cardEtatService.replayValidationOrInvalidation(card.getId(), validateServicesNames, resynchro);
 		uiModel.asMap().clear();
 		return "redirect:/manager/" + card.getId();
@@ -334,7 +335,7 @@ public class ManagerCardController {
 		if(validateServicesNames != null){
 			for(Long id : listeIds){
 				try {
-					Card card = Card.findCard(id);
+					Card card = cardDaoService.findCard(id);
 					cardEtatService.replayValidationOrInvalidation(card.getId(), validateServicesNames, resynchro);
 				} catch (Exception e) {
 					log.info("La carte avec l'id suivant n'a pas été validée/invalidée : " + id, e);
@@ -343,7 +344,7 @@ public class ManagerCardController {
 		}else{
 			redirectAttributes.addFlashAttribute("messageWarning", WARNING_MSG.concat("multivalidation"));
 		}
-		return "redirect:/manager/";
+		return "redirect:/manager";
 	}
 	
     @PreAuthorize("hasPermission(#cardId, 'manage')")
@@ -351,16 +352,19 @@ public class ManagerCardController {
 	@Transactional
 	public String actionEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment,
 							 @RequestParam(value="motif", required=false) MotifDisable motifDisable, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
-		Card card = Card.findCard(cardId);
-		card.merge();
+		Card card = cardDaoService.findCard(cardId);
+		cardDaoService.merge(card);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 
 		if(Etat.IN_PRINT.equals(etatFinal) && (Etat.REQUEST_CHECKED.equals(card.getEtat()) || eppn.equals(card.getEtatEppn())) && StringUtils.isEmpty(printerEppn)) {
 			if(cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false)) {
 				uiModel.addAttribute("cards", Arrays.asList(new Card[]{card}));
+                Map<Card, TemplateCard> userTemplatesCards = new HashMap<>();
+                userTemplatesCards.put(card, templateCardDaoService.getTemplateCard(card.getUser()));
+                uiModel.addAttribute("userTemplatesCards", userTemplatesCards);
 			}
-			return "manager/print-card";
+			return "templates/manager/print-card";
 		} else {
 			uiModel.asMap().clear();
 			if(Etat.RENEWED.equals(etatFinal)) {
@@ -387,11 +391,11 @@ public class ManagerCardController {
 	public ResponseEntity<String>  actionAjaxEtat(@RequestParam Long cardId, @RequestParam Etat etatFinal, @RequestParam(required=false) String comment, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         String response = "";
-		card.merge();
+		cardDaoService.merge(card);
 		uiModel.asMap().clear();
 		String etatInitial = card.getEtat().name();
 		cardEtatService.setCardEtat(card, etatFinal, comment, comment, true, false, printerEppn);
@@ -409,22 +413,29 @@ public class ManagerCardController {
 	 */
 	@RequestMapping(produces = "text/html", params={"index=first"})
 	@Transactional(readOnly = true)
-	public String defaultSearch(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 
-    		@RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, 
+	public String defaultSearch(@PageableDefault(size = 10, direction = Sort.Direction.ASC, sort = "key") Pageable pageable,
     		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request, Authentication auth) {
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		CardSearchBean searchBean = new CardSearchBean();
 		searchBean.setType(permissionService.getDefaultTypeTab(roles));
-		return search(searchBean, page, size, sortFieldName, sortOrder, index, uiModel, request, auth);
+		return search(pageable, searchBean, index, uiModel, request, auth);
 	}
 	
 	
     @RequestMapping(produces = "text/html")
     @Transactional(readOnly = true)
-    public String search(@Valid CardSearchBean searchBean, 
-    		@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 
-    		@RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, 
-    		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request, Authentication auth) {
+    public String search(@PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "dateEtat") Pageable pageable,
+                         @Valid CardSearchBean searchBean,
+                         @RequestParam(value = "index", required = false) String index,
+                         Model uiModel,
+                         HttpServletRequest request,
+                         Authentication auth) {
+
+        Sort sort = pageable.getSort();
+        String sortFieldName = sort.stream().iterator().next().getProperty();
+        String sortOrder = sort.stream().iterator().next().getDirection().name();
+        int size = pageable.getPageSize();
+        int page = pageable.getPageNumber();
 
 		StopWatch stopWatch = new PrettyStopWatch();
 
@@ -437,15 +448,14 @@ public class ManagerCardController {
 		uiModel.addAttribute("userPrefs", getuserPrefs());
 
 		stopWatch.start("base");
-		Long cardsInprintCount = Card.countfindCardsByEtatEppnEqualsAndEtatEquals(eppn, Etat.IN_PRINT);
+		Long cardsInprintCount = cardDaoService.countfindCardsByEtatEppnEqualsAndEtatEquals(eppn, Etat.IN_PRINT);
 		uiModel.addAttribute("cardsInprintCount", cardsInprintCount);
 		
     	int sizeNo = -1;
-    	int firstResult = -1;  	   	
-    	if(size == null || size > 1000 || size == 0) {
+    	int firstResult = -1;
+    	if(size == 0) {
     		Object sizeInSession = request.getSession().getAttribute("size_in_session");
     		size = sizeInSession != null ? (Integer)sizeInSession : 10;
-    		page = 1;
     	}
     	if(!userTypes.contains(searchBean.getType())) {
     		searchBean.setType(permissionService.getDefaultTypeTab(roles));
@@ -502,11 +512,11 @@ public class ManagerCardController {
     	}
 
 		stopWatch.start("cards search count");
-    	sizeNo = size == null ? 10 : size.intValue();
-    	firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-    	long countCards = Card.countFindCards(searchBean, eppn);
+    	sizeNo = size;
+    	firstResult = page * sizeNo;
+    	long countCards = cardDaoService.countFindCards(searchBean, eppn);
 		stopWatch.start("cards search");
-    	List<Card> cards = Card.findCards(searchBean, eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
+    	List<Card> cards = cardDaoService.findCards(searchBean, eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
         float nrOfPages = (float) countCards / sizeNo;
 
 		stopWatch.start("filters");
@@ -515,9 +525,9 @@ public class ManagerCardController {
 		uiModel.addAttribute("userTypes", userTypes);
     	uiModel.addAttribute("etats", cardEtatService.getDistinctEtats());
     	uiModel.addAttribute("lastTemplateCardsPrinted", userInfoService.getDistinctLastTemplateCardsPrinted());
-    	List<BigInteger> nbCards = User.getDistinctNbCards();
+    	List<Long> nbCards = userDaoService.getDistinctNbCards();
 		uiModel.addAttribute("nbCards", nbCards);
-		List<BigInteger> nbRejets = Card.getDistinctNbRejets();
+		List<Long> nbRejets = cardDaoService.getDistinctNbRejets();
 		uiModel.addAttribute("nbRejets", nbRejets);
         uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
     	uiModel.addAttribute("searchBean", searchBean);
@@ -540,14 +550,17 @@ public class ManagerCardController {
 
 		log.trace(stopWatch.prettyPrint());
 
-    	return "manager/list";
+        PageRequest pageRequest = PageRequest.of(page, sizeNo, sort);
+        Page<Card> pageCards = new PageImpl<>(cards, pageRequest, countCards);
+        uiModel.addAttribute("cards", pageCards);
+        return "templates/manager/list";
     }
 
     @PreAuthorize("hasPermission(#listeIds, 'manage')")
     @RequestMapping(value="/multiUpdate", method = RequestMethod.POST)
     // No @Transactional here so that exception catching on ManagerController.multiUpdate works well
     public String multiUpdate(@RequestParam(value="comment", defaultValue= "") String comment, 
-    		@RequestParam List<Long> listeIds, @RequestParam Etat etatFinal, @RequestParam(value="forcedEtatFinal", required=false) Etat forcedEtatFinal, 
+    		@RequestParam List<Long> listeIds, @RequestParam(value="etatFinal", required=false) Etat etatFinal, @RequestParam(value="forcedEtatFinal", required=false) Etat forcedEtatFinal,
     		@RequestParam(value="updateEtatAdmin", required=false) String updateEtatAdmin, @RequestHeader("User-Agent") String userAgent, @SessionAttribute(required = false) String printerEppn,
 							  final RedirectAttributes redirectAttributes, Model uiModel, HttpServletRequest request) {
 
@@ -562,15 +575,15 @@ public class ManagerCardController {
     			try {
     				i++;
     				//if(i==2) throw new RuntimeException("yop");
-    				Card card = Card.findCard(id);
+    				Card card = cardDaoService.findCard(id);
     				card.setCommentaire(comment);
     				
     				if(updateEtatAdmin != null && forcedEtatFinal!=null) {
     					Etat firstEtat = card.getEtat();
     					card.setEtat(forcedEtatFinal);
-    					card.merge();
+    					cardDaoService.merge(card);
     					card.getUser().setHasCardRequestPending(cardEtatService.hasRequestCard(card.getEppn()));
-    					card.getUser().merge();
+    					userDaoService.merge(card.getUser());
     					log.info("Changement d'etat manuel à " + forcedEtatFinal + " pour la carte de " + card.getEppn());
     					logService.log(card.getId(), ACTION.FORCEDUPDATE, RETCODE.SUCCESS, firstEtat.name() + " -> " + forcedEtatFinal, card.getEppn(), null);
     				} else {
@@ -601,7 +614,12 @@ public class ManagerCardController {
 
     	if(Etat.IN_PRINT.equals(etatFinal) && StringUtils.isEmpty(printerEppn)) {
     		uiModel.addAttribute("cards", cards);
-    		return "manager/print-card";
+            Map<Card, TemplateCard> userTemplatesCards = new HashMap<>();
+            for(Card card : cards) {
+                userTemplatesCards.put(card, templateCardDaoService.getTemplateCard(card.getUser()));
+            }
+            uiModel.addAttribute("userTemplatesCards", userTemplatesCards);
+    		return "templates/manager/print-card";
     	}
 
     	/*
@@ -618,7 +636,7 @@ public class ManagerCardController {
     @PreAuthorize("hasPermission(#cardIds, 'manage')")
 	@RequestMapping(value="/getMultiUpdateForm")
 	@Transactional(readOnly = true)
-	public String getMultiUpdateForm(@RequestParam List<Long> cardIds, @SessionAttribute(required = false) String printerEppn, Model uiModel) {
+	public String getMultiUpdateForm(@RequestParam List<Long> cardIds, @SessionAttribute(required = false) String printerEppn, Model uiModel, HttpServletRequest request) {
 		if(cardIds.isEmpty()) {
 			uiModel.addAttribute("cardIds", cardIds);
 		} else {
@@ -628,11 +646,12 @@ public class ManagerCardController {
 			uiModel.addAttribute("allEtats", Arrays.asList(Etat.values()));
 			uiModel.addAttribute("etatsAvailable", etatsAvailable);
 			uiModel.addAttribute("cardIds", cardIds);
-			uiModel.addAttribute("etatInit", Card.findCard(cardIds.get(0)).getEtat());
+			uiModel.addAttribute("etatInit", cardDaoService.findCard(cardIds.get(0)).getEtat());
 			uiModel.addAttribute("deliveredFlag", cardEtatService.areCardsReadyToBeDelivered(cardIds));
 			uiModel.addAttribute("validatedFlag", cardEtatService.areCardsReadyToBeValidated(cardIds));
 		}
-		return "manager/multiUpdateForm";
+        uiModel.addAttribute("userAgent", request.getHeader("User-Agent"));
+		return "templates/manager/multiUpdateForm";
 	}
 	
     @PreAuthorize("hasPermission(#id, 'manage')")
@@ -645,7 +664,7 @@ public class ManagerCardController {
 			redirectAttributes.addFlashAttribute("messageInfo", "error_leocarte_emptyfile");
 		} else {
 			if(id!=null){
-				Card card = Card.findCard(id);
+				Card card = cardDaoService.findCard(id);
 				try {
 					String encoding = cardService.getPhotoParams().get("encoding");
 					int contentStartIndex = imageData.indexOf(encoding) + encoding.length();
@@ -656,11 +675,10 @@ public class ManagerCardController {
 					card.getPhotoFile().setFileSize(fileSize);
 					ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 					log.info("Upload and set file in DB with filesize = " + fileSize);
-					card.getPhotoFile().getBigFile().setBinaryFileStream(inputStream, fileSize);
-					Calendar cal = Calendar.getInstance();
-					Date currentTime = cal.getTime();
+                    bigFileDaoService.setBinaryFileStream(card.getPhotoFile().getBigFile(), inputStream, fileSize);
+                    LocalDateTime currentTime = LocalDateTime.now();
 					card.getPhotoFile().setSendTime(currentTime);
-					card.merge();
+					cardDaoService.merge(card);
 					logService.log(card.getId(), ACTION.UPDATEPHOTO, RETCODE.SUCCESS, "", card.getEppn(), null);
 					log.info("Succès de la mise à jour de la photo pour l'utilisateur " +   card.getEppn());
 					redirectAttributes.addFlashAttribute("messageSuccess", SUCCESS_MSG.concat("updatePhoto"));
@@ -688,7 +706,7 @@ public class ManagerCardController {
 			redirectAttributes.addFlashAttribute("messageInfo", "error_leocarte_emptyfile");
 		} else {
 			if(id!=null){
-				Card card = Card.findCard(id);
+				Card card = cardDaoService.findCard(id);
 				try {
 					String encoding = cardService.getPhotoParams().get("encoding");
 					int contentStartIndex = imageData.indexOf(encoding) + encoding.length();
@@ -698,11 +716,9 @@ public class ManagerCardController {
 					card.getPhotoFile().setContentType(contentType);
 					card.getPhotoFile().setFileSize(fileSize);
 					log.info("Upload and set file in DB with filesize = " + fileSize);
-					card.getPhotoFile().getBigFile().setBinaryFile(bytes);
-					Calendar cal = Calendar.getInstance();
-					Date currentTime = cal.getTime();
-					card.getPhotoFile().setSendTime(currentTime);
-					card.merge();
+                    bigFileDaoService.setBinaryFile(card.getPhotoFile().getBigFile(), bytes);
+					card.getPhotoFile().setSendTime(LocalDateTime.now());
+					cardDaoService.merge(card);
 					logService.log(card.getId(), ACTION.UPDATEPHOTO, RETCODE.SUCCESS, "", card.getEppn(), null);
 					log.info("Succès de la mise à jour de la photo pour l'utilisateur " +   card.getEppn());
 					redirectAttributes.addFlashAttribute("messageSuccess", SUCCESS_MSG.concat("updatePhoto"));
@@ -759,7 +775,7 @@ public class ManagerCardController {
 	
 	@RequestMapping(value="/savePrefs")
 	public String  savePrefs(@RequestParam(value="editable", required=false) String editable, @RequestParam(value="ownOrFreeCard", required=false) String ownOrFreeCard,
-							 @RequestParam(value="userType", required=false) String userType, Model uiModel) {
+							 @RequestParam(value="userType", required=false) String userType, @RequestParam(value="listNoImg", required=false) String listNoImg, Model uiModel) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		
@@ -770,7 +786,7 @@ public class ManagerCardController {
 			preferencesService.setPrefs(eppn, MANAGER_SEARCH_PREF.EDITABLE.name(), editable);
 			preferencesService.setPrefs(eppn, MANAGER_SEARCH_PREF.OWNORFREECARD.name(), ownOrFreeCard);
 			preferencesService.setPrefs(eppn, MANAGER_SEARCH_PREF.USERTYPE.name(), userType);
-
+            preferencesService.setPrefs(eppn, MANAGER_SEARCH_PREF.LIST_NO_IMG.name(), listNoImg);
 		} catch (Exception e) {
 			log.warn("Impossible de sauvegarder les préférences", e);
 		}
@@ -803,10 +819,10 @@ public class ManagerCardController {
     		searchBean.setFreeFieldValue(freeFieldValueDecoded);	
     	}
     	
-    	Long nbCards = Card.countFindCards(searchBean, eppn);
+    	Long nbCards = cardDaoService.countFindCards(searchBean, eppn);
     	boolean msgbordereau = false;
     	if(nbCards < 500){
-    		List<Card> cards = Card.findCards(searchBean, eppn, "address", "ASC").getResultList();
+    		List<Card> cards = cardDaoService.findCards(searchBean, eppn, "address", "ASC").getResultList();
     		uiModel.addAttribute("cards", cards);
     		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());
     	}else{
@@ -815,20 +831,86 @@ public class ManagerCardController {
     	uiModel.addAttribute("msgbordereau", msgbordereau);
 		
 		
-		return "manager/bordereau";
+		return "templates/manager/bordereau";
 	}
 	
 	@PreAuthorize("hasPermission(#listeIds, 'manage')")
 	@RequestMapping(value="/retouche", method = RequestMethod.POST)
 	public String getRetouchePage(@RequestParam("listeIds") List<Long> listeIds, Model uiModel) {
-		List<Card> cards = Card.findAllCards(listeIds);
+		List<Card> cards = cardDaoService.findAllCards(listeIds);
 		uiModel.addAttribute("cardIds",listeIds);
 		uiModel.addAttribute("cards",cards);
 		String joinIds = StringUtils.join(listeIds.toArray(new Long[listeIds.size()]), ",");
 		uiModel.addAttribute("joinIds",joinIds);
 		
-		return "manager/retouche";
+		return "templates/manager/retouche";
 	}
 	
+
+	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
+    public String create(@Valid Card card, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            populateEditForm(uiModel, card);
+            return "templates/manager/create";
+        }
+        uiModel.asMap().clear();
+        cardDaoService.persist(card);
+        return "redirect:/manager/" + encodeUrlPathSegment(card.getId().toString(), httpServletRequest);
+    }
+
+	@RequestMapping(params = "form", produces = "text/html")
+    public String createForm(Model uiModel) {
+        populateEditForm(uiModel, new Card());
+        return "templates/manager/create";
+    }
+
+	@RequestMapping(method = RequestMethod.PUT, produces = "text/html")
+    public String update(@Valid Card card, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            populateEditForm(uiModel, card);
+            return "templates/manager/update";
+        }
+        uiModel.asMap().clear();
+        cardDaoService.merge(card);
+        return "redirect:/manager/" + encodeUrlPathSegment(card.getId().toString(), httpServletRequest);
+    }
+
+	@RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String updateForm(@PathVariable("id") Long id, Model uiModel) {
+        populateEditForm(uiModel, cardDaoService.findCard(id));
+        return "templates/manager/update";
+    }
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        Card card = cardDaoService.findCard(id);
+        cardDaoService.remove(card);
+        uiModel.asMap().clear();
+        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
+        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
+        return "redirect:/manager";
+    }
+
+	void addDateTimeFormatPatterns(Model uiModel) {
+        uiModel.addAttribute("card_requestdate_date_format", "dd/MM/yyyy");
+        uiModel.addAttribute("card_dateetat_date_format", "dd/MM/yyyy");
+    }
+
+	void populateEditForm(Model uiModel, Card card) {
+        uiModel.addAttribute("card", card);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("photofiles", photoFileDaoService.findAllPhotoFiles());
+        uiModel.addAttribute("templatecards", templateCardDaoService.findAllTemplateCards());
+        uiModel.addAttribute("users", userDaoService.findAllUsers());
+    }
+
+	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+        String enc = httpServletRequest.getCharacterEncoding();
+        if (enc == null) {
+            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
+        }
+        pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
+        return pathSegment;
+    }
 }
 

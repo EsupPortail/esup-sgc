@@ -1,0 +1,92 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/actionmessages/update.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Modifier le message d'action</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Liste des messages</h2>
+    <form th:action="@{/admin/actionmessages}" th:object="${cardActionMessage}" th:method="${cardActionMessage.id == null} ? POST : PUT" class="form-horizontal well">
+        <input type="hidden" th:field="*{id}" th:if="${cardActionMessage.id != null}"/>
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="etatInitial">Etat initial</label>
+            <div class="col-lg-6">
+                <select class="form-control" th:field="*{etatInitial}" id="etatInitial">
+                    <option value=""></option>
+                    <option th:each="etat : ${etats}"
+                            th:value="${etat}"
+                            th:selected="${cardActionMessage.etatInitial == etat}"
+                            th:text="#{|card.label.${etat}|}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="etatFinal">Etat final</label>
+            <div class="col-lg-6">
+                <select class="form-control" th:field="*{etatFinal}" id="etatFinal">
+                    <option th:each="etat : ${etats}"
+                            th:value="${etat}"
+                            th:selected="${cardActionMessage.etatFinal == etat}"
+                            th:text="#{|card.label.${etat}|}"></option>
+                </select>
+            </div>
+        </div>
+        <input type="hidden" th:field="*{etatInitial}"/>
+        <input type="hidden" th:field="*{etatFinal}"/>
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="message">Message</label>
+            <div class="col-lg-6">
+                <textarea class="form-control" th:field="*{message}" id="message" rows="10" cols="30"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-lg-offset-4 col-lg-8">
+                <label>
+                    <input type="checkbox" th:field="*{auto}"/> Auto
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="mailTo">MailTo</label>
+            <div class="col-lg-6">
+                <input class="form-control" th:field="*{mailTo}" id="mailTo"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="mailTo">Defaut</label>
+            <div class="col-lg-6">
+                <input type="checkbox" th:field="*{defaut}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="userTypes">Types utilisateur</label>
+            <div class="col-lg-6">
+                <select multiple="multiple" class="form-control" th:field="*{userTypes}" id="userTypes" size="10">
+                    <option th:each="type : ${userTypes}" th:value="${type}" th:text="${type}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="dateDelay4PreventCaduc">
+            <p class="well">Le champ ci dessous permet de faire envoyer un mail n jours avant la date de fin d'un compte ayant une carte activée qui deviendra caduque</p>
+            <i>En dehors de cet usage il ne sert pas</i>
+            <div class="form-group">
+                <label class="col-lg-4 control-label" for="dateDelay4PreventCaduc">Délai (jours)</label>
+                <div class="col-lg-6">
+                    <input class="form-control" th:field="*{dateDelay4PreventCaduc}" id="dateDelay4PreventCaduc"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-lg-offset-4 col-lg-8">
+                <button type="submit" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+        <input type="hidden" th:field="*{version}"/>
+    </form>
+</div>
+</body>
+</html>

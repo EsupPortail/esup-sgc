@@ -1,0 +1,54 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/payboxtransactions/show.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Détail Transaction Paybox</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Détail de la transaction Paybox</h2>
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Date</th>
+                <td th:text="${#temporals.format(payboxtransactionlog.transactionDate, 'dd/MM/yyyy HH:mm')}"></td>
+            </tr>
+            <tr>
+                <th>Eppn</th>
+                <td>
+                    <a th:href="@{/manager(eppn=${payboxtransactionlog.eppn})}" th:text="${payboxtransactionlog.eppn}"></a>
+                </td>
+            </tr>
+            <tr>
+                <th>Référence</th>
+                <td th:text="${payboxtransactionlog.reference}"></td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td th:text="${payboxtransactionlog.montant}"></td>
+            </tr>
+            <tr>
+                <th>Auto</th>
+                <td th:text="${payboxtransactionlog.auto}"></td>
+            </tr>
+            <tr>
+                <th>Erreur</th>
+                <td th:text="${payboxtransactionlog.erreur}"></td>
+            </tr>
+            <tr>
+                <th>Idtrans</th>
+                <td th:text="${payboxtransactionlog.idtrans}"></td>
+            </tr>
+            <tr>
+                <th>Signature</th>
+                <td th:text="${payboxtransactionlog.signature}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/admin/payboxtransactions}" class="btn btn-default">Retour à la liste</a>
+</div>
+</body>
+</html>

@@ -31,11 +31,6 @@
 		<intercept-url pattern="/wsrest/**" access="${accessRestrictionWSRestApi}"/>
 		<csrf disabled="true"/>
 	</http>
-
-	<http pattern="/wsescr/**" entry-point-ref="http403EntryPoint" create-session="stateless">
-		<intercept-url pattern="/wsescr/**" access="${accessRestrictionWSescr}"/>
-		<csrf disabled="true"/>
-	</http>
     
     <!-- HTTP security configurations -->
     <http disable-url-rewriting="true" use-expressions="true" entry-point-ref="http403EntryPoint">
@@ -52,20 +47,28 @@
 		<custom-filter ref="concurrencyFilter" position="CONCURRENT_SESSION_FILTER" />
 		<custom-filter ref="resourceUrlEncodingFilter" position="LAST"/>        
 		<logout logout-success-url="/" />
-		<expression-handler ref="sgcWebSecurityExpressionHandler"/>
-                <csrf disabled="true"/>
+		<csrf disabled="true"/>
     </http>
 
 	<beans:bean id="resourceUrlEncodingFilter"
 		class="org.springframework.web.servlet.resource.ResourceUrlEncodingFilter"/>
 		
     <beans:bean id="http403EntryPoint" class="org.esupportail.sgc.web.LoggingHttp403ForbiddenEntryPoint"/>
-    
-    <beans:bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
-        <beans:property name="permissionEvaluator">
-            <beans:bean class="org.esupportail.sgc.security.SgcPermissionEvaluator"/>
-        </beans:property>
+
+    <beans:bean id="webSecurityExpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler">
+        <beans:property name="roleHierarchy" ref="sgcRoleHierarchy"/>
     </beans:bean>
+
+    <beans:bean id="methodSecurityExpressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+ 		<beans:property name="permissionEvaluator">
+ 		     <beans:bean class="org.esupportail.sgc.security.SgcPermissionEvaluator"/>
+ 		</beans:property>
+	</beans:bean>
+
+    <!-- enable support for Expression-based annotations in Spring Security -->
+    <global-method-security pre-post-annotations="enabled">
+        <expression-handler ref="methodSecurityExpressionHandler" />
+    </global-method-security>
     
     <beans:bean id="shibFilter" class="org.esupportail.sgc.security.ShibRequestHeaderAuthenticationFilter">
 		<beans:property name="principalRequestHeader" value="REMOTE_USER"/>
@@ -122,11 +125,6 @@
 		<beans:property name="groupService" ref="groupService"/>
 	</beans:bean>
 
-
-	<beans:bean id="sgcWebSecurityExpressionHandler" class="org.esupportail.sgc.security.SgcWebSecurityExpressionHandler">
-	    <beans:property name="roleHierarchy" ref="sgcRoleHierarchy"/>
-	</beans:bean>
-	
 
 	<util:map id="sgcMappingGroupesRoles">
 		<beans:entry key="cn=for.esup-sgc.admin,ou=groups,dc=univ-ville,dc=fr" value="ROLE_ADMIN" />

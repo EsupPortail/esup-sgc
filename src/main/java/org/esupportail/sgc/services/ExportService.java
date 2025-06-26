@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.ExportBean;
 import org.esupportail.sgc.domain.User;
@@ -29,14 +31,20 @@ public class ExportService {
 	@Autowired
     MessageSource messageSource;
 
-	public List<ExportBean> getBean(String stats, Locale locale) throws ParseException{
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    public List<ExportBean> getBean(String stats, Locale locale) throws ParseException{
 		
 		List<Object[]> objs = new ArrayList<>();
 	   
 		if("editable".equals(stats)){
-			objs = User.selectEditableCsv().getResultList();
+			objs = userDaoService.selectEditableCsv().getResultList();
 		} else if("deliveryByAdress".equals(stats)){
-			objs = Card.countDeliveryByAddress();
+			objs = cardDaoService.countDeliveryByAddress();
 		}
 		
 		List<ExportBean> exportList = new ArrayList<>();
@@ -79,15 +87,15 @@ public class ExportService {
 		LinkedHashMap<String, String> datesStats =  statsService.getDates();
 		typeCsv = new LinkedHashMap<Integer, String> ();
 		String message = messageSource.getMessage("stats.table.edited.yesterday", null, locale);
-		objs = User.countYesterdayCardsByPopulationCrous(statsService.getDates().get("isMonday"),"encoded_date");
+		objs = userDaoService.countYesterdayCardsByPopulationCrous(statsService.getDates().get("isMonday"),"encoded_date");
 		typeCsv.put(0, message + datesStats.get("yesterday"));
 		statsList.add(objs); objs = new ArrayList<>();
 		message = messageSource.getMessage("stats.table.edited.month", null, locale);
-		objs = User.countMonthCardsByPopulationCrous(statsService.getDates().get("likeMonth"),"encoded_date");
+		objs = userDaoService.countMonthCardsByPopulationCrous(statsService.getDates().get("likeMonth"),"encoded_date");
 		typeCsv.put(1, message + datesStats.get("month"));
 		statsList.add(objs); objs = new ArrayList<>();
 		message = messageSource.getMessage("stats.table.edited.year", null, locale);
-		objs = User.countYearEnabledCardsByPopulationCrous(statsService.getDates().get("year"), "request_date", statsService.getDateFinAnneeUniv(statsService.getDates().get("year")));
+		objs = userDaoService.countYearEnabledCardsByPopulationCrous(statsService.getDates().get("year"), "request_date", statsService.getDateFinAnneeUniv(statsService.getDates().get("year")));
 		typeCsv.put(2, message + datesStats.get("formatYear"));
 		statsList.add(objs);
 		message = messageSource.getMessage("stats.table.edited.all", null, locale);
@@ -95,7 +103,7 @@ public class ExportService {
 	    	for(Map.Entry<String, String> entry : statsService.getAnneeUnivs().entrySet()){
 	    		if(k!=0){
 		        	Date dateFin = statsService.getDateFinAnneeUniv(entry.getValue());
-		        	objs = User.countYearEnabledCardsByPopulationCrous(entry.getValue(),"request_date", dateFin);
+		        	objs = userDaoService.countYearEnabledCardsByPopulationCrous(entry.getValue(),"request_date", dateFin);
 		        	typeCsv.put(j+1, message + entry.getKey());
 	    		}
 	    		k++;

@@ -1,0 +1,46 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/layout/fragments/head.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+    <link rel="shortcut icon" th:href="@{/resources/images/favicon.png}" />
+    <link rel="icon" type="image/png" th:href="@{/resources/images/favicon.png}" />
+    <link rel="manifest" th:href="@{/resources/images/manifest.json}" />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/slim-select/dist/slimselect.css}" />
+    <link rel="stylesheet" th:href="@{/resources/css/esup-sgc.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/awesomplete/awesomplete.css}" />
+    <link rel="stylesheet" th:href="@{/resources/css/progress-wizard.min.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/dragula/dist/dragula.min.css}" />
+    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+        <link rel="stylesheet" th:href="@{/resources/css/suneditor.min.css}" />
+    </th:block>
+    <!-- Ajoutez d'autres CSS si besoin -->
+
+    <script th:src="@{/resources/js/bootstrap-native-custom.min.js}"></script>
+    <script th:src="@{/resources/js/ezcrop.js}"></script>
+    <script th:src="@{/webjars/konva/konva.min.js}"></script>
+    <script th:src="@{/webjars/chartjs/Chart.min.js}"></script>
+    <script th:src="@{/webjars/awesomplete/awesomplete.min.js}"></script>
+    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+        <script th:src="@{/resources/js/suneditor.min.js}"></script>
+    </th:block>
+    <script th:src="@{/resources/js/esup-sgc_msg_fr.js}"></script>
+    <script th:src="@{/webjars/dragula/dist/dragula.min.js}"></script>
+    <script th:src="@{/webjars/exif-js/exif.js}"></script>
+    <script th:src="@{/resources/js/webcam.min.js}"></script>
+    <script th:src="@{/webjars/slim-select/dist/slimselect.min.js}"></script>
+    <script th:src="@{/resources/js/equalDiv.js}"></script>
+    <script th:src="@{/resources/js/chartjs-plugin-datalabels.min.js}"></script>
+    <script th:src="@{/resources/js/esup-sgc-vanilla.js}"></script>
+    <!-- Ajoutez d'autres JS si besoin -->
+
+    <script sec:authorize="hasRole('ROLE_MANAGER') || hasRole('ROLE_CONSULT') || hasRole('ROLE_CONSULT_')">
+        var sgcRootUrl = "[[@{/}]]";
+    </script>
+</head>
+</html>

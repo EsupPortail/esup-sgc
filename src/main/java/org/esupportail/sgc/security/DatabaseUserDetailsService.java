@@ -1,5 +1,6 @@
 package org.esupportail.sgc.security;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -13,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
 	@Resource
 	RoleHierarchy sgcRoleHierarchy;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String eppn)
@@ -38,11 +42,11 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
 		eppn = eppn.trim().toLowerCase();
 
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 	    if(user == null) {
 	       	user = new User();
 	       	user.setEppn(eppn);
-	       	user.persist();
+	       	userDaoService.persist(user);
 	    }
 		return loadUserByUser(user);				
 	}

@@ -1,0 +1,142 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/config/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Configurations</title>
+</head>
+<body>
+<div id="configList" layout:fragment="content"
+     th:with="
+        create_url=@{/admin/config},
+        tabs_url=@{/admin/config/tabs}
+     ">
+    <script>
+        var tabsUrl = "[[${tabs_url}]]";
+        var configUrl = "[[${create_url}]]";
+    </script>
+    <h2>
+        Configurations
+        <button class="btn btn-primary" data-target="#appliConfig" data-toggle="modal">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </h2>
+    <form th:action="${tabs_url}" method="get" id="tabConfigsForm">
+        <input type="hidden" name="page" value="1"/>
+        <input type="hidden" name="size" value="10"/>
+        <input type="hidden" name="sortFieldName" value="key"/>
+        <input type="hidden" name="sortOrder" value="asc"/>
+        <input type="hidden" name="searchField" value="HTML"/>
+    </form>
+    <ul class="nav nav-tabs" role="tablist" id="tabTypes">
+        <li role="presentation" th:classappend="${selectedType} == null ? 'active' : 'sleep'">
+            <a href="#0" role="tab" data-toggle="tab" th:utext="#{manager.type.All}"></a>
+        </li>
+        <li th:if="${listTypes != null}" th:each="type : ${listTypes}" role="presentation"
+            th:classappend="${selectedType} == ${type} ? 'active' : 'sleep'">
+            <a th:href="'#' + ${type}" role="tab" data-toggle="tab" th:utext="#{|manager.type.${type}|}"></a>
+        </li>
+    </ul>
+
+    <!-- Tableau des configurations -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_AppliConfig">
+            <thead>
+            <tr>
+                <th>Clé</th>
+                <th>Valeur</th>
+                <th>Description</th>
+                <th>
+                    <a class="sorting" sd:pagination-sort="type">
+                        Type
+                    </a>
+                </th>
+                <th data-type="html" class="">Modifier</th>
+                <th data-type="html" class="">Supprimer</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="config : ${appliconfigs}">
+                <td th:text="${config.key}"></td>
+                <td th:text="${#strings.abbreviate(config.value, 500)}"></td>
+                <td th:text="${#strings.abbreviate(config.description, 500)}"></td>
+                <td th:text="${config.type}"></td>
+                <td>
+                    <a class="btn btn-primary" th:href="@{/admin/config/{id}(id=${config.id}, form=true)}">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </a>
+                </td>
+                <td>
+                    <form th:action="@{/admin/config/{id}(id=${config.id})}" th:method="DELETE" class="form-inline">
+                        <button class="btn btn-danger" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette configuration ?');">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Modal d'ajout de configuration -->
+    <div class="modal fade" id="appliConfig">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                    <h4 class="modal-title">
+                        Ajouter une configuration
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form th:action="${create_url}" id="createConfigForm" method="post">
+                        <div class="form-group">
+                            <label class="control-label" for="cle">Clé</label>
+                            <input class="form-control" id="cle" name="key" type="text"/>
+                        </div>
+                        <div class="form-group">
+                            <h5><strong>Type</strong></h5>
+                            <label class="radio-inline">
+                                <input type="radio" name="type" id="typeText" value="TEXT" checked="checked"/> Texte
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="type" id="typeHtml" value="HTML"/> Html
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="type" id="typeBoolean" value="BOOLEAN"/> Booléen
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="valeur" id="areaEditor">Valeur</label>
+                            <textarea class="form-control simple-editor" id="valeur" name="value">&nbsp;</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="desc">Description</label>
+                            <textarea class="form-control" id="desc" name="description">&nbsp;</textarea>
+                        </div>
+                        <div class="form-group">
+                            <input class="btn btn-success" type="submit" value="Valider"/>
+                        </div>
+                        <input type="hidden" id="hiddenValeur" value=""/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

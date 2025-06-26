@@ -1,0 +1,72 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/payboxtransactions/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Transactions Paybox</title>
+</head>
+<body>
+<div id="payboxtransactionsList" layout:fragment="content"
+     th:with="paybox_url=@{/admin/payboxtransactions}">
+    <h2>Transactions Paybox</h2>
+    <div class="alert alert-info" id="searchBar">
+        <div class="row">
+            <div class="col-lg-2">
+                <form th:action="${paybox_url}" method="get">
+                    <label for="eppn">Eppn</label>
+                    <div class="input-group">
+                        <input type="text" name="eppn" class="form-control" th:value="${param.eppn}"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-success" type="submit">OK</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_PayboxTransactionLog">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Eppn</th>
+                    <th>Référence</th>
+                    <th>Montant</th>
+                    <th>Auto</th>
+                    <th>Erreur</th>
+                    <th>Voir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="log : ${payboxtransactionlogs}">
+                    <td th:text="${#temporals.format(log.transactionDate, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <a th:href="@{/manager(eppn=${log.eppn})}" th:text="${log.eppn}"></a>
+                    </td>
+                    <td th:text="${log.reference}"></td>
+                    <td th:text="${log.montant}"></td>
+                    <td th:text="${log.auto}"></td>
+                    <td th:text="${log.erreur}"></td>
+                    <td>
+                        <a th:href="@{/admin/payboxtransactions/{id}(id=${log.id})}" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-eye-open"></span> Voir
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

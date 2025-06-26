@@ -1,15 +1,13 @@
 package org.esupportail.sgc.web.manager;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.PrefsDaoService;
 import org.esupportail.sgc.domain.Prefs;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.PreferencesService;
@@ -56,6 +54,12 @@ public class StatsController {
 	
 	@Resource
 	PreferencesService preferencesService;
+
+    @Resource
+    PrefsDaoService prefsDaoService;
+
+    @Resource
+    ManagerCardController managerCardController;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -116,7 +120,10 @@ public class StatsController {
 		uiModel.addAttribute("prefsRm",jsonStatsRm);
 		uiModel.addAttribute("prefsRmList",prefsStatsRm);
 		uiModel.addAttribute("annees",statsService.getAnneeUnivs());
-		return "manager/stats";
+
+
+        uiModel.addAttribute("userPrefs", managerCardController.getuserPrefs());
+        return "templates/manager/stats";
 	}
 	
 	@RequestMapping(value = "/tabs/{type}", produces = "text/html")
@@ -143,14 +150,28 @@ public class StatsController {
 	}
 	
 	@RequestMapping(value="/table", produces = "text/html")
-	public String getTableStats( Model uiModel) throws ParseException {
+	public String getTableStats(Model uiModel, HttpServletRequest request) throws ParseException {
 		uiModel.addAttribute("dates", statsService.getDates());
 		uiModel.addAttribute("populationCrous", statsService.getPopulationCrous());
-		uiModel.addAttribute("yesterdayCards", statsService.getYesterdayCardsByPopulationCrous("encoded_date"));
-		uiModel.addAttribute("monthCards", statsService.getMonthCardsByPopulationCrous("encoded_date"));
-		uiModel.addAttribute("yearCards", statsService.getYearEnabledCardsByPopulationCrous("request_date", statsService.getDates().get("year")));
-		uiModel.addAttribute("allYearCards", statsService.getAllPastYearEnabledCardsByPopulationCrous("request_date"));
-		return "manager/stats/table";
+        Map<String, String> yesterdayCards = statsService.getYesterdayCardsByPopulationCrous("encoded_date");
+        Map<String, String> monthCards = statsService.getMonthCardsByPopulationCrous("encoded_date");
+        Map<String, String> yearCards = statsService.getYearEnabledCardsByPopulationCrous("request_date", statsService.getDates().get("year"));
+        Map<String, LinkedHashMap<String, String>> allYearCards = statsService.getAllPastYearEnabledCardsByPopulationCrous("request_date");
+		uiModel.addAttribute("yesterdayCards", yesterdayCards);
+        uiModel.addAttribute("yesterdayCardsTotal", yesterdayCards.values().stream().mapToInt(Integer::parseInt).sum());
+		uiModel.addAttribute("monthCards", monthCards);
+        uiModel.addAttribute("monthCardsTotal", monthCards.values().stream().mapToInt(Integer::parseInt).sum());
+		uiModel.addAttribute("yearCards", yearCards);
+        uiModel.addAttribute("yearCardsTotal", yearCards.values().stream().mapToInt(Integer::parseInt).sum());
+		uiModel.addAttribute("allYearCards", allYearCards);
+        // allYearCardsTotal: sums
+        List<Long> allYearCardsTotal = new ArrayList<>();
+        for(String year : allYearCards.keySet()) {
+            allYearCardsTotal.add(allYearCards.get(year).values().stream()
+                    .mapToLong(Long::parseLong).sum());
+        }
+        uiModel.addAttribute("allYearCardsTotal", allYearCardsTotal);
+        return "templates/manager/stats-table";
 	}
 	
 	@RequestMapping(value="/prefs", headers = "Accept=application/json; charset=utf-8")
@@ -186,9 +207,9 @@ public class StatsController {
 				}
 				preferencesService.setPrefs(eppn, KEYRM, StringUtils.join(prefsStatsRm.toArray(), ","));
 				preferencesService.setPrefs(eppn, KEY, StringUtils.join(prefsStats.toArray(), ","));
-				if( Prefs.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult().getValue().isEmpty()){
-					Prefs pref = Prefs.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult();
-					pref.remove();
+				if( prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult().getValue().isEmpty()){
+					Prefs pref = prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult();
+                    prefsDaoService.remove(pref);
 				}
 			}
 		} catch (Exception e) {

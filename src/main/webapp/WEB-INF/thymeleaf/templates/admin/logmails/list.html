@@ -1,0 +1,67 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/logmails/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Logs Mails</title>
+</head>
+<body>
+<div id="logmailsList" layout:fragment="content"
+     th:with="logmails_url=@{/admin/logmails}">
+    <h2>Logs Mails</h2>
+    <div class="alert alert-info" id="searchBar">
+        <div class="row">
+            <div class="col-lg-2">
+                <form th:action="${logmails_url}" method="get">
+                    <label for="eppn">Eppn</label>
+                    <div class="input-group">
+                        <input type="text" name="eppn" class="form-control" th:value="${param.eppn}"/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-success" type="submit">OK</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_LogMail">
+            <thead>
+                <tr>
+                    <th>Action message</th>
+                    <th>Date</th>
+                    <th>Eppn</th>
+                    <th>Sujet</th>
+                    <th>Mail To</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="logmail : ${logmails}">
+                    <td>
+                        <a th:href="@{/admin/actionmessages/{id}(id=${logmail.cardActionMessageId})}"
+                           th:text="${logmail.cardActionMessageId}"></a>
+                    </td>
+                    <td th:text="${#temporals.format(logmail.logDate, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                    <td>
+                        <a th:href="@{/manager(eppn=${logmail.eppn})}" th:text="${logmail.eppn}"></a>
+                    </td>
+                    <td th:text="${logmail.subject}"></td>
+                    <td th:text="${logmail.mailTo}"></td>
+                </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

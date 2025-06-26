@@ -1,0 +1,69 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/fragments/navbar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div class="navbar-default navbar-inverse navbar-fixed-top" th:fragment="navbar">
+    <div class="container-fluid hidden-print">
+        <div id="bs-navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li>
+                <a th:href="@{/}" th:text="#{application_name}"></a>
+            </li>
+            <th:block sec:authorize="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_CONSULT_') or hasRole('ROLE_LIVREUR')">
+                <li th:classappend="${role} == 'user' ? 'active'">
+                    <a th:href="@{/user}">Vue Utilisateur</a>
+                </li>
+                <li th:classappend="${role} == 'manager' ? 'active'">
+                    <a th:href="@{/manager(index='first')}">Vue Manager</a>
+                </li>
+            </th:block>
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <li th:classappend="${role} == 'admin' ? 'active'">
+                    <a th:href="@{/admin/currentsessions}">Admin</a>
+                </li>
+            </th:block>
+            <th:block sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')">
+                <li th:classappend="${role} == 'supervisor' ? 'active'">
+                    <a th:href="@{/manager/su}">SU</a>
+                </li>
+            </th:block>
+            <li th:if="${navBarApps != null}" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apps<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li th:each="navBarApp : ${navBarApps}" class="menuTools">
+                        <a th:href="${navBarApp.url}">
+                            <span th:style="'opacity: 0.5;background-size:15px;background-image: url(' + ${navBarApp.icon} + '); width: 15px; height: 15px;'" class="glyphicon"></span>
+                            <span th:text="${navBarApp.title}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#collapseHelp" data-toggle="collapse">
+                    <span class="glyphicon glyphicon-question-sign"></span> Aide
+                </a>
+            </li>
+        </ul>
+        </div>
+        <th:block sec:authorize="isAuthenticated()">
+            <ul class="list-inline navbar-right navbar-right-custom visible-xs-block visible-lg-block visible-md-block visible-sm-block">
+                <li>
+                    <button id="hiddenBtn" class="btn btn-xs collapsed" type="button" data-target="#collapseEtat" aria-expanded="false">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    </button>
+                </li>
+                <li>
+                    <span sec:authentication="name"></span>
+                </li>
+            </ul>
+        </th:block>
+        <th:block sec:authorize="hasRole('ROLE_PREVIOUS_ADMINISTRATOR')">
+            <ul class="nav navbar-nav navbar-right esupsgc-supervisor-nav">
+                <li>
+                    <a th:href="@{/logout}" class="btn btn-warning">SORTIR DU SU !</a>
+                </li>
+            </ul>
+        </th:block>
+    </div>
+</div>
+</html>

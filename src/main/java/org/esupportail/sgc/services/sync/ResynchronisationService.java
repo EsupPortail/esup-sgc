@@ -1,16 +1,14 @@
 package org.esupportail.sgc.services.sync;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
-
-import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
-import antlr.debug.TraceAdapter;
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 
 @Service
 public class ResynchronisationService {
@@ -18,7 +16,10 @@ public class ResynchronisationService {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Resource
-	private ResynchronisationUserService resynchronisationUserService;
+	ResynchronisationUserService resynchronisationUserService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	private Boolean shutdownCalled = false; 
 	
@@ -36,7 +37,7 @@ public class ResynchronisationService {
 		long nbUpdate = 0;
 		long nbNoUpdate = 0;
 		long nbError = 0;
-		for(String eppn : User.findAllUsersEppns()) {
+		for(String eppn : userDaoService.findAllUsersEppns()) {
 			try {
 				if(resynchronisationUserService.synchronizeUserInfo(eppn)) {
 					nbUpdate++;

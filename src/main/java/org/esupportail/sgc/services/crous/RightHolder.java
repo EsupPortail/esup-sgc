@@ -1,22 +1,16 @@
 package org.esupportail.sgc.services.crous;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTimeComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.tostring.RooToString;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonValue;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@RooToString
-@RooJavaBean
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RightHolder {
 
@@ -38,13 +32,13 @@ public class RightHolder {
 
 	String email;
 
-	Date dueDate;
+    LocalDateTime dueDate;
 
 	Long idCompanyRate;
 
 	Long idRate;
 
-	Date birthDate;
+    LocalDateTime birthDate;
 
 	String ine;
 
@@ -55,12 +49,12 @@ public class RightHolder {
 	BlockingStatus blockingStatus;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
-	public Date getDueDate() {
+	public LocalDateTime getDueDate() {
 		return dueDate;
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
-	public Date getBirthDate() {
+	public LocalDateTime getBirthDate() {
 		return birthDate;
 	}
 
@@ -155,5 +149,97 @@ public class RightHolder {
 
 	 */
 
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getIdentifier() {
+        return this.identifier;
+    }
+
+	public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+	public String getFirstName() {
+        return this.firstName;
+    }
+
+	public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+	public String getLastName() {
+        return this.lastName;
+    }
+
+	public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+	public String getEmail() {
+        return this.email;
+    }
+
+	public void setEmail(String email) {
+        this.email = email;
+    }
+
+	public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+	public Long getIdCompanyRate() {
+        return this.idCompanyRate;
+    }
+
+	public void setIdCompanyRate(Long idCompanyRate) {
+        this.idCompanyRate = idCompanyRate;
+    }
+
+	public Long getIdRate() {
+        return this.idRate;
+    }
+
+	public void setIdRate(Long idRate) {
+        this.idRate = idRate;
+    }
+
+	public void setBirthDate(LocalDateTime birthDate) {
+        this.birthDate = birthDate;
+    }
+
+	public String getIne() {
+        return this.ine;
+    }
+
+	public void setIne(String ine) {
+        this.ine = ine;
+    }
+
+	public String getRneOrgCode() {
+        return this.rneOrgCode;
+    }
+
+	public void setRneOrgCode(String rneOrgCode) {
+        this.rneOrgCode = rneOrgCode;
+    }
+
+	public AccountStatus getAccountStatus() {
+        return this.accountStatus;
+    }
+
+	public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+	public BlockingStatus getBlockingStatus() {
+        return this.blockingStatus;
+    }
+
+	public void setBlockingStatus(BlockingStatus blockingStatus) {
+        this.blockingStatus = blockingStatus;
+    }
 }
 

@@ -1,0 +1,105 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/tableStats.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Statistiques - tableaux</title>
+</head>
+<body>
+<div id="tableStats" layout:fragment="content">
+    <th:block th:with="
+        listeUrl=@{/manager(index='first')},
+        statsPage=@{/manager/stats},
+        downloadUrl=@{/admin/import/tableStats},
+        colspanVal=${populationCrous.size() + 1}
+    ">
+        <h2>
+            Statistiques - tableaux
+            <a class="btn btn-primary pull-right" th:href="${listeUrl}" type="button">
+                <span class="glyphicon glyphicon-home"></span>
+            </a>
+            <a class="btn btn-warning pull-right" th:href="${statsPage}" id="btnStats" title="Statistiques">
+                <span class="glyphicon glyphicon-stats"></span>
+            </a>
+            <a th:href="${downloadUrl}" class="btn btn-primary pull-right" id="statsEdit" title="Télécharger csv">
+                <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+            </a>
+        </h2>
+
+        <div class="well">
+            <h3>Statistiques cartes éditées</h3>
+            <h4>Année universitaire débutant au <span th:text="${dates['formatYear']}"></span></h4>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th th:each="popu : ${populationCrous}" th:text="${popu.value}"></th>
+                    <th><b>TOTAL</b></th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Hier -->
+                <tr>
+                    <th th:colspan="${colspanVal}" class="titleStats editedStats">
+                        <span th:text="#{stats.table.edited.yesterday}"></span>
+                        <span th:text="${dates['yesterday']}"></span>
+                    </th>
+                </tr>
+                <tr id="cartesJour">
+                    <td th:each="yes : ${yesterdayCards}" th:text="${yes.value}"></td>
+                    <td class="bold" th:text="${yesterdayCardsTotal}"></td>
+                </tr>
+                <!-- Mois -->
+                <tr>
+                    <th th:colspan="${colspanVal}" class="titleStats editedStats">
+                        <span th:text="#{stats.table.edited.month}"></span>
+                        <span th:text="${dates['month']}"></span>
+                    </th>
+                </tr>
+                <tr id="cartesPeriode">
+                    <td th:each="month : ${monthCards}" th:text="${month.value}"></td>
+                    <td class="bold" th:text="${monthCardsTotal}"></td>
+                </tr>
+                <!-- Année -->
+                <tr>
+                    <th th:colspan="${colspanVal}" class="titleStats editedStats">
+                        <span th:text="#{stats.table.edited.year}"></span>
+                        <span th:text="${dates['formatYear']}"></span>
+                    </th>
+                </tr>
+                <tr id="cartesPeriode">
+                    <td th:each="year : ${yearCards}" th:text="${year.value}"></td>
+                    <td class="bold" th:text="${yearCardsTotal}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="well">
+            <h4>Années universitaires précédentes</h4>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th th:each="popu : ${populationCrous}" th:text="${popu.value}"></th>
+                    <th><b>TOTAL</b></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <th:block th:each="yearMap, iStat : ${allYearCards}">
+                        <th th:colspan="${colspanVal}" class="titleStats editedStats">
+                            <span th:text="#{stats.table.edited.all}"></span>
+                            <span th:text="${yearMap.key}"></span>
+                        </th>
+                        <tr>
+                            <td th:each="year : ${yearMap.value}" th:text="${year.value}"></td>
+                            <td class="bold" th:text="${allYearCardsTotal[iStat.index]}"></td>
+                        </tr>
+                    </th:block>
+                </tbody>
+            </table>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd 
-						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd         
+	xsi:schemaLocation="http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 						http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd         
-						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd         
-						http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd         
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
-	<!-- This will automatically locate any and all property files you have 
-		within your classpath, provided they fall under the META-INF/spring directory. 
-		The located property files are parsed and their values can then be used within 
-		application context files in the form of ${propertyKey}. -->
+
+
+    <!-- needed with spring 6 -->
+    <bean class="org.springframework.web.servlet.handler.HandlerMappingIntrospector" name="mvcHandlerMappingIntrospector"/>
+
+    <!-- This will automatically locate any and all property files you have
+        within your classpath, provided they fall under the META-INF/spring directory.
+        The located property files are parsed and their values can then be used within
+        application context files in the form of ${propertyKey}. -->
 	<context:property-placeholder location="classpath*:META-INF/spring/*.properties" />
 
 	<!-- Turn on AspectJ @Configurable support. As a result, any time you instantiate 
@@ -52,7 +55,7 @@
 		<context:exclude-filter expression="org.springframework.web.bind.annotation.ControllerAdvice"
 			type="annotation" />
 	</context:component-scan>
-	<bean class="org.apache.commons.dbcp.BasicDataSource"
+	<bean class="org.apache.commons.dbcp2.BasicDataSource"
 		destroy-method="close" id="dataSource">
 		<property name="driverClassName" value="${database.driverClassName}" />
 		<property name="url" value="${database.url}" />
@@ -65,21 +68,23 @@
 		<property name="numTestsPerEvictionRun" value="3" />
 		<property name="minEvictableIdleTimeMillis" value="1800000" />
 		<property name="validationQuery" value="SELECT version();" />
-		<property name="maxActive" value="50" />
 		<property name="maxIdle" value="10" />
 	</bean>
 	<bean class="org.springframework.orm.jpa.JpaTransactionManager"
 		id="transactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
-	<tx:annotation-driven mode="aspectj"
-		transaction-manager="transactionManager" />
-	<bean
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-		id="entityManagerFactory">
-		<property name="persistenceUnitName" value="persistenceUnit" />
-		<property name="dataSource" ref="dataSource" />
-	</bean>
+
+	<tx:annotation-driven />
+
+    <jpa:repositories base-package="org.esupportail.sgc.repositories"/>
+
+    <bean
+            class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+            id="entityManagerFactory">
+        <property name="persistenceUnitName" value="persistenceUnit" />
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 
   <!-- Resolves localized messages*.properties and application.properties files in the application to allow for internationalization. 
     The messages*.properties files translate Roo generated messages which are part of the admin interface, the 

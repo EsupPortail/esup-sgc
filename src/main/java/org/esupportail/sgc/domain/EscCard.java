@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -17,7 +19,12 @@ public class EscCard {
 	public enum CardStatusType{ACTIVE, INACTIVE};
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+@SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
 	@Column(name = "id")
 	private Long id;
 
@@ -28,10 +35,10 @@ public class EscCard {
 
 	@Enumerated(EnumType.STRING)
 	CardType cardType;
-	
-	Date expiresAt;
 
-	Date issuedAt;
+    LocalDateTime expiresAt;
+
+    LocalDateTime issuedAt;
 
 	String issuerIdentifier;
 
@@ -72,20 +79,20 @@ public class EscCard {
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	public Date getExpiresAt() {
+	public LocalDateTime getExpiresAt() {
 		return expiresAt;
 	}
 
-	public void setExpiresAt(Date expiresAt) {
+	public void setExpiresAt(LocalDateTime expiresAt) {
 		this.expiresAt = expiresAt;
 	}
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	public Date getIssuedAt() {
+	public LocalDateTime getIssuedAt() {
 		return issuedAt;
 	}
 
-	public void setIssuedAt(Date issuedAt) {
+	public void setIssuedAt(LocalDateTime issuedAt) {
 		this.issuedAt = issuedAt;
 	}
 

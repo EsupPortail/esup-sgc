@@ -1,5 +1,8 @@
 package org.esupportail.sgc.services;
 
+import jakarta.annotation.Resource;
+import org.esupportail.sgc.dao.LogDaoService;
+import org.esupportail.sgc.dao.LogMailDaoService;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.LogMail;
 import org.slf4j.Logger;
@@ -10,9 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -40,6 +41,12 @@ public class LogService {
 	
 	@Resource
 	AppliConfigService appliConfigService;
+
+    @Resource
+    LogDaoService logDaoService;
+
+    @Resource
+    LogMailDaoService logMailDaoService;
 
 	public void log(Long cardId, ACTION action, RETCODE success, String comment, String eppnCible, String ip) {
 		log(cardId, action, success, comment, eppnCible, ip, null);
@@ -80,7 +87,7 @@ public class LogService {
 			eppn = printerEppn;
 		}
 
-		Date logDate = new Date();
+		LocalDateTime logDate = LocalDateTime.now();
 
 		Log log = new Log();
 		log.setLogDate(logDate);
@@ -92,7 +99,7 @@ public class LogService {
 		log.setComment(comment);
 		log.setEppnCible(eppnCible);
 		log.setRemoteAddress(remoteAddress);
-		log.persist();
+        logDaoService.persist(log);
 	}
 	
 	
@@ -102,21 +109,18 @@ public class LogService {
 		
 		int daysNb = appliConfigService.getDaysNbConfig();
 				
-		Date currentDate = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(currentDate);
-		cal.add(Calendar.DAY_OF_MONTH, -daysNb);
-		Date datePurge = cal.getTime();
+		LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime datePurge = currentDate.minusDays(daysNb);
 		
-		List<Log> logs2purge = Log.findLogsByLogDateLessThan(datePurge).getResultList();
+		List<Log> logs2purge = logDaoService.findLogsByLogDateLessThan(datePurge).getResultList();
 		for(Log log: logs2purge) {
-			log.remove();
+            logDaoService.remove(log);
 		}
 		log.info(logs2purge.size() + " logs en base vieux de " + daysNb  + " jours purgés");
 
-		List<LogMail> logmails2purge = LogMail.findLogMailsByLogDateLessThan(datePurge).getResultList();
+		List<LogMail> logmails2purge = logMailDaoService.findLogMailsByLogDateLessThan(datePurge).getResultList();
 		for(LogMail log: logmails2purge) {
-			log.remove();
+            logMailDaoService.remove(log);
 		}
 		log.info(logmails2purge.size() + " logs mails en base vieux de " + daysNb  + " jours purgés");
 

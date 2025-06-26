@@ -1,0 +1,102 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/ldapSearch.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Recherche utilisateur Ldap</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <script type="text/javascript">
+        var searchLdapUrl = "[[@{/manager/searchLdap}]]";
+    </script>
+    <h2>Recherche utilisateur Ldap</h2>
+    <div class="well">
+        <p>Cette page vous permet de rechercher une personne dans l'annuaire LDAP afin de faire une demande de carte, notamment lorsque cette personne n'est pas encore connue du SGC (n'a pas encore de carte).</p>
+        <p>La recherche s'effectue sur le nom / prénom (attribut ldap cn : common name).</p>
+        <p>Les résultats retournés proviennent du ldap, ainsi que du SGC si l'utilisateur à déjà une carte enregistrée.</p>
+        <p>Si l'utilisateur n'a pas de carte enregistrée, on vous propose d'accéder au formulaire de demande, sinon on vous propose d'accéder à la fiche utilisateur du SGC (qui vous permet de demander un renouvellement par exemple).</p>
+        <p>La demande de carte effectuée via le formulaire est journalisée dans la base en votre nom.</p>
+    </div>
+
+    <form class="form-inline" th:action="@{/manager/ldapSearch}" method="get" id="searchLdapForm">
+        <div class="jumbotron">
+            <label for="searchLdap" class="control-label col-lg-offset-3 col-md-offset-2 col-sm-offset-1">
+                Recherche sur nom / prénom :
+            </label>
+            <div class="form-group">
+                <select th:if="${ldapTemplatesNames != null}" name="ldapTemplateName" id="ldapTemplateName" class="form-control">
+                    <option th:each="ldapTemplateName : ${ldapTemplatesNames}"
+                            th:value="${ldapTemplateName}"
+                            th:text="${ldapTemplateName}"
+                            th:selected="${param.ldapTemplateName == ldapTemplateName}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="searchLdap"
+                       name="searchString" maxlength="100" minlength="3"
+                       required="required" th:value="${searchItem}" />
+                &nbsp;
+                <button type="submit" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+    </form>
+
+    <table th:unless="${#lists.isEmpty(ldapList)}" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Eppn</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Date de naissance</th>
+                <th>Mail</th>
+                <th>Nb de cartes</th>
+                <th>Type</th>
+                <th>Affectation</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${ldapList}">
+                <td th:text="${user.eppn}"></td>
+                <td th:text="${user.firstname}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${#temporals.format(user.birthday, 'dd/MM/yyyy')}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.nbCards}"></td>
+                <td th:text="${user.userType}"></td>
+                <td th:text="${user.supannEntiteAffectationPrincipale}"></td>
+                <td>
+                    <div th:if="${user.cards != null and #lists.size(user.cards) > 0}">
+                        <div th:if="${user.viewRight}">
+                            <a th:href="@{/manager/{id}(id=${user.cards[0].id})}" class="btn btn-warning">Voir la fiche</a>
+                        </div>
+                        <div th:unless="${user.viewRight}">
+                            <span class="btn btn-warning disabled">Voir la fiche</span>
+                        </div>
+                    </div>
+                    <div th:unless="${user.cards != null and #lists.size(user.cards) > 0}">
+                        <div th:if="${user.externalCard == null or user.externalCard.csn == null}">
+                            <form th:if="${user.newCardRight}" class="form-horizontal" th:action="@{/manager/ldapUserForm}" method="post">
+                                <input type="hidden" th:value="${user.eppn}" name="eppn" />
+                                <button type="submit" class="btn btn-primary">Faire une demande</button>
+                            </form>
+                        </div>
+                        <div th:if="${user.externalCard != null and user.externalCard.csn != null}">
+                            <form th:if="${user.importExtCardRight}" class="form-horizontal" th:action="@{/manager/ldapUserExtForm}" method="post">
+                                <input type="hidden" th:value="${user.eppn}" name="eppn" />
+                                <button type="submit" class="btn btn-danger">Importer la carte extérieure</button>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

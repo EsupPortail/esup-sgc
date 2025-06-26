@@ -4,20 +4,23 @@ import org.esupportail.sgc.dao.EscPersonDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.EscCard;
 import org.esupportail.sgc.domain.EscPerson;
-import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assumptions.*;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations={"classpath*:META-INF/spring/applicationContext*.xml"})
 public class ApiEscServiceTest {
 	
@@ -32,7 +35,7 @@ public class ApiEscServiceTest {
 	@Test
 	public void getEscrPersonTest() {
 		EscPerson escPersonFromDb = escPersonDaoService.findOneEscPerson4test();
-		Assume.assumeTrue(escPersonFromDb!=null);
+		assumeTrue(escPersonFromDb!=null);
 		log.info("escPersonFromDb : " + escPersonFromDb);
 		for(ApiEscService apiEscService : apiEscServices) {
 			EscPerson escPersonFromEsc = apiEscService.getEscPerson(escPersonFromDb.getEppn());
@@ -43,7 +46,7 @@ public class ApiEscServiceTest {
 	@Test
 	public void getCardTypeTest() {
 		Card c = new Card();
-		c.setEncodedDate(new Date());
+		c.setEncodedDate(LocalDateTime.now());
 		for(ApiEscService apiEscService : apiEscServices) {
 			EscCard.CardType cardType = apiEscService.getCardType(c);
 			log.info("cardType : " + cardType);

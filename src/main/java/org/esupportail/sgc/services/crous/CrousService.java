@@ -1,6 +1,9 @@
 package org.esupportail.sgc.services.crous;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.CrousSmartCardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.User;
@@ -14,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 
 public class CrousService extends ValidateService {
@@ -29,13 +32,22 @@ public class CrousService extends ValidateService {
 	
 	@Resource 
 	UserInfoService userInfoService;
-	
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    CrousSmartCardDaoService crousSmartCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
 	@Override
 	public void validateInternal(Card card) {
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			if(this.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.ACTIVATE)) {
-				CrousSmartCard smartCard = card.getCrousSmartCard();
+				CrousSmartCard smartCard = crousSmartCardDaoService.getCrousSmartCard(card);
 				if(smartCard == null) {
 					throw new SgcRuntimeException("Card with csn " + card.getCsn() + " has not the CROUS/IZLY application encoded ?", null);
 				} else {
@@ -55,7 +67,7 @@ public class CrousService extends ValidateService {
 
 	@Override
 	public void invalidateInternal(Card card) {
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			Boolean postOrUpdateRightHolderOk4invalication = false;
 			try {
@@ -69,7 +81,7 @@ public class CrousService extends ValidateService {
 				}
 			}
 			if(postOrUpdateRightHolderOk4invalication) {
-				CrousSmartCard smartCard = CrousSmartCard.findCrousSmartCard(card.getCsn());
+				CrousSmartCard smartCard = crousSmartCardDaoService.findCrousSmartCard(card.getCsn());
 				if(smartCard == null) {
 					throw new SgcRuntimeException("Card with csn " + card.getCsn() + " has not the CROUS/IZLY application encoded ?", null);
 				} else {
@@ -136,7 +148,7 @@ public class CrousService extends ValidateService {
 	}
 	
 	public boolean postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) {		
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		try {
 			if(authApiCrousService.postOrUpdateRightHolder(eppn, esupSgcOperation)) {
 				user.setCrousError("");
@@ -155,7 +167,7 @@ public class CrousService extends ValidateService {
 		try {
 			authApiCrousService.patchIdentifier(patchIdentifier);
 		} catch(CrousHttpClientErrorException clientEx) {
-			List<User> users = User.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
+			List<User> users = userDaoService.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
 			if(!users.isEmpty()) {
 				clientEx.setEppn(users.get(0).getEppn());
 				crousLogService.logErrorCrousAsync(clientEx);
@@ -171,7 +183,7 @@ public class CrousService extends ValidateService {
 
 	public void uncloseAndResync(String eppn) {
 		this.unclose(eppn, CrousErrorLog.EsupSgcOperation.UNCLOSE);
-		List<Card> cardsEnabled = Card.findCardsByEppnAndEtatEquals(eppn, Card.Etat.ENABLED).getResultList();
+		List<Card> cardsEnabled = cardDaoService.findCardsByEppnAndEtatEquals(eppn, Card.Etat.ENABLED).getResultList();
 		if (cardsEnabled.isEmpty()) {
 			this.postOrUpdateRightHolder(eppn, EsupSgcOperation.SYNC);
 		} else {
@@ -182,7 +194,7 @@ public class CrousService extends ValidateService {
 
 	@Transactional
 	protected void unclose(String eppn, EsupSgcOperation esupSgcOperation) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		try {
 			authApiCrousService.unclose(eppn, esupSgcOperation);
 			user.setCrousError("");
@@ -195,7 +207,7 @@ public class CrousService extends ValidateService {
 
 	@Transactional
 	public void enableCrous(String eppn) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		Card enabledCard = user.getEnabledCard();
 		user.setCrous(true);
 		userInfoService.updateUser(eppn, null);

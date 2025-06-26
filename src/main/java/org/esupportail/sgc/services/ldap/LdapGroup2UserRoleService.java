@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services.ldap;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +33,10 @@ public class LdapGroup2UserRoleService {
 	protected Map<String, String> mappingGroupesRoles;
 	
 	@Resource
-	protected LdapGroup2OneUserRoleService ldapGroup2OneUserRoleService;
+	LdapGroup2OneUserRoleService ldapGroup2OneUserRoleService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	public void setGroupService(GroupService groupService) {
 		this.groupService = groupService;
@@ -74,7 +78,7 @@ public class LdapGroup2UserRoleService {
 	@Transactional
 	public List<GrantedAuthority> getReachableRoles(String eppn) {
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		for(String role : user.getReachableRoles()) {
 			authorities.add(new SimpleGrantedAuthority(role));
 		}
@@ -83,7 +87,7 @@ public class LdapGroup2UserRoleService {
 
 	@Transactional
 	public void syncUser(String eppn) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		Set<String> rolesTarget = getRoles(eppn);
 		Set<String> roles2Add = new HashSet<String>(rolesTarget);
 		roles2Add.removeAll(user.getRoles());
@@ -101,7 +105,7 @@ public class LdapGroup2UserRoleService {
 		long membersAdded = 0;
 		long membersRemoved = 0;
 		StopWatch stopWatch = new PrettyStopWatch();
-		Set<String> allEppnUsers = new HashSet<String>(User.findAllEppns());
+		Set<String> allEppnUsers = new HashSet<String>(userDaoService.findAllEppns());
 		Map<String, List<String>> groups4RoleMap = new HashMap<String, List<String>>();
 		
 		for(String groupName : mappingGroupesRoles.keySet()) {
@@ -117,7 +121,7 @@ public class LdapGroup2UserRoleService {
 			
 				stopWatch.start("sync " + role);
 				
-				Set<String> eppnUsersWithRole = new HashSet<String>(User.findAllEppnsWithRole(role));
+				Set<String> eppnUsersWithRole = new HashSet<String>(userDaoService.findAllEppnsWithRole(role));
 				
 				Set<String> ldapGroupMembers = new HashSet<String>();
 				for(String groupName : groups4RoleMap.get(role)) {

@@ -1,5 +1,6 @@
 package org.esupportail.sgc.security;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.ldap.LdapGroup2UserRoleService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -11,16 +12,20 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedC
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Resource;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Transactional
 public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenticationFilter {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
+
+    @Resource
+    UserDaoService userDaoService;
+
 	private UserInfoService userInfoService;
 	
 	private LdapGroup2UserRoleService ldapGroup2UserRoleService;
@@ -45,11 +50,11 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException, ServletException {
         super.successfulAuthentication(request, response, authResult);
         String eppn = authResult.getName();
-        User user = User.findUser(eppn);
+        User user = userDaoService.findUser(eppn);
 	    if(user == null) {
 	       	user = new User();
 	       	user.setEppn(eppn);
-	       	user.persist();
+            userDaoService.persist(user);
 	    }
 	    try {
 	    	resynchronisationUserService.synchronizeUserInfo(eppn);
@@ -66,7 +71,7 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 	 * Surcharge de la méthode initiale : si pas d'attributs correspondant à credentialsRequestHeader (shib) ; on continue  :
 	 * 	credentials ldap suffisent (et pas de credentials du tout aussi ...). 
 	 * 
-	 * @see org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter#getPreAuthenticatedCredentials(javax.servlet.http.HttpServletRequest)
+	 * @see org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter#getPreAuthenticatedCredentials(jakarta.servlet.http.HttpServletRequest)
 	 */
 	@Override
     protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {

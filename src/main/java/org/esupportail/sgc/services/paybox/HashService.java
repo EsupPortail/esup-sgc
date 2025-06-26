@@ -2,7 +2,7 @@ package org.esupportail.sgc.services.paybox;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;

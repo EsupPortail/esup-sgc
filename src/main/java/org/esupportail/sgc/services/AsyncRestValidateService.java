@@ -16,27 +16,37 @@ public class AsyncRestValidateService extends RestValidateService {
 		this.delay = delay;
 	}
 
-	@Async
+    /* Can't use @Async here because it self calls its own methods.
+       So we simply manage threads manually.
+     */
+	// @Async
 	@Override
 	public void validateInternal(Card card) {
-		try {
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {
-			log.debug("InterruptedException when sleeping before calling validateInternal", delay);
-		}
-		super.validateInternal(card);
+        new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                log.debug("InterruptedException when sleeping before calling validateInternal", delay);
+            }
+            super.validateInternal(card);
+        }).start();
 	}
 
-	@Async
-	@Override
-	public void invalidateInternal(Card card) {
-		try {
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {
-			log.debug("InterruptedException when sleeping before calling invalidateInternal", delay);
-		}
-		super.invalidateInternal(card);
-	}
+    /* Can't use @Async here because it self calls its own methods.
+        So we simply manage threads manually.
+    */
+    // @Async
+    @Override
+    public void invalidateInternal(Card card) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                log.debug("InterruptedException when sleeping before calling invalidateInternal", delay);
+            }
+            super.invalidateInternal(card);
+        }).start();
+    }
 
 }
 

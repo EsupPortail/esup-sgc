@@ -1,0 +1,176 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/actionmessages/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Liste des messages d'action</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>
+        Liste des messages
+        <a class="btn btn-primary" th:href="@{/admin/actionmessages?form}">
+            <span class="glyphicon glyphicon-plus"></span>
+        </a>
+    </h2>
+
+    <!-- Modals si besoin -->
+    <div th:replace="~{templates/manager/includes/modals :: modals}"></div>
+
+    <p>
+        <h4>
+            <a class="glyphicon glyphicon-plus" data-toggle="collapse" href="#actionMessagesHelp">
+                Aide / Descriptif
+            </a>
+            <hr/>
+        </h4>
+    </p>
+
+    <div th:unless="${#maps.isEmpty(cardActionsMessagesConflictsList)}" class="alert alert-danger">
+        <b>Problème détecté sur les messages automatiques :</b>
+        <ul>
+            <li th:each="conflict : ${cardActionsMessagesConflictsList}">
+                conflits sur <span th:text="${conflict.key}"></span> :
+                <span th:each="msg : ${conflict.value}">
+                    <a th:href="@{/admin/actionmessages/{id}(id=${msg.id})}" th:text="${msg.id}"></a>
+                    <span th:if="${!${#lists.isLast(conflict.value, msg)}}">, </span>
+                </span>
+            </li>
+        </ul>
+    </div>
+
+    <div th:unless="${#maps.isEmpty(cardActionsMessagesUnreachableList)}" class="alert alert-warning">
+        <b>Problème détecté sur les messages suivants - ces messages ne sont pas cohérents avec le cycle de vie de la carte et ne seront jamais proposés / utilisés :</b>
+        <ul>
+            <li th:each="unreachable : ${cardActionsMessagesUnreachableList}">
+                Transition impossible - <span th:text="${unreachable.key}"></span> :
+                <span th:each="msg, stat : ${unreachable.value}">
+                    <a th:href="@{/admin/actionmessages/{id}(id=${msg.id})}" th:text="${msg.id}"></a>
+                     <span th:if="${!stat.last}">, </span>
+                </span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="panel-collapse collapse well" id="actionMessagesHelp">
+        <!-- Bloc d'aide, contenu repris du JSP -->
+        <p>Vous pouvez ici paramétrer des messages mails qui seront envoyés à l'utilisateur lors des changements d'état de la carte.</p>
+        <p>
+            Lors du passage d'une carte d'un état à un autre - voir le descriptif du workflow ici :
+            <button class="btn btn-primary navbar-btn" data-target="#noticeEtats" data-toggle="modal" title="Etats" type="button">
+                <span class="glyphicon glyphicon-info-sign"></span>
+            </button>
+        </p>
+        <ul>
+            <li>l'état final est obligatoire, mais l'état initial non : en ne définissant pas l'état initial cela permet de proposer un même message pour toutes les transitions dont l'état final est celui sélectionné</li>
+            <li>le message correspond au mail qui sera envoyé à l'utilisateur final, ce même message sera affiché également dans sa vue utilisateur</li>
+            <li>Auto permet de préciser un message/mail à envoyer de manière automatique</li>
+            <li>mailTo permet d'envoyer le mail à cette adresse plutôt qu'à l'utilisateur</li>
+            <li>Defaut permet de préselectionner ce message/mail pour le gestionnaire</li>
+        </ul>
+        <h5>Exemples :</h5>
+        <ul>
+            <li>Si on souhaite envoyer un message de confirmation de réactivation de cartes, on pourra proposer un message avec
+                <ul>
+                    <li>Etat Initial à <span class="label label-disabled" title="DISABLED">DÉSACTIVÉ</span></li>
+                    <li>Etat Final à <span class="label label-enabled" title="ENABLED">ACTIVÉ</span></li>
+                    <li>Auto à true</li>
+                    <li>Defaut à false</li>
+                </ul>
+            </li>
+        </ul>
+        <h5>Nombre de jours avant la date de fin utilisateur</h5>
+        <ul>
+            <li>Cette option permet de prévenir un utilisateur que sa carte deviendra caduque dans un nombre de jours donné.</li>
+            <li>Fonctionne uniquement sur un message avec état initial 'ACTIVÉ' et état final 'CADUC'</li>
+            <li>ESUP-SGC envoie ces mails via la tâche sendMails2PreventCaduc</li>
+            <li>
+                <a th:href="@{/admin/logmails}">mails logués en base</a>
+            </li>
+        </ul>
+        <h5>MAIL_LISTE_PRINCIPALE</h5>
+        <p>Les mails sont envoyés à l'utilisateur (ou à mailTo), et en copie à la liste MAIL_LISTE_PRINCIPALE.</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_CardActionMessage">
+            <thead>
+                <tr>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="etatInitial">
+                            Etat initial
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="etatFinal">
+                            Etat final
+                        </a>
+                    </th>
+                    <th>Message</th>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="auto">
+                            Auto
+                        </a>
+                    </th>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="defaut">
+                            Defaut
+                        </a>
+                    </th>
+                    <th>MailTo</th>
+                    <th>Types utilisateur</th>
+                    <th>Logs</th>
+                    <th data-type="html" class="">Modifier</th>
+                    <th data-type="html" class="">Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="msg : ${cardactionmessages}">
+                    <td>
+                        <span th:text="#{|card.label.${msg.etatInitial}|}"
+                              class="label"
+                              th:classappend="${'label-' + #strings.toLowerCase(msg.etatInitial)}"/>
+                    </td>
+                    <td>
+                        <span th:text="#{|card.label.${msg.etatFinal}|}"
+                              class="label"
+                              th:classappend="${'label-' + #strings.toLowerCase(msg.etatFinal)}"/>
+                    </td>
+                    <td th:text="${msg.message}"></td>
+                    <td th:text="${msg.auto}"></td>
+                    <td th:text="${msg.defaut}"></td>
+                    <td th:text="${msg.mailTo}"></td>
+                    <td th:text="${msg.userTypes}"></td>
+                    <td>
+                        <a th:href="@{/admin/logmails(sortFieldName='logDate',sortOrder='desc',find='ByCardActionMessage',cardActionMessage=${msg.id})}" th:text="${msg.id}"></a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" th:href="@{/admin/actionmessages/{id}(id=${msg.id}, form=true)}">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/actionmessages/{id}(id=${msg.id}}" th:method="DELETE" class="form-inline">
+                            <button class="btn btn-danger" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?');">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

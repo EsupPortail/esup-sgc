@@ -23,14 +23,11 @@
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
 		<constructor-arg ref="httpClientFactory" />
 	</bean>
-	
-	<bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder"
-	    factory-method="create">
-	    <property name="connectionReuseStrategy">
-	    	<bean class="org.apache.http.impl.NoConnectionReuseStrategy"/>
-	    </property>
-	</bean>
-	
+
+    <bean id="httpClientBuilder" class="org.apache.hc.client5.http.impl.classic.HttpClientBuilder"
+          factory-method="create">
+    </bean>
+
 	<bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build" />
 
 

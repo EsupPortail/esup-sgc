@@ -1,45 +1,31 @@
 package org.esupportail.sgc.services.ac;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.fs.AccessService;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.SmartLifecycle;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
-import javax.persistence.EntityManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class CsvExportP2sService implements Export2AccessControlService, ApplicationListener<ContextRefreshedEvent> {
 	
@@ -60,6 +46,9 @@ public class CsvExportP2sService implements Export2AccessControlService, Applica
 	@Autowired
 	@Qualifier("transactionManager")
 	protected PlatformTransactionManager txManager;
+
+    @Resource
+    UserDaoService userDaoService;
 
 	Map<String, String> queueEppns2Update = new HashMap<>();
 
@@ -181,7 +170,7 @@ public class CsvExportP2sService implements Export2AccessControlService, Applica
 	private String sgcId2csv(Card card) {
 		ArrayList<String> fields = new ArrayList<String>();
 		
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		
 		fields.add(user.getSecondaryId());
 		fields.add(user.getName());	
@@ -211,24 +200,19 @@ public class CsvExportP2sService implements Export2AccessControlService, Applica
 	/**
 	 * -> YYYY/MM/DD
 	 */
-	private String formatDate(final Date date) {
-		String dateFt = "";
-		Date date4p2s = date;
-		if(date!=null) {
-			// P2S attend le format YYYY/MM/DD et n'accepte pas les dates supérieures à 2099/12/31
-			SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-            try {
-                Date dateMax = df.parse("2099/12/31");
-				if(date.after(dateMax)) {
-					date4p2s = dateMax;
-				}
-            } catch (ParseException e) {
-                log.error("Error during parsing date : " + e.getMessage());
-            }
-            dateFt = df.format(date4p2s);
-		}
-		return dateFt;
-	}
+    private String formatDate(final LocalDateTime date) {
+        if (date == null) {
+            return "";
+        }
+
+        // P2S attend le format YYYY/MM/DD et n'accepte pas les dates supérieures à 2099/12/31
+        LocalDateTime maxDate = LocalDateTime.of(2099, 12, 31, 0, 0);
+
+        LocalDateTime dateToFormat = date.isAfter(maxDate) ? maxDate : date;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        return dateToFormat.format(formatter);
+    }
 
 	@PreDestroy
 	public void stop() {

@@ -4,15 +4,19 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.TemplateCardDaoService;
 import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.tools.PrettyStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,6 +25,11 @@ import java.nio.file.Files;
 
 @Service
 public class EsupSgcBmpAsBase64Service {
+
+    @Autowired
+    private CardDaoService cardDaoService;
+    @Autowired
+    private TemplateCardDaoService templateCardDaoService;
 
     public enum BmpType {black, overlay, color, virtual, back};
 
@@ -42,8 +51,9 @@ public class EsupSgcBmpAsBase64Service {
             if(BmpType.black.equals(type)) {
                 bmpCardCommand = appliConfigService.getBmpCardCommandBlack4printer();
             } else if(BmpType.back.equals(type)) {
-                Card card = Card.findCard(cardId);
-                if(!card.getUser().getTemplateCard().getBackSupported()) {
+                Card card = cardDaoService.findCard(cardId);
+                TemplateCard templateCard = templateCardDaoService.getTemplateCard(card.getUser());
+                if(!templateCard.getBackSupported()) {
                     return "";
                 }
                 bmpCardCommand = appliConfigService.getBmpCardCommandBack4printer();

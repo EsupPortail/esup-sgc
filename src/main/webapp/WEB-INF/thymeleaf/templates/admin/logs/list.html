@@ -1,0 +1,118 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/logs/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Logs</title>
+</head>
+<body>
+<div id="logsList" layout:fragment="content">
+    <h2>Logs</h2>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 well">
+        <div class="collapse navbar-collapse" id="searchCollapse">
+            <form th:action="@{/admin/logs}" method="get" class="navbar-form navbar-left form-inline" th:object="${searchLog}">
+                <input name="sortFieldName" value="logDate" type="hidden"/>
+                <input name="sortOrder" value="desc" type="hidden"/>
+                <input name="size" value="10" type="hidden"/>
+                <div class="form-group">
+                    <label for="eppnCible">Eppn cible</label>
+                    <div class="input-group">
+                        <input type="text" th:field="*{eppnCible}" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="eppn">Modificateur</label>
+                    <div class="input-group">
+                        <input type="text" th:field="*{eppn}" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="typeLogs">Type d'utilisateur</label>
+                    <div class="input-group">
+                        <select id="typeLogs" th:field="*{type}" class="form-control">
+                            <option value="">--Choisir--</option>
+                            <option th:each="type : ${enumTypes}"
+                                    th:value="${type}"
+                                    th:text="${type}"
+                                    th:selected="${type} == ${typeSelected}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="actionLogs">Action</label>
+                    <div class="input-group">
+                        <select id="actionLogs" th:field="*{action}" class="form-control">
+                            <option value="">--Choisir--</option>
+                            <option th:each="action : ${enumActions}"
+                                    th:value="${action}"
+                                    th:text="${action}"
+                                    th:selected="${action} == ${actionSelected}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="retCodeLogs">Ret Code</label>
+                    <div class="input-group">
+                        <select id="retCodeLogs" th:field="*{retCode}" class="form-control">
+                            <option value="">--Choisir--</option>
+                            <option th:each="retCode : ${enumRetCodes}"
+                                    th:value="${retCode}"
+                                    th:text="${retCode}"
+                                    th:selected="${retCode} == ${retCodeSelected}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" type="submit">OK</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_Log">
+            <thead>
+            <tr>
+                <th>Log Date</th>
+                <th>Cible</th>
+                <th>Modificateur</th>
+                <th>Type</th>
+                <th>Card Id</th>
+                <th>Action</th>
+                <th>Ret Code</th>
+                <th>Commentaire</th>
+                <th>IP</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="log : ${logs}">
+                <td th:text="${#temporals.format(log.logDate, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                <td>
+                    <a th:href="@{/manager(eppn=${log.eppnCible})}" th:text="${log.eppnCible}"></a>
+                </td>
+                <td th:text="${log.eppn}"></td>
+                <td th:text="${log.type}"></td>
+                <td>
+                    <a th:href="@{/manager/{cardId}(cardId=${log.cardId})}" th:text="${log.cardId}"></a>
+                </td>
+                <td th:text="${log.action}"></td>
+                <td th:text="${log.retCode}"></td>
+                <td th:text="${log.comment}"></td>
+                <td th:text="${log.remoteAddress}"></td>
+            </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

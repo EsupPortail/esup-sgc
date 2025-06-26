@@ -9,6 +9,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import flexjson.JSONSerializer;
 import org.apache.commons.io.IOUtils;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.TemplateCardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
@@ -38,8 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -75,11 +78,20 @@ public class ManagerCardControllerNoHtml {
 	
 	@Resource
 	PhotoResizeService photoResizeService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    TemplateCardDaoService templateCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	@RequestMapping(value="/photo/{cardId}")
 	@Transactional(readOnly = true)
 	public ResponseEntity<byte[]> writePhotoToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		PhotoFile photoFile = card.getPhotoFile();
 		Long size = photoFile.getFileSize();
 		String contentType = photoFile.getContentType();
@@ -92,14 +104,14 @@ public class ManagerCardControllerNoHtml {
 	@RequestMapping(value="/{userId}/photo")
 	@Transactional(readOnly = true)
 	public ResponseEntity<byte[]> writeUserPhotoToResponse(@PathVariable Long userId, HttpServletResponse response) throws IOException, SQLException {
-		User user = User.findUser(userId);
+		User user = userDaoService.findUser(userId);
 		return getUserPhotoAsResponseEntity(user);
 	}
 	
 	@RequestMapping(value="/photo", params="eppn")
 	@Transactional
 	public ResponseEntity<byte[]> writeUserPhotoToResponse(@RequestParam String eppn, HttpServletResponse response) throws IOException, SQLException {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(user == null) {
 			user = new User();
 			user.setEppn(eppn);
@@ -131,7 +143,7 @@ public class ManagerCardControllerNoHtml {
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public ResponseEntity<byte[]> writePhotoVignetteToResponse(@PathVariable Long cardId, HttpServletResponse response) throws IOException, SQLException {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		PhotoFile photoFile = card.getPhotoFile();
 		byte[] vignetteImgBytes = photoResizeService.resizePhoto(photoFile, 150, 188);
 		String contentType = photoFile.getContentType();
@@ -145,15 +157,15 @@ public class ManagerCardControllerNoHtml {
 	@ResponseBody
 	@Transactional(readOnly = true)
 	public ResponseEntity<String>  getQRCode(@RequestParam Long cardId, HttpServletResponse response) throws WriterException, IOException, SQLException {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		PhotoFile photoFile = null;
 		boolean isCodeBarres = false;
 		if( card.getTemplateCard()!=null){
 			isCodeBarres = card.getTemplateCard().isCodeBarres();
 			photoFile = card.getTemplateCard().getPhotoFileQrCode();
-		}else if(card.getUserAccount().getTemplateCard()!=null){
-			isCodeBarres = card.getUserAccount().getTemplateCard().isCodeBarres();
-			photoFile = card.getUserAccount().getTemplateCard().getPhotoFileQrCode();
+		} else if(templateCardDaoService.getTemplateCard(card.getUserAccount())!=null){
+			isCodeBarres = templateCardDaoService.getTemplateCard(card.getUserAccount()).isCodeBarres();
+			photoFile = templateCardDaoService.getTemplateCard(card.getUserAccount()).getPhotoFileQrCode();
 		}
 		
 		String value = card.getQrcode();
@@ -206,7 +218,7 @@ public class ManagerCardControllerNoHtml {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<Card> eppnList = new ArrayList<Card>();
 		if(!searchString.trim().isEmpty()) {
-			eppnList = Card.findCardsByEppnLike(searchString, "eppn", "ASC").setMaxResults(100).getResultList();
+			eppnList = cardDaoService.findCardsByEppnLike(searchString, "eppn", "ASC").setMaxResults(100).getResultList();
 			// hack : we keep only one card for one eppn
 			Map<String, Card> cardsMap = eppnList.stream()
 					.collect(
@@ -242,19 +254,19 @@ public class ManagerCardControllerNoHtml {
 	@ResponseBody 
 	@Transactional(readOnly = true)
     public RightHolder getCrousRightHolder(@RequestParam String eppn) {
-		return crousService.getRightHolder(User.findUser(eppn));
+		return crousService.getRightHolder(userDaoService.findUser(eppn));
 	}
 	
 	@RequestMapping(value="/getCrousRightHolderHtmlPart")
 	@Transactional(readOnly = true)
     public String getCrousRightHolderHtmlPart(@RequestParam String eppn, Model uiModel) {
 		try {
-			RightHolder rightHolder = crousService.getRightHolder(User.findUser(eppn));
+			RightHolder rightHolder = crousService.getRightHolder(userDaoService.findUser(eppn));
 			uiModel.addAttribute("rightHolder", rightHolder);
-			return "manager/rightHolder";
+			return "templates/manager/rightHolder";
 		} catch(CrousAccountForbiddenException ex) {
 			uiModel.addAttribute("message", ex.getMessage());
-			return "manager/simple-message";
+			return "templates/manager/simple-message";
 		}
 	}
 	
@@ -264,7 +276,7 @@ public class ManagerCardControllerNoHtml {
     public String getCrousSmartCardUrlHtmlPart(@RequestParam String csn, Model uiModel) {
 		CrousSmartCard crousSmartCard = crousService.getCrousSmartCard(csn);
 		uiModel.addAttribute("crousSmartCard", crousSmartCard);
-		return "manager/crousSmartCard";
+		return "templates/manager/crousSmartCard";
 	}
 	
 	
@@ -279,7 +291,7 @@ public class ManagerCardControllerNoHtml {
 			}
 		}
 		uiModel.addAttribute("escPerson", escPerson);
-		return "manager/escrStudent";
+		return "templates/manager/escrStudent";
 	}
 	
 	
@@ -294,7 +306,7 @@ public class ManagerCardControllerNoHtml {
 			}
 		}
 		uiModel.addAttribute("escCard", escCard);
-		return "manager/escrCard";
+		return "templates/manager/escrCard";
 	}
 	
 	
@@ -303,7 +315,7 @@ public class ManagerCardControllerNoHtml {
 	@Transactional(readOnly = true)
 	public void getPhoto(@PathVariable String type, @PathVariable Long templateId, HttpServletResponse response) throws IOException, SQLException {
 		
-		TemplateCard templateCard = TemplateCard.findTemplateCard(templateId);
+		TemplateCard templateCard = templateCardDaoService.findTemplateCard(templateId);
 		PhotoFile photoFile = null;
 		if(templateCard != null) {
 			if("logo".equals(type)){

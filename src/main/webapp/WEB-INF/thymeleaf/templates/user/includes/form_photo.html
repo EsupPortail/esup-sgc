@@ -1,0 +1,73 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/user/includes/form_photo.html -->
+<div th:fragment="form_photo">
+    <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Photo</legend>
+        <div id="image-cropper">
+            <div class="col-lg-6">
+                <div class="col-lg-5">
+                    <div th:if="${isRejected}">
+                        <div class="thumbnail">
+                            <img th:src="@{${rejectedPhotoUrl}}" />
+                            <div class="caption">
+                                <strong>Photo originale</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ezcrop-preview" id="ezcrop-preview">&nbsp;</div>
+                    <hr />
+                    <p class="text-muted">Zoom :</p>
+                    <input type="range" class="ezcrop-image-zoom-input" />
+                    <br />
+                    <p class="text-muted">
+                        Rotation :
+                        <button id="rotate-ccw" class="rotate-ccw" type="button">
+                            <span class="glyphicon glyphicon-repeat icon-flipped" aria-hidden="true"></span>
+                        </button>
+                        <button id="rotate-cw" class="rotate-cw" type="button">
+                            <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+                        </button>
+                    </p>
+                </div>
+                <div class="well alert alert-info col-lg-7" id="ezcrop-info">
+                    <div th:if="${deviceType.name == 'Computer'}" id="webCam">
+                        <div id="my_camera">&nbsp;</div>
+                        <input type="button" class="btn btn-primary" value="Capturer" id="snapShot" />&nbsp;
+                        <button type="button" class="btn btn-default" id="retryWebcam">Effacer</button>
+                    </div>
+                    <input type="file" class="ezcrop-image-input" />
+                    <span class="bg-warning">Vous pouvez également glisser-déposer l'image</span>
+                    <p class="msgPhoto">Pour enregistrer votre demande de Léocarte, vous devez choisir une photo.</p>
+                </div>
+                <div class="form-group">
+                    <button type="button" id="preview" class="btn btn-danger" data-toggle="modal" data-target="#previewCarte">
+                        <strong>Prévisualiser</strong>
+                    </button>
+                </div>
+                <div class="col-lg-12 alert alert-danger" id="alertPreview">
+                    <span class="glyphicon glyphicon-warning-sign"></span>
+                    <strong>Vous devez obligatoirement prévisualiser la carte pour confirmer la photo choisie.</strong>
+                </div>
+                <input type="hidden" value="false" name="confirmPreview" id="confirmPreview" />
+                <input type="hidden" name="PhotoFile.imageData" class="ezcrop-image-data" />
+            </div>
+            <div class="col-lg-6">
+                <div th:if="${isRejected}" class="alert alert-danger" th:utext="${configUserMsgs['userFormRejectedMsg']}"></div>
+                <div class="alert alert-info">
+                    <p>
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true">&nbsp;</span>
+                        <strong>
+                            La photo attendue est une photo au format identité. Le fond blanc, visage de face et assez grand sur celle-ci pour que votre demande soit acceptée.
+                        </strong>
+                        <br />
+                        Si vous le souhaitez vous pouvez zoomer avec le curseur et déplacer l'image en maintenant le bouton de la souris enfoncé afin de recadrer votre photo. Si la photo est trop petite, vous ne pourrez pas zoomer.
+                    </p>
+                    <p>
+                        <strong>
+                            Votre visage doit être dans le bon sens, vous pouvez utiliser les boutons ci-dessous pour le faire pivoter. Si vous n'arrivez pas à le tourner dans le bon sens, c'est que votre photo est trop petite pour cette action. Vous devez alors en télécharger une autre.
+                        </strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>

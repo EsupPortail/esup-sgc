@@ -1,5 +1,6 @@
 package org.esupportail.sgc.batch;
 
+import org.esupportail.sgc.dao.*;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
 import org.esupportail.sgc.domain.AppliVersion;
@@ -12,10 +13,11 @@ import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.sql.DataSource;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -30,26 +32,41 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "2.6.x";
+	final static String currentEsupSgcVersion = "3.0.x";
 		
 	@Resource
 	DataSource dataSource;
-	
-	@Resource
-	UserInfoService userInfoService;
-	
-	@Resource
-	CardEtatService cardEtatService;
-	
-	@Transactional
+
+    @Resource
+    AppliConfigDaoService appliConfigDaoService;
+
+    @Resource
+    AppliVersionDaoService appliVersionDaoService;
+
+    @Resource
+    BigFileDaoService bigFileDaoService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    CardActionMessageDaoService cardActionMessageDaoService;
+
+    @Resource
+    PhotoFileDaoService photoFileDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    @Transactional
 	public void upgrade() {
 		AppliVersion appliVersion = null;
-		List<AppliVersion> appliVersions = AppliVersion.findAllAppliVersions("esupSgcVersion", "desc");
+		List<AppliVersion> appliVersions = appliVersionDaoService.findAllAppliVersions("esupSgcVersion", "desc");
 		if(appliVersions.isEmpty()) {
 			appliVersion = new AppliVersion();
 			appliVersion.setEsupSgcVersion("0.0.x");
 			appliVersion.setVersion(1);
-			appliVersion.persist();
+            appliVersionDaoService.persist(appliVersion);
 		} else {
 			appliVersion = appliVersions.get(0);
 			if(appliVersion.getVersion() == null) {
@@ -69,7 +86,7 @@ public class DbToolService {
 				}
 			}
 			for(int i = 1; i<appliVersions.size() ; i++) {
-				appliVersions.get(i).remove();
+				appliVersionDaoService.remove(appliVersions.get(i));
 			}
 		}
 		upgradeIfNeeded(appliVersion);
@@ -142,13 +159,13 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				
-				if(AppliConfig.findAppliConfigsByKeyEquals("PHOTO_SIZE_MAX").getResultList().isEmpty()) {
+				if(appliConfigDaoService.findAppliConfigsByKeyEquals("PHOTO_SIZE_MAX").getResultList().isEmpty()) {
 					AppliConfig appliConfig = new AppliConfig();
 					appliConfig.setKey("PHOTO_SIZE_MAX");
 					appliConfig.setDescription("Taille maximale (en octets) de la photo que l''on peut télécharger lors de la demande de carte");
 					appliConfig.setValue("200000");
 					appliConfig.setType(TypeConfig.TEXT);
-					appliConfig.persist();
+                    appliConfigDaoService.persist(appliConfig);
 				}
 							
 	    		esupSgcVersion = "0.1.z";
@@ -166,19 +183,19 @@ public class DbToolService {
 					int bid = photoFilesIdRs.getInt("bid");
 					int id = Math.max(aid, bid);
 					int id4Copy = Math.min(aid, bid);
-					PhotoFile photoFile4Copy = PhotoFile.findPhotoFile(Long.valueOf(id4Copy));
-					PhotoFile photoFile = PhotoFile.findPhotoFile(Long.valueOf(id));
+					PhotoFile photoFile4Copy = photoFileDaoService.findPhotoFile(Long.valueOf(id4Copy));
+					PhotoFile photoFile = photoFileDaoService.findPhotoFile(Long.valueOf(id));
 					photoFile.setBigFile(new BigFile());
-					photoFile.getBigFile().setBinaryFile(photoFile4Copy.getBigFile().getBinaryFileasBytes());
+                    bigFileDaoService.setBinaryFile(photoFile.getBigFile(), photoFile4Copy.getBigFile().getBinaryFileasBytes());
 					photoFile.setFileSize(photoFile4Copy.getFileSize());
-					photoFile.merge();
+                    photoFileDaoService.merge(photoFile);
 				}
 				connection.close();
 				
-				Set<String> userTypes = new HashSet<String>(User.findDistinctUserType());
-				for(CardActionMessage message : CardActionMessage.findAllCardActionMessages()) {
+				Set<String> userTypes = new HashSet<String>(userDaoService.findDistinctUserType());
+				for(CardActionMessage message : cardActionMessageDaoService.findAllCardActionMessages()) {
 					message.setUserTypes(userTypes);
-					message.merge();
+                    cardActionMessageDaoService.merge(message);
 				}
 				
 	    		esupSgcVersion = "0.2.u";
@@ -330,11 +347,11 @@ public class DbToolService {
 				statement.execute();
 				connection.close();
 				
-				log.warn(String.format("Mise à jour des colonnes full_text pour %s users et %s cards", User.countUsers(), Card.countCards()));
-				for(User user : User.findAllUsers()) {
+				log.warn(String.format("Mise à jour des colonnes full_text pour %s users et %s cards", userDaoService.countUsers(), cardDaoService.countCards()));
+				for(User user : userDaoService.findAllUsers()) {
 					user.updateFullText();
 				}
-				for(Card card : Card.findAllCards()) {
+				for(Card card : cardDaoService.findAllCards()) {
 					card.updateFullText();
 				}			
 				
@@ -490,8 +507,11 @@ public class DbToolService {
 				connection.close();
 				esupSgcVersion = "2.6.x";
 			}
+            if("2.6.x".equals(esupSgcVersion)) {
+                esupSgcVersion = "3.0.x";
+            }
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
-			appliVersion.merge();
+            appliVersionDaoService.merge(appliVersion);
 			log.warn("\n\n#####\n\t" +
     				"Base de données à jour !" +
     				"\n#####\n");

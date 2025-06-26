@@ -1,25 +1,19 @@
 package org.esupportail.sgc.web.wsrest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.security.ShibAuthenticatedUserDetailsService;
-import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.CardEtatService;
-import org.esupportail.sgc.services.EncodeAndPringLongPollService;
-import org.esupportail.sgc.services.EsupNfcTagService;
-import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
-import org.esupportail.sgc.services.IpService;
-import org.esupportail.sgc.services.LogService;
+import org.esupportail.sgc.services.*;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
-import org.esupportail.sgc.services.PrinterService;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
 import org.esupportail.sgc.services.esc.DamService;
 import org.esupportail.sgc.services.ldap.GroupService;
-import org.esupportail.sgc.web.manager.ClientJWSController;
 import org.esupportail.sgc.web.manager.SearchLongPollController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,28 +26,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
+import jakarta.persistence.NoResultException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 
 /**
@@ -70,7 +58,11 @@ import java.util.Map;
 public class WsRestEsupNfcController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
+
+    private SecureRandom random = new SecureRandom();
+
+    private Map<String,String> authTokens = new HashMap<String, String>();
+
 	@Autowired(required = false)
 	CardIdsService cardIdsService;
 	
@@ -85,9 +77,6 @@ public class WsRestEsupNfcController {
 	
 	@Autowired(required = false)
 	EsupNfcTagService esupNfcTagService;
-	
-	@Resource 
-	ClientJWSController clientJWSController;
 	
 	@Resource
 	CrousSmartCardService crousSmartCardService;
@@ -115,6 +104,12 @@ public class WsRestEsupNfcController {
 
 	@Resource
 	PrinterService printerService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 
 	/**
 	 * Example :
@@ -244,7 +239,7 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value="/verso",  method=RequestMethod.POST)
 	public String verso(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
 		log.info("get verso from : " + taglog);
-		Card card = Card.findCardsByCsn(taglog.getCsn()).getSingleResult();
+		Card card = cardDaoService.findCardsByCsn(taglog.getCsn()).getSingleResult();
 		uiModel.addAttribute("card", card);
 		return "verso";
 	}
@@ -252,7 +247,7 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value="/updateCheck",  method=RequestMethod.POST)
 	public String updateCheck(@RequestBody EsupNfcTagLog taglog, Model uiModel) {
 		log.info("get updateCheck from : " + taglog);
-		Card card = Card.findCardsByCsn(taglog.getCsn()).getSingleResult();
+		Card card = cardDaoService.findCardsByCsn(taglog.getCsn()).getSingleResult();
 		uiModel.addAttribute("card", card);
 		return "updateCheck";
 	}
@@ -263,9 +258,9 @@ public class WsRestEsupNfcController {
 		log.trace("idName : " + idName);
 		log.trace("taglog : " + taglog);
 		String secondaryId = null;
-		Card card = Card.findCardByCsn(taglog.csn);
+		Card card = cardDaoService.findCardByCsn(taglog.csn);
 		if(card!=null && card.isEnabled()) {
-			User user = User.findUser(card.getEppn());
+			User user = userDaoService.findUser(card.getEppn());
 			switch (idName) {
 				case "csn":
 					secondaryId = taglog.csn;
@@ -308,9 +303,9 @@ public class WsRestEsupNfcController {
 		log.trace("fieldName : " + fieldName);
 		log.trace("taglog : " + taglog);
 		String fieldValue = null;
-		Card card = Card.findCardByCsn(taglog.csn);
+		Card card = cardDaoService.findCardByCsn(taglog.csn);
 		if(card!=null && (etats == null || etats.isEmpty() || etats.contains(card.getEtat()))) {
-			User user = User.findUser(card.getEppn());
+			User user = userDaoService.findUser(card.getEppn());
 			try {
 			Field field = user.getClass().getDeclaredField(fieldName);	
 			field.setAccessible(true);
@@ -342,7 +337,7 @@ public class WsRestEsupNfcController {
 		
 		Card card = null;
 		try{
-			card = Card.findCardByCsn(csn);
+			card = cardDaoService.findCardByCsn(csn);
 			if(card==null) {
 				log.warn("card "+ csn + " not found");
 				return new ResponseEntity<String>("Carte non trouvée", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -409,7 +404,7 @@ public class WsRestEsupNfcController {
 		String csn = esupNfcTagLog.getCsn();
 		if(EsupNfcTagLog.SALLE_ENCODAGE.equals(esupNfcTagLog.getLocation())) {
 			log.info("validateTag on "+ EsupNfcTagLog.SALLE_ENCODAGE +" with " + esupNfcTagLog);
-			Card card = Card.findCardsByCsn(csn).getSingleResult();
+			Card card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 			if(!cardIdsService.isCrousEncodeEnabled()){
 				cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
 				if (appliConfigService.getEnableAuto()) {
@@ -419,10 +414,10 @@ public class WsRestEsupNfcController {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.SALLE_LIVRAISON.equals(esupNfcTagLog.getLocation())) {
 			Card card = null;
-			card = Card.findCardsByCsn(csn).getSingleResult();
+			card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 			log.info("validateTag on "+ EsupNfcTagLog.SALLE_LIVRAISON +" with " + esupNfcTagLog + " CSN for 'Livraison'");
-			card.setDeliveredDate(new Date());
-			card.merge();
+			card.setDeliveredDate(LocalDateTime.now());
+            cardDaoService.merge(card);
 			if(!Etat.ENABLED.equals(card.getEtat())) {
 				log.info("livraison of " + card.getCsn() + " -> activation");
 				cardEtatService.setCardEtatAsync(card.getId(), Etat.ENABLED, "Activation suite à la livraison.", null, false, false);
@@ -431,7 +426,7 @@ public class WsRestEsupNfcController {
 		} else if(EsupNfcTagLog.SALLE_SEARCH.equals(esupNfcTagLog.getLocation())) {
 			Card card = null;
 			try{
-				card = Card.findCardsByCsn(csn).getSingleResult();
+				card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 				log.info("validateTag on "+ EsupNfcTagLog.SALLE_SEARCH +" with " + esupNfcTagLog + " CSN");
 			} catch (EmptyResultDataAccessException | IllegalArgumentException ee) {
 				return new ResponseEntity<String>("Not Found", responseHeaders, HttpStatus.NOT_FOUND);
@@ -441,17 +436,17 @@ public class WsRestEsupNfcController {
 		} else if(EsupNfcTagLog.SALLE_UPDATE.equals(esupNfcTagLog.getLocation())) {
 			log.info("validateTag on "+ EsupNfcTagLog.SALLE_UPDATE +" with " + esupNfcTagLog);
 			Card card = null;
-			card = Card.findCardsByCsn(csn).getSingleResult();
+			card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 			log.info("validateTag on "+ EsupNfcTagLog.SALLE_LIVRAISON +" with " + esupNfcTagLog + " CSN");
-			card.setLastEncodedDate(new Date());
-			card.merge();
+			card.setLastEncodedDate(LocalDateTime.now());
+            cardDaoService.merge(card);
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.VERSO_CARTE.equals(esupNfcTagLog.getLocation())) {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.SECONDARY_ID.equals(esupNfcTagLog.getLocation())) {
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		} else if(EsupNfcTagLog.SALLE_DESTROY.equals(esupNfcTagLog.getLocation())) {
-			Card card = Card.findCardsByCsn(csn).getSingleResult();
+			Card card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 			cardEtatService.setCardEtat(card, Etat.DESTROYED, "Carte marquée comme détruite via badgeage.", null, false, false);
 			return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 		}  else {
@@ -505,7 +500,7 @@ public class WsRestEsupNfcController {
 		Card card = null;
 		
 		try {
-			card = Card.findCardsByCsn(csn).getSingleResult();
+			card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 		} catch(Exception e){
 			log.info("card not found ", e);
 		}
@@ -526,9 +521,9 @@ public class WsRestEsupNfcController {
 	
 	@RequestMapping(value="/lastUpdateFromCsn", params={"csn"},  method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public Date lastUpdateFromCsn(@RequestParam(required=true) String csn) {
+	public LocalDateTime lastUpdateFromCsn(@RequestParam(required=true) String csn) {
 		log.debug("lastUpdateFromCsn with csn = " + csn);
-		Card card = Card.findCardsByCsn(csn).getSingleResult();
+		Card card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 		return card.getLastEncodedDate();
 	}
 
@@ -544,7 +539,7 @@ public class WsRestEsupNfcController {
 		Card card = null;
 		String id = null;
 		try{
-			card = Card.findCardsByCsn(csn).getSingleResult();
+			card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 			String desfireId = cardIdsService.generateCardId(card.getId(), appName);
 			id = cardIdsService.encodeCardId(desfireId, appName);
 		} catch (NoResultException e) {
@@ -569,9 +564,9 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public String getSecondaryId(@RequestParam String csn, @RequestParam(required = false) String service) throws IOException, ParseException {
 		String secondaryId = null;
-		Card card = Card.findCardByCsn(csn);
+		Card card = cardDaoService.findCardByCsn(csn);
 		if(card!=null && card.isEnabled()) {
-			User user = User.findUser(card.getEppn());
+			User user = userDaoService.findUser(card.getEppn());
 			if("biblio".equals(service)){
 				secondaryId = user.getSecondaryId();
 			} else if("eppn".equals(service)){
@@ -590,13 +585,13 @@ public class WsRestEsupNfcController {
 	public ResponseEntity<Long> getCnousCardId(@RequestParam String authToken, @RequestParam String csn) {
 		log.debug("getCnousCardId with csn = " + csn);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		String eppnInit = clientJWSController.getEppnInit(authToken);
+		String eppnInit = getEppnInit(authToken);
 		if(eppnInit == null) {
 			log.info("Bad authToken : " + authToken);
-			return new ResponseEntity<Long>(new Long(-1), responseHeaders, HttpStatus.FORBIDDEN);
+			return new ResponseEntity<Long>(-1L, responseHeaders, HttpStatus.FORBIDDEN);
 		}
 		
-		Card card = Card.findCardsByCsn(csn).getSingleResult();
+		Card card = cardDaoService.findCardsByCsn(csn).getSingleResult();
 		String cnousCardId = cardIdsService.generateCardId(card.getId(), "crous");
 		log.debug("cnousCardId for csn " + csn + " = " + cnousCardId);
 		
@@ -608,14 +603,14 @@ public class WsRestEsupNfcController {
 	public ResponseEntity<String> getCardBmpB64(@RequestParam String authToken, @RequestParam String qrcode, @RequestParam EsupSgcBmpAsBase64Service.BmpType type) {
 		log.debug("getCardBmpB64 with qrcode = " + qrcode);
 		HttpHeaders responseHeaders = new HttpHeaders();
-		String eppnInit = clientJWSController.getEppnInit(authToken);
+		String eppnInit = getEppnInit(authToken);
 		if(eppnInit == null) {
 			log.info("Bad authToken : " + authToken);
 			return new ResponseEntity<String>("", responseHeaders, HttpStatus.FORBIDDEN);
 		}
 
 		String bmpAsBase64 = "";
-		List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.IN_PRINT})).getResultList();
+		List<Card> cards = cardDaoService.findCardsByQrcodeAndEtatIn(qrcode, Arrays.asList(new Etat[] {Etat.IN_PRINT})).getResultList();
 		if(!cards.isEmpty()) {
 			if(cards.size() > 1) {
 				throw new RuntimeException("More than one card with qrcode " + qrcode + " in state IN_PRINT !?");
@@ -632,14 +627,14 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/qrcode2edit", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public DeferredResult<String> qrcode2edit(@RequestParam String authToken) {
-		String printerEppn = clientJWSController.getEppnInit(authToken);
+		String printerEppn = getEppnInit(authToken);
 		if(printerEppn == null) {
 			log.info("Bad authToken : " + authToken);
 			DeferredResult emptyResult = new DeferredResult();
 			emptyResult.setResult("");
 			return emptyResult;
 		}
-		List<Card> cards = Card.findCardsByEtatEppnEqualsAndEtatEquals(printerEppn, Etat.IN_PRINT).getResultList();
+		List<Card> cards = cardDaoService.findCardsByEtatEppnEqualsAndEtatEquals(printerEppn, Etat.IN_PRINT).getResultList();
 		if(cards.size() > 0 ) {
 			log.info("qrcode2edit from DB : " + cards.get(0).getQrcode());
 			DeferredResult dbResult = new DeferredResult();
@@ -660,7 +655,7 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public DeferredResult<String> encodePrintHeartbeat(@RequestParam String authToken, @RequestBody(required = false) String maintenanceInfo, HttpServletRequest request) {
 		HttpHeaders responseHeaders = new HttpHeaders();
-		String eppnInit = clientJWSController.getEppnInit(authToken);
+		String eppnInit = getEppnInit(authToken);
 		if(eppnInit == null) {
 			log.info("Bad authToken : " + authToken);
 			DeferredResult emptyResult = new DeferredResult();
@@ -682,17 +677,17 @@ public class WsRestEsupNfcController {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		try{
         	log.info("try to find card to encode with : " + qrcodeAndCsn);
-			List<Card> cards = Card.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE})).getResultList();
+			List<Card> cards = cardDaoService.findCardsByQrcodeAndEtatIn(qrcodeAndCsn.get("qrcode"), Arrays.asList(new Etat[] {Etat.IN_PRINT, Etat.PRINTED, Etat.IN_ENCODE})).getResultList();
 			if(cards.size() > 0 ){
 				String csn = qrcodeAndCsn.get("csn");
-				Card cardWithThisCsn = Card.findCardByCsn(csn);
+				Card cardWithThisCsn = cardDaoService.findCardByCsn(csn);
 				if(cardWithThisCsn != null && !cardWithThisCsn.getId().equals(cards.get(0).getId())) {
 					String errorMsg = "This card (with this csn" + csn + ") is already used in ESUP-SGC : " + cardWithThisCsn;
 					return new ResponseEntity<String>(errorMsg, responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 				} else {
 					Card card = cards.get(0);
 					card.setCsn(qrcodeAndCsn.get("csn"));
-					card.merge();
+                    cardDaoService.merge(card);
 				}
 				return new ResponseEntity<String>("OK", responseHeaders, HttpStatus.OK);
 			}
@@ -706,7 +701,7 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public ResponseEntity<Map<String,String>> getEppnAndNumeroId(@RequestParam String authToken) {
 		HttpHeaders responseHeaders = new HttpHeaders();
-		String eppnInit = clientJWSController.getEppnInit(authToken);
+		String eppnInit = getEppnInit(authToken);
 		if(eppnInit == null) {
 			Map<String,String> errorMap = new HashMap<String, String>();
 			errorMap.put("eroor", "authToken not known");
@@ -734,7 +729,7 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public ResponseEntity<String> addCrousCsvFile(@RequestParam String authToken, @RequestParam MultipartFile file, @RequestParam String csn) throws IOException, ParseException {
 		HttpHeaders responseHeaders = new HttpHeaders();
-		String eppnInit = clientJWSController.getEppnInit(authToken);
+		String eppnInit = getEppnInit(authToken);
 		if(eppnInit == null) {
 			log.info("Bad authToken : " + authToken);
 			return new ResponseEntity<String>("bad authToken", responseHeaders, HttpStatus.FORBIDDEN);
@@ -744,7 +739,7 @@ public class WsRestEsupNfcController {
 			String filename = file.getOriginalFilename();
 			log.info("CrousSmartCardController retrieving file from rest call " + filename);
 			InputStream stream = new  ByteArrayInputStream(file.getBytes());
-			Card card = Card.findCardByCsn(csn);
+			Card card = cardDaoService.findCardByCsn(csn);
 			crousSmartCardService.consumeCsv(stream, false);
 			cardEtatService.setCardEtat(card, Etat.ENCODED, null, null, false, true);
 			if (appliConfigService.getEnableAuto()) {
@@ -768,9 +763,9 @@ public class WsRestEsupNfcController {
 	@ResponseBody
 	public List<String> getVersoText(@RequestParam String csn,  HttpServletRequest request) throws IOException, ParseException {
 		List<String> versoText = Arrays.asList(new String[] {}); 
-		Card card = Card.findCardByCsn(csn);
+		Card card = cardDaoService.findCardByCsn(csn);
 		if(card!=null) {
-			User user = User.findUser(card.getEppn());
+			User user = userDaoService.findUser(card.getEppn());
 			versoText = user.getVersoText();
 			if(!card.getTemplateCard().getBackSupported()) {
 				card.setVersoTextPrinted(StringUtils.join(versoText, "\n"));
@@ -788,7 +783,7 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/isCnousEncodeEnabled", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public Boolean isCnousEncodeEnabled(@RequestParam String authToken) throws IOException, ParseException {
-		String eppnInit = clientJWSController.getEppnInit(authToken);
+		String eppnInit = getEppnInit(authToken);
 		if(eppnInit == null) {
 			log.info("Bad authToken : " + authToken);
 			return false;
@@ -804,7 +799,21 @@ public class WsRestEsupNfcController {
 	@RequestMapping(value = "/generateAuthToken", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public String generateAuthToken(@RequestParam String eppnInit) {
-		return clientJWSController.generateAuthToken(eppnInit);
+        String authToken = new BigInteger(130, random).toString(32);
+        // JWS Application is not multi-session for one user
+        // -> only one authToken by user !!
+        synchronized (authTokens) {
+            if(authTokens.containsValue(eppnInit)) {
+                for(String key : new ArrayList<String>(authTokens.keySet())) {
+                    if(authTokens.get(key).equals(eppnInit)) {
+                        authTokens.remove(key);
+                    }
+                }
+            }
+            authTokens.put(authToken, eppnInit);
+            log.info(String.format("New authToken for %s : %s", eppnInit, authToken));
+        }
+        return authToken;
 	}
 
 	@RequestMapping(value = "/createDamDiversBaseKey", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -825,7 +834,8 @@ public class WsRestEsupNfcController {
 		damService.resetDamDiversBaseKey(csn);
 		return "OK";
 	}
-	
+
+    public String getEppnInit(String authToken) {
+        return authTokens.get(authToken);
+    }
 }
-
-

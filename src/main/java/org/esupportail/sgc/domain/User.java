@@ -1,59 +1,21 @@
 package org.esupportail.sgc.domain;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Query;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.Card.Etat;
-import org.esupportail.sgc.security.SgcRoleHierarchy;
-import org.joda.time.DateTimeComparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.dbre.RooDbManaged;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.esupportail.sgc.security.SgcRoleHierarchy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@RooJavaBean
-@RooToString(excludeFields={"cards"})
-@RooDbManaged(automaticallyDelete = true)
-@RooJpaActiveRecord(versionField = "", table = "UserAccount", finders={"findUsersByEppnEquals", "findUsersByCrous", "findUsersByEuropeanStudentCard", "findUsersByCrousIdentifier"})
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.*;
+
+@Entity
 @JsonFilter("userFilter")
 @Table(name = "UserAccount", indexes = {
 		@Index(name = "user_account_nb_cards_id", columnList = "nbCards"),
@@ -66,18 +28,21 @@ public class User {
 	
 	private final static Logger log = LoggerFactory.getLogger(User.class);
 
-	// @see getDueDateIncluded()
-	public final static int DUE_DATE_INCLUDED_DELAY = +0;
-
-	public static List<String> findAllUsersEppns() {
-		return entityManager().createQuery("SELECT o.eppn FROM User o", String.class).getResultList();
-	}
-
-	public static enum CnousReferenceStatut {
+	public enum CnousReferenceStatut {
 		psg, etd, prs, hbg, fct, fpa, stg, ctr, hb2, hb3, hb4, hb5, hb6, po, rtr;
 	};
 	
 	public final static List<String> BOOLEAN_FIELDS = Arrays.asList(new String[] {"crous", "europeanStudentCard", "difPhoto", "editable", "requestFree", "hasCardRequestPending"});
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+@SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
+    @Column(name = "id")
+    private Long id;
 
 	@JsonInclude
     @Column(unique=true)
@@ -106,7 +71,7 @@ public class User {
 	private String firstname;
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-	private Date birthday;
+	private LocalDateTime birthday;
 	
 	private String institute;
 	
@@ -123,7 +88,7 @@ public class User {
 	private Long indice = Long.valueOf(0);
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-	private Date dueDate;
+	private LocalDateTime dueDate;
 	
 	private Long idCompagnyRate;
 	
@@ -189,13 +154,14 @@ public class User {
 
 	private String freeField7 = "";
 
-	private Long nbCards = new Long(0);
+	private Long nbCards = 0L;
 	
 	private String userType;
 	
 	private String templateKey;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "last_card_template_printed")
 	private TemplateCard lastCardTemplatePrinted;
 
 	@ElementCollection
@@ -224,6 +190,7 @@ public class User {
 	private Boolean viewRight = true;
 	
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "default_photo", nullable = false)
     private PhotoFile defaultPhoto = new PhotoFile();
     
 	@Column(columnDefinition="TEXT")
@@ -232,7 +199,7 @@ public class User {
 	private String pic = "";
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd@HH:mm:ss.SSSZ")
-	private Date updateDate;
+	private LocalDateTime updateDate;
 	
 	@PreUpdate
 	@PrePersist
@@ -258,6 +225,14 @@ public class User {
 		fullText += getFreeField6() + " ";
 		fullText += getFreeField7() + " ";
 	}
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 	public String getDisplayName() {
 		return getName() + " " + getFirstname();
@@ -290,73 +265,6 @@ public class User {
 		String[] versoText = new String[] {verso1, verso2, verso3, verso4, verso5, verso6, verso7};
 		return Arrays.asList(versoText);
 	}
-	
-	public static User findUser(String eppn) {
-		User user = null;
-		List<User> users = User.findUsersByEppnEquals(eppn).getResultList();
-		if(!users.isEmpty()) {
-			user = users.get(0);
-		}
-		return user;
-	}
-
-
-	public static List<String> findAllEppns() {
-		EntityManager em = User.entityManager();
-		TypedQuery<String> q = em.createQuery("SELECT o.eppn FROM User o", String.class);
-		return q.getResultList();
-	}
-	
-	
-	public static TypedQuery<User> findUsersWithNoCards() {
-		EntityManager em = User.entityManager();
-		TypedQuery<User> q = em.createQuery("SELECT o FROM User o where o.cards IS EMPTY", User.class);
-		return q;
-	}
-	
-	public static long countFindUsersWithNoCards() {
-		EntityManager em = User.entityManager();
-		TypedQuery<Long> q = em.createQuery("SELECT COUNT(o) FROM User o where o.cards IS EMPTY", Long.class);
-		return q.getSingleResult();
-	}
-	
-	
-	public static List<String> findAllEppnsWithRole(String roleName) {
-		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery("select eppn from user_account u, roles r where r.role=:roleName and u.id=r.user_account");
-		q.setParameter("roleName", roleName);
-		return q.getResultList();
-	}
-	
-	public static List<String> findDistinctAddresses(String userType, Etat etat) {
-		if(etat==null && (userType==null || userType.isEmpty() || "All".equals(userType))) {
-			return findDistinctAddresses();
-		}
-		EntityManager em = User.entityManager();
-		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<String> query = criteriaBuilder.createQuery(String.class);
-        Root<User> u = query.from(User.class);
-        List<Predicate> predicates = new ArrayList<Predicate>();
-        predicates.add(criteriaBuilder.notEqual(u.get("address"), ""));
-        if(etat!=null) {
-			Join<User, Card> c = u.join("cards");
-        	predicates.add(criteriaBuilder.equal(c.get("etat"), etat));
-        }
-        if(userType != null && !userType.isEmpty() && !"All".equals(userType)) {
-        	predicates.add(criteriaBuilder.equal(u.get("userType"), userType));
-        }
-        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
-        query.orderBy(criteriaBuilder.asc(u.get("address")));
-        query.select(u.get("address")).groupBy(u.get("address"));
-        return em.createQuery(query).getResultList();
-	}
-
-	public static List<String> findDistinctRnecodes() {
-		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery("select distinct rne_etablissement from user_account where rne_etablissement is not null and rne_etablissement != ''");
-		return q.getResultList();
-	}
-	
 
 	public List<String> getFieldNotEquals(Object obj) {
 		List<String> fieldsNotEquals = new ArrayList<String>();
@@ -379,7 +287,7 @@ public class User {
 			}
 		} 
 		// compare only day (without time) for birthday 
-		else if (DateTimeComparator.getDateOnlyInstance().compare(birthday, other.birthday) != 0) {
+		else if (!birthday.equals(other.birthday)) {
 			fieldsNotEquals.add("birthday");
 		}
 
@@ -472,317 +380,529 @@ public class User {
 		return isEquals;
 	}
 
-    public static List<Object[]> countNbCrous(String userType) {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT crous, count(*) as count FROM user_account GROUP BY crous ORDER BY count DESC";
-        if (!userType.isEmpty()) {
-            sql = "SELECT crous, count(*) as count FROM user_account WHERE user_type = :userType GROUP BY crous ORDER BY count DESC";
-        }
-        Query q = em.createNativeQuery(sql);
-        if (!userType.isEmpty()) {
-            q.setParameter("userType", userType);
-        }
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countNbDifPhoto(String userType) {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT dif_photo, count(*) as count FROM user_account GROUP BY dif_photo ORDER BY count DESC";
-        if (!userType.isEmpty()) {
-            sql = "SELECT dif_photo, count(*) as count FROM user_account WHERE user_type = :userType GROUP BY dif_photo ORDER BY count DESC";
-        }
-        Query q = em.createNativeQuery(sql);
-        if (!userType.isEmpty()) {
-            q.setParameter("userType", userType);
-        }
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countYesterdayCardsByPopulationCrous(String isMonday, String typeDate) {
-        EntityManager em = User.entityManager();
-        
-        String mondayorNot = " AND to_date(to_char(" + typeDate + ", 'DD-MM-YYYY'), 'DD-MM-YYYY')= TIMESTAMP 'yesterday'";
-        if("true".equals(isMonday)){
-        	mondayorNot = " AND to_char(" + typeDate + ", 'DD-MM-YYYY') = to_char((now() - interval '3 day'), 'DD-MM-YYYY')";
-        }
-        String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count "
-        		+ "FROM card, user_account WHERE card.user_account=user_account.id AND etat IN ('ENABLED','DISABLED','CADUC','ENCODED') "
-        		+ mondayorNot + " GROUP BY cnous_reference_statut";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countMonthCardsByPopulationCrous(String date, String typeDate) {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count "
-        		+ "FROM card, user_account WHERE card.user_account=user_account.id AND etat IN ('ENABLED','DISABLED','CADUC','ENCODED') "
-        		+ "AND to_char(" + typeDate + ", 'yyyy-mm-dd') like '" + date + "' GROUP BY cnous_reference_statut";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countYearEnabledCardsByPopulationCrous(String date, String typeDate, Date dateFin) {
-        EntityManager em = User.entityManager();
-        String endDate = "";
-        if(dateFin != null){
-        	endDate = " AND " + typeDate + "<:dateFin ";
-        }
-        String majCond = "";
-        String sql = "SELECT cnous_reference_statut AS eppa, count(*) as count FROM card, user_account "
-        		+ " WHERE card.user_account=user_account.id AND etat IN ('ENABLED','DISABLED','CADUC','ENCODED') "
-        		+ "AND " + typeDate + " >='" + date + "' " + endDate  +  "GROUP BY cnous_reference_statut";
-
-        Query q = em.createNativeQuery(sql);
-        if(dateFin != null){
-        	q.setParameter("dateFin", dateFin);
-        }
-        return q.getResultList();
+	public String getEppn() {
+        return this.eppn;
     }
 
-	public static List<BigInteger> getDistinctNbCards() {
-		EntityManager em = Card.entityManager();
-		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account", "nb_cards"));
-		List<BigInteger> distinctNbCards = q.getResultList();
-		distinctNbCards.remove(BigInteger.valueOf(0));
-		return distinctNbCards;
-	}
-	
-	public static List<Object[]> countNbCardsByuser(String userType) {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT nb_cards, count(*) as count FROM user_account GROUP BY nb_cards ORDER BY count DESC";
-        if (!userType.isEmpty()) {
-            sql = "SELECT nb_cards, count(*) as count FROM user_account WHERE user_type = :userType GROUP BY nb_cards ORDER BY count DESC";
-        }
-        Query q = em.createNativeQuery(sql);
-        if (!userType.isEmpty()) {
-            q.setParameter("userType", userType);
-        }
-        return q.getResultList();
-    }
-	
-    public static List<Object[]> countNbEditable() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT CASE WHEN editable = 't' THEN 'Editable' ELSE 'Non editable' END AS etat , count(*) FROM card, user_account WHERE card.user_account=user_account.id AND etat='NEW' GROUP BY editable ORDER BY count";
-        Query q = em.createNativeQuery(sql);
-        return q.getResultList();
-    }
-    
-    public static Query selectEditableCsv() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT CASE WHEN editable = 't' THEN 'Editable' ELSE 'Non editable' END AS etat, name, firstname, email  FROM card, user_account WHERE card.user_account=user_account.id AND etat='NEW' ORDER BY etat DESC, name";
-        Query q = em.createNativeQuery(sql);
-        return q;
-    }
-    
-	public static List<String> findDistinctUserType() {
-		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account", "user_type"));
-		return q.getResultList();
-	}
-
-	public static List<String> findDistinctAddresses() {
-		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account", "address"));
-		List<String> addresses = q.getResultList();
-		addresses.remove(null);
-		addresses.remove("");
-		return addresses;
-	}
-
-    /**
-     * @deprecated - use directly getDueDate() : DUE_DATE_INCLUDED_DELAY = 0 now
-     * @return Date + DUE_DATE_INCLUDED_DELAY
-     */
-    public Date getDueDateIncluded() {
-        Date dueDateIncluded = null;
-        Date dueDate = this.getDueDate();
-        if (dueDate != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(dueDate);
-            cal.add(Calendar.HOUR, DUE_DATE_INCLUDED_DELAY);
-            dueDateIncluded = cal.getTime();
-        }
-        return dueDateIncluded;
-    }
-	
-    public static List<Object[]> countTarifCrousByType() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT CONCAT(id_compagny_rate, '/', id_rate) as rate, user_type, COUNT(id_rate) FROM user_account WHERE due_date > now() AND id_rate IS NOT NULL GROUP BY rate, user_type ORDER BY rate";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countNextDueDatesOneYearByType() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT to_char(due_date, 'MM-YYYY') tochar, user_type, count(*) FROM user_account WHERE due_date > now() AND due_date < now() + INTERVAL '1 YEAR' GROUP BY tochar, user_type ORDER BY to_date(to_char(due_date, 'MM-YYYY'), 'MM-YYYY')";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countNextDueDatesOneMonthByType() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT to_char(due_date, 'DD-MM-YYYY') tochar, user_type, count(*) FROM user_account WHERE due_date > now() AND due_date < now() + INTERVAL '1 MONTH' GROUP BY tochar, user_type ORDER BY to_date(to_char(due_date, 'DD-MM-YYYY'), 'DD-MM-YYYY')";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    
-    public static List<Object[]> countNbRequestFree() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT CASE WHEN request_free THEN 'GRATUIT' ELSE 'PAYANT' END AS request_free, user_type, count(*) FROM user_account WHERE user_type IS NOT NULL GROUP BY request_free, user_type ORDER BY request_free";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
+	public void setEppn(String eppn) {
+        this.eppn = eppn;
     }
 
-	public TemplateCard getTemplateCard() {
-		String domain =  this.getTemplateKey();
-		if(domain!=null && TemplateCard.findTemplateCardsByKeyEquals(domain).getResultList().size()>0){
-			return TemplateCard.findTemplateCardsByKeyEquals(domain, "numVersion", "DESC").getResultList().get(0);
-		} else {
-			return TemplateCard.findTemplateCardsByKeyEquals("default").getResultList().get(0);	
-		}
-	}
-    
-	public static List<String> getDistinctFreeField(String field) {
-		EntityManager em = User.entityManager();
-		// FormService.getField1List uses its preventing sql injection
-		String req = "SELECT DISTINCT CAST(" + field + " AS VARCHAR) FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
-		Query q = em.createNativeQuery(req);
-		List<String> distinctResults = q.getResultList();
-		return distinctResults;
-	}
-	
-	public static Long getCountDistinctFreeField(String field) {
-		EntityManager em = User.entityManager();
-		// FormService.getField1List uses its preventing sql injection
-		String req = "SELECT count(DISTINCT(" + field + ")) FROM user_account WHERE " + field  + " IS NOT NULL";
-		Query q = em.createNativeQuery(req);
-		return ((BigInteger)q.getSingleResult()).longValue();
-	}
-
-	public static List<TemplateCard> findDistinctLastTemplateCardsPrinted() {
-		List<TemplateCard> templateCards = new ArrayList<TemplateCard>();
-		EntityManager em = User.entityManager();
-		Query q = em.createNativeQuery(selectDistinctWithLooseIndex("user_account" , "last_card_template_printed"));
-		List<BigInteger> last_card_template_ids = q.getResultList();
-		for(BigInteger id : last_card_template_ids) {
-			if(id != null) {
-				templateCards.add(TemplateCard.findTemplateCard(id.longValue()));
-			}
-		}	
-		return templateCards;
-	}
-	
-    public static List<Object[]> countNbEuropenCards() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT european_student_card, count(*) as count FROM user_account, card WHERE user_account.id= card.user_account AND etat='ENABLED' AND user_type='E' GROUP BY european_student_card ORDER BY count DESC";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countNbRoles() {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT role, count(role) AS count FROM roles, user_account WHERE roles.user_account=user_account.id GROUP BY role ORDER BY count DESC";
-
-        Query q = em.createNativeQuery(sql);
-
-        return q.getResultList();
-    }
-    
-    public static List<Object[]> countNbPendingCards(String userType) {
-        EntityManager em = User.entityManager();
-        String sql = "SELECT has_card_request_pending, count(*) as count FROM user_account GROUP BY has_card_request_pending ORDER BY count DESC";
-        if (!userType.isEmpty()) {
-            sql = "SELECT has_card_request_pending, count(*) as count FROM user_account WHERE user_type = :userType GROUP BY has_card_request_pending ORDER BY count DESC";
-        }
-        Query q = em.createNativeQuery(sql);
-        if (!userType.isEmpty()) {
-            q.setParameter("userType", userType);
-        }
-        return q.getResultList();
-    }
-    
-    public static TypedQuery<User> findUsersByEppnOrEmailEquals(String eppnOrEmail) {
-        if (eppnOrEmail == null || eppnOrEmail.length() == 0) throw new IllegalArgumentException("The eppnOrEmail argument is required");
-        EntityManager em = User.entityManager();
-        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o WHERE o.eppn = :eppnOrEmail or o.email = :eppnOrEmail", User.class);
-        q.setParameter("eppnOrEmail", eppnOrEmail);
-        return q;
-    }
-    
-    public static List<User> findUsers4PatchIdentifiersIne() {
-        EntityManager em = User.entityManager();
-        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o WHERE "
-        		+ "o.crous = true "
-        		+ "and o.supannCodeINE is not empty "
-        		+ "and o.supannCodeINE <> '' "
-        		+ "and o.crousIdentifier is not empty "
-        		+ "and o.crousIdentifier <> '' "
-        		+ "and o.supannCodeINE <> o.crousIdentifier "
-        		+ "and o.dueDate > current_date()", User.class);
-        return q.getResultList();
+	public List<Card> getCards() {
+        return this.cards;
     }
 
-	public static Long countFindUsersWithCrousAndWithCardEnabled() {
-        EntityManager em = User.entityManager();
-        TypedQuery<Long> q = em.createQuery("SELECT count(o) FROM User AS o, Card AS c WHERE "
-        		+ "o.crous = true "
-        		+ "and c.userAccount = o "
-        		+ "and c.etat = 'ENABLED'", Long.class);
-        return q.getSingleResult();
-	}
-	
-
-	public static List<User> findUsersWithCrousAndWithCardEnabled() {
-        EntityManager em = User.entityManager();
-        TypedQuery<User> q = em.createQuery("SELECT o FROM User AS o, Card AS c WHERE "
-        		+ "o.crous = true "
-        		+ "and c.userAccount = o "
-        		+ "and c.etat = 'ENABLED'", User.class);
-        return q.getResultList();
-	}
-	
-    public static TypedQuery<User> findAllUsersQuery() {
-    	EntityManager em = User.entityManager();
-        return em.createQuery("SELECT o FROM User o", User.class);
+	public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 
-	/* Hack - optimisation distinct - cf https://wiki.postgresql.org/wiki/Loose_indexscan */
-	public static String selectDistinctWithLooseIndex(String tbl, String col) {
-		// String sql = String.format("SELECT DISTINCT col FROM tbl where col is not null");
-		String sql = String.format("WITH RECURSIVE t AS ( " +
-				"(SELECT col FROM tbl ORDER BY col LIMIT 1) " +
-				"UNION ALL " +
-				"SELECT (SELECT col FROM tbl WHERE col > t.col ORDER BY col LIMIT 1) " +
-				"FROM t WHERE t.col IS NOT NULL" +
-				") SELECT col FROM t WHERE col IS NOT NULL;");
-		sql = sql.replaceAll("tbl", tbl).replaceAll("col", col);
-		log.trace("distinct sql request opimized : {}", sql);
-		return sql;
-	}
+	public Boolean getCrous() {
+        return this.crous;
+    }
+
+	public void setCrous(Boolean crous) {
+        this.crous = crous;
+    }
+
+	public String getCrousError() {
+        return this.crousError;
+    }
+
+	public void setCrousError(String crousError) {
+        this.crousError = crousError;
+    }
+
+	public String getCrousIdentifier() {
+        return this.crousIdentifier;
+    }
+
+	public void setCrousIdentifier(String crousIdentifier) {
+        this.crousIdentifier = crousIdentifier;
+    }
+
+	public Boolean getEuropeanStudentCard() {
+        return this.europeanStudentCard;
+    }
+
+	public void setEuropeanStudentCard(Boolean europeanStudentCard) {
+        this.europeanStudentCard = europeanStudentCard;
+    }
+
+	public Boolean getDifPhoto() {
+        return this.difPhoto;
+    }
+
+	public void setDifPhoto(Boolean difPhoto) {
+        this.difPhoto = difPhoto;
+    }
+
+	public String getName() {
+        return this.name;
+    }
+
+	public void setName(String name) {
+        this.name = name;
+    }
+
+	public String getFirstname() {
+        return this.firstname;
+    }
+
+	public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+	public LocalDateTime getBirthday() {
+        return this.birthday;
+    }
+
+	public void setBirthday(LocalDateTime birthday) {
+        this.birthday = birthday;
+    }
+
+	public String getInstitute() {
+        return this.institute;
+    }
+
+	public void setInstitute(String institute) {
+        this.institute = institute;
+    }
+
+	public String getEduPersonPrimaryAffiliation() {
+        return this.eduPersonPrimaryAffiliation;
+    }
+
+	public void setEduPersonPrimaryAffiliation(String eduPersonPrimaryAffiliation) {
+        this.eduPersonPrimaryAffiliation = eduPersonPrimaryAffiliation;
+    }
+
+	public String getEmail() {
+        return this.email;
+    }
+
+	public void setEmail(String email) {
+        this.email = email;
+    }
+
+	public String getRneEtablissement() {
+        return this.rneEtablissement;
+    }
+
+	public void setRneEtablissement(String rneEtablissement) {
+        this.rneEtablissement = rneEtablissement;
+    }
+
+	public CnousReferenceStatut getCnousReferenceStatut() {
+        return this.cnousReferenceStatut;
+    }
+
+	public void setCnousReferenceStatut(CnousReferenceStatut cnousReferenceStatut) {
+        this.cnousReferenceStatut = cnousReferenceStatut;
+    }
+
+	public Long getIndice() {
+        return this.indice;
+    }
+
+	public void setIndice(Long indice) {
+        this.indice = indice;
+    }
+
+	public LocalDateTime getDueDate() {
+        return this.dueDate;
+    }
+
+	public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+	public Long getIdCompagnyRate() {
+        return this.idCompagnyRate;
+    }
+
+	public void setIdCompagnyRate(Long idCompagnyRate) {
+        this.idCompagnyRate = idCompagnyRate;
+    }
+
+	public Long getIdRate() {
+        return this.idRate;
+    }
+
+	public void setIdRate(Long idRate) {
+        this.idRate = idRate;
+    }
+
+	public String getSupannEmpId() {
+        return this.supannEmpId;
+    }
+
+	public void setSupannEmpId(String supannEmpId) {
+        this.supannEmpId = supannEmpId;
+    }
+
+	public String getSupannEtuId() {
+        return this.supannEtuId;
+    }
+
+	public void setSupannEtuId(String supannEtuId) {
+        this.supannEtuId = supannEtuId;
+    }
+
+	public String getSupannEntiteAffectationPrincipale() {
+        return this.supannEntiteAffectationPrincipale;
+    }
+
+	public void setSupannEntiteAffectationPrincipale(String supannEntiteAffectationPrincipale) {
+        this.supannEntiteAffectationPrincipale = supannEntiteAffectationPrincipale;
+    }
+
+	public String getSupannCodeINE() {
+        return this.supannCodeINE;
+    }
+
+	public void setSupannCodeINE(String supannCodeINE) {
+        this.supannCodeINE = supannCodeINE;
+    }
+
+	public String getSecondaryId() {
+        return this.secondaryId;
+    }
+
+	public void setSecondaryId(String secondaryId) {
+        this.secondaryId = secondaryId;
+    }
+
+	public String getRecto1() {
+        return this.recto1;
+    }
+
+	public void setRecto1(String recto1) {
+        this.recto1 = recto1;
+    }
+
+	public String getRecto2() {
+        return this.recto2;
+    }
+
+	public void setRecto2(String recto2) {
+        this.recto2 = recto2;
+    }
+
+	public String getRecto3() {
+        return this.recto3;
+    }
+
+	public void setRecto3(String recto3) {
+        this.recto3 = recto3;
+    }
+
+	public String getRecto4() {
+        return this.recto4;
+    }
+
+	public void setRecto4(String recto4) {
+        this.recto4 = recto4;
+    }
+
+	public String getRecto5() {
+        return this.recto5;
+    }
+
+	public void setRecto5(String recto5) {
+        this.recto5 = recto5;
+    }
+
+	public String getRecto6() {
+        return this.recto6;
+    }
+
+	public void setRecto6(String recto6) {
+        this.recto6 = recto6;
+    }
+
+	public String getRecto7() {
+        return this.recto7;
+    }
+
+	public void setRecto7(String recto7) {
+        this.recto7 = recto7;
+    }
+
+	public String getVerso1() {
+        return this.verso1;
+    }
+
+	public void setVerso1(String verso1) {
+        this.verso1 = verso1;
+    }
+
+	public String getVerso2() {
+        return this.verso2;
+    }
+
+	public void setVerso2(String verso2) {
+        this.verso2 = verso2;
+    }
+
+	public String getVerso3() {
+        return this.verso3;
+    }
+
+	public void setVerso3(String verso3) {
+        this.verso3 = verso3;
+    }
+
+	public String getVerso4() {
+        return this.verso4;
+    }
+
+	public void setVerso4(String verso4) {
+        this.verso4 = verso4;
+    }
+
+	public String getVerso5() {
+        return this.verso5;
+    }
+
+	public void setVerso5(String verso5) {
+        this.verso5 = verso5;
+    }
+
+	public String getVerso6() {
+        return this.verso6;
+    }
+
+	public void setVerso6(String verso6) {
+        this.verso6 = verso6;
+    }
+
+	public String getVerso7() {
+        return this.verso7;
+    }
+
+	public void setVerso7(String verso7) {
+        this.verso7 = verso7;
+    }
+
+	public boolean isEditable() {
+        return this.editable;
+    }
+
+	public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+	public boolean isRequestFree() {
+        return this.requestFree;
+    }
+
+	public void setRequestFree(boolean requestFree) {
+        this.requestFree = requestFree;
+    }
+
+	public String getAddress() {
+        return this.address;
+    }
+
+	public void setAddress(String address) {
+        this.address = address;
+    }
+
+	public String getExternalAddress() {
+        return this.externalAddress;
+    }
+
+	public void setExternalAddress(String externalAddress) {
+        this.externalAddress = externalAddress;
+    }
+
+	public String getFreeField1() {
+        return this.freeField1;
+    }
+
+	public void setFreeField1(String freeField1) {
+        this.freeField1 = freeField1;
+    }
+
+	public String getFreeField2() {
+        return this.freeField2;
+    }
+
+	public void setFreeField2(String freeField2) {
+        this.freeField2 = freeField2;
+    }
+
+	public String getFreeField3() {
+        return this.freeField3;
+    }
+
+	public void setFreeField3(String freeField3) {
+        this.freeField3 = freeField3;
+    }
+
+	public String getFreeField4() {
+        return this.freeField4;
+    }
+
+	public void setFreeField4(String freeField4) {
+        this.freeField4 = freeField4;
+    }
+
+	public String getFreeField5() {
+        return this.freeField5;
+    }
+
+	public void setFreeField5(String freeField5) {
+        this.freeField5 = freeField5;
+    }
+
+	public String getFreeField6() {
+        return this.freeField6;
+    }
+
+	public void setFreeField6(String freeField6) {
+        this.freeField6 = freeField6;
+    }
+
+	public String getFreeField7() {
+        return this.freeField7;
+    }
+
+	public void setFreeField7(String freeField7) {
+        this.freeField7 = freeField7;
+    }
+
+	public Long getNbCards() {
+        return this.nbCards;
+    }
+
+	public void setNbCards(Long nbCards) {
+        this.nbCards = nbCards;
+    }
+
+	public String getUserType() {
+        return this.userType;
+    }
+
+	public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+	public String getTemplateKey() {
+        return this.templateKey;
+    }
+
+	public void setTemplateKey(String templateKey) {
+        this.templateKey = templateKey;
+    }
+
+	public TemplateCard getLastCardTemplatePrinted() {
+        return this.lastCardTemplatePrinted;
+    }
+
+	public void setLastCardTemplatePrinted(TemplateCard lastCardTemplatePrinted) {
+        this.lastCardTemplatePrinted = lastCardTemplatePrinted;
+    }
+
+	public Set<String> getRoles() {
+        return this.roles;
+    }
+
+	public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+	public Card getExternalCard() {
+        return this.externalCard;
+    }
+
+	public void setExternalCard(Card externalCard) {
+        this.externalCard = externalCard;
+    }
+
+	public String getBlockUserMsg() {
+        return this.blockUserMsg;
+    }
+
+	public void setBlockUserMsg(String blockUserMsg) {
+        this.blockUserMsg = blockUserMsg;
+    }
+
+	public Boolean getHasCardRequestPending() {
+        return this.hasCardRequestPending;
+    }
+
+	public void setHasCardRequestPending(Boolean hasCardRequestPending) {
+        this.hasCardRequestPending = hasCardRequestPending;
+    }
+
+	public Long getAcademicLevel() {
+        return this.academicLevel;
+    }
+
+	public void setAcademicLevel(Long academicLevel) {
+        this.academicLevel = academicLevel;
+    }
+
+	public Boolean getImportExtCardRight() {
+        return this.importExtCardRight;
+    }
+
+	public void setImportExtCardRight(Boolean importExtCardRight) {
+        this.importExtCardRight = importExtCardRight;
+    }
+
+	public Boolean getNewCardRight() {
+        return this.newCardRight;
+    }
+
+	public void setNewCardRight(Boolean newCardRight) {
+        this.newCardRight = newCardRight;
+    }
+
+	public Boolean getViewRight() {
+        return this.viewRight;
+    }
+
+	public void setViewRight(Boolean viewRight) {
+        this.viewRight = viewRight;
+    }
+
+	public PhotoFile getDefaultPhoto() {
+        return this.defaultPhoto;
+    }
+
+	public void setDefaultPhoto(PhotoFile defaultPhoto) {
+        this.defaultPhoto = defaultPhoto;
+    }
+
+	public String getFullText() {
+        return this.fullText;
+    }
+
+	public void setFullText(String fullText) {
+        this.fullText = fullText;
+    }
+
+	public String getPic() {
+        return this.pic;
+    }
+
+	public void setPic(String pic) {
+        this.pic = pic;
+    }
+
+	public LocalDateTime getUpdateDate() {
+        return this.updateDate;
+    }
+
+	public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
 
 
-	public static TypedQuery<User> findAllUsersWithDueDateBeforeAndDueDateAfterNow(Date date) {
-		EntityManager em = User.entityManager();
-		TypedQuery<User> q = em.createQuery("SELECT o FROM User o WHERE dueDate < :date and dueDate > now()", User.class);
-		q.setParameter("date", date);
-		return q;
-	}
-
-
+	public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("cards").toString();
+    }
 }
 

@@ -1,0 +1,56 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/userinfos.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>UserInfos utilisateur (test/debug)</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>UserInfos d'un utilisateur (pour test/debug)</h2>
+    <form th:action="@{/admin/userinfos}" method="get">
+        <div class="jumbotron">
+            <div class="form-group">
+                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible :</label>
+                <div class="col-lg-2 col-md-2 col-xs-4">
+                    <input type="text" class="form-control" placeholder="eppn" id="searchEppn" name="eppn" maxlength="100" th:value="${eppn}"/>
+                </div>
+                <button type="submit" class="btn btn-success col-lg-1 col-md-1">Test des UserInfos</button>
+            </div>
+        </div>
+    </form>
+    <div class="panel-body">
+        <div class="col-lg-6">
+            <h3>UserInfos successifs</h3>
+            <div th:each="beanNameRegexMatch : ${beanNamesRegexMatch}">
+                <h4>
+                    <span th:text="${beanNameRegexMatch.key}"></span>
+                    <span th:if="${beanNameRegexMatch.value}" class="text-success glyphicon glyphicon-ok"></span>
+                    <span th:if="${beanNameRegexMatch.value}" th:text="${durations[beanNameRegexMatch.key]} + 'ms'"></span>
+                    <span th:if="${!beanNameRegexMatch.value}" class="text-danger glyphicon glyphicon-remove"></span>
+                </h4>
+                <ul>
+                    <li th:each="userInfo : ${userInfosMap[beanNameRegexMatch.key]}"
+                        th:classappend="${beanNameFinal4UserInfo[userInfo.key] == beanNameRegexMatch.key} ? 'bold'">
+                        <span th:text="${userInfo.key}"></span> :
+                        <span th:classappend="${beanNameFinal4UserInfo[userInfo.key] == beanNameRegexMatch.key} ? 'text-success' : 'text-warning'"
+                              th:text="${userInfo.value}"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h3>UserInfos Final/Calculé - <span th:text="${totalDuration} + 'ms'"></span></h3>
+            <ul>
+                <li th:each="userInfo : ${userInfosFinal}" class="bold">
+                    <span th:text="${userInfo.key}"></span> :
+                    <span class="text-success" th:text="${userInfo.value}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

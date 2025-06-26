@@ -1,15 +1,10 @@
 package org.esupportail.sgc.web.wsrest;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.web.manager.ManagerCardController;
@@ -28,6 +23,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 @Transactional
 @RequestMapping("/wsrest/photo")
 @Controller
@@ -37,6 +38,9 @@ public class WsRestPhotoController extends AbstractRestController {
 
 	@Resource
 	ManagerCardControllerNoHtml managerCardControllerNoHtml;
+
+    @Resource
+    CardDaoService cardDaoService;
 	
 	/**
 	 * Examples :
@@ -45,15 +49,15 @@ public class WsRestPhotoController extends AbstractRestController {
 	 * wget 'http://localhost:8080/wsrest/photo/joe@univ-ville.fr/photo?cardEtat=ENABLED&dateEtatAfter=2018-06-19'
 	 */
 	@RequestMapping(value="/{eppn}/photo")
-	public ResponseEntity getPhoto(@PathVariable String eppn, @RequestParam(required=false) Etat cardEtat, 
-			@RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date dateEtatAfter,HttpServletResponse response) throws IOException, SQLException {
+	public ResponseEntity getPhoto(@PathVariable String eppn, @RequestParam(required=false) Etat cardEtat,
+                                   @RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime dateEtatAfter, HttpServletResponse response) throws IOException, SQLException {
 		List<Card> validCards = null;
 		if(cardEtat==null) {
 			Etat [] etatsIn = {Etat.ENABLED,  Etat.CADUC, Etat.DISABLED};
 			String [] eppns = {eppn};
-			validCards = Card.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
+			validCards = cardDaoService.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
 		} else {
-			validCards = Card.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
+			validCards = cardDaoService.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
 		}
 		if(!validCards.isEmpty()) {
 			if(dateEtatAfter==null) { 
@@ -62,7 +66,7 @@ public class WsRestPhotoController extends AbstractRestController {
 			} else { 
 				Card lastValidCard = null;
 				for(Card card : validCards) {
-					if(dateEtatAfter.before(card.getDateEtat())) {
+					if(dateEtatAfter.isBefore(card.getDateEtat())) {
 						lastValidCard = card;
 						break;
 					}
@@ -87,7 +91,7 @@ public class WsRestPhotoController extends AbstractRestController {
 	 */
 	@RequestMapping(value="/{id}/card")
 	public ResponseEntity getPhotoById(@PathVariable Long id, HttpServletResponse response) throws IOException, SQLException {
-		Card card = Card.findCard(id);
+		Card card = cardDaoService.findCard(id);
 		if(card!=null) {
 			return managerCardControllerNoHtml.writePhotoToResponse(id, response);
 		} else {
@@ -106,14 +110,14 @@ public class WsRestPhotoController extends AbstractRestController {
 	 */
 	@RequestMapping(value="/{eppn}/restrictedPhoto")
 	public ResponseEntity getAuthorizedPhoto(@PathVariable String eppn, @RequestParam(required=false) Etat cardEtat, 
-			@RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date dateEtatAfter, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
+			@RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime dateEtatAfter, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
 		List<Card> validCards = null;
 		if(cardEtat==null) {
 			Etat [] etatsIn = {Etat.ENABLED,  Etat.CADUC, Etat.DISABLED};
 			String [] eppns = {eppn};
-			validCards = Card.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
+			validCards = cardDaoService.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
 		} else {
-			validCards = Card.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
+			validCards = cardDaoService.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
 		}
 		if(!validCards.isEmpty()) {
 			if(validCards.get(0).getUser().getDifPhoto()) {
@@ -123,7 +127,7 @@ public class WsRestPhotoController extends AbstractRestController {
 				} else { 
 					Card lastValidCard = null;
 					for(Card card : validCards) {
-						if(dateEtatAfter.before(card.getDateEtat())) {
+						if(dateEtatAfter.isBefore(card.getDateEtat())) {
 							lastValidCard = card;
 							break;
 						}

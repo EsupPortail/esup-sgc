@@ -1,10 +1,8 @@
 package org.esupportail.sgc.web.wsrest;
 
-import org.springframework.roo.addon.javabean.RooJavaBean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@RooJavaBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EsupNfcTagLog {
 	
@@ -37,4 +35,68 @@ public class EsupNfcTagLog {
 		return "TagLog [location=" + location + ", csn=" + csn + ", eppn=" + eppn + ", lastname=" + lastname + ", firstname=" + firstname + "]";
 	}
 	
+
+	public String getCsn() {
+        return this.csn;
+    }
+
+	public void setCsn(String csn) {
+        this.csn = csn;
+    }
+
+	public String getEppn() {
+        return this.eppn;
+    }
+
+	public void setEppn(String eppn) {
+        this.eppn = eppn;
+    }
+
+	public String getLastname() {
+        return this.lastname;
+    }
+
+	public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+	public String getFirstname() {
+        return this.firstname;
+    }
+
+	public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+	public String getEppnInit() {
+        return this.eppnInit;
+    }
+
+	public void setEppnInit(String eppnInit) {
+        this.eppnInit = eppnInit;
+    }
+
+	public String getLocation() {
+        return this.location;
+    }
+
+	public void setLocation(String location) {
+        this.location = location;
+    }
+
+	public String getDesfireId() {
+		return desfireId;
+	}
+
+	public void setDesfireId(String desfireId) {
+		this.desfireId = desfireId;
+	}
+
+	public String getApplicationName() {
+		return applicationName;
+	}
+
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
+	}
 }

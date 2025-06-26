@@ -1,0 +1,115 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/crouserrorlogs/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Erreurs CROUS</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Erreurs CROUS</h2>
+    <div class="well">
+        ESUP-SGC enregistre en base les éventuelles erreurs rencontrées lors de la synchronisation de l'ayant droit (RightHolder) et/ou de la carte.<br/>
+        Cette page présente le listing de ces erreurs.<br/>
+        Nous maintenons une page wiki ESUP qui tente de lister et expliquer chaque erreur possible que peut rencontrer esup-sgc, merci de vous y référer :
+        <a target="_blank" href="https://www.esup-portail.org/wiki/display/SGC/Erreurs+CROUS">https://www.esup-portail.org/wiki/display/SGC/Erreurs+CROUS</a>
+    </div>
+    <div class="row">
+        <div class="col-md-7">
+            <form th:action="@{/admin/crouserrorlogs}" role="search" method="get" class="well" th:object="${searchCrousErrorLog}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Bloquant</label>
+                        <select class="form-control" th:field="*{blocking}">
+                            <option value=""></option>
+                            <option value="true">true</option>
+                            <option value="false">false</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>ESUP-SGC Operation</label>
+                        <select class="form-control" th:field="*{esupSgcOperation}">
+                            <option value=""></option>
+                            <option th:each="op : ${esupSgcOperations}" th:value="${op}" th:text="${op}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-success">Filtrer</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-1">
+            <a th:href="@{/admin/crouserrorlogs(csv='')}" class="btn btn-primary">Export CSV</a>
+        </div>
+        <div class="col-md-1">
+            <form th:action="@{/admin/crouserrorlogs}" method="post">
+                <input type="hidden" name="_method" value="delete"/>
+                <button class="btn btn-danger" type="submit">Purger les logs</button>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Carte</th>
+                    <th>Compte</th>
+                    <th>Nom</th>
+                    <th>Mail</th>
+                    <th>CSN</th>
+                    <th>Code</th>
+                    <th>Message</th>
+                    <th>Champ</th>
+                    <th>Date</th>
+                    <th>Opération CROUS</th>
+                    <th>Opération ESUP-SGC</th>
+                    <th>URL CROUS</th>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="blocking">Bloquant</a>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="log : ${crouserrorlogs}">
+                    <td>
+                        <a th:href="@{'/manager/' + ${log.cardId}}" th:text="${log.cardId}"></a>
+                    </td>
+                    <td>
+                        <a th:href="@{'/manager/?eppn=' + ${log.userEppn}}" th:text="${log.userEppn}"></a>
+                    </td>
+                    <td th:text="${log.userDisplayName}"></td>
+                    <td th:text="${log.userEmail}"></td>
+                    <td th:text="${log.cardCsn}"></td>
+                    <td th:text="${log.code}"></td>
+                    <td th:text="${log.message}"></td>
+                    <td th:text="${log.field}"></td>
+                    <td th:text="${#temporals.format(log.date, 'dd/MM/yy HH:mm')}"></td>
+                    <td th:text="${log.crousOperation}"></td>
+                    <td th:text="${log.esupSgcOperation}"></td>
+                    <td th:text="${log.crousUrl}"></td>
+                    <td th:text="${log.blocking}"></td>
+                    <td>
+                        <a class="btn btn-primary" th:href="@{/admin/crouserrorlogs/{id}(id=${log.id})}">
+                            <span class="glyphicon glyphicon-eye-open">Voir</span>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

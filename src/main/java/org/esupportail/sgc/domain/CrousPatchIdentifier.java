@@ -1,21 +1,26 @@
 package org.esupportail.sgc.domain;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
-import org.springframework.transaction.annotation.Transactional;
-
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord(finders = { "findCrousPatchIdentifiersByPatchSuccessNotEquals"})
+@Entity
 public class CrousPatchIdentifier {
-	
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+@SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
+    @Column(name = "id")
+    private Long id;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
+
 	@Column(unique = true)
 	String oldId;
 	
@@ -26,43 +31,57 @@ public class CrousPatchIdentifier {
 	String mail;
 	
 	Boolean patchSuccess;
-	
-    public static Long countFindCrousPatchIdentifiersByPatchSuccessNotEquals(Boolean patchSuccess) {
-        if (patchSuccess == null) throw new IllegalArgumentException("The patchSuccess argument is required");
-        EntityManager em = CrousPatchIdentifier.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CrousPatchIdentifier AS o WHERE o.patchSuccess != :patchSuccess or o.patchSuccess is null", Long.class);
-        q.setParameter("patchSuccess", patchSuccess);
-        return ((Long) q.getSingleResult());
+
+    public Long getId() {
+        return this.id;
     }
-    
-    public static TypedQuery<CrousPatchIdentifier> findCrousPatchIdentifiersByPatchSuccessNotEquals(Boolean patchSuccess) {
-        if (patchSuccess == null) throw new IllegalArgumentException("The patchSuccess argument is required");
-        EntityManager em = CrousPatchIdentifier.entityManager();
-        TypedQuery<CrousPatchIdentifier> q = em.createQuery("SELECT o FROM CrousPatchIdentifier AS o WHERE o.patchSuccess != :patchSuccess or o.patchSuccess is null", CrousPatchIdentifier.class);
-        q.setParameter("patchSuccess", patchSuccess);
-        return q;
+
+    public void setId(Long id) {
+        this.id = id;
     }
-    
-    
-    public static TypedQuery<CrousPatchIdentifier> findCrousPatchIdentifiersByPatchSuccessNotEquals(Boolean patchSuccess, String sortFieldName, String sortOrder) {
-        if (patchSuccess == null) throw new IllegalArgumentException("The patchSuccess argument is required");
-        EntityManager em = CrousPatchIdentifier.entityManager();
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CrousPatchIdentifier AS o WHERE o.patchSuccess != :patchSuccess or o.patchSuccess is null");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<CrousPatchIdentifier> q = em.createQuery(queryBuilder.toString(), CrousPatchIdentifier.class);
-        q.setParameter("patchSuccess", patchSuccess);
-        return q;
+
+    public Integer getVersion() {
+        return this.version;
     }
-    
-    public static void removeAll() {
-    	EntityManager em = CrousPatchIdentifier.entityManager();
-    	Query q = em.createQuery("DELETE FROM CrousPatchIdentifier");
-    	q.executeUpdate();
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public String getOldId() {
+        return this.oldId;
+    }
+
+	public void setOldId(String oldId) {
+        this.oldId = oldId;
+    }
+
+	public String getEppnNewId() {
+        return this.eppnNewId;
+    }
+
+	public void setEppnNewId(String eppnNewId) {
+        this.eppnNewId = eppnNewId;
+    }
+
+	public String getMail() {
+        return this.mail;
+    }
+
+	public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+	public Boolean getPatchSuccess() {
+        return this.patchSuccess;
+    }
+
+	public void setPatchSuccess(Boolean patchSuccess) {
+        this.patchSuccess = patchSuccess;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
 }

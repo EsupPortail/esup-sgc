@@ -1,33 +1,22 @@
 package org.esupportail.sgc.services;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.dao.*;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
-import org.esupportail.sgc.domain.Log;
-import org.esupportail.sgc.domain.PayboxTransactionLog;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.Resource;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -44,8 +33,23 @@ public class StatsService {
 	
 	@Resource 
 	UserInfoService userInfoService;
-	
-	public LinkedHashMap<String, String> getPopulationCrous(){
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    LogDaoService logDaoService;
+
+    @Resource
+    PayboxTransactionLogDaoService payboxTransactionLogDaoService;
+
+    @Resource
+    TemplateCardDaoService templateCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    public LinkedHashMap<String, String> getPopulationCrous(){
 		
 		LinkedHashMap<String, String> populationCrous = new LinkedHashMap<String, String> ();
 		populationCrous.put("ctr", "Contractuel");
@@ -160,74 +164,74 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
 			   LinkedHashMap<String,String>  anneeUnivs = getAnneeUnivs();
 	        {
 	        	if("cardsEdited".equals(typeStats)){
-	        		put("cardsEdited", mapFieldWith1Labels(Card.countNbCardsEditedByYear(typeInd)));
+	        		put("cardsEdited", mapFieldWith1Labels(cardDaoService.countNbCardsEditedByYear(typeInd)));
 	        	}else if("cardsOld".equals(typeStats)){
-	        		put("cardsOld", mapFieldWith1Labels(Card.countNbCardsEnabledEncodedByYear(typeInd)));
+	        		put("cardsOld", mapFieldWith1Labels(cardDaoService.countNbCardsEnabledEncodedByYear(typeInd)));
 	        	}else if("cardsByYearEtat".equals(typeStats)){
-	        		put("cardsByYearEtat", mapFieldWith2Labels(Card.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), true));
+	        		put("cardsByYearEtat", mapFieldWith2Labels(cardDaoService.countNbCardsByYearEtat(typeInd, mapToCase("etat", mapsFromI18n("etats", Locale.FRENCH, "card.label"), "etat")), true));
 	        	}else if("crous".equals(typeStats)){
-	        		put("crous", mapFieldWith1Labels(User.countNbCrous(typeInd)));
+	        		put("crous", mapFieldWith1Labels(userDaoService.countNbCrous(typeInd)));
 	        	}else if("difPhoto".equals(typeStats)){
-	        		put("difPhoto", mapFieldWith1Labels(User.countNbDifPhoto(typeInd)));
+	        		put("difPhoto", mapFieldWith1Labels(userDaoService.countNbDifPhoto(typeInd)));
 	        	}else if("cardsByDay".equals(typeStats)){
-	        		put("cardsByDay", mapFieldWith1Labels(Card.countNbCardsByDay(typeInd, "request_date")));
+	        		put("cardsByDay", mapFieldWith1Labels(cardDaoService.countNbCardsByDay(typeInd, "request_date")));
 	        	}else if("paybox".equals(typeStats)){
-	        		put("paybox", mapFieldWith2Labels(PayboxTransactionLog.countNbPayboxByYearEtat(), true));
+	        		put("paybox", mapFieldWith2Labels(payboxTransactionLogDaoService.countNbPayboxByYearEtat(), true));
 	        	}else if("motifs".equals(typeStats)){
-	        		put("motifs", mapFieldWith1Labels(Card.countNbCardsByMotifsDisable(typeInd, mapToCase("motif_disable", mapsFromI18n("motifs", Locale.FRENCH, "card.label"), "motif_disable"))));
+	        		put("motifs", mapFieldWith1Labels(cardDaoService.countNbCardsByMotifsDisable(typeInd, mapToCase("motif_disable", mapsFromI18n("motifs", Locale.FRENCH, "card.label"), "motif_disable"))));
 	        	}else if("dates".equals(typeStats)){
-	        		put("dates", mapFieldWith2Labels(Card.countNbCardsByMonthYear(typeInd), false));
+	        		put("dates", mapFieldWith2Labels(cardDaoService.countNbCardsByMonthYear(typeInd), false));
 	        	}else if("encodagedates".equals(typeStats)){
-	        		put("encodagedates", mapFieldWith2Labels(Card.countNbCardsEncodedByMonthYear(typeInd), false));
+	        		put("encodagedates", mapFieldWith2Labels(cardDaoService.countNbCardsEncodedByMonthYear(typeInd), false));
 	        	}else if("deliveredCardsByDay".equals(typeStats)){
-	        		put("deliveredCardsByDay", mapFieldWith1Labels(Card.countNbDeliverdCardsByDay(typeInd)));
+	        		put("deliveredCardsByDay", mapFieldWith1Labels(cardDaoService.countNbDeliverdCardsByDay(typeInd)));
 	        	}else if("encodedCardsByday".equals(typeStats)){
-	        		put("encodedCardsByday", mapFieldWith1Labels(Card.countNbEncodedCardsByDay(typeInd)));
+	        		put("encodedCardsByday", mapFieldWith1Labels(cardDaoService.countNbEncodedCardsByDay(typeInd)));
 	        	}else if("nbCards".equals(typeStats)){
-	        		put("nbCards", mapFieldWith1Labels(User.countNbCardsByuser(typeInd)));
+	        		put("nbCards", mapFieldWith1Labels(userDaoService.countNbCardsByuser(typeInd)));
 	        	}else if("editable".equals(typeStats)){
-	        		put("editable", mapFieldWith1Labels(User.countNbEditable()));
+	        		put("editable", mapFieldWith1Labels(userDaoService.countNbEditable()));
 	        	}else if("browsers".equals(typeStats)){
-	        		put("browsers", mapFieldWith1Labels(Card.countBrowserStats(typeInd)));
+	        		put("browsers", mapFieldWith1Labels(cardDaoService.countBrowserStats(typeInd)));
 	        	}else if("os".equals(typeStats)){
-	        		put("os", mapFieldWith1Labels(Card.countOsStats(typeInd)));
+	        		put("os", mapFieldWith1Labels(cardDaoService.countOsStats(typeInd)));
 	        	}else if("realos".equals(typeStats)){
-	        		put("realos", mapFieldWith1Labels(Card.countRealOsStats(typeInd)));
+	        		put("realos", mapFieldWith1Labels(cardDaoService.countRealOsStats(typeInd)));
 	        	}else if("nbRejets".equals(typeStats)){
-	        		put("nbRejets", mapFieldWith1Labels(Card.countNbCardsByRejets(typeInd)));
+	        		put("nbRejets", mapFieldWith1Labels(cardDaoService.countNbCardsByRejets(typeInd)));
 	        	}else if("notDelivered".equals(typeStats)){
-	        		put("notDelivered", mapFieldWith2Labels(Card.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), true));
+	        		put("notDelivered", mapFieldWith2Labels(cardDaoService.countNbEditedCardNotDelivered(mapToCase("user_type", mapsFromI18n("types", Locale.FRENCH, "manager.type"), "motif_disable")), true));
 	        	}else if("deliveryByAdress".equals(typeStats)){
-	        		put("deliveryByAdress", mapFieldWith1Labels(Card.countDeliveryByAddress()));
+	        		put("deliveryByAdress", mapFieldWith1Labels(cardDaoService.countDeliveryByAddress()));
 	        	}else if("noneditableByAdress".equals(typeStats)){
-	        		put("noneditableByAdress", mapFieldWith1Labels(Card.countNonEditableByAddress()));
+	        		put("noneditableByAdress", mapFieldWith1Labels(cardDaoService.countNonEditableByAddress()));
 	        	}else if("userDeliveries".equals(typeStats)){
-	        		put("userDeliveries", mapFieldWith1Labels(Log.countUserDeliveries()));
+	        		put("userDeliveries", mapFieldWith1Labels(logDaoService.countUserDeliveries()));
 	        	}else if("tarifsCrousBars".equals(typeStats)){
-	        		put("tarifsCrousBars", mapFieldWith2Labels(User.countTarifCrousByType(), true));
+	        		put("tarifsCrousBars", mapFieldWith2Labels(userDaoService.countTarifCrousByType(), true));
 	        	}else if("nextDueDatesOneYearByType".equals(typeStats)){
-	        		put("nextDueDatesOneYearByType", mapFieldWith2Labels(User.countNextDueDatesOneYearByType(), true));
+	        		put("nextDueDatesOneYearByType", mapFieldWith2Labels(userDaoService.countNextDueDatesOneYearByType(), true));
 	        	}else if("nextDueDatesOneMonthByType".equals(typeStats)){
-	        		put("nextDueDatesOneMonthByType", mapFieldWith2Labels(User.countNextDueDatesOneMonthByType(), true));
+	        		put("nextDueDatesOneMonthByType", mapFieldWith2Labels(userDaoService.countNextDueDatesOneMonthByType(), true));
 	        	}else if("cardsByMonth".equals(typeStats)){
-	        		put("cardsByMonth", mapFieldWith1Labels(Card.countNbCardRequestByMonth(typeInd)));
-	        		put("encodedCardsByMonth", mapFieldWith1Labels(Card.countNbCardEncodedByMonth(typeInd)));
+	        		put("cardsByMonth", mapFieldWith1Labels(cardDaoService.countNbCardRequestByMonth(typeInd)));
+	        		put("encodedCardsByMonth", mapFieldWith1Labels(cardDaoService.countNbCardEncodedByMonth(typeInd)));
 	        	}else if("nbRejetsByMonth".equals(typeStats)){
-	        		put("nbRejetsByMonth", mapFieldWith1Labels(Card.countNbRejetsByMonth(typeInd)));
+	        		put("nbRejetsByMonth", mapFieldWith1Labels(cardDaoService.countNbRejetsByMonth(typeInd)));
 	        	}else if("requestFree".equals(typeStats)){
-	        		put("requestFree", mapFieldWith2Labels(User.countNbRequestFree(), true));
+	        		put("requestFree", mapFieldWith2Labels(userDaoService.countNbRequestFree(), true));
 	        	}else if("templateCards".equals(typeStats)){
-	        		put("templateCards", mapFieldWith1Labels(TemplateCard.countTemplateCardByNameVersion()));
+	        		put("templateCards", mapFieldWith1Labels(templateCardDaoService.countTemplateCardByNameVersion()));
 	        	}else if("europeanCardChart".equals(typeStats)){
-	        		put("europeanCardChart", mapFieldWith1Labels(User.countNbEuropenCards()));
+	        		put("europeanCardChart", mapFieldWith1Labels(userDaoService.countNbEuropenCards()));
 	        	}else if("nbRoles".equals(typeStats)){
-	        		put("nbRoles", mapFieldWith1Labels(User.countNbRoles()));
+	        		put("nbRoles", mapFieldWith1Labels(userDaoService.countNbRoles()));
 	        	}else if("pendingCards".equals(typeStats)){
-	        		put("pendingCards", mapFieldWith1Labels(User.countNbPendingCards(typeInd)));
+	        		put("pendingCards", mapFieldWith1Labels(userDaoService.countNbPendingCards(typeInd)));
 	        	}else if("dueDate".equals(typeStats)){
-	        		put("dueDate", mapFieldWith1Labels(Card.countDueDatesByDate(typeInd)));
+	        		put("dueDate", mapFieldWith1Labels(cardDaoService.countDueDatesByDate(typeInd)));
 	        	}else if("cardsByEtat".equals(typeStats)){
-	        		put("cardsByEtat", mapFieldWith1Labels(Card.countNbCardsByEtat(typeInd)));
+	        		put("cardsByEtat", mapFieldWith1Labels(cardDaoService.countNbCardsByEtat(typeInd)));
 	        	}
 	        }
 	    };
@@ -265,7 +269,7 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
     	
     	LinkedHashMap<String, String> finalMap = new LinkedHashMap<String, String>();
     	
-    	finalMap = getStatsCardsByPopulationCrous (User.countYesterdayCardsByPopulationCrous(this.getDates().get("isMonday"),typeDate));
+    	finalMap = getStatsCardsByPopulationCrous (userDaoService.countYesterdayCardsByPopulationCrous(this.getDates().get("isMonday"),typeDate));
     	
     	return finalMap;
     }
@@ -274,7 +278,7 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
     	
     	LinkedHashMap<String, String> finalMap = new LinkedHashMap<String, String>();
     	
-    	finalMap = getStatsCardsByPopulationCrous (User.countMonthCardsByPopulationCrous(this.getDates().get("likeMonth"),typeDate));
+    	finalMap = getStatsCardsByPopulationCrous (userDaoService.countMonthCardsByPopulationCrous(this.getDates().get("likeMonth"),typeDate));
     	
     	return finalMap;
     }
@@ -285,7 +289,7 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
     	
     	Date dateFin = getDateFinAnneeUniv(anneeUniv);
 
-    	finalMap = getStatsCardsByPopulationCrous (User.countYearEnabledCardsByPopulationCrous(anneeUniv,typeDate, dateFin));
+    	finalMap = getStatsCardsByPopulationCrous (userDaoService.countYearEnabledCardsByPopulationCrous(anneeUniv,typeDate, dateFin));
     	
     	return finalMap;
     }
@@ -300,7 +304,7 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
 	        	
 	        	Date dateFin = getDateFinAnneeUniv(entry.getValue());
 	
-	        	finalMap = getStatsCardsByPopulationCrous (User.countYearEnabledCardsByPopulationCrous(entry.getValue(),typeDate, dateFin));
+	        	finalMap = getStatsCardsByPopulationCrous (userDaoService.countYearEnabledCardsByPopulationCrous(entry.getValue(),typeDate, dateFin));
 	    		
 	    		anneesMap.put(entry.getKey(), finalMap);
     		}

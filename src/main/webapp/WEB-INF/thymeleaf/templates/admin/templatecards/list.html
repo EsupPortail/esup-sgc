@@ -1,0 +1,84 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/templatecards/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Thèmes carte</title>
+</head>
+<body>
+<div id="templateCardsList" layout:fragment="content"
+     th:with="photoLocalPrefix=@{/admin/templatecards/photo/}, createUrl=@{/admin/templatecards?form}">
+    <h2>
+        Thèmes carte
+        <a class="btn btn-primary" th:href="${createUrl}">
+            <span class="glyphicon glyphicon-plus"></span>
+        </a>
+    </h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_TemplateCard">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Clé</th>
+                    <th>Version</th>
+                    <th>Masque</th>
+                    <th>Logo</th>
+                    <th>QR Code</th>
+                    <th>Code barres</th>
+                    <th>Style CSS</th>
+                    <th>Css mobile</th>
+                    <th>Modificateur</th>
+                    <th>Date modification</th>
+                    <th data-type="html" class="">Voir</th>
+                    <th data-type="html" class="">Modifier</th>
+                    <th data-type="html" class="">Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="tc : ${templatecards}">
+                    <td th:text="${tc.name}"></td>
+                    <td th:text="${tc.key}"></td>
+                    <td th:text="${tc.numVersion}"></td>
+                    <td class="photo centerCell">
+                        <img th:src="${photoLocalPrefix + 'masque/' + tc.id}" alt="masque" style="max-height:40px;"/>
+                    </td>
+                    <td class="photo centerCell">
+                        <img th:src="${photoLocalPrefix + 'logo/' + tc.id}" alt="logo" style="max-height:40px;"/>
+                    </td>
+                    <td class="photo centerCell">
+                        <img th:src="${photoLocalPrefix + 'qrCode/' + tc.id}" alt="qrCode" style="max-height:40px;"/>
+                    </td>
+                    <td class="centerCell">
+                        <span th:if="${tc.codeBarres}" class="glyphicon glyphicon-ok text-success"></span>
+                        <span th:if="${!tc.codeBarres}" class="glyphicon glyphicon-remove text-danger"></span>
+                    </td>
+                    <td th:text="${#strings.abbreviate(tc.cssStyle, 50)}"></td>
+                    <td th:text="${#strings.abbreviate(tc.cssMobileStyle, 50)}"></td>
+                    <td th:text="${tc.modificateur}"></td>
+                    <td th:text="${#temporals.format(tc.dateModification, templateCard_datemodification_date_format)}"></td>
+                    <td>
+                        <a class="btn btn-success" th:href="@{/admin/templatecards/{id}(id=${tc.id})}">
+                            <span class="glyphicon glyphicon-cd"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" th:href="@{/admin/templatecards/{id}(id=${tc.id}, form=true)}">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/templatecards/{id}(id=${tc.id}}" th:method="DELETE" class="form-inline">
+                            <button class="btn btn-danger" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce thème ?');">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

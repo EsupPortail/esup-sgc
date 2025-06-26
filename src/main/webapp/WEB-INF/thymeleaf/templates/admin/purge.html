@@ -1,0 +1,84 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/purge.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Purge</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Purge des cartes</h2>
+    <div class="row">
+        <div class="col-lg-1">&nbsp;</div>
+        <div class="col-lg-10">
+            <form th:action="@{/admin/purge}" class="form-horizontal" method="post">
+                <div class="well">
+                    Supprimer toutes les
+                    <select name="etat" id="etatPurge">
+                        <option th:each="etat : ${etatsPurgeable}" th:value="${etat}" th:text="#{|card.step.${etat}|}"></option>
+                    </select>
+                    <hr/>
+                    Pour les utilisateurs du type
+                    <select name="userType" id="userTypePurge">
+                        <option value="">Tous</option>
+                        <option th:each="type : ${userTypes}" th:value="${type}" th:text="#{|manager.type.${type}|}"></option>
+                    </select>
+                    <hr/>
+                    Avant le
+                    <input type="date" name="date" th:value="${#temporals.format(datePurge, 'yyyy-MM-dd')}" id="datePurge"/>
+                </div>
+                <strong id="card2purgeNb"></strong>
+                <hr/>
+                <div class="form-group">
+                    <button class="btn btn-danger" type="submit" name="action" value="purger"
+                            onclick="return confirm('Attention les cartes ainsi purgées seront supprimées de la base de données et ne pourront plus être réactivées.')">
+                        Purger/Supprimer les cartes correspondantes de la base de données.
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h2>Purge des utilisateurs</h2>
+    <div class="row">
+        <div class="col-lg-1">&nbsp;</div>
+        <div class="col-lg-10">
+            <strong th:text="${userWithNoCardsNb} + ' utilisateurs en base sans cartes associées.'"></strong>
+            <form th:action="@{/admin/purge(users='')}" class="form-horizontal" method="post">
+                <div class="form-group">
+                    <button class="btn btn-danger" type="submit" name="action" value="purger"
+                            onclick="return confirm('Merci de confirmer.')">
+                        Supprimer tous les utilisateurs de la base qui n'ont pas/plus de cartes.
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        let purgeUrl = "[[@{/admin/purge/count}]]";
+        let updateUserCardsNb = function () {
+            let etatPurge = document.getElementById("etatPurge").value;
+            let userTypePurge = document.getElementById("userTypePurge").value;
+            let datePurge = document.getElementById("datePurge").value;
+            let request = new XMLHttpRequest();
+            request.open('GET', purgeUrl + "?etat=" + etatPurge + "&userType=" + userTypePurge + "&date=" + datePurge, true);
+            request.onload = function() {
+                if (request.status == 200) {
+                    let nbCards = this.response;
+                    let card2purgeNbBlock = document.getElementById("card2purgeNb");
+                    card2purgeNbBlock.innerHTML = nbCards + " carte(s) à purger";
+                }
+            };
+            request.send();
+        }
+        document.getElementById("etatPurge").addEventListener("change", updateUserCardsNb);
+        document.getElementById("datePurge").addEventListener("change", updateUserCardsNb);
+        document.getElementById("userTypePurge").addEventListener("change", updateUserCardsNb);
+        updateUserCardsNb();
+    </script>
+</div>
+</body>
+</html>

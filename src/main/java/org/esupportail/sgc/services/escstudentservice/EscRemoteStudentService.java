@@ -1,9 +1,13 @@
 package org.esupportail.sgc.services.escstudentservice;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
+import org.esupportail.sgc.dao.BigFileDaoService;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -27,12 +31,21 @@ public class EscRemoteStudentService {
 	@Resource
 	CardEtatService cardEtatService;
 
+    @Resource
+    BigFileDaoService bigFileDaoService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
 	protected void update(EscRemoteStudent escRemoteStudent) {
 
-		User user = User.findUser(escRemoteStudent.getEppn());
+		User user = userDaoService.findUser(escRemoteStudent.getEppn());
 		if(user == null) {
 			user = new User();
-			user.persist();
+			userDaoService.persist(user);
 		}
 		user.setEppn(escRemoteStudent.getEppn());
 		user.setEuropeanStudentCard(false);
@@ -57,15 +70,15 @@ public class EscRemoteStudentService {
 					thisCard = new Card();
 					thisCard.setUserAccount(user);
 					user.getCards().add(thisCard);
-					thisCard.setRequestDate(new Date());
+					thisCard.setRequestDate(LocalDateTime.now());
 					thisCard.setEtat(Etat.DISABLED);
-					thisCard.setDateEtat(new Date());
-					thisCard.setDeliveredDate(new Date());
+					thisCard.setDateEtat(LocalDateTime.now());
+					thisCard.setDeliveredDate(LocalDateTime.now());
 					byte[] bytes = ImportExportCardService.loadNoImgEscrPhoto();
-					thisCard.getPhotoFile().getBigFile().setBinaryFile(bytes);
+                    bigFileDaoService.setBinaryFile(thisCard.getPhotoFile().getBigFile(), bytes);
 					thisCard.getPhotoFile().setFileSize((long)bytes.length);
 					thisCard.getPhotoFile().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
-					thisCard.persist();
+                    cardDaoService.persist(thisCard);
 				}
 				thisCard.setEppn(escRemoteStudent.getEppn());
 				thisCard.setEscnUid(escRemoteStudentCard.getEuropeanStudentCardNumber());
@@ -96,7 +109,7 @@ public class EscRemoteStudentService {
 	public void activate(EscRemoteStudent escRemoteStudent) {
 		this.update(escRemoteStudent);
 		String csnEnabledCard = getCsnEnabledCard(escRemoteStudent);
-		User user = User.findUser(escRemoteStudent.getEppn());
+		User user = userDaoService.findUser(escRemoteStudent.getEppn());
 		for(Card card : user.getCards()) {
 			if(csnEnabledCard!=null && csnEnabledCard.equals(card.getCsn()) && (Etat.DISABLED.equals(card.getEtat()) || Etat.CADUC.equals(card.getEtat()))) {
 				cardEtatService.setCardEtat(card, Etat.ENABLED, "Enable card via ESCR Web Service", null, true, true);
@@ -107,7 +120,7 @@ public class EscRemoteStudentService {
 
 	public void deactivate(EscRemoteStudent escRemoteStudent) {
 		this.update(escRemoteStudent);
-		User user = User.findUser(escRemoteStudent.getEppn());
+		User user = userDaoService.findUser(escRemoteStudent.getEppn());
 		for(Card card : user.getCards()) {
 			if(Etat.ENABLED.equals(card.getEtat())) {
 				cardEtatService.setCardEtat(card, Etat.DISABLED, "Enable card via ESCR Web Service", null, true, true);
@@ -126,7 +139,7 @@ public class EscRemoteStudentService {
 	public void deleteCard(EscRemoteStudent escRemoteStudent) {
 		this.update(escRemoteStudent);
 		String csnEnabledCard = getCsnEnabledCard(escRemoteStudent);
-		User user = User.findUser(escRemoteStudent.getEppn());
+		User user = userDaoService.findUser(escRemoteStudent.getEppn());
 		for(Card card : user.getCards()) {
 			if(!csnEnabledCard.equals(card.getCsn()) && Etat.ENABLED.equals(card.getEtat())) {
 				cardEtatService.setCardEtat(card, Etat.DISABLED, "Disable card via ESCR Web Service", null, true, true);
@@ -136,7 +149,7 @@ public class EscRemoteStudentService {
 
 	public void deleteStudent(EscRemoteStudent escRemoteStudent) {
 		this.update(escRemoteStudent);
-		User user = User.findUser(escRemoteStudent.getEppn());
+		User user = userDaoService.findUser(escRemoteStudent.getEppn());
 		for(Card card : user.getCards()) {
 			cardEtatService.setCardEtat(card, Etat.CADUC, "Enable card via ESCR Web Service", null, true, true);
 		}

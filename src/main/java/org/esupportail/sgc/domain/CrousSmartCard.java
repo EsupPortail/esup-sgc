@@ -1,27 +1,32 @@
 package org.esupportail.sgc.domain;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
-
-import org.springframework.roo.addon.dbre.RooDbManaged;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-@RooJavaBean
-@RooToString
-@RooDbManaged(automaticallyDelete = true)
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Entity
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "id", "version", "hibernateLazyInitializer", "handler", "crousSmartCardIdGenerator"})
-@RooJpaActiveRecord(finders = { "findCrousSmartCardsByUidEquals" })
 public class CrousSmartCard {
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+@SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
+    @Column(name = "id")
+    private Long id;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
+
     Long idTransmitter;
 
     Long idMapping;
@@ -29,7 +34,7 @@ public class CrousSmartCard {
     @Column(unique = true)
     Long idZdc;
 
-    Date zdcCreationDate;
+    LocalDateTime zdcCreationDate;
 
     String pixSs;
 
@@ -42,17 +47,97 @@ public class CrousSmartCard {
 
     String rid;
 
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
-    public Date getZdcCreationDate() {
+    public LocalDateTime getZdcCreationDate() {
         return zdcCreationDate;
     }
 
-    public static CrousSmartCard findCrousSmartCard(String uid) {
-    	CrousSmartCard smartCard = null;
-    	List<CrousSmartCard> smartCards = CrousSmartCard.findCrousSmartCardsByUidEquals(uid).getResultList();
-    	if(!smartCards.isEmpty()) {
-    		smartCard = smartCards.get(0);
-    	}
-        return smartCard;
+	public Long getIdTransmitter() {
+        return this.idTransmitter;
     }
+
+	public void setIdTransmitter(Long idTransmitter) {
+        this.idTransmitter = idTransmitter;
+    }
+
+	public Long getIdMapping() {
+        return this.idMapping;
+    }
+
+	public void setIdMapping(Long idMapping) {
+        this.idMapping = idMapping;
+    }
+
+	public Long getIdZdc() {
+        return this.idZdc;
+    }
+
+	public void setIdZdc(Long idZdc) {
+        this.idZdc = idZdc;
+    }
+
+	public void setZdcCreationDate(LocalDateTime zdcCreationDate) {
+        this.zdcCreationDate = zdcCreationDate;
+    }
+
+	public String getPixSs() {
+        return this.pixSs;
+    }
+
+	public void setPixSs(String pixSs) {
+        this.pixSs = pixSs;
+    }
+
+	public String getPixNn() {
+        return this.pixNn;
+    }
+
+	public void setPixNn(String pixNn) {
+        this.pixNn = pixNn;
+    }
+
+	public String getAppl() {
+        return this.appl;
+    }
+
+	public void setAppl(String appl) {
+        this.appl = appl;
+    }
+
+	public String getUid() {
+        return this.uid;
+    }
+
+	public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+	public String getRid() {
+        return this.rid;
+    }
+
+	public void setRid(String rid) {
+        this.rid = rid;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
 }

@@ -40,18 +40,22 @@
 		</property>	
 	</bean>
 
-    <bean id="ldapContextSourcePool" class="org.springframework.ldap.pool.factory.PoolingContextSource">
-      <property name="contextSource" ref="ldapContextSource" />
-      <property name="dirContextValidator" ref="dirContextValidator"/>
-      <property name="testWhileIdle" value="true"/>
-      <property name="testOnBorrow" value="true"/>
-      <property name="timeBetweenEvictionRunsMillis" value="30000"/>
-      <property name="minEvictableIdleTimeMillis" value="60000"/>
+    <bean id="ldapContextSourcePool" class="org.springframework.ldap.pool2.factory.PooledContextSource">
+        <constructor-arg>
+            <bean class="org.springframework.ldap.pool2.factory.PoolConfig">
+                <property name="testWhileIdle" value="true"/>
+                <property name="testOnBorrow" value="true"/>
+                <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+                <property name="minEvictableIdleTimeMillis" value="60000"/>
+            </bean>
+        </constructor-arg>
+        <property name="contextSource" ref="ldapContextSource" />
+        <property name="dirContextValidator" ref="dirContextValidator"/>
     </bean>
 
-    <bean id="dirContextValidator"
-         class="org.springframework.ldap.pool.validation.DefaultDirContextValidator" />
-    
+   <bean id="dirContextValidator"
+         class="org.springframework.ldap.pool2.validation.DefaultDirContextValidator" />
+	
     <bean id="ldapContextSource"
 		class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="ldap://ldap.univ-ville.fr" />
@@ -98,7 +102,7 @@
 	</bean>
 
         <!--
-    <bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" id="dbExtDataSource">
+    <bean class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close" id="dbExtDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://ext-test-db.univ-ville.fr:3306/siBase?zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true"/>
         <property name="username" value="toto"/>
@@ -134,7 +138,8 @@
 			from SgcTable where eppn=?"/>
 	</bean>
         -->
-        <!-- 
+
+	<!-- 
 	On s'assure que eduPersonPrimaryAffiliation est conservé
 	On fait également en sorte de toujours conserver une email, même si celui-ci n'est plus valide : le crous exige qu'un compte ait toujours un email de présent
 	-->
@@ -227,17 +232,21 @@
 	</bean>
 	
 
-        <bean id="ldapContextSourceWritePool" class="org.springframework.ldap.pool.factory.PoolingContextSource">
-            <property name="contextSource" ref="ldapContextSourceWrite" />
-            <property name="dirContextValidator" ref="dirContextValidator"/>
-            <property name="testWhileIdle" value="true"/>
-            <property name="testOnBorrow" value="true"/>
-            <property name="timeBetweenEvictionRunsMillis" value="30000"/>
-            <property name="minEvictableIdleTimeMillis" value="60000"/>
-        </bean>
+    <bean id="ldapContextSourceWritePool" class="org.springframework.ldap.pool2.factory.PooledContextSource">
+        <constructor-arg>
+            <bean class="org.springframework.ldap.pool2.factory.PoolConfig">
+                <property name="testWhileIdle" value="true"/>
+                <property name="testOnBorrow" value="true"/>
+                <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+                <property name="minEvictableIdleTimeMillis" value="60000"/>
+            </bean>
+        </constructor-arg>            
+        <property name="contextSource" ref="ldapContextSourceWrite" />
+        <property name="dirContextValidator" ref="dirContextValidator"/>
+    </bean>
                 
 	<bean id="ldapContextSourceWrite"
-		class="org.springframework.ldap.core.support.LdapContextSource">
+          class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="ldap://ldap.univ-ville.fr" />
 		<property name="base" value="dc=univ-ville,dc=fr" />
 		<property name="userDn" value="cn=admin,dc=univ-ville,dc=fr" />
@@ -264,7 +273,20 @@
 		</property>
 	</bean>
 
-<!--	 
+    <!--
+    <bean id="adContextSourcePool" class="org.springframework.ldap.pool2.factory.PooledContextSource">
+        <constructor-arg>
+            <bean class="org.springframework.ldap.pool2.factory.PoolConfig">
+                <property name="testWhileIdle" value="true"/>
+                <property name="testOnBorrow" value="true"/>
+                <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+                <property name="minEvictableIdleTimeMillis" value="60000"/>
+            </bean>
+        </constructor-arg>
+        <property name="contextSource" ref="adContextSource" />
+        <property name="dirContextValidator" ref="dirContextValidator"/>
+    </bean>
+	
    <bean id="adContextSource"
 		class="org.springframework.ldap.core.support.LdapContextSource">
 		<property name="url" value="ldaps://ad.univ-ville.fr:636" />
@@ -275,7 +297,7 @@
 	</bean>
 	
 	<bean id="adLdapTemplate" class="org.springframework.ldap.core.LdapTemplate">  
-      <constructor-arg ref="adContextSource" />
+      <constructor-arg ref="adContextSourcePool" />
       <property name="ignorePartialResultException" value="true"/>
    </bean>
    

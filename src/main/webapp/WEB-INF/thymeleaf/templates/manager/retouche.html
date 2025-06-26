@@ -1,0 +1,126 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/retouche.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Retouche</title>
+</head>
+<body>
+<div layout:fragment="content" id="retouche">
+    <script type="text/javascript">
+        var photorUrl = "[[@{/manager/photo/}]]";
+        var updatePhototUrl = "[[@{/manager/updatePhotoAjax}]]";
+        var actionUrl = "[[@{/manager/actionAjax/}]]";
+    </script>
+    <h2>
+        Retouche
+        <a class="btn btn-primary pull-right hidden-print" th:href="@{/manager(index='first')}" type="button">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </h2>
+    <div class="col-lg-8">
+        <div class="well clearfix">
+            <div th:each="card : ${cards}" class="col-lg-2 col-md-2 col-sm-3 col-xs-4">
+                <div class="boxes">
+                    <div class="thumbnail">
+                        <a href="#" th:id="${card.id}" class="photoNail">
+                            <img th:src="@{/manager/photo/{cardId}(cardId=${card.id})}" width="150" height="188"/>
+                        </a>
+                        <div class="caption">
+                            <p>
+                                <strong th:text="${card.userAccount.firstname + ' ' + card.userAccount.name}"></strong>
+                            </p>
+                            <div class="clearfix" id="retClear">
+                                <div th:id="'formActionDiv' + ${card.id}" class="pull-left">
+                                    <th:block th:if="${card.etat != 'NEW' and card.etat != 'RENEWED'}">
+                                        <span th:class="'label label-' + ${#strings.toLowerCase(card.etat)}"
+                                              th:text="#{|card.label.${card.etat}|}"></span>
+                                    </th:block>
+                                    <th:block th:unless="${card.etat != 'NEW' and card.etat != 'RENEWED'}">
+                                        <span class="badge badge-e pull-left" th:text="${card.userAccount.userType}"></span>&nbsp;
+                                        <form th:action="@{/manager/actionAjax/{id}(id=${card.id})}" method="post" class="pull-left retoucheAction">
+                                            <button class="btn btn-default btn-xs" type="submit">
+                                                <span class="text-success glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                            </button>
+                                            <input type="hidden" th:value="${card.id}" name="cardId"/>
+                                            <input type="hidden" value="REQUEST_CHECKED" name="etatFinal"/>
+                                        </form>
+                                        <form th:action="@{/manager/actionAjax/{id}(id=${card.id})}" method="post" class="pull-left retoucheAction">
+                                            <button class="btn btn-default btn-xs" type="submit"
+                                                    onclick="return confirm('Vous confirmez le rejet de cette demande ?');">
+                                                <span class="text-danger glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                            </button>
+                                            <input type="hidden" th:value="${card.id}" name="cardId"/>
+                                            <input type="hidden" value="REJECTED" name="etatFinal"/>
+                                        </form>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4" id="retoucheLeft">
+        <div class="alert-info clearfix">
+            <form th:action="@{/manager/updatePhotoAjax}" enctype="multipart/form-data" id="retouchePhoto" method="post">
+                <div id="image-cropper">
+                    <div class="col-lg-12">
+                        <div class="ezcrop-preview col-lg-4" id="ezcrop-preview">&nbsp;</div>
+                        <div id="container"></div>
+                    </div>
+                    <div class="well clearfix" id="ezcrop-info">
+                        <label>Zoom</label>
+                        <input class="ezcrop-image-zoom-input" type="range"/>
+                        <label>Rotation</label>
+                        <br/>
+                        <button class="rotate-ccw" id="rotate-ccw" type="button">
+                            <span aria-hidden="true" class="glyphicon glyphicon-repeat icon-flipped"></span>
+                        </button>
+                        <button class="rotate-cw" id="rotate-cw" type="button">
+                            <span aria-hidden="true" class="glyphicon glyphicon-repeat"></span>
+                        </button>
+                        <input class="ezcrop-image-input" style="display:none;" type="file"/>
+                        <br/>
+                    </div>
+                    <div class="well" id="filterSliders">
+                        <label for="brighten">Luminosité</label>
+                        <input id="brighten" max="1" min="-1" step="0.05" type="range" value="0"/>
+                        <label for="contrast">Contraste</label>
+                        <input id="contrast" max="100" min="-100" step="1" type="range" value="0"/>
+                        <label for="enhance">Amélioration</label>
+                        <input id="enhance" max="1" min="-1" step="0.05" type="range" value="0"/>
+                        <label for="rotate">Rotation libre</label>
+                        <input id="rotate" max="360" min="0" step="1" type="range" value="0"/>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="btnColors" type="button">Filtres</button>&nbsp;
+                        <button class="btn btn-warning" id="scaleBtn" type="button">Echelle</button>&nbsp;
+                        <button class="btn btn-default" id="resetBtn" type="button">Effacer</button>&nbsp;
+                        <button class="btn btn-success" id="exportAdmin"
+                                onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
+                    </div>
+                    <input id="cardId" name="cardId" type="hidden" value=""/>
+                    <input class="ezcrop-image-data" name="imageData" type="hidden"/>
+                </div>
+            </form>
+        </div>
+        <div class="jumbotron center-block">
+            <form th:action="@{/manager/multiUpdate/}" id="REQUEST_CHECKEDForm" method="post">
+                <button class="btn btn-danger" type="submit">
+                    <strong>Accepter toutes les demandes non traitées</strong>
+                </button>
+                <input type="hidden" th:value="${joinIds}" name="listeIds"/>
+                <input type="hidden" value="REQUEST_CHECKED" name="etatFinal"/>
+            </form>
+            <a th:href="@{/manager(index='first')}" class="btn btn-info">
+                <strong>Retourner à la page d'accueil</strong>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

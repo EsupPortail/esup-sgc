@@ -1,9 +1,11 @@
 package org.esupportail.sgc.services;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
+import org.esupportail.sgc.dao.PrefsDaoService;
 import org.esupportail.sgc.domain.Prefs;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
@@ -14,27 +16,30 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PreferencesService {
-	
+
+    public final Logger log = LoggerFactory.getLogger(getClass());
+
 	@Resource
 	LogService logService;
-	
-	public final Logger log = LoggerFactory.getLogger(getClass());
+
+    @Resource
+    PrefsDaoService prefsDaoService;
 	
 	public void setPrefs(String eppn, String key, String value){
 		
 		try {
-			if(Prefs.countFindPrefsesByEppnEqualsAndKeyEquals(eppn, key)>0){
-				Prefs pref = Prefs.findPrefsesByEppnEqualsAndKeyEquals(eppn, key).getSingleResult();
-				pref.setDateModification(new Date());
+			if(prefsDaoService.countFindPrefsesByEppnEqualsAndKeyEquals(eppn, key)>0){
+				Prefs pref = prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, key).getSingleResult();
+				pref.setDateModification(LocalDateTime.now());
 				pref.setValue(value);
-				pref.merge();
+                prefsDaoService.merge(pref);
 			}else{
 				Prefs pref = new Prefs();
 				pref.setKey(key);
 				pref.setValue(value);
 				pref.setEppn(eppn);
-				pref.setDateModification(new Date());
-				pref.persist();
+				pref.setDateModification(LocalDateTime.now());
+                prefsDaoService.persist(pref);
 				//log... creation et update STATS DELETED
 			}
 			logService.log(null, ACTION.UPDATEPREFS, RETCODE.SUCCESS, key, eppn, null);
@@ -45,8 +50,8 @@ public class PreferencesService {
 	}
 	
 	public Prefs getPrefs(String eppn, String key){
-		if(Prefs.countFindPrefsesByEppnEqualsAndKeyEquals(eppn, key)>0){
-			return Prefs.findPrefsesByEppnEqualsAndKeyEquals(eppn, key).getSingleResult();
+		if(prefsDaoService.countFindPrefsesByEppnEqualsAndKeyEquals(eppn, key)>0){
+			return prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, key).getSingleResult();
 		}else{
 			return null;
 		}
@@ -60,7 +65,9 @@ public class PreferencesService {
 				value = "all";
 			}else if(ManagerCardController.MANAGER_SEARCH_PREF.OWNORFREECARD.name().equals(key)){
 				value = "false";
-			}
+			}else if(ManagerCardController.MANAGER_SEARCH_PREF.LIST_NO_IMG.name().equals(key)){
+                value = "false";
+            }
 		}else{
 			value = prefs.getValue();
 		}

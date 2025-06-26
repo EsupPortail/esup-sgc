@@ -1,12 +1,10 @@
 package org.esupportail.sgc.services.crous;
 
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@RooToString
-@RooJavaBean
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class PatchIdentifier {
 
@@ -16,4 +14,32 @@ public class PatchIdentifier {
 	
 	String newIdentifier;
 			
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getCurrentIdentifier() {
+        return this.currentIdentifier;
+    }
+
+	public void setCurrentIdentifier(String currentIdentifier) {
+        this.currentIdentifier = currentIdentifier;
+    }
+
+	public String getEmail() {
+        return this.email;
+    }
+
+	public void setEmail(String email) {
+        this.email = email;
+    }
+
+	public String getNewIdentifier() {
+        return this.newIdentifier;
+    }
+
+	public void setNewIdentifier(String newIdentifier) {
+        this.newIdentifier = newIdentifier;
+    }
 }

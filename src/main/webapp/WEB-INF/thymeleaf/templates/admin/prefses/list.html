@@ -1,0 +1,59 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/prefses/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Liste des préférences</title>
+</head>
+<body>
+<div id="prefsesList" layout:fragment="content"
+     th:with="prefs_url=@{/admin/prefses}">
+    <h2>Préférences</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_Prefs">
+            <thead>
+                <tr>
+                    <th>Eppn</th>
+                    <th>Date modification</th>
+                    <th>Valeur</th>
+                    <th>Clé</th>
+                    <th data-type="html" class="">Modifier</th>
+                    <th data-type="html" class="">Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="prefs : ${prefses}">
+                    <td th:text="${prefs.eppn}"></td>
+                    <td th:text="${#temporals.format(prefs.dateModification, prefs_datemodification_date_format)}"></td>
+                    <td th:text="${#strings.abbreviate(prefs.value, 50)}"></td>
+                    <td th:text="${prefs.key}"></td>
+                    <td>
+                        <a class="btn btn-primary" th:href="@{/admin/prefses/{id}(id=${prefs.id}, form=true)}">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/prefses/{id}(id=${prefs.id}}" th:method="DELETE" class="form-inline">
+                            <button class="btn btn-danger" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ces préférences ?');">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

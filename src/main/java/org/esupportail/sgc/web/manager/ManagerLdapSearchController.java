@@ -6,9 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -69,6 +70,9 @@ public class ManagerLdapSearchController {
 	
 	@Resource
 	PermissionService permissionService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -107,7 +111,7 @@ public class ManagerLdapSearchController {
 		
 		//loo from manager
 		//modificateur
-		return "manager/ldapSearch";
+		return "templates/manager/ldapSearch";
 
 	}
 	
@@ -115,7 +119,7 @@ public class ManagerLdapSearchController {
 	@PreAuthorize("hasPermission(#eppn, 'manage-user')")
 	public String ldapUserForm(@RequestParam(value="eppn") String eppn, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
 		
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(user == null) {
 			user = new User();
 			user.setEppn(eppn);
@@ -146,7 +150,7 @@ public class ManagerLdapSearchController {
 		uiModel.addAttribute("eppn", eppn);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
 		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
-		return "user/card-request";
+		return "templates/user/card-request";
 
 	}
 	

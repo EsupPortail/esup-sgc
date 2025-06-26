@@ -10,9 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.apache.commons.io.IOUtils;
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.web.manager.CardSearchBean;
@@ -42,6 +43,9 @@ public class ImportExportService {
 
 	@Resource
 	MessageSource messageSource;
+
+    @Resource
+    CardDaoService cardDaoService;
 
 	public Boolean isInWorking() {
 		return inWorking;
@@ -140,7 +144,7 @@ public class ImportExportService {
 
             beanWriter.configureBeanMapping(Card.class, FIELD_MAPPING);
 
-			List<Card> cards = Card.findCards(searchBean, eppn, null, null).getResultList();
+			List<Card> cards = cardDaoService.findCards(searchBean, eppn, null, null).getResultList();
 			for(Card card : cards) {
 				beanWriter.write(card,processors);
 			}		

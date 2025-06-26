@@ -1,0 +1,66 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/crousrules/update.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Modifier une règle tarifaire CROUS</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Modifier une règle tarifaire CROUS</h2>
+    <form th:action="@{/admin/crousrules}" th:object="${crousRule}" th:method="${crousRule.id == null} ? POST : PUT" class="form-horizontal well">
+        <input type="hidden" th:field="*{id}" th:if="${crousRule.id != null}"/>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="rne">RNE</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{rne}" id="rne" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="referenceStatus">Status</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{referenceStatus}" id="referenceStatus" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="indiceMin">Indice min</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{indiceMin}" id="indiceMin" type="number" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="indiceMax">Indice max</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{indiceMax}" id="indiceMax" type="number" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="codeSociete">Code société</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{codeSociete}" id="codeSociete" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="codeTarif">Code tarif</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{codeTarif}" id="codeTarif" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="priority">Priorité</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{priority}" id="priority" type="number" required="required"/>
+            </div>
+        </div>
+        <input type="hidden" th:field="*{version}"/>
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-6">
+                <button type="submit" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

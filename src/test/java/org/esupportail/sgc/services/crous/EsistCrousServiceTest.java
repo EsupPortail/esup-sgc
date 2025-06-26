@@ -2,19 +2,21 @@ package org.esupportail.sgc.services.crous;
 
 import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.esupportail.sgc.EsupSgcTestUtilsService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.User;
-import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assumptions.*;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations={"classpath*:META-INF/spring/applicationContext*.xml"})
 public class EsistCrousServiceTest {
 	
@@ -25,13 +27,16 @@ public class EsistCrousServiceTest {
 	
 	@Resource
 	EsupSgcTestUtilsService esupSgcTestUtilsService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
     @Test
     public void testComputeIdCompagnyRateAndIdRate4UserOfEsupSgc() {
     	String eppn = esupSgcTestUtilsService.getEppnFromDb();
-    	Assume.assumeTrue(eppn != null);
-	    User user = User.findUser(eppn);
-	    Assume.assumeTrue(user != null);
+    	assumeTrue(eppn != null);
+	    User user = userDaoService.findUser(eppn);
+	    assumeTrue(user != null);
 		List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
 		log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
     }
@@ -39,9 +44,9 @@ public class EsistCrousServiceTest {
     @Test
     public void testComputeIdCompagnyRateAndIdRate4UserOfLdap() {
     	String eppn = esupSgcTestUtilsService.getEppnFromLdap();
-    	Assume.assumeTrue(eppn != null);
-	    User user = User.findUser(eppn);
-	    Assume.assumeTrue(user != null);
+    	assumeTrue(eppn != null);
+	    User user = userDaoService.findUser(eppn);
+	    assumeTrue(user != null);
 		List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
 		log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
     }
@@ -49,9 +54,9 @@ public class EsistCrousServiceTest {
     @Test
     public void testComputeIdCompagnyRateAndIdRate4UserOfTestConfig() {
     	String eppn = esupSgcTestUtilsService.getEppnFromConfig();
-    	Assume.assumeTrue(eppn != null);
-	    User user = User.findUser(eppn);
-	    Assume.assumeTrue(user != null);
+    	assumeTrue(eppn != null);
+	    User user = userDaoService.findUser(eppn);
+	    assumeTrue(user != null);
 		List<Long> idCompagnyRateAndIdRate = esistCrousService.compute(user);
 		log.info(String.format("idCompagnyRateAndIdRate for %s : %s", user.getEppn(), idCompagnyRateAndIdRate));
     }

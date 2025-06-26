@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.ac;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -11,10 +12,13 @@ import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,7 +33,9 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	private final static String CSV_FILENAME =  "insa-ac-from-esup-sgc.csv";
 
 	// 2524518000000 ms == 31/12/2049
-	private final static Date DATE_MAX = new Date(2524518000000L);
+	private final static LocalDateTime DATE_MAX = Instant.ofEpochMilli(2524518000000L)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
 
 	private String eppnFilter = ".*";
 	
@@ -40,6 +46,9 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	
 	@Resource
 	AppliConfigService appliConfigService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	public CsvExportAcInsaService(AccessService accessService) {
 		super();
@@ -108,7 +117,7 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	private String sgc2csv(Card card) {
 		ArrayList<String> fields = new ArrayList<String>();
 		
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		
 		// Hack : verso6 contient identifiant base métier pour personnels et étudiants insa, ce préfixé par 08, ce sur 8 caractères
 		// pour cartes extérieurs, sans verso6, on construit cet identifant en préfixant par 07 l'identifiant BD du user de esup-sgc
@@ -166,11 +175,11 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	 * -> YYYY/MM/DD
 	 * @return
 	 */
-	private String formatDate(Date date) {
+	private String formatDate(LocalDateTime date) {
 		String dateFt = "";
 		if(date!=null) {
-			Date date2print = date;
-			if(date2print.after(DATE_MAX)) {
+            LocalDateTime date2print = date;
+			if(date2print.isAfter(DATE_MAX)) {
 				date2print = DATE_MAX;
 			}
 			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");

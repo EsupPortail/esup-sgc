@@ -1,14 +1,20 @@
 package org.esupportail.sgc.services.cardid;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.annotation.Resource;
+
 public class ComueNuBuCardIdService implements CardIdService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
+
+    @Resource
+    CardDaoService cardDaoService;
 	
 	private String appName;
 	
@@ -23,7 +29,7 @@ public class ComueNuBuCardIdService implements CardIdService {
 
 	@Override
 	public String generateCardId(Long cardId) {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		User user = card.getUser();
 		String leocode = user.getSecondaryId();
 		return leocode;

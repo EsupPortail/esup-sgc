@@ -4,10 +4,12 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,9 @@ public class CsnDomainCardIdService implements CardIdService {
 	
 	@PersistenceContext
 	EntityManager entityManager;
+
+    @Resource
+    CardDaoService cardDaoService;
 	
 	private String appName;
 	
@@ -50,12 +55,12 @@ public class CsnDomainCardIdService implements CardIdService {
 
 	@Override
 	public String generateCardId(Long cardId) {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		String domain = card.getEppn().replaceAll(".*@", "");
 		String desfireId = MessageFormat.format(identifierFormat, card.getCsn(), domain);
 		if(!desfireId.equals(card.getDesfireIds().get(appName))) {
 			card.getDesfireIds().put(appName, desfireId);
-			card.merge();
+            cardDaoService.merge(card);
 			log.info("generate card Id for " + card.getEppn() + " : " + appName + " -> "  + desfireId);
 		}
 		return card.getDesfireIds().get(appName);

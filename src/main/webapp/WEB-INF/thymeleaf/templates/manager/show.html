@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Utilisateur</title>
+</head>
+<body>
+<div id="cardShow" layout:fragment="content">
+    <script>
+        var photorUrl = "[[${'/manager/photo/'}]]";
+        var getCrousRightHolderUrl = "[[${'/manager/getCrousRightHolderHtmlPart?eppn=' + user.eppn}]]";
+        var getEscrStudentUrl = "[[${'/manager/getEscrStudentHtmlPart?eppn=' + user.eppn}]]";
+        var printerEppn = "[[${printerEppn}]]";
+    </script>
+    <h2>
+        Utilisateur
+        <a class="btn btn-primary pull-right" th:href="@{/manager(index='first')}" type="button">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+    </h2>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h5>
+                        <span th:text="${user.eppn}"></span>
+                        <th:block sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')">
+                            <form th:action="@{/j_spring_security_switch_user}" class="form-horizontal" method="POST" style="display:inline">
+                                <input name="j_username" type="hidden" th:value="${user.eppn}"/>
+                                <button class="btn btn-danger" type="submit">SU</button>
+                            </form>
+                            <a class="btn btn-info pull-right"
+                               th:href="@{/admin/logs(eppnCible=${user.eppn})}">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                            <span class="pull-right">&nbsp;</span>
+                            <a class="btn btn-info pull-right"
+                               th:href="@{/admin/logmails(eppn=${user.eppn})}">
+                                <span class="glyphicon glyphicon-envelope"></span>
+                            </a>
+                            <span class="pull-right">&nbsp;</span>
+                            <a class="btn btn-info pull-right"
+                               th:href="@{/admin/payboxtransactions(eppn=${user.eppn})}">
+                                <span class="glyphicon glyphicon-euro"></span>
+                            </a>
+                        </th:block>
+                    </h5>
+                </div>
+                <div class="panel-body">
+                    <div class="col-lg-4">
+                        <div class="well">
+                            <h3>
+                                Infos Perso
+                                <span th:if="${user.defaultPhoto != null and user.defaultPhoto.bigFile != null and user.defaultPhoto.bigFile.md5 != null}">
+                                    <img class="col-lg-2 col-md-2 col-xs-3 pull-right img-thumbnail center"
+                                         th:src="@{/manager/{id}/photo(id=${user.id})}"/>
+                                </span>
+                            </h3>
+                            <dl class="dl-horizontal displayWs">
+                                <dt>Prénom :</dt>
+                                <dd th:utext="${user.firstname}"></dd>
+                                <dt>Nom :</dt>
+                                <dd th:utext="${user.name}"></dd>
+                                <dt>Date de naissance :</dt>
+                                <dd th:utext="${#temporals.format(user.birthday, 'dd/MM/yyyy')}"></dd>
+                                <dt>Type :</dt>
+                                <dd th:utext="${user.userType}"></dd>
+                                <dt>Email :</dt>
+                                <dd th:utext="${user.email}"></dd>
+                                <dt>Adresse :</dt>
+                                <dd th:utext="${user.address}"></dd>
+                                <dt>Adresse Externe :</dt>
+                                <dd th:utext="${user.externalAddress}"></dd>
+                                <dt>Demande de nouvelle carte gratuite :</dt>
+                                <dd th:utext="${user.requestFree ? 'oui' : 'non'}"></dd>
+                                <dt>Editable :</dt>
+                                <dd th:utext="${user.editable ? 'oui' : 'non'}"></dd>
+                                <dt class="fieldWs">Crous :</dt>
+                                <dd class="fieldWs" th:text="${user.crous ? 'oui' : 'non'}"></dd>
+                                <dt class="fieldWs">Identifiant Crous :</dt>
+                                <dd class="fieldWs" th:text="${user.crousIdentifier}"></dd>
+                                <span th:unless="${#strings.isEmpty(user.crousError)}">
+                                    <dt class="fieldWs"><span class="badge alert-danger">!</span> Erreur Crous :</dt>
+                                    <dd class="fieldWs" th:text="${user.crousError}"></dd>
+                                </span>
+                                <span th:if="${user.crous}">
+                                    <button id="getCrousRighHolder" type="button">Visualiser les données côté CROUS</button>
+                                    <div id="getCrousRighHolderDiv"></div>
+                                </span>
+                                <dt class="fieldWs">European Student Card :</dt>
+                                <dd class="fieldWs" th:text="${user.europeanStudentCard ? 'oui' : 'non'}"></dd>
+                                <span th:if="${user.europeanStudentCard}">
+                                    <button id="getEscrStudent" type="button">Visualiser les données côté ESCR</button>
+                                    <div id="getEscrStudentDiv"></div>
+                                </span>
+                                <dt class="fieldWs">Diffusion Photo :</dt>
+                                <dd class="fieldWs" th:text="${user.difPhoto ? 'oui' : 'non'}"></dd>
+                                <dt>Institut :</dt>
+                                <dd th:utext="${user.institute}"></dd>
+                                <dt>Etablissement Rne :</dt>
+                                <dd th:utext="${user.rneEtablissement}"></dd>
+                                <dt class="fieldWs">Statut Cnous :</dt>
+                                <dd class="fieldWs" th:text="${user.cnousReferenceStatut}"></dd>
+                                <dt>Date limite :</dt>
+                                <dd th:utext="${#temporals.format(user.dueDate, 'dd/MM/yyyy')}"></dd>
+                                <dt class="fieldWs">Société crous :</dt>
+                                <dd class="fieldWs" th:text="${user.idCompagnyRate}"></dd>
+                                <dt class="fieldWs">Tarif crous :</dt>
+                                <dd class="fieldWs" th:text="${user.idRate}"></dd>
+                                <dt>eduPersonPrimaryAffiliation</dt>
+                                <dd th:utext="${user.eduPersonPrimaryAffiliation}"></dd>
+                                <dt>supannEmpId</dt>
+                                <dd th:utext="${user.supannEmpId}"></dd>
+                                <dt>supannEtuId</dt>
+                                <dd th:utext="${user.supannEtuId}"></dd>
+                                <dt>supannCodeINE</dt>
+                                <dd th:utext="${user.supannCodeINE}"></dd>
+                                <dt>academicLevel</dt>
+                                <dd th:utext="${user.academicLevel}"></dd>
+                                <dt>supannEntiteAffectationPrincipale</dt>
+                                <dd th:utext="${user.supannEntiteAffectationPrincipale}"></dd>
+                                <dt>secondaryId</dt>
+                                <dd th:utext="${user.secondaryId}"></dd>
+                                <dt>template</dt>
+                                <dd th:utext="${user.templateKey}"></dd>
+                                <dt>template de la dernière carte</dt>
+                                <dd th:utext="${user.lastCardTemplatePrinted}"></dd>
+                                <dt>recto1</dt>
+                                <dd th:utext="${user.recto1}"></dd>
+                                <dt>recto2</dt>
+                                <dd th:utext="${user.recto2}"></dd>
+                                <dt>recto3</dt>
+                                <dd th:utext="${user.recto3}"></dd>
+                                <dt>recto4</dt>
+                                <dd th:utext="${user.recto4}"></dd>
+                                <dt>recto5</dt>
+                                <dd th:utext="${user.recto5}"></dd>
+                                <dt>recto6</dt>
+                                <dd th:utext="${user.recto6}"></dd>
+                                <dt>recto7</dt>
+                                <dd th:utext="${user.recto7}"></dd>
+                                <dt>verso1</dt>
+                                <dd th:utext="${user.verso1}"></dd>
+                                <dt>verso2</dt>
+                                <dd th:utext="${user.verso2}"></dd>
+                                <dt>verso3</dt>
+                                <dd th:utext="${user.verso3}"></dd>
+                                <dt>verso4</dt>
+                                <dd th:utext="${user.verso4}"></dd>
+                                <dt>verso5</dt>
+                                <dd th:utext="${user.verso5}"></dd>
+                                <dt>verso6</dt>
+                                <dd th:utext="${user.verso6}"></dd>
+                                <dt>verso7</dt>
+                                <dd th:utext="${user.verso7}"></dd>
+                                <dt>freeField1</dt>
+                                <dd th:utext="${user.freeField1}"></dd>
+                                <dt>freeField2</dt>
+                                <dd th:utext="${user.freeField2}"></dd>
+                                <dt>freeField3</dt>
+                                <dd th:utext="${user.freeField3}"></dd>
+                                <dt>freeField4</dt>
+                                <dd th:utext="${user.freeField4}"></dd>
+                                <dt>freeField5</dt>
+                                <dd th:utext="${user.freeField5}"></dd>
+                                <dt>freeField6</dt>
+                                <dd th:utext="${user.freeField6}"></dd>
+                                <dt>freeField7</dt>
+                                <dd th:utext="${user.freeField7}"></dd>
+                                <dt>mis à jour :</dt>
+                                <dd th:utext="${#temporals.format(user.updateDate, 'dd/MM/yyyy HH:mm')}"></dd>
+                            </dl>
+                            <th:block th:if="${managePermission}">
+                                <a class="btn btn-danger"
+                                   th:href="@{/manager/{id}/resync-user/{eppn}(id=${currentCard.id}, eppn=${user.eppn})}">
+                                    Resynchronisation
+                                </a>
+                                <div th:if="${!hasRequestCard}">
+                                    <hr/>
+                                    <div th:if="${!user.requestFree}" class="alert alert-warning">
+                                        La demande d'une nouvelle carte requiert normalement ici un paiement !
+                                    </div>
+                                    <form class="form-horizontal" th:action="@{/manager/ldapUserForm}" method="POST" id="ldapUserFormUrl">
+                                        <input type="hidden" th:value="${user.eppn}" name="eppn"/>
+                                        <button type="submit" class="btn"
+                                                th:classappend="${user.requestFree} ? 'btn-primary' : 'btn-warning'">
+                                            Faire une demande
+                                        </button>
+                                    </form>
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div th:replace="~{templates/manager/includes/printer :: printer}"></div>
+                        <div class="well" id="allCards">
+                            <h3>Cartes</h3>
+                            <p th:if="${user.cards == null}">Aucune carte à afficher.</p>
+                            <div th:each="card, iStat : ${user.cards}">
+                                <div aria-multiselectable="true" class="panel-group" id="accordion" role="tablist">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading" role="tab">
+                                            <h5 class="panel-title">
+                                                <a class="accordion-toggle"
+                                                   th:classappend="${card.id != currentCard.id} ? 'collapsed'"
+                                                   data-parent="#accordion" data-toggle="collapse"
+                                                   th:href="'#collapseCard' + ${iStat.index}" role="button">
+                                                    <span class="etat">
+                                                        <span th:text="#{|card.step.${card.etat}|}"></span> -
+                                                        <span th:text="${#temporals.format(card.dateEtat, 'dd/MM/yyyy')}"></span>
+                                                    </span>
+                                                    <span th:if="${card.external}">- Carte extérieure !</span>
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <div class="panel-collapse collapse"
+                                             th:classappend="${card.id == currentCard.id} ? ' in'"
+                                             th:id="'collapseCard' + ${iStat.index}">
+                                            <div class="panel-body">
+                                                <div class="col-lg-2">
+                                                    <img class="img-thumbnail center"
+                                                         th:src="@{/manager/photo/{id}(id=${card.id})}"/>
+                                                    <th:block th:if="${managePermission}">
+                                                        <th:block th:if="${card.isPhotoEditable}">
+                                                            <button class="btn btn-default btn-block"
+                                                                    data-target="#retouche" data-toggle="modal"
+                                                                    id="btnRetouche" type="button">
+                                                                Retoucher
+                                                            </button>
+                                                            <!-- Bloc modal retouche en Thymeleaf -->
+                                                            <div class="modal fade" id="retouche">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                                                                            <h3 class="modal-title">Modification Photo</h3>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form th:action="@{/manager/updatePhoto}" enctype="multipart/form-data" id="updatePhoto" method="post">
+                                                                                <div id="image-cropper">
+                                                                                    <div class="col-lg-4">
+                                                                                        <div class="ezcrop-preview col-lg-4" id="ezcrop-preview">&nbsp;</div>
+                                                                                        <div id="container">
+                                                                                            <!--  -->
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-lg-8">
+                                                                                        <div class="well" id="ezcrop-info">
+                                                                                            <label>Zoom</label>
+                                                                                            <input class="ezcrop-image-zoom-input" type="range"/>
+                                                                                            <label>Rotation</label>
+                                                                                            <br/>
+                                                                                            <button class="rotate-ccw" id="rotate-ccw" type="button">
+                                                                                                <span aria-hidden="true" class="glyphicon glyphicon-repeat icon-flipped"></span>
+                                                                                            </button>
+                                                                                            <button class="rotate-cw" id="rotate-cw" type="button">
+                                                                                                <span aria-hidden="true" class="glyphicon glyphicon-repeat"></span>
+                                                                                            </button>
+                                                                                            <input class="ezcrop-image-input" style="display:none;" type="file"/>
+                                                                                            <br/>
+                                                                                        </div>
+                                                                                        <div class="well" id="filterSliders">
+                                                                                            <label for="brighten">Luminosité</label>
+                                                                                            <input id="brighten" max="1" min="-1" step="0.05" type="range" value="0"/>
+                                                                                            <label for="contrast">Contraste</label>
+                                                                                            <input id="contrast" max="100" min="-100" step="1" type="range" value="0"/>
+                                                                                            <label for="enhance">Amélioration</label>
+                                                                                            <input id="enhance" max="1" min="-1" step="0.05" type="range" value="0"/>
+                                                                                            <label for="rotate">Rotation libre</label>
+                                                                                            <input id="rotate" max="360" min="0" step="1" type="range" value="0"/>
+                                                                                        </div>
+                                                                                        <div class="form-group">
+                                                                                            <button class="btn btn-primary" id="btnColors" type="button">Filtres</button>&nbsp;
+                                                                                            <button class="btn btn-warning" id="scaleBtn" type="button">Echelle</button>&nbsp;
+                                                                                            <button class="btn btn-default" id="resetBtn" type="button">Effacer</button>&nbsp;
+                                                                                            <button class="btn btn-success" id="exportAdmin" onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
+                                                                                        </div>
+                                                                                        <input id="cardId" name="cardId" type="hidden" th:value="${card.id}"/>
+                                                                                        <input class="ezcrop-image-data" name="imageData" type="hidden"/>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                            <hr/>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </th:block>
+                                                    </th:block>
+
+                                                    <!-- Bloc modal de prévisualisation de carte en Thymeleaf -->
+                                                    <button class="preview btn btn-warning btn-block"
+                                                            th:attr="data-target='#previewCarte' + ${iStat.index}"
+                                                            data-toggle="modal"
+                                                            type="button">
+                                                        Prévisualiser
+                                                    </button>
+                                                    <div class="modal fade" th:id="'previewCarte' + ${iStat.index}">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                                                                    <h3 class="modal-title">Prévisualisation de la carte</h3>
+                                                                </div>
+                                                                <div class="modal-body"
+                                                                     th:with="
+                                                                        currentTemplate=${card.templateCard} == null ? ${userTemplateCard} : ${card.templateCard},
+                                                                        cssId=${'specimenCarte' + iStat.index},
+                                                                        css=${#strings.replace(currentTemplate.cssStyle, 'specimenCarte', 'specimenCarte' + iStat.index)},
+                                                                        cssMobileStyle=${#strings.replace(currentTemplate.cssMobileStyle, 'specimenCarte', 'specimenCarte' + iStat.index)},
+                                                                        photoLocalPrefix=@{/manager/templatePhoto/},
+                                                                        masqueUrl=@{${photoLocalPrefix} + 'masque/' + ${currentTemplate.id}},
+                                                                        logoUrl=@{${photoLocalPrefix} + 'logo/' + ${currentTemplate.id}},
+                                                                        photoUrl=@{/manager/photo/{id}(id=${card.id})},
+                                                                        QRCodeUrl=@{/manager/QRCode(cardId=${card.id})}
+                                                                     ">
+                                                                    <style th:inline="text">
+                                                                        @media screen {
+                                                                            #[[${cssId}]] {
+                                                                                background: url([[${masqueUrl}]]);
+                                                                                line-height: 1;
+                                                                            }
+                                                                        }
+                                                                        #[[${cssId}]] * {
+                                                                            -webkit-box-sizing: content-box;
+                                                                            -moz-box-sizing: content-box;
+                                                                            box-sizing: content-box;
+                                                                        }
+                                                                    </style>
+                                                                    <style id="mainStyle" th:inline="text">
+                                                                        @media screen and (min-width: 451px) {
+                                                                            [[${css}]]
+                                                                        }
+                                                                        @media screen and (max-width: 450px) {
+                                                                            [[${cssMobileStyle}]]
+                                                                        }
+                                                                    </style>
+                                                                    <div th:id="${cssId}">
+                                                                        <div id="left">
+                                                                            <p id="recto1" th:utext="${card.printed} ? ${card.recto1Printed} : ${card.user.recto1}"></p>
+                                                                            <p id="recto2" th:utext="${card.printed} ? ${card.recto2Printed} : ${card.user.recto2}"></p>
+                                                                            <p id="recto3" th:utext="${card.printed} ? ${card.recto3Printed} : ${card.user.recto3}"></p>
+                                                                            <p id="recto4" th:utext="${card.printed} ? ${card.recto4Printed} : ${card.user.recto4}"></p>
+                                                                            <p id="recto5" th:utext="${card.printed} ? ${card.recto5Printed} : ${card.user.recto5}"></p>
+                                                                            <p id="recto6" th:utext="${card.printed} ? ${card.recto6Printed} : ${card.user.recto6}"></p>
+                                                                            <p id="recto7" th:utext="${card.printed} ? ${card.recto7Printed} : ${card.user.recto7}"></p>
+                                                                            <img alt="qrcode" id="qrcode" th:src="${QRCodeUrl}"/>
+                                                                        </div>
+                                                                        <div id="right">
+                                                                            <img id="photo" th:src="${photoUrl}"/>
+                                                                            <img id="logo-ur" th:src="${logoUrl}"/>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <th:block sec:authorize="hasRole('ROLE_LIVREUR') or hasRole('ROLE_MANAGER')">
+                                                        <div th:if="${livraison and (card.etat.name == 'ENABLED' or card.etat.name == 'ENCODED' or card.etat.name == 'DISABLED' or card.etat.name == 'CADUC' or card.etat.name == 'DESTROYED') and #strings.isEmpty(card.deliveredDate)}">
+                                                            <form th:action="@{/manager/deliver/{id}(id=${card.id})}" method="post">
+                                                                <button class="btn btn-primary btn-block" type="submit">
+                                                                    Noter comme livrée
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </th:block>
+                                                    <div th:if="${managePermission}" id="btnBlock">
+                                                        <th:block th:with="etatActionUrl=@{/manager/action/{id}(id=${card.id})}">
+                                                            <div th:each="etatAvailable, jStat : ${card.etatsAvailable}">
+                                                                <th:block th:unless="${#lists.isEmpty(card.cardActionMessages[etatAvailable.name])}">
+                                                                    <form th:action="${etatActionUrl} + '?etatFinal=' + ${etatAvailable}" th:id="${etatAvailable} + 'Form'" method="post">
+                                                                        <button class="btn btn-success btn-block"
+                                                                                th:attr="data-target='#commentEtat' + ${iStat.index} + '-' + ${jStat.index}"
+                                                                                data-toggle="modal" type="button">
+                                                                            <span th:text="#{|manager.action.${card.etat}-${etatAvailable}|}"></span>
+                                                                        </button>
+                                                                        <div class="modal fade"
+                                                                             th:id="'commentEtat' + ${iStat.index} + '-' + ${jStat.index}">
+                                                                            <div class="modal-dialog">
+                                                                                <div class="modal-content">
+                                                                                    <div class="modal-header">
+                                                                                        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
+                                                                                        <h3 class="modal-title">Commentaire</h3>
+                                                                                    </div>
+                                                                                    <div class="modal-body">
+                                                                                        <div class="form-group" th:if="${etatAvailable.name == 'DISABLED'}">
+                                                                                            <div class="radio">
+                                                                                                <label>
+                                                                                                    <input type="radio" name="motif" value="" checked="checked"/>
+                                                                                                </label>
+                                                                                            </div>
+                                                                                            <div class="radio" th:each="motif : ${motifsList}">
+                                                                                                <label>
+                                                                                                    <input type="radio" name="motif" th:value="${motif}"/>
+                                                                                                    <span th:utext="#{|user.motif.${motif}|}"></span>
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="form-group">
+                                                                                            <div class="form-group">
+                                                                                                <textarea class="form-control"
+                                                                                                          th:id="'comment_' + ${iStat.index} + '_' + ${jStat.index}"
+                                                                                                          name="comment"
+                                                                                                          rows="5">
+                                                                                                    <th:block th:each="entry : ${card.cardActionMessages}">
+                                                                                                        <th:block th:if="${entry.key == etatAvailable}">
+                                                                                                            <th:block th:each="msg : ${entry.value}">
+                                                                                                                <th:block th:if="${msg.defaut}" th:text="${msg.message}"></th:block>
+                                                                                                            </th:block>
+                                                                                                        </th:block>
+                                                                                                    </th:block>
+                                                                                                </textarea>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <button class="btn btn-success btn-block" th:id="${etatAvailable}">
+                                                                                            <span th:text="#{|manager.action.${card.etat}-${etatAvailable}|}"></span>
+                                                                                        </button>
+                                                                                        <h4>Messages prédéfinis</h4>
+                                                                                        <div class="panel-default">
+                                                                                            <div class="panel-heading">
+                                                                                                <a class="accordion-toggle" data-parent="#accordionfilter" data-toggle="collapse"
+                                                                                                   th:href="'#msgChoice_' + ${iStat.index} + '_' + ${jStat.index}">
+                                                                                                    <span class="glyphicon glyphicon-plus">Choisir</span>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                            <div class="panel-collapse collapse well"
+                                                                                                 th:id="'msgChoice_' + ${iStat.index} + '_' + ${jStat.index}">
+                                                                                                <ul>
+                                                                                                    <li th:each="msg, loop : ${card.cardActionMessages[etatAvailable.name]}">
+                                                                                                        <button class="btn btn-default btn-xs" type="button">
+                                                                                                            <span aria-hidden="true" class="glyphicon glyphicon-edit"
+                                                                                                                  th:id="'msg_' + ${iStat.index} + '_' + ${jStat.index} + '_' + ${loop.index}"></span>
+                                                                                                        </button>
+                                                                                                        <span th:id="'span_' + ${iStat.index} + '_' + ${jStat.index} + '_' + ${loop.index}"
+                                                                                                              th:text="${msg.message}"></span>
+                                                                                                    </li>
+                                                                                                </ul>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="modal-footer">
+                                                                                        <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </th:block>
+                                                                <form th:if="${#lists.isEmpty(card.cardActionMessages[etatAvailable.name]) and etatAvailable.name == 'DESTROYED'}"
+                                                                      th:action="${etatActionUrl + '?etatFinal=' + etatAvailable}"
+                                                                      th:id="${etatAvailable + 'Form'}" method="post">
+                                                                    <button class="btn btn-danger btn-block"
+                                                                            onclick="return confirm('Confirmez la destruction de la carte');"
+                                                                            type="submit">
+                                                                        <span th:text="#{${'manager.action.' + card.etat + '-' + etatAvailable}}"></span>
+                                                                    </button>
+                                                                </form>
+                                                                <form th:if="${#lists.isEmpty(card.cardActionMessages[etatAvailable.name]) and etatAvailable.name != 'DESTROYED'}"
+                                                                      th:action="${etatActionUrl + '?etatFinal=' + etatAvailable}"
+                                                                      th:id="${etatAvailable + 'Form'}" method="post">
+                                                                    <button class="btn btn-success btn-block"
+                                                                            type="submit">
+                                                                        <span th:text="#{${'manager.action.' + card.etat + '-' + etatAvailable}}"></span>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </th:block>
+                                                    </div>
+                                                </div>
+                                                <!-- Détails des cartes -->
+                                                <dl class="dl-horizontal col-lg-5">
+                                                    <h4>Recto/verso</h4>
+                                                    <dt>recto1</dt>
+                                                    <dd th:utext="${card.recto1Printed}"></dd>
+                                                    <dt>recto2</dt>
+                                                    <dd th:utext="${card.recto2Printed}"></dd>
+                                                    <dt>recto3</dt>
+                                                    <dd th:utext="${card.recto3Printed}"></dd>
+                                                    <dt>recto4</dt>
+                                                    <dd th:utext="${card.recto4Printed}"></dd>
+                                                    <dt>recto5</dt>
+                                                    <dd th:utext="${card.recto5Printed}"></dd>
+                                                    <dt>recto6</dt>
+                                                    <dd th:utext="${card.recto6Printed}"></dd>
+                                                    <dt>recto7</dt>
+                                                    <dd th:utext="${card.recto7Printed}"></dd>
+                                                    <dt>QRCode :</dt>
+                                                    <dd th:utext="${card.qrcode}"></dd>
+                                                    <dt>Verso Texte :</dt>
+                                                    <dd>
+                                                        <pre th:utext="${card.versoTextPrinted}"></pre>
+                                                    </dd>
+                                                    <dt>Thème :</dt>
+                                                    <dd>
+                                                        <span th:if="${card.templateCard == null}"><i>Aucun thème défini</i></span>
+                                                        <span th:if="${card.templateCard != null}" th:text="${card.templateCard}"></span>
+                                                    </dd>
+                                                    <h4>Dates</h4>
+                                                    <dt>Date de demande :</dt>
+                                                    <dd th:utext="${#temporals.format(card.requestDate, 'dd/MM/yyyy')}"></dd>
+                                                    <dt>Date d'encodage :</dt>
+                                                    <dd th:utext="${#temporals.format(card.encodedDate, 'dd/MM/yyyy')}"></dd>
+                                                    <dt>Date du dernier réencodage (maj) :</dt>
+                                                    <dd th:utext="${#temporals.format(card.lastEncodedDate, 'dd/MM/yyyy')}"></dd>
+                                                    <dt>Date du dernier changement d'état :</dt>
+                                                    <dd th:utext="${#temporals.format(card.dateEtat, 'dd/MM/yyyy')}"></dd>
+                                                    <dt th:if="${livraison}">Date de livraison :</dt>
+                                                    <dd th:if="${livraison}" th:text="${#temporals.format(card.deliveredDate, 'dd/MM/yyyy')}"></dd>
+                                                    <dt>Date d'activation :</dt>
+                                                    <dd th:utext="${#temporals.format(card.ennabledDate, 'dd/MM/yyyy')}"></dd>
+                                                    <dt>Date limite / de fin :</dt>
+                                                    <dd th:utext="${#temporals.format(card.dueDate, 'dd/MM/yyyy')}"></dd>
+                                                    <h4>Numéros</h4>
+                                                    <dt>Csn :</dt>
+                                                    <dd th:utext="${card.csn}"></dd>
+                                                    <dt>Reversed Csn :</dt>
+                                                    <dd th:utext="${card.reverseCsn}"></dd>
+                                                    <dt>Decimal Csn :</dt>
+                                                    <dd th:utext="${card.decimalCsn}"></dd>
+                                                    <dt>Desfire Ids (générés):</dt>
+                                                    <dd>
+                                                        <span th:each="desfireId : ${card.desfireIds}">
+                                                            <b th:text="${desfireId.key}"></b> : <span th:text="${desfireId.value}"></span><br/>
+                                                        </span>
+                                                    </dd>
+                                                    <dt>Paybox :</dt>
+                                                    <dd th:utext="${card.payCmdNum}"></dd>
+                                                    <dt>Motif :</dt>
+                                                    <dd>
+                                                        <span th:if="${card.motifDisable != null}" th:text="#{user.motif.${card.motifDisable}}"></span>
+                                                    </dd>
+                                                    <h4>Modification</h4>
+                                                    <dt>Etat Eppn :</dt>
+                                                    <dd th:utext="${card.etatEppn}"></dd>
+                                                    <dt>Commentaire :</dt>
+                                                    <dd th:utext="${card.commentaire}"></dd>
+                                                </dl>
+                                                <dl class="dl-horizontal col-lg-5">
+                                                    <h4>Demande</h4>
+                                                    <dt>Structure :</dt>
+                                                    <dd th:utext="${card.structure}"></dd>
+                                                    <dt>Adresse de livraison demandée :</dt>
+                                                    <dd th:utext="${(card.flagAdresse != null ? card.flagAdresse : '') + ', ' + (card.addressRequested != null ? card.addressRequested : '')}"></dd>
+                                                    <dt>Nombre de rejets :</dt>
+                                                    <dd th:utext="${card.nbRejets == null ? 0 : card.nbRejets}"></dd>
+                                                    <dt>Navigateur:</dt>
+                                                    <dd th:utext="${card.requestBrowser}"></dd>
+                                                    <dt>OS:</dt>
+                                                    <dd th:utext="${card.requestOs}"></dd>
+                                                </dl>
+                                                <div th:unless="${crousSmartCards.get(card) == null}">
+                                                    <dl class="dl-horizontal col-lg-5">
+                                                        <h4>Restauration CROUS</h4>
+                                                        <dt th:if="${card.crousError != null}" class="dl-horizontal col-lg-5"><span class="badge alert-danger">!</span> Erreur Crous :</dt>
+                                                        <dd th:if="${card.crousError != null}" th:text="${card.crousError}"></dd>
+                                                        <dt>Numéro Crous :</dt>
+                                                        <dd th:utext="${crousSmartCards.get(card).idZdc}"></dd>
+                                                        <dt>Date de création :</dt>
+                                                        <dd th:utext="${#temporals.format(crousSmartCards.get(card).zdcCreationDate, 'dd/MM/yyyy')}"></dd>
+                                                        <dt>Emetteur :</dt>
+                                                        <dd th:utext="${crousSmartCards.get(card).idTransmitter}"></dd>
+                                                    </dl>
+                                                    <div th:if="${card.csn != null}">
+                                                        <h5>
+                                                            <a class="getCrousSmartCard btn btn-default"
+                                                               th:href="@{/manager/getCrousSmartCardUrlHtmlPart(csn=${card.csn})}">
+                                                                Cliquer pour visualiser les données côté CROUS :
+                                                            </a>
+                                                        </h5>
+                                                        <div class="getCrousSmartCardDiv"></div>
+                                                    </div>
+                                                </div>
+                                                <div th:if="${user.europeanStudentCard}">
+                                                    <dl class="dl-horizontal col-lg-5">
+                                                        <h4>Carte d'étudiant européenne</h4>
+                                                        <dt>Numéro de carte d'étudiant européenne :</dt>
+                                                        <dd th:utext="${card.escnUid}"></dd>
+                                                        <div th:if="${card.csn != null and card.escnUid != null}">
+                                                            <h5>
+                                                                <a class="getEscrCard btn btn-default"
+                                                                   th:href="@{/manager/getEscrCardHtmlPart(eppn=${card.eppn}, csn=${card.csn})}">
+                                                                    Cliquer pour visualiser les données côté ESCR :
+                                                                </a>
+                                                            </h5>
+                                                            <div class="getEscrCardDiv"></div>
+                                                        </div>
+                                                    </dl>
+                                                </div>
+                                                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                                                    <div class="col-lg-5">
+                                                        <h4>Historique</h4>
+                                                        <a class="btn btn-info btn-block"
+                                                           th:href="@{/admin/logs(cardId=${card.id})}">
+                                                            Voir logs
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-lg-5" th:if="${card.etat.name == 'ENABLED' or card.etat.name == 'CADUC' or card.etat.name == 'DISABLED'}">
+                                                        <form th:action="@{/manager/replayValidationOrInvalidation/{id}(id=${card.id})}" method="POST"
+                                                              onsubmit="return confirm('Attention, avec cette action, pour la partie CROUS, Izly pourra renvoyer un mail à l\'utilisateur');">
+                                                            <div th:each="validateServicesName : ${validateServicesNames}">
+                                                                <div class="checkbox">
+                                                                    <label>
+                                                                        <input type="checkbox" name="validateServicesNames" th:value="${validateServicesName}"/>
+                                                                        <span th:text="${validateServicesName}"></span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="checkbox">
+                                                                <label>
+                                                                    <input checked="checked" name="resynchro" type="checkbox" value="true"/>Resynchronisation préalable
+                                                                </label>
+                                                            </div>
+                                                            <button class="btn btn-danger" type="submit">
+                                                                Rejouer la procédure de validation / invalidation
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </th:block>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Historique, actions, etc. à adapter de la même façon -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

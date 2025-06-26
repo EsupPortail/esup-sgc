@@ -1,0 +1,185 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/templatecards/show.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Détail du thème carte</title>
+</head>
+<body>
+<div id="showTemplate" layout:fragment="content"
+     th:with="photoLocalPrefix=@{/admin/templatecards/photo/}, bmpUrl=@{/admin/templatecards/bmp}">
+    <script type="text/javascript">
+        var searchEppnUrl =  "[[@{/manager/searchEppn}]]";
+        var submitUrl =  "[[@{/admin/templatecards/fillTemplate}]]";
+    </script>
+    <h2>Template</h2>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Éléments</h5>
+                </div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                        <dt>Clé</dt>
+                        <dd th:text="${templatecard.key}"></dd>
+                        <dt>Nom</dt>
+                        <dd th:text="${templatecard.name}"></dd>
+                        <dt>Version</dt>
+                        <dd th:text="${templatecard.numVersion}"></dd>
+                        <dt>Description</dt>
+                        <dd th:text="${templatecard.description}"></dd>
+                        <dt>Style css</dt>
+                        <pre th:text="${templatecard.cssStyle}"></pre>
+                        <dt>Style mobile css</dt>
+                        <pre th:text="${templatecard.cssMobileStyle}"></pre>
+                        <div th:if="${templatecard.backSupported}">
+                            <dt>Style verso css</dt>
+                            <pre th:text="${templatecard.cssBackStyle}"></pre>
+                        </div>
+                        <dt>Masque</dt>
+                        <dd>
+                            <img class="thumb-image" th:src="${photoLocalPrefix + 'masque/' + templatecard.id}" alt="masque"/>
+                        </dd>
+                        <dt>Logo</dt>
+                        <dd>
+                            <img class="thumb-image" th:src="${photoLocalPrefix + 'logo/' + templatecard.id}" alt="logo"/>
+                        </dd>
+                        <dt>Qr Code</dt>
+                        <dd>
+                            <img class="thumb-image" th:src="${photoLocalPrefix + 'qrCode/' + templatecard.id}" alt="qrCode"/>
+                        </dd>
+                        <dt>Code barres</dt>
+                        <dd>
+                            <span th:if="${templatecard.codeBarres}" class="glyphicon glyphicon-ok"></span>
+                            <span th:if="${!templatecard.codeBarres}" class="glyphicon glyphicon-remove"></span>
+                        </dd>
+                        <dt>Modificateur</dt>
+                        <dd th:text="${templatecard.modificateur}"></dd>
+                        <dt>Date modification</dt>
+                        <dd th:text="${#temporals.format(templatecard.dateModification, templateCard_datemodification_date_format)}"></dd>
+                        <dt>Verso supporté</dt>
+                        <dd>
+                            <span th:if="${templatecard.backSupported}" class="glyphicon glyphicon-ok"></span>
+                            <span th:if="${!templatecard.backSupported}" class="glyphicon glyphicon-remove"></span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Prévisualisation</h5>
+                </div>
+                <div class="panel-body">
+                    <div class="col-lg-6">
+                        <div>
+                            <style th:inline="text">
+                                @media screen {
+                                    #specimenCarte {
+                                        background: url([[${photoLocalPrefix + 'masque/' + templatecard.id}]]); line-height: 1;
+                                    }
+                                }
+                                #specimenCarte * {
+                                    -webkit-box-sizing: content-box;
+                                    -moz-box-sizing: content-box;
+                                    box-sizing: content-box;
+                                }
+                                @media screen and (min-width: 451px) {
+                                    [[${templatecard.cssStyle}]]
+                                }
+                                @media screen and (max-width: 450px) {
+                                    [[${templatecard.cssMobileStyle}]]
+                                }
+                            </style>
+                            <div id="specimenCarte">
+                                <div id="left">
+                                    <p id="recto1">recto1</p>
+                                    <p id="recto2">recto2</p>
+                                    <p id="recto3">recto3</p>
+                                    <p id="recto4">recto4</p>
+                                    <p id="recto5">recto5</p>
+                                    <p id="recto6">recto6</p>
+                                    <p id="recto7">recto7</p>
+                                    <img alt="qrcode" id="qrcode" th:src="${photoLocalPrefix + 'qrCode/' + templatecard.id}"/>
+                                </div>
+                                <div id="right">
+                                    <img id="photo" th:src="@{/images/NoPhoto.jpg}"/>
+                                    <img id="logo-ur" th:src="${photoLocalPrefix + 'logo/' + templatecard.id}"/>
+                                </div>
+                            </div>
+                            <hr/>
+                        </div>
+                        <div th:if="${templatecard.backSupported}">
+                            <br/><br/>
+                            <div id="back-preview">
+                                <style>
+                                    @media screen {
+                                        #backCarte {
+                                            border: 1px solid black;
+                                            border-radius: 20px;
+                                        }
+                                    }
+                                    #backCarte {
+                                        -webkit-box-sizing: content-box;
+                                        -moz-box-sizing: content-box;
+                                        box-sizing: content-box;
+                                    }
+                                </style>
+                                <style th:inline="text" id="backStyle">
+                                    @media screen {
+                                        [[${templatecard.cssBackStyle}]]
+                                    }
+                                </style>
+                                <div id="backCarte">
+                                    <p id="verso1">verso1</p>
+                                    <p id="verso2">verso2</p>
+                                    <p id="verso3">verso3</p>
+                                    <p id="verso4">verso4</p>
+                                    <p id="verso5">verso5</p>
+                                    <p id="verso6">verso6</p>
+                                    <p id="verso7">verso7</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="alert alert-info">
+                            Les champs "recto" seront bien sûr remplacés par les infos de l'utilisateur.
+                        </div>
+                        <div class="alert alert-info">
+                            <form th:action="@{/admin/templatecards/fillTemplate}" id="searchEppnForm" role="search">
+                                <div class="form-group">
+                                    <label>Utilisateur test</label>
+                                    <input class="form-control" id="searchEppnTemp" name="searchText" placeholder="Login" type="text" th:value="${searchBean?.searchText}"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Prévisualisation BMP - édition en 1 temps</h5>
+                </div>
+                <div class="panel-body">
+                    <div class="col-lg-6">
+                        <img th:src="${bmpUrl + '?templateId=' + templatecard.id + '&type=black'}" class="img-thumbnail"/>
+                    </div>
+                    <div class="col-lg-6">
+                        <img th:src="${bmpUrl + '?templateId=' + templatecard.id + '&type=color'}" class="img-thumbnail"/>
+                    </div>
+                    <div th:if="${templatecard.backSupported}" class="col-lg-6">
+                        <br/>
+                        <img th:src="${bmpUrl + '?templateId=' + templatecard.id + '&type=back'}" class="img-thumbnail"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.ac;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -11,10 +12,12 @@ import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,6 +40,9 @@ public class CsvExportTilService implements Export2AccessControlService {
 	
 	@Resource
 	AppliConfigService appliConfigService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	public CsvExportTilService(AccessService accessService) {
 		super();
@@ -115,7 +121,7 @@ public class CsvExportTilService implements Export2AccessControlService {
 	private String sgc2csv(Card card) {
 		ArrayList<String> fields = new ArrayList<String>();
 		
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		
 		fields.add(user.getSecondaryId()); 
 		fields.add(user.getName());	
@@ -147,10 +153,10 @@ public class CsvExportTilService implements Export2AccessControlService {
 	 * -> YYYY/MM/DD
 	 * @return
 	 */
-	private String formatDate(Date date) {
+	private String formatDate(LocalDateTime date) {
 		String dateFt = "";
 		if(date!=null) {
-			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 			dateFt = df.format(date);
 		}
 		return dateFt;

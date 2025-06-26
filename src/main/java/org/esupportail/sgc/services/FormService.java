@@ -1,5 +1,16 @@
 package org.esupportail.sgc.services;
 
+import org.apache.commons.codec.binary.Hex;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.TemplateCardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
+import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.domain.TemplateCard;
+import org.esupportail.sgc.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import jakarta.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -7,15 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Hex;
-import org.esupportail.sgc.domain.Card;
-import org.esupportail.sgc.domain.TemplateCard;
-import org.esupportail.sgc.domain.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class FormService {
-
 
 	private enum HashType {
 		HASH, HEXA, URL, NONE
@@ -38,7 +41,14 @@ public class FormService {
 	// default to none now, before it was hash
 	private HashType hashType = HashType.NONE;
 
+    @Resource
+    CardDaoService cardDaoService;
 
+    @Resource
+    TemplateCardDaoService templateCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	public int getNbFields() {
 		return nbFields;
@@ -101,7 +111,7 @@ public class FormService {
 	public List<String> getFieldsListAsCamel() {
 		List<String> camelFields = new ArrayList<>();
 		for(String item : fieldsList.keySet()){
-			camelFields.add(Card.snakeToCamel(item));
+			camelFields.add(CardDaoService.snakeToCamel(item));
 		}
 		return camelFields;
 	}
@@ -111,33 +121,33 @@ public class FormService {
 		// prevent sql injection here
 		if(fieldsList.keySet().contains(field)) {
 			if(field.equals("card.template_card")) {
-				for(TemplateCard tc : TemplateCard.findAllTemplateCards()) {
+				for(TemplateCard tc : templateCardDaoService.findAllTemplateCards()) {
 					mapWithEncodedString.put(encodeUrlString(tc.getId().toString()), tc.toString());
 				}
 			} else {
 				List<String> fields = new ArrayList<String>();
 				if(field.startsWith("card.")) {
-					long nbFields = Card.getCountDistinctFreeField(field.substring("card.".length()));
+					long nbFields = cardDaoService.getCountDistinctFreeField(field.substring("card.".length()));
 					if(nbFields>fieldsValuesNbMax) {
 						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
 					} else {
-						fields = Card.getDistinctFreeField(field.substring("card.".length()));
+						fields = cardDaoService.getDistinctFreeField(field.substring("card.".length()));
 					}
 				} else if(field.startsWith("user_account.")) {
-					long nbFields = User.getCountDistinctFreeField(field.substring("user_account.".length()));
+					long nbFields = userDaoService.getCountDistinctFreeField(field.substring("user_account.".length()));
 					if(nbFields>fieldsValuesNbMax) {
 						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
 					} else {
-						fields = User.getDistinctFreeField(field.substring("user_account.".length()));
+						fields = userDaoService.getDistinctFreeField(field.substring("user_account.".length()));
 					}
 				} else if(field.contains(".")) {
 					log.debug(String.format("champ %s inconnu ?", field));
 				} else if(!"desfire_ids".equals(field)) {
-					long nbFields = User.getCountDistinctFreeField(field);
+					long nbFields = userDaoService.getCountDistinctFreeField(field);
 					if(nbFields>fieldsValuesNbMax) {
 						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
 					} else {
-						fields = User.getDistinctFreeField(field);
+						fields = userDaoService.getDistinctFreeField(field);
 					}
 				}
 				fields.remove("");

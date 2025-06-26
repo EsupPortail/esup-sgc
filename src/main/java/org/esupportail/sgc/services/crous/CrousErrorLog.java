@@ -1,33 +1,28 @@
 package org.esupportail.sgc.services.crous;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
-import org.springframework.roo.addon.dbre.RooDbManaged;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RooToString
-@RooJavaBean
-@RooDbManaged(automaticallyDelete = true)
+@Entity
+@Configurable
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "id", "version", "card", "userAccount", "date", "crousOperation", "esupSgcOperation" })
-@RooJpaActiveRecord(finders = { "findCrousErrorLogsByUserAccount", "findCrousErrorLogsByCard"})
 public class CrousErrorLog {
 
     public static enum CrousOperation {
@@ -39,9 +34,11 @@ public class CrousErrorLog {
     };
     
 	@OneToOne
+    @JoinColumn(name = "card")
     Card card;
 
 	@OneToOne
+    @JoinColumn(name = "user_account")
     User userAccount;
 
     String code;
@@ -50,7 +47,7 @@ public class CrousErrorLog {
 
     String field;
 
-    Date date;
+    LocalDateTime date;
     
     Boolean blocking;
     
@@ -99,66 +96,117 @@ public class CrousErrorLog {
     	return null;
     }
 
-	public static List<CrousErrorLog> findCrousErrorLogs(CrousErrorLog searchCrousErrorLog, int firstResult, int sizeNo,
-			String sortFieldName, String sortOrder) {
-		EntityManager em = entityManager();
-	    CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-	    CriteriaQuery<CrousErrorLog> query = criteriaBuilder.createQuery(CrousErrorLog.class);
-	    Root<CrousErrorLog> c = query.from(CrousErrorLog.class);
-	    
-	    final List<Order> orders = new ArrayList<Order>();
-	    if ("DESC".equalsIgnoreCase(sortOrder)) {
-	        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-	            orders.add(criteriaBuilder.desc(c.get(sortFieldName)));
-	        } 
-	    } else {
-	        if(fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-	            orders.add(criteriaBuilder.asc(c.get(sortFieldName)));
-	        }
-	    }
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 
-	    orders.add(criteriaBuilder.desc(c.get("id")));
-	    
-	    final List<Predicate> predicates = getPredicates4SearchCrousErrorLog(searchCrousErrorLog, criteriaBuilder, c);
-	    
-	    query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
-	    query.orderBy(orders);
-	    query.select(c);
-	    return em.createQuery(query).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
-	}
+	@Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+    @SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
+    @Column(name = "id")
+    private Long id;
 
-	private static List<Predicate> getPredicates4SearchCrousErrorLog(CrousErrorLog searchCrousErrorLog,
-			CriteriaBuilder criteriaBuilder, Root<CrousErrorLog> c) {
+	@Version
+    @Column(name = "version")
+    private Integer version;
 
-		List<Predicate> predicates = new ArrayList<Predicate>();
-		
-        if (searchCrousErrorLog.getBlocking() != null) {
-            Expression<Boolean> blockingExpr = c.get("blocking");
-            if (searchCrousErrorLog.getBlocking()) {
-                predicates.add(criteriaBuilder.isTrue(blockingExpr));
-            } else {
-                predicates.add(criteriaBuilder.isFalse(blockingExpr));
-            }
-        }
-        if (searchCrousErrorLog.getEsupSgcOperation() != null) {
-            predicates.add(criteriaBuilder.equal(c.get("esupSgcOperation"), searchCrousErrorLog.getEsupSgcOperation()));
-        }
-        
-        
-        return predicates;
-	}
+	public Long getId() {
+        return this.id;
+    }
 
-	public static long countCrousErrorLogs(CrousErrorLog searchCrousErrorLog) {
-		EntityManager em = entityManager();
-	    CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-	    CriteriaQuery<Long> query = criteriaBuilder.createQuery(Long.class);
-	    Root<CrousErrorLog> c = query.from(CrousErrorLog.class);
-	    
-	    final List<Predicate> predicates = getPredicates4SearchCrousErrorLog(searchCrousErrorLog, criteriaBuilder, c);
-	    
-	    query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
-	    query.select(criteriaBuilder.count(c));
-        return em.createQuery(query).getSingleResult();
-	}
+	public void setId(Long id) {
+        this.id = id;
+    }
 
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public Card getCard() {
+        return this.card;
+    }
+
+	public void setCard(Card card) {
+        this.card = card;
+    }
+
+	public User getUserAccount() {
+        return this.userAccount;
+    }
+
+	public void setUserAccount(User userAccount) {
+        this.userAccount = userAccount;
+    }
+
+	public String getCode() {
+        return this.code;
+    }
+
+	public void setCode(String code) {
+        this.code = code;
+    }
+
+	public String getMessage() {
+        return this.message;
+    }
+
+	public void setMessage(String message) {
+        this.message = message;
+    }
+
+	public String getField() {
+        return this.field;
+    }
+
+	public void setField(String field) {
+        this.field = field;
+    }
+
+	public LocalDateTime getDate() {
+        return this.date;
+    }
+
+	public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+	public Boolean getBlocking() {
+        return this.blocking;
+    }
+
+	public void setBlocking(Boolean blocking) {
+        this.blocking = blocking;
+    }
+
+	public CrousOperation getCrousOperation() {
+        return this.crousOperation;
+    }
+
+	public void setCrousOperation(CrousOperation crousOperation) {
+        this.crousOperation = crousOperation;
+    }
+
+	public EsupSgcOperation getEsupSgcOperation() {
+        return this.esupSgcOperation;
+    }
+
+	public void setEsupSgcOperation(EsupSgcOperation esupSgcOperation) {
+        this.esupSgcOperation = esupSgcOperation;
+    }
+
+	public String getCrousUrl() {
+        return this.crousUrl;
+    }
+
+	public void setCrousUrl(String crousUrl) {
+        this.crousUrl = crousUrl;
+    }
 }

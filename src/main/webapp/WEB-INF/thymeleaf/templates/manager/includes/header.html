@@ -1,0 +1,57 @@
+<!-- src/main/resources/templates/manager/includes/header.html -->
+<div th:fragment="header">
+    <script>
+        var multiUpdateFormUrl = "[[@{/manager/getMultiUpdateForm}]]";
+        var searchEppnUrl = "[[@{/manager/searchEppn}]]";
+        var rootManagerUrl = "[[@{/manager}]]";
+        var filterAdressUrl = "[[@{/manager/filterAdress}]]";
+        var freeUrl = "[[@{/manager/freeFieldResults}]]";
+        var fieldsValue = "[[${fieldsValue}]]";
+        var nbFields = "[[${#lists.size(nbFields)}]]";
+    </script>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <form th:action="@{/manager/bordereau}" id="searchCsvForm" th:object="${searchBean}">
+            <p class="text-info">
+                <strong>Nb de résultats : <span th:text="${countCards}"></span></strong>
+                <input type="hidden" id="address" th:field="*{address}" />
+                <input type="hidden" id="type" th:field="*{type}" />
+                <input type="hidden" id="etat" th:field="*{etat}" />
+                <input type="hidden" id="lastCardTemplatePrinted" th:field="*{lastTemplateCardPrinted.id}" />
+                <input type="hidden" th:field="*{editable}" />
+                <input type="hidden" id="ownOrFreeCard" th:field="*{ownOrFreeCard}" />
+                <input type="hidden" id="nbCards" th:field="*{nbCards}" />
+                <input type="hidden" id="nbRejets" th:field="*{nbRejets}" />
+                <input type="hidden" id="flagAdresse" th:field="*{flagAdresse}" />
+                <input type="hidden" id="searchText" th:field="*{searchText}" />
+                <th:block th:each="filtre, status : ${csvFiltres}">
+                    <input type="hidden" th:id="'freeField' + ${status.index}" th:name="'freeField[' + ${status.index} + ']'" th:value="${searchBean.freeField[status.index]}" />
+                    <th:block th:if="${fieldsValueEncoded != null}">
+                        <th:block th:each="entry : ${fieldsValueEncoded}">
+                            <th:block th:if="${entry.key == status.index}">
+                                <th:block th:each="entry2 : ${entry.value}">
+                                    <input type="hidden" th:id="'freeFieldValue' + ${entry.key}" th:name="'freeFieldValue[' + ${entry.key} + ']'" th:value="${entry2}" />
+                                </th:block>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                </th:block>
+                <button type="button" title="Export CSV" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields">
+                    <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                </button>&nbsp;
+                <button type="submit" title="bordereau envoi" class="btn btn-xs btn-danger">
+                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                </button>
+            </p>
+        </form>
+
+        <div th:replace="~{templates/manager/includes/printer :: printer}"></div>
+
+        <ul class="nav nav-tabs" role="tablist" id="tabTypes">
+            <li th:each="userType : ${userTypes}"
+                th:classappend="${selectedType == userType} ? 'active' : 'sleep'">
+                <a th:href="@{/manager(type=${userType})}" role="tab"
+                   th:text="#{|manager.type.${userType}|}"></a>
+            </li>
+        </ul>
+    </div>
+</div>

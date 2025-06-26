@@ -1,5 +1,7 @@
 package org.esupportail.sgc.web.admin;
 
+import jakarta.annotation.Resource;
+import org.esupportail.sgc.dao.*;
 import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.exceptions.CrousAccountForbiddenException;
 import org.esupportail.sgc.services.AppliConfigService;
@@ -21,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.annotation.Resource;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +49,23 @@ public class ToolsController {
 
 	@Autowired
 	List<ApiEscService> apiEscServices;
-	
-	@ModelAttribute("help")
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    CrousPatchIdentifierDaoService crousPatchIdentifierDaoService;
+
+    @Resource
+    LogDaoService logDaoService;
+
+    @Resource
+    PayboxTransactionLogDaoService payboxTransactionLogDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    @ModelAttribute("help")
 	public String getHelp() {
 		return appliConfigService.getHelpAdmin();
 	}
@@ -73,18 +88,18 @@ public class ToolsController {
 	
 	@ModelAttribute("usersWithCrousDisabledInDbCount")
 	public Long countFindUsersWithCrousDisabledInDb() {
-		return User.countFindUsersByCrous(false);
+		return userDaoService.countFindUsersByCrous(false);
 	}
 	
 	@ModelAttribute("usersWithCrousCount")
 	public Long countFindUsersWithCrousCount() {
-		return User.countFindUsersWithCrousAndWithCardEnabled();
+		return userDaoService.countFindUsersWithCrousAndWithCardEnabled();
 	}
 	
 	
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
 	public String index() {
-		return "admin/tools";
+        return "templates/admin/tools";
 	}
 
 	
@@ -92,8 +107,8 @@ public class ToolsController {
 	public String replayAllActivationDesactivation(RedirectAttributes redirectAttrs, @RequestParam(required=false, defaultValue="") List<String> validateServicesNames, @RequestParam(required=false, defaultValue="false") Boolean resynchro) {
 		// Card.findAllCardIds() return ids with specific orders : enable at last -  replayValidationOrInvalidation is synchronized on eppn 
 		// with thatn, we avoid parallel modifications on ldap (and avoid to add /remove ldap_value %secondary_id% that is same for multiples cards of one user !)
-		for(BigInteger cardId : Card.findAllCardIds()) {
-			cardEtatService.replayValidationOrInvalidation(cardId.longValue(), validateServicesNames, resynchro);
+		for(Long cardId : cardDaoService.findAllCardIds()) {
+			cardEtatService.replayValidationOrInvalidation(cardId, validateServicesNames, resynchro);
 		}
 		redirectAttrs.addFlashAttribute("messageSuccess", "success_replayAllActivationDesactivation");
 		return "redirect:/admin/tools";
@@ -103,26 +118,26 @@ public class ToolsController {
 	@RequestMapping(value = "/patchEsupSgcEppn", method = RequestMethod.POST, produces = "text/html")
 	public String patchEsupSgcEppn(RedirectAttributes redirectAttrs, @RequestParam String oldEppn, @RequestParam String newEppn) {
 		if(!oldEppn.isEmpty() && !newEppn.isEmpty()) {
-			User user = User.findUser(oldEppn);
+			User user = userDaoService.findUser(oldEppn);
 			if(user.getEppn().equals(user.getCrousIdentifier())) {
 				CrousPatchIdentifier crousPatchIdentifier = new CrousPatchIdentifier();
 				crousPatchIdentifier.setOldId(user.getEppn());
 				crousPatchIdentifier.setMail(user.getEmail());
 				crousPatchIdentifier.setEppnNewId(newEppn);
-				crousPatchIdentifier.persist();
+				crousPatchIdentifierDaoService.persist(crousPatchIdentifier);
 				crousPatchIdentifierService.patchIdentifier(crousPatchIdentifier);
 			}
 			user.setEppn(newEppn);
 			for(Card card : user.getCards()) {
 				card.setEppn(newEppn);
 			}
-			for(PayboxTransactionLog payboxTransactionLog : PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(oldEppn).getResultList()) {
+			for(PayboxTransactionLog payboxTransactionLog : payboxTransactionLogDaoService.findPayboxTransactionLogsByEppnEquals(oldEppn).getResultList()) {
 				payboxTransactionLog.setEppn(newEppn);
 			}
-			for(Log log : Log.findLogsByEppnEquals(oldEppn).getResultList()) {
+			for(Log log : logDaoService.findLogsByEppnEquals(oldEppn).getResultList()) {
 				log.setEppn(newEppn);
 			}
-			for(Log log : Log.findLogsByEppnCibleEquals(oldEppn).getResultList()) {
+			for(Log log : logDaoService.findLogsByEppnCibleEquals(oldEppn).getResultList()) {
 				log.setEppnCible(newEppn);
 			}
 			redirectAttrs.addFlashAttribute("messageSuccess", "success_patchEsupSgcEppn");
@@ -133,7 +148,7 @@ public class ToolsController {
 	@RequestMapping(value = "/checkCrousDisabledExistingInApiCrous", method = RequestMethod.POST, produces = "text/html")
 	public String checkCrousDisabledExistingInApiCrous(Model uiModel) {
 		List<String> usersCrousDisabledExistingInApiCrous = new ArrayList<String>();
-		for(User user : User.findUsersByCrous(false).getResultList()) {
+		for(User user : userDaoService.findUsersByCrous(false).getResultList()) {
 			try {
 				if(crousService.getRightHolder(user) != null) {
 					usersCrousDisabledExistingInApiCrous.add(user.getEppn());
@@ -144,7 +159,7 @@ public class ToolsController {
 		}
 		log.info("Users with crous disabled but existing in api crous : " + usersCrousDisabledExistingInApiCrous);
 		uiModel.addAttribute("usersCrousDisabledExistingInApiCrous", usersCrousDisabledExistingInApiCrous);
-		return "admin/tools";
+        return "templates/admin/tools";
 	}
 	
 	
@@ -152,7 +167,7 @@ public class ToolsController {
 	public String forceSendEscrApiCrous(Model uiModel) {
 		log.info("forceSendEscrApiCrous called");
 		int nbCardSendedInEscr = 0;
-		for(User user : User.findUsersByEuropeanStudentCard(true).getResultList()) {
+		for(User user : userDaoService.findUsersByEuropeanStudentCard(true).getResultList()) {
 			try {
 				for (ApiEscService apiEscService : apiEscServices) {
 					if (apiEscService.validateESCenableCard(user.getEppn())) {
@@ -173,7 +188,7 @@ public class ToolsController {
 	public String forcePostOrUpdateRightHolderCrous(Model uiModel) {
 		log.info("forcePostOrUpdateRightHolderCrous called");
 		int nbRightHolderPutinCrous = 0;
-		for(User user : User.findUsersWithCrousAndWithCardEnabled()) {
+		for(User user : userDaoService.findUsersWithCrousAndWithCardEnabled()) {
 			try {
 				if(crousService.postOrUpdateRightHolder(user.getEppn(), EsupSgcOperation.SYNC)) {
 					nbRightHolderPutinCrous++;

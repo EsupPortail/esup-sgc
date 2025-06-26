@@ -7,18 +7,10 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import eu.bitwalker.useragentutils.UserAgent;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.apache.commons.codec.binary.Base64;
-import org.esupportail.sgc.domain.AppliConfig;
-import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.dao.*;
+import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.domain.Card.Etat;
-import org.esupportail.sgc.domain.CardActionMessage;
-import org.esupportail.sgc.domain.LogMail;
-import org.esupportail.sgc.domain.PayboxTransactionLog;
-import org.esupportail.sgc.domain.PhotoFile;
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
 import org.esupportail.sgc.services.cardid.CardIdsService;
@@ -28,22 +20,15 @@ import org.esupportail.sgc.tools.Params;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDateTime;
+import java.util.*;
 
 
 @Service
@@ -58,6 +43,7 @@ public class CardService {
 	protected EmailService emailService;	
 	
 	@Resource
+    @Lazy // Avoid circular dependency issues
 	protected CardEtatService cardEtatService;	
 	
 	@Resource
@@ -71,10 +57,28 @@ public class CardService {
 	
 	@Resource
 	CardService cardService;
-	
-	public Card findLastCardByEppnEquals(String eppn) {
+
+    @Resource
+    AppliConfigDaoService appliConfigDaoService;
+
+    @Resource
+    BigFileDaoService bigFileDaoService;
+
+    @Resource
+    private CardDaoService cardDaoService;
+
+    @Resource
+    LogMailDaoService logMailDaoService;
+
+    @Resource
+    PayboxTransactionLogDaoService payboxTransactionLogDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    public Card findLastCardByEppnEquals(String eppn) {
 		Card lastCard = null;
-		List<Card> cards =  Card.findCardsByEppnEquals(eppn,"requestDate","DESC").getResultList();
+		List<Card> cards =  cardDaoService.findCardsByEppnEquals(eppn,"requestDate","DESC").getResultList();
 		if(!cards.isEmpty()) {
 			lastCard = cards.get(0);
 		}
@@ -88,7 +92,7 @@ public class CardService {
 	}
 
 	public Object findCard(Long id) {
-		Card card = Card.findCard(id);
+		Card card = cardDaoService.findCard(id);
 		cardEtatService.updateEtatsAvailable4Card(card);
 		return card;
 	}
@@ -98,9 +102,9 @@ public class CardService {
 		
 		boolean success = true;
 		
-		if(AppliConfig.findAppliConfigsByKeyLike(id).getMaxResults()>0){
+		if(appliConfigDaoService.findAppliConfigsByKeyLike(id).getMaxResults()>0){
 			// TODO - à virer ??
-			AppliConfig.findAppliConfigsByKeyLike(id).getResultList().get(0).remove();
+            appliConfigDaoService.remove(appliConfigDaoService.findAppliConfigsByKeyLike(id).getResultList().get(0));
 		}else{
 			success = false;
 		}
@@ -174,8 +178,8 @@ public class CardService {
 	
 	public String getPaymentWithoutCard(String eppn){
 		String reference = "";
-		User user = User.findUser(eppn);
-		List <PayboxTransactionLog> payboxList =  PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(eppn).getResultList();
+		User user = userDaoService.findUser(eppn);
+		List <PayboxTransactionLog> payboxList =  payboxTransactionLogDaoService.findPayboxTransactionLogsByEppnEquals(eppn).getResultList();
 
 		if(!payboxList.isEmpty()){
 			List<String> references = new ArrayList<String>();
@@ -215,44 +219,38 @@ public class CardService {
 		logMail.setMailTo(mailTo);
 		logMail.setMessage(mailMessage);
 		logMail.setSubject(subject);
-		logMail.setLogDate(new Date());
-		logMail.persist();
+		logMail.setLogDate(LocalDateTime.now());
+		logMailDaoService.persist(logMail);
 	}
 	
-	public String getQrCodeSvg(String value) throws SVGGraphics2DIOException, WriterException{
+	public String getQrCodeSvg(String value) throws WriterException{
 		
 		Map<EncodeHintType, Object> hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
 		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 		hints.put(EncodeHintType.MARGIN, 0);	
 		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-		
-		BitMatrix matrix = new QRCodeWriter().encode(value, BarcodeFormat.QR_CODE, 100, 100, hints); 
-		// Get a DOMImplementation.
-		DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
-		// Create an instance of org.w3c.dom.Document.
-		String svgNS = "http://www.w3.org/2000/svg";
-		Document document = domImpl.createDocument(svgNS, "svg", null);
-		// Create an instance of the SVG Generator.
-		SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
-		svgGenerator.setBackground(Color.RED);
-		svgGenerator.setColor(Color.BLACK);
-		svgGenerator.setSVGCanvasSize(new Dimension(100,100));
-		
-		
+
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+		BitMatrix matrix = new QRCodeWriter().encode(value, BarcodeFormat.QR_CODE, 100, 100, hints);
+
+        StringBuilder svg = new StringBuilder();
+        svg.append(String.format(
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%d\" height=\"%d\" shape-rendering=\"crispEdges\">",
+                100, 100));
+        svg.append("<rect width=\"100%\" height=\"100%\" fill=\"white\"/>");
+        svg.append("<g fill=\"black\">");
+
 		int w = matrix.getWidth();
-		svgGenerator.setSVGCanvasSize(new Dimension(w,w));
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < w; j++) {
 				if (matrix.get(i, j)) {
-					svgGenerator.fillRect(i, j, 1, 1);
+                    svg.append(String.format("<rect x=\"%d\" y=\"%d\" width=\"1\" height=\"1\"/>", i, j));
 				}
 			}
 		}
 
-		boolean useCSS = false; // we want to use CSS style attributes
-		Writer svgWriter = new StringWriter();
-		svgGenerator.stream(svgWriter, useCSS);
-		return svgWriter.toString();
+        svg.append("</g></svg>");
+		return svg.toString();
 	}
 	
 	@Transactional
@@ -264,7 +262,7 @@ public class CardService {
 		String systeme = userAgentUtils.getOperatingSystem().getName();
 
 		card.setEppn(eppn);
-		card.setRequestDate(new Date());
+		card.setRequestDate(LocalDateTime.now());
 		card.setRequestBrowser(navigateur);
 		card.setRequestOs(systeme);
 
@@ -290,17 +288,16 @@ public class CardService {
 			}
 			card.getPhotoFile().setContentType(contentType);
 			card.getPhotoFile().setFileSize(fileSize);
-			card.getPhotoFile().getBigFile().setBinaryFile(bytes);
-			Calendar cal = Calendar.getInstance();
-			Date currentTime = cal.getTime();
+            bigFileDaoService.setBinaryFile(card.getPhotoFile().getBigFile(), bytes);
+            LocalDateTime currentTime = LocalDateTime.now();
 			card.getPhotoFile().setSendTime(currentTime);
 			if(card.getId() !=null){
-				card.setNbRejets(card.findCard(card.getId()).getNbRejets());
+				card.setNbRejets(cardDaoService.findCard(card.getId()).getNbRejets());
 			} else {
 				card.setNbRejets(Long.valueOf(0));
 			}
 
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			if(user == null){
 				user = new User();
 				user.setEppn(card.getEppn());
@@ -323,14 +320,14 @@ public class CardService {
 			userInfoService.setAdditionalsInfo(user, null);
 			cardIdsService.generateQrcode4Card(card);
 			if(card.getId() ==null) {
-				card.persist();
+                cardDaoService.persist(card);
 			}else{
-				card.merge();
+                cardDaoService.merge(card);
 			}
 			if(user.getId() ==null) {
-				user.persist();
+				userDaoService.persist(user);
 			}else{
-				user.merge();
+                userDaoService.merge(user);
 			}
 			
 			String messageLog = "Succès de la demande de carte pour l'utilisateur " +  eppn;
@@ -351,11 +348,10 @@ public class CardService {
 		synchronized(lockKey.intern()) {
 			cardEtatService.updateEtatsAvailable4Card(card);
 			if(card.getEtatsAvailable().contains(Etat.RENEWED)) {
-				Calendar cal = Calendar.getInstance();
-				Date currentTime = cal.getTime();
+                LocalDateTime currentTime = LocalDateTime.now();
 				Card copyCard = new Card();
 				copyCard.setEppn(card.getEppn());
-				copyCard.setRequestDate(new Date());
+				copyCard.setRequestDate(LocalDateTime.now());
 				copyCard.setRequestBrowser(card.getRequestBrowser());
 				copyCard.setRequestOs(card.getRequestOs());
 				cardIdsService.generateQrcode4Card(copyCard);
@@ -367,14 +363,14 @@ public class CardService {
 				photoFile.setSendTime(currentTime);
 				copyCard.setPhotoFile(photoFile);
 				copyCard.setNbRejets(card.getNbRejets());
-				User user = User.findUser(card.getEppn());
+				User user = userDaoService.findUser(card.getEppn());
 				copyCard.setUserAccount(user);
 				copyCard.setDueDate(user.getDueDate());
 				// on initialise l'état de la carte avec l'état de la carte source pour permettre l'usage de messages de type ENABLED->RENEWED ou encore DISABLED->RENEWED
 				copyCard.setEtat(card.getEtat());
 				String messageLog = "Demande de renouvellement de carte pour :  " + card.getEppn() + " effectuée.";
 				cardEtatService.setCardEtat(copyCard, Etat.RENEWED, messageLog, null, false, false);
-				copyCard.persist();
+				cardDaoService.persist(copyCard);
 				log.info(messageLog);
 				return copyCard;
 			} else {

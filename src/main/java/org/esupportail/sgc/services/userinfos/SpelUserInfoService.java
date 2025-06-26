@@ -3,8 +3,8 @@ package org.esupportail.sgc.services.userinfos;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.tools.DateUtils;

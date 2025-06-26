@@ -3,17 +3,25 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 
+import org.esupportail.sgc.dao.CrousSmartCardDaoService;
+import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequestMapping("/admin/crouscards")
 @Controller
-@RooWebScaffold(path = "admin/crouscards", formBackingObject = CrousSmartCard.class, create=false, delete=false, update=false)
 public class CrousSmartCardController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -31,6 +38,9 @@ public class CrousSmartCardController {
 	
 	@Resource
 	CrousSmartCardService crousSmartCardService;
+
+    @Resource
+    CrousSmartCardDaoService crousSmartCardDaoService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -62,8 +72,23 @@ public class CrousSmartCardController {
 			crousSmartCardService.consumeCsv(stream, inverseCsn);
 		}
 
-		return "redirect:/admin/crouscards?page=1&size=10";
+		return "redirect:/admin/crouscards";
 	}
 
-	
+	@RequestMapping(value = "/{id}", produces = "text/html")
+    public String show(@PathVariable("id") Long id, Model uiModel) {
+        uiModel.addAttribute("croussmartcard", crousSmartCardDaoService.findCrousSmartCard(id));
+        uiModel.addAttribute("itemId", id);
+        return "templates/admin/crouscards/show";
+    }
+
+	@RequestMapping(produces = "text/html")
+    public String list(@PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "zdcCreationDate") Pageable pageable,
+                       Model uiModel,
+                       HttpServletRequest request
+                       ) {
+        Page<CrousSmartCard> crousSmartCards = crousSmartCardDaoService.findCrousSmartCardEntries(pageable);
+        uiModel.addAttribute("croussmartcards", crousSmartCards);
+        return "templates/admin/crouscards/list";
+    }
 }

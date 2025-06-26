@@ -1,5 +1,6 @@
 package org.esupportail.sgc.web.admin;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.userinfos.ExtUserInfoService;
 import org.slf4j.Logger;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.persistence.NoResultException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
+import jakarta.persistence.NoResultException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RequestMapping("/admin/userinfos")
@@ -23,6 +25,9 @@ import java.util.*;
 public class UserInfosController {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
+
+    @Resource
+    UserDaoService userDaoService;
 
 	List<ExtUserInfoService> extUserInfoServices;
 
@@ -48,7 +53,7 @@ public class UserInfosController {
 
 		User user = new User();
 		try {
-			user = User.findUsersByEppnEquals(eppn).getSingleResult();
+			user = userDaoService.findUsersByEppnEquals(eppn).getSingleResult();
 		} catch(NoResultException e) {
 			log.info(String.format("No result for %s in DB", eppn));
 			user.setEppn(eppn);
@@ -83,7 +88,7 @@ public class UserInfosController {
 		uiModel.addAttribute("durations", durations);
 		uiModel.addAttribute("totalDuration", System.currentTimeMillis()-totalTime);
 
-		return "admin/userinfos";
+        return "templates/admin/userinfos";
 	}
 
 }

@@ -1,16 +1,14 @@
 package org.esupportail.sgc.services.escstudentservice;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@RooToString
-@RooJavaBean
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class EscRemoteStudent {
 
@@ -21,8 +19,8 @@ public class EscRemoteStudent {
 	Long picInstitutionCode;
 	
 	String emailAddress;
-	
-	Date expiryDate;
+
+    LocalDateTime expiryDate;
 	
 	String firstName;
 	
@@ -33,7 +31,7 @@ public class EscRemoteStudent {
 	List<EscRemoteStudentCard> cards;
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
-	public Date getExpiryDate() {
+	public LocalDateTime getExpiryDate() {
 		return expiryDate;
 	}
 
@@ -42,4 +40,72 @@ public class EscRemoteStudent {
 		this.eppn = europeanStudentIdentifier + "@europeanstudentcard.eu";
 	}
 
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getEppn() {
+        return this.eppn;
+    }
+
+	public void setEppn(String eppn) {
+        this.eppn = eppn;
+    }
+
+	public String getEuropeanStudentIdentifier() {
+        return this.europeanStudentIdentifier;
+    }
+
+	public Long getPicInstitutionCode() {
+        return this.picInstitutionCode;
+    }
+
+	public void setPicInstitutionCode(Long picInstitutionCode) {
+        this.picInstitutionCode = picInstitutionCode;
+    }
+
+	public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+	public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+	public void setExpiryDate(LocalDateTime expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+	public String getFirstName() {
+        return this.firstName;
+    }
+
+	public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+	public String getLastName() {
+        return this.lastName;
+    }
+
+	public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+	public Long getAcademicLevel() {
+        return this.academicLevel;
+    }
+
+	public void setAcademicLevel(Long academicLevel) {
+        this.academicLevel = academicLevel;
+    }
+
+	public List<EscRemoteStudentCard> getCards() {
+        return this.cards;
+    }
+
+	public void setCards(List<EscRemoteStudentCard> cards) {
+        this.cards = cards;
+    }
 }

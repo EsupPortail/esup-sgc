@@ -6,16 +6,15 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import eu.bitwalker.useragentutils.UserAgent;
+import org.esupportail.sgc.dao.BigFileDaoService;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.services.CardEtatService;
-import org.esupportail.sgc.services.CardService;
-import org.esupportail.sgc.services.ExternalCardService;
-import org.esupportail.sgc.services.LogService;
+import org.esupportail.sgc.services.*;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
-import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.cardid.CardIdsService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
@@ -35,22 +34,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -107,6 +101,15 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@Resource
 	CrousSmartCardService crousSmartCardService;
 
+    @Resource
+    BigFileDaoService bigFileDaoService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
 	/**
 	 * Example to use it :
 	 * curl   -F "eppn=toto@univ-ville.fr" -F "difPhotoTransient=true" -F "crousTransient=true" -F "europeanTransient=true" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
@@ -114,7 +117,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<String> cardRequest(@Valid Card card, BindingResult bindingResult, Model uiModel, @RequestHeader("User-Agent") String userAgent, HttpServletRequest request) throws IOException {	
-		
+
 		HttpHeaders responseHeaders = new HttpHeaders();
 
 		if (bindingResult.hasErrors()) {
@@ -126,11 +129,11 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 		
 		synchronized (eppn.intern()) {
 			
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			if(user == null) {
 				user = new User();
 				user.setEppn(eppn);
-				user.persist();
+                userDaoService.persist(user);
 			}
 			
 			resynchronisationUserService.synchronizeUserInfoNoTx(eppn);
@@ -146,7 +149,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 			
 					// TODO : use cardEtatService.setCardEtat !
 					card.setEppn(eppn);
-					card.setRequestDate(new Date());
+					card.setRequestDate(LocalDateTime.now());
 					card.setRequestBrowser(navigateur);
 					card.setRequestOs(systeme);
 					cardIdsService.generateQrcode4Card(card);
@@ -169,19 +172,17 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 						card.getPhotoFile().setContentType(contentType);
 						card.getPhotoFile().setFileSize(fileSize);
 						log.info("Upload and set file in DB with filesize = " + fileSize);
-						card.getPhotoFile().getBigFile().setBinaryFile(card.getPhotoFile().getFile().getBytes());
+                        bigFileDaoService.setBinaryFile(card.getPhotoFile().getBigFile(), card.getPhotoFile().getFile().getBytes());
 					}
-					Calendar cal = Calendar.getInstance();
-					Date currentTime = cal.getTime();
-					card.getPhotoFile().setSendTime(currentTime);
+					card.getPhotoFile().setSendTime(LocalDateTime.now());
 					card.setUserAccount(user);
 					
 					if(card.getId() !=null){
-						card.setNbRejets(Card.findCard(card.getId()).getNbRejets());
-						card.merge();
+						card.setNbRejets(cardDaoService.findCard(card.getId()).getNbRejets());
+						cardDaoService.merge(card);
 					} else {
 						card.setNbRejets(Long.valueOf(0));
-						card.persist();
+                        cardDaoService.persist(card);
 					}
 					
 					card.setDueDate(user.getDueDate());
@@ -199,8 +200,8 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 					if(!reference.isEmpty()){
 						card.setPayCmdNum(reference);
 					}
-					user.merge();
-					card.merge();
+                    userDaoService.merge(user);
+                    cardDaoService.merge(card);
 					logService.log(card.getId(), ACTION.DEMANDE, RETCODE.SUCCESS, "", eppn, request.getRemoteAddr());
 					log.info("Succès de la demande de carte pour l'utilisateur " +  eppn);
 					
@@ -224,11 +225,11 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@RequestMapping(value="/sync", method = RequestMethod.GET)
 	public ResponseEntity<String> sync(@RequestParam String eppn) {	
 		
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(user == null) {
 			user = new User();
 			user.setEppn(eppn);
-			user.persist();
+            userDaoService.persist(user);
 		}
 		
 		resynchronisationUserService.synchronizeUserInfo(eppn);
@@ -246,7 +247,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	public ResponseEntity<String> replayValidationOrInvalidation(@RequestParam String eppn, @RequestParam List<String> validateServicesNames, @RequestParam(required=false, defaultValue="false") Boolean resynchro) {	
 		long nbCardsOk  = 0;
 		long nbCardsKo  = 0;
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		for(Card card : user.getCards()) {
 			try {
 				cardEtatService.replayValidationOrInvalidation(card.getId(), validateServicesNames, resynchro);
@@ -271,7 +272,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 			Card externalCard = externalCardService.importExternalCard(eppn, null);
 			externalCard.setCrous(crous);
 			externalCard.setDifPhoto(difPhoto);
-			externalCard.merge();
+            cardDaoService.merge(externalCard);
 			cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
 		} catch (Exception e) {
 			String errorMessage = "problème lors de l'importation de la carte extérieure de " + eppn + " : " + e.getMessage();
@@ -291,7 +292,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	public ResponseEntity<String>  get(@RequestParam(value="eppn") List<String> eppns) throws JsonProcessingException {
 		List<User> users = new ArrayList<User>();
 		for(String eppn : eppns) {
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			if(user != null) {
 				users.add(user);
 			}
@@ -332,7 +333,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@Transactional
 	@RequestMapping(value="/renew/{cardId}", method = RequestMethod.POST)
 	public ResponseEntity<Long> requestRenewalCard(@PathVariable("cardId") Long cardId) {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		Card newCard = cardService.requestRenewalCard(card);
 		if(newCard != null) {
 			return new ResponseEntity<Long>(newCard.getId(), HttpStatus.OK);
@@ -349,7 +350,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@Transactional
 	@RequestMapping(value="/setCardEtat/{cardId}", method = RequestMethod.POST)
 	public ResponseEntity<Boolean> setCardEtat(@PathVariable("cardId") Long cardId, @RequestParam Etat etat, @RequestParam(required = false) String comment, @RequestParam(required = false) String printerEppn, @RequestParam(required = false) String csn, HttpServletRequest request) {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		Boolean r = cardEtatService.setCardEtat(card, etat, comment, null, false, false, printerEppn, csn);
 		log.info("Changement d'état de la carte {} ({}) à {} via WS depuis l'IP {} -> {}", card.getId(), card.getEppn(), etat, request.getRemoteAddr(), r);
 		return new ResponseEntity<Boolean>(r, HttpStatus.OK);
