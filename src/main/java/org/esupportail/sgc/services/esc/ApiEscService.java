@@ -244,7 +244,12 @@ public class ApiEscService extends ValidateService {
 				throw clientEx;
 			}
 		}
-		escPersonDaoService.remove(escPersonDaoService.findEscPersonsByEppnEquals(eppn).getSingleResult());
+        // local delete if exists
+        List<EscPerson> escPersons = escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList();
+        if(!escPersons.isEmpty()) {
+            log.debug("Local delete of EscPerson for " + eppn);
+            escPersonDaoService.remove(escPersons.get(0));
+        } 
 	}
 
 
