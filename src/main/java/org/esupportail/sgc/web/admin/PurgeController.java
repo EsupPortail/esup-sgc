@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
@@ -85,16 +86,18 @@ public class PurgeController {
 
 	@RequestMapping(value="/count")
 	@ResponseBody
-	public Long card2purgeCount(@DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
-		return cardDaoService.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date);
+	public Long card2purgeCount(@DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
+		LocalDateTime dateTime = date.atStartOfDay();
+        return cardDaoService.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, dateTime);
 	}
 	
 	// @Transactional - pas de transactionnal ici -> purge de chaque carte dans sa propre transaction
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
-	public synchronized String purge(RedirectAttributes redirectAttrs, @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
-		long nbCardsRemoved = 0;
-		log.info(cardDaoService.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date) + " cartes vont être supprimées/purgées");
-		for(Card card : cardDaoService.findCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date).getResultList()) {
+	public synchronized String purge(RedirectAttributes redirectAttrs, @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
+        LocalDateTime dateTime = date.atStartOfDay();
+        long nbCardsRemoved = 0;
+		log.info(cardDaoService.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, dateTime) + " cartes vont être supprimées/purgées");
+		for(Card card : cardDaoService.findCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, dateTime).getResultList()) {
 			try {
 				purgeService.purge(card);
 				nbCardsRemoved++;
