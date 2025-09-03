@@ -14,9 +14,6 @@
 
         <div id="bs-navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-            <li>
-                <a th:href="@{/}" th:text="#{application_name}"></a>
-            </li>
             <th:block sec:authorize="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_CONSULT_') or hasRole('ROLE_LIVREUR')">
                 <li th:classappend="${role} == 'user' ? 'active'">
                     <a th:href="@{/user}">Vue Utilisateur</a>
