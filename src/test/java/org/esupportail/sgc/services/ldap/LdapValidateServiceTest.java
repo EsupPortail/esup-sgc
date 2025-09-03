@@ -9,12 +9,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
+
+import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations={"classpath*:META-INF/spring/applicationContext*.xml"})
@@ -26,7 +29,6 @@ public class LdapValidateServiceTest {
     @Resource
     EsupSgcTestUtilsService esupSgcTestUtilsService;
 
-    @Resource
     LdapValidateService ldapValidateService;
 
     @Resource
@@ -46,9 +48,16 @@ public class LdapValidateServiceTest {
 
     static String ldapValueWithEtat2replace = "{ETAT}:" + LdapValidateService.ETAT;
 
+    @Autowired
+    void setLdapValidateServices(List<LdapValidateService> ldapValidateServices) {
+        if (!ldapValidateServices.isEmpty()) {
+            ldapValidateService = ldapValidateServices.get(0);
+        }
+    }
 
     @Test
     public void testComputeLdapValueWithCsn2replace() {
+        assumeTrue(ldapValidateService != null, "no ldapValidateService defined");
         Card enabledCard = esupSgcTestUtilsService.getEncodedCardFromDb();
         assumeTrue(enabledCard != null, "no enabled card in db");
         Object ldapValue = ldapValidateService.computeLdapValue(enabledCard, ldapValueWithCsn2replace);
@@ -60,6 +69,7 @@ public class LdapValidateServiceTest {
 
     @Test
     public void testComputeLdapValueWithCsnReturn2replace() {
+        assumeTrue(ldapValidateService != null, "no ldapValidateService defined");
         Card enabledCard = esupSgcTestUtilsService.getEncodedCardFromDb();
         assumeTrue(enabledCard != null, "no enabled card in db");
         Object ldapValue = ldapValidateService.computeLdapValue(enabledCard, ldapValueWithCsnReturn2replace);
@@ -71,6 +81,7 @@ public class LdapValidateServiceTest {
 
     @Test
     public void testComputeLdapValueWithCsnDec2replace() {
+        assumeTrue(ldapValidateService != null, "no ldapValidateService defined");
         Card enabledCard = esupSgcTestUtilsService.getEncodedCardFromDb();
         assumeTrue(enabledCard != null);
         Object ldapValue = ldapValidateService.computeLdapValue(enabledCard, ldapValueWithCsnDec2replace);
@@ -82,6 +93,7 @@ public class LdapValidateServiceTest {
 
     @Test
     public void testComputeLdapValueWithEppn2replace() {
+        assumeTrue(ldapValidateService != null, "no ldapValidateService defined");
         Card enabledCard = esupSgcTestUtilsService.getEncodedCardFromDb();
         assumeTrue(enabledCard != null);
         Object ldapValue = ldapValidateService.computeLdapValue(enabledCard, ldapValueWithEppn2replace);
@@ -93,6 +105,7 @@ public class LdapValidateServiceTest {
 
     @Test
     public void testComputeLdapValueWithEnabledDate2replace() {
+        assumeTrue(ldapValidateService != null, "no ldapValidateService defined");
         Card enabledCard = esupSgcTestUtilsService.getEncodedCardFromDb();
         assumeTrue(enabledCard != null);
         Object ldapValue = ldapValidateService.computeLdapValue(enabledCard, ldapValueWithEnabledDate2replace);
@@ -104,6 +117,7 @@ public class LdapValidateServiceTest {
 
     @Test
     public void testComputeLdapValueWithEtatDate2replace() {
+        assumeTrue(ldapValidateService != null, "no ldapValidateService defined");
         Card enabledCard = esupSgcTestUtilsService.getEncodedCardFromDb();
         assumeTrue(enabledCard != null);
         Object ldapValue = ldapValidateService.computeLdapValue(enabledCard, ldapValueWithEtatDate2replace);
@@ -115,6 +129,7 @@ public class LdapValidateServiceTest {
 
     @Test
     public void testComputeLdapValueWithEtat2replace() {
+        assumeTrue(ldapValidateService != null, "no ldapValidateService defined");
         Card enabledCard = esupSgcTestUtilsService.getEncodedCardFromDb();
         assumeTrue(enabledCard != null);
         Object ldapValue = ldapValidateService.computeLdapValue(enabledCard, ldapValueWithEtat2replace);
