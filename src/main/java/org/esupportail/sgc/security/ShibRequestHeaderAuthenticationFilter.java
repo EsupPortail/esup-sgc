@@ -8,6 +8,7 @@ import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,9 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 
     @Resource
     UserDaoService userDaoService;
+
+    @Resource
+    SessionRegistry sessionRegistry;
 
 	private UserInfoService userInfoService;
 	
@@ -49,6 +53,9 @@ public class ShibRequestHeaderAuthenticationFilter extends RequestHeaderAuthenti
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException, ServletException {
         super.successfulAuthentication(request, response, authResult);
+        // appelé normalement au travers de org.springframework.security.web.session.SessionManagementFilter
+        // incompatible avec le fonctionnement de ShibRequestHeaderAuthenticationFilter ici
+        this.sessionRegistry.registerNewSession(request.getSession().getId(), authResult.getPrincipal());
         String eppn = authResult.getName();
         User user = userDaoService.findUser(eppn);
 	    if(user == null) {
