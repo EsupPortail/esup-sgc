@@ -48,7 +48,7 @@ public class LdapValidateServiceTest {
 
     static String ldapValueWithEtat2replace = "{ETAT}:" + LdapValidateService.ETAT;
 
-    @Autowired
+    @Autowired(required = false)
     void setLdapValidateServices(List<LdapValidateService> ldapValidateServices) {
         if (!ldapValidateServices.isEmpty()) {
             ldapValidateService = ldapValidateServices.get(0);
