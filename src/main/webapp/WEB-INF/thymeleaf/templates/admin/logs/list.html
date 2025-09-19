@@ -11,9 +11,9 @@
 <body>
 <div id="logsList" layout:fragment="content">
     <h2>Logs</h2>
-    <div class="col-12 well">
+    <div class="col-12">
         <div>
-            <form th:action="@{/admin/logs}" method="get" class="navbar-form navbar-left form-inline" th:object="${searchLog}">
+            <form th:action="@{/admin/logs}" method="get" class="navbar-form navbar-left form-inline well" th:object="${searchLog}">
                 <input name="sortFieldName" value="logDate" type="hidden"/>
                 <input name="sortOrder" value="desc" type="hidden"/>
                 <input name="size" value="10" type="hidden"/>
@@ -75,15 +75,15 @@
         <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_Log">
             <thead>
             <tr>
-                <th>Log Date</th>
-                <th>Cible</th>
-                <th>Modificateur</th>
-                <th>Type</th>
-                <th>Card Id</th>
-                <th>Action</th>
-                <th>Ret Code</th>
-                <th>Commentaire</th>
-                <th>IP</th>
+                <th><a class="sorting" sd:pagination-sort="logDate">Log Date</a></th>
+                <th><a class="sorting" sd:pagination-sort="eppnCible">Cible</a></th>
+                <th><a class="sorting" sd:pagination-sort="eppn">Modificateur</a></th>
+                <th><a class="sorting" sd:pagination-sort="type">Type</a></th>
+                <th><a class="sorting" sd:pagination-sort="cardId">Card Id</a></th>
+                <th><a class="sorting" sd:pagination-sort="action">Action</a></th>
+                <th><a class="sorting" sd:pagination-sort="retCode">Ret Code</a></th>
+                <th><a class="sorting" sd:pagination-sort="comment">Commentaire</a></th>
+                <th><a class="sorting" sd:pagination-sort="remoteAddress">IP</a></th>
             </tr>
             </thead>
             <tbody>
