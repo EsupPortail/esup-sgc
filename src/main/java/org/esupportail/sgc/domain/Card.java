@@ -3,6 +3,7 @@ package org.esupportail.sgc.domain;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.esupportail.sgc.services.CardEtatService;
@@ -213,6 +214,9 @@ public class Card {
 		for(String desfireId : desfireIds.values()) {
 			fullText += desfireId + " ";
 		}
+        if(StringUtils.isNotEmpty(csn)) {
+            fullText += csn + " " + getReverseCsn() + " " + getDecimalCsn() + " " + getDecimalReverseCsn() + " ";
+        }
 		fullText += recto1Printed + " ";
 		fullText += recto2Printed + " ";
 		fullText += recto3Printed + " ";

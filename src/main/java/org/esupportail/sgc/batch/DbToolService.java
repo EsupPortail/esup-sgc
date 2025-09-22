@@ -508,6 +508,10 @@ public class DbToolService {
 				esupSgcVersion = "2.6.x";
 			}
             if("2.6.x".equals(esupSgcVersion)) {
+                log.warn(String.format("Mise à jour des colonnes full_text pour %s cards", cardDaoService.countCards()));
+                for(Card card : cardDaoService.findAllCards()) {
+                    card.updateFullText();
+                }
                 esupSgcVersion = "3.0.x";
             }
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
