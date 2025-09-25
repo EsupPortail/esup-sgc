@@ -30,7 +30,7 @@ public class CnousCardIdService extends GenericCardIdService {
 	public String generateCardId(Long cardId) {
 		Card card = cardDaoService.findCard(cardId);
 		String csn = card.getCsn();
-		CrousSmartCard smartCard = crousSmartCardDaoService.findCrousSmartCard(csn);
+		CrousSmartCard smartCard = card.getCrousSmartCard();
 		if(smartCard == null) {
 			if(crousEncodeEnabled && getIdCounterBegin(card) != null) {
 				Long idZdc = Long.valueOf(super.generateCardId(cardId));

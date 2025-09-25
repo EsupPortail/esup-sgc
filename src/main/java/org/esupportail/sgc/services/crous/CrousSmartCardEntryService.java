@@ -13,6 +13,7 @@ import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -80,7 +81,7 @@ public class CrousSmartCardEntryService {
 				if(numCarte!=null && !numCarte.isEmpty()) {
 					smartCard.setIdZdc(Long.valueOf(numCarte));
 				}
-                LocalDateTime zdcCreationDate = LocalDateTime.parse(dateCreation, csvDateFormat);
+                LocalDateTime zdcCreationDate = LocalDate.parse(dateCreation, csvDateFormat).atStartOfDay();
 				smartCard.setZdcCreationDate(zdcCreationDate);
 				smartCard.setPixSs(pixSs);
 				smartCard.setPixNn(pixNn);

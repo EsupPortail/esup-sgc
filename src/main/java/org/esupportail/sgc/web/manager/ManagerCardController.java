@@ -46,8 +46,11 @@ import org.springframework.web.util.WebUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequestMapping("/manager")
 @Controller	
@@ -261,7 +264,6 @@ public class ManagerCardController {
         uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
         uiModel.addAttribute("hasRequestCard", cardEtatService.hasRequestCard(user.getEppn()));
         uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
-        uiModel.addAttribute("crousSmartCards", crousSmartCardDaoService.getCrousSmartCards(user));
 
         return "templates/manager/show";
     }
@@ -413,23 +415,33 @@ public class ManagerCardController {
 	 */
 	@RequestMapping(produces = "text/html", params={"index=first"})
 	@Transactional(readOnly = true)
-	public String defaultSearch(@PageableDefault(size = 10, direction = Sort.Direction.ASC, sort = "key") Pageable pageable,
-    		@RequestParam(value = "index", required = false) String index, Model uiModel, HttpServletRequest request, Authentication auth) {
+	public String defaultSearch(@RequestParam Map<String, String> params,
+								@PageableDefault(size = 10, direction = Sort.Direction.ASC, sort = "key") Pageable pageable,
+    							@RequestParam(value = "index", required = false) String index,
+								Model uiModel, HttpServletRequest request, Authentication auth) {
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		CardSearchBean searchBean = new CardSearchBean();
 		searchBean.setType(permissionService.getDefaultTypeTab(roles));
-		return search(pageable, searchBean, index, uiModel, request, auth);
+		return search(params, pageable, searchBean, index, uiModel, request, auth);
 	}
 	
 	
     @RequestMapping(produces = "text/html")
     @Transactional(readOnly = true)
-    public String search(@PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "dateEtat") Pageable pageable,
+    public String search(@RequestParam Map<String, String> params,
+						 @PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "dateEtat") Pageable pageable,
                          @Valid CardSearchBean searchBean,
                          @RequestParam(value = "index", required = false) String index,
                          Model uiModel,
                          HttpServletRequest request,
                          Authentication auth) {
+
+		// used to keep search params in the tabs links
+		String queryParams = params.entrySet().stream()
+				.filter(e -> !e.getKey().equals("page") && !e.getKey().equals("type") && !e.getKey().equals("index"))
+				.map(e -> e.getKey() + "=" + e.getValue())
+				.collect(Collectors.joining("&"));
+		uiModel.addAttribute("queryParams", queryParams);
 
         Sort sort = pageable.getSort();
         String sortFieldName = sort.stream().iterator().next().getProperty();

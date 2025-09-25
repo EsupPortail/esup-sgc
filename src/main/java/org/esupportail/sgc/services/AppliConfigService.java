@@ -361,6 +361,11 @@ public class AppliConfigService {
 		return userAgent;
 	}
 
+	public String getEsupSgcWoEtablissementAsHttpUserAgent() {
+		String userAgent = String.format("ESUP-SGC/%s", appliVersionDaoService.getAppliVersion().getEsupSgcVersion());
+		return userAgent;
+	}
+
 	public String getBmpCardCommandColor4printer() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.BMP_COMMAND_COLOR_PRINTER);
 		return appliConfig==null ? "" : appliConfig.getValue();

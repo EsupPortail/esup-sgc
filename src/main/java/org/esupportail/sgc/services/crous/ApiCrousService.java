@@ -59,6 +59,9 @@ public class ApiCrousService {
 
     @Resource
     UserDaoService userDaoService;
+
+	@Resource
+	ObjectMapper objectMapper;
 	
 	RestTemplate restTemplate;
 	
@@ -122,7 +125,7 @@ public class ApiCrousService {
 				basicAuthorisation = Base64.encodeBase64String(basicAuthorisation.getBytes());
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("Content-Type", "application/x-www-form-urlencoded");
-				headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+				headers.set("User-Agent", appliConfigService.getEsupSgcWoEtablissementAsHttpUserAgent());
 				headers.set("Authorization", basicAuthorisation);
 				log.trace(String.format("Headers for CROUS API authentication : %s", headers));
 				String body = "grant_type=client_credentials";
@@ -154,7 +157,7 @@ public class ApiCrousService {
 				String base64Creds = Base64.encodeBase64String(String.format("%s:%s", clientId, clientSecret).getBytes());
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("Authorization", "Basic " + base64Creds);
-				headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+				headers.set("User-Agent", appliConfigService.getEsupSgcWoEtablissementAsHttpUserAgent());
 				HttpEntity entity = new HttpEntity(headers);
 				ResponseEntity<Map<String, String>> response = restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<Map<String, String>>() {});
 				authToken = response.getBody().get("access_token");
@@ -172,7 +175,7 @@ public class ApiCrousService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", "application/json");
 		headers.set("Content-Type", "application/json");
-		headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+		headers.set("User-Agent", appliConfigService.getEsupSgcWoEtablissementAsHttpUserAgent());
 		return headers;
 	}
 	
@@ -207,7 +210,7 @@ public class ApiCrousService {
 		if(enable && card!=null) {
 			if(enable) {
 				User user = userDaoService.findUser(card.getEppn());
-				String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + crousSmartCardDaoService.getCrousSmartCard(card).getIdZdc();
+				String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 				HttpHeaders headers = this.getAuthHeaders();	
 				HttpEntity entity = new HttpEntity(headers);	
 				try {
@@ -312,13 +315,13 @@ public class ApiCrousService {
 			// NON ETUDIANT
 			if (newRightHolder.getBirthDate() == null) {
 				if (oldRightHolder.birthDate != null) {
-					log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate()));
+					log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate()));
 					return false;
 				}
 			} 
 			// compare only day (without time) for birthday 
 			else if (!newRightHolder.getBirthDate().equals(oldRightHolder.getBirthDate())) {
-				log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate())); 
+				log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate())); 
 				return false;
 			}
 
@@ -501,7 +504,7 @@ public class ApiCrousService {
 	public boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
 		if(enable) {
 			User user = userDaoService.findUser(card.getEppn());
-			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + crousSmartCardDaoService.getCrousSmartCard(card).getIdZdc();
+			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
 			try {
@@ -509,7 +512,7 @@ public class ApiCrousService {
 				log.info("GET on " + url + " is OK : " + response.getBody() + " we revalidate this smartCard");
 			} catch(HttpClientErrorException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
-					log.info("Card not found in crous - we try to send card " + card.getCsn() + " - " + crousSmartCardDaoService.getCrousSmartCard(card).getIdZdc() + " in CROUS");
+					log.info("Card not found in crous - we try to send card " + card.getCsn() + " - " + card.getCrousSmartCard().getIdZdc() + " in CROUS");
 					return validateNewSmartCard(card);
 				} else {
 					CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.GET, EsupSgcOperation.ACTIVATE, url);
@@ -525,7 +528,7 @@ public class ApiCrousService {
 		User user = userDaoService.findUser(card.getEppn());
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard";
 		HttpHeaders headers = this.getAuthHeaders();
-		CrousSmartCard smartCard = crousSmartCardDaoService.getCrousSmartCard(card);
+		CrousSmartCard smartCard = card.getCrousSmartCard();
 		HttpEntity entity = new HttpEntity(smartCard, headers);
 		log.debug("Try to post to CROUS SmartCard for " +  card.getEppn() + " : " + smartCard);
 		try {
@@ -559,7 +562,7 @@ public class ApiCrousService {
 	
 	private boolean revalidateSmartCard(Card card) throws CrousHttpClientErrorException {
 		User user = userDaoService.findUser(card.getEppn());
-		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + crousSmartCardDaoService.getCrousSmartCard(card).getIdZdc();
+		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 		HttpHeaders headers = this.getAuthHeaders();
 		headers.add("uid", card.getCsn().toUpperCase());
 		Map<String, String> body = new HashMap<String, String>();
@@ -586,7 +589,7 @@ public class ApiCrousService {
 	public boolean invalidateSmartCard(Card card) throws CrousHttpClientErrorException {
 		if(enable) {
 			User user = userDaoService.findUser(card.getEppn());
-			CrousSmartCard smartCard = crousSmartCardDaoService.findCrousSmartCard(card.getCsn());
+			CrousSmartCard smartCard = card.getCrousSmartCard();
 			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + smartCard.getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();
 			headers.add("uid", card.getCsn().toUpperCase());
@@ -637,13 +640,12 @@ public class ApiCrousService {
 	
 	private String getErrorPart(String errorsAsJsonString, String part) {
 		String errorPart = null;
-		ObjectMapper mapper = new ObjectMapper(); 
 	    TypeReference<Map<String,List<Map<String, String>>>> typeRef 
 	            = new TypeReference<Map<String,List<Map<String, String>>>>() {};
 
 	            Map<String,List<Map<String, String>>> errorsMap = null;
 		try {
-			errorsMap = mapper.readValue(errorsAsJsonString, typeRef);
+			errorsMap = objectMapper.readValue(errorsAsJsonString, typeRef);
 		} catch (IOException e) {
 			log.error("Can't parse errors : " + errorsAsJsonString, e);
 		} 

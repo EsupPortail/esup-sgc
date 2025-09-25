@@ -241,7 +241,7 @@ public class WsRestEsupNfcController {
 		log.info("get verso from : " + taglog);
 		Card card = cardDaoService.findCardsByCsn(taglog.getCsn()).getSingleResult();
 		uiModel.addAttribute("card", card);
-		return "verso";
+		return "templates/verso";
 	}
 
 	@RequestMapping(value="/updateCheck",  method=RequestMethod.POST)
@@ -249,7 +249,7 @@ public class WsRestEsupNfcController {
 		log.info("get updateCheck from : " + taglog);
 		Card card = cardDaoService.findCardsByCsn(taglog.getCsn()).getSingleResult();
 		uiModel.addAttribute("card", card);
-		return "updateCheck";
+		return "templates/updateCheck";
 	}
 	
 	@RequestMapping(value="/secondaryId",  method=RequestMethod.POST)

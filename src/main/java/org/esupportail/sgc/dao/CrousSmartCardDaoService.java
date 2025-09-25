@@ -36,25 +36,7 @@ public class CrousSmartCardDaoService {
         }
         return smartCard;
     }
-    
-    public long countCrousSmartCards() {
-        return entityManager.createQuery("SELECT COUNT(o) FROM CrousSmartCard o", Long.class).getSingleResult();
-    }
 
-    public List<CrousSmartCard> findAllCrousSmartCards() {
-        return entityManager.createQuery("SELECT o FROM CrousSmartCard o", CrousSmartCard.class).getResultList();
-    }
-
-    public List<CrousSmartCard> findAllCrousSmartCards(String sortFieldName, String sortOrder) {
-        String jpaQuery = "SELECT o FROM CrousSmartCard o";
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                jpaQuery = jpaQuery + " " + sortOrder;
-            }
-        }
-        return entityManager.createQuery(jpaQuery, CrousSmartCard.class).getResultList();
-    }
 
     public CrousSmartCard findCrousSmartCard(Long id) {
         if (id == null) return null;
@@ -96,21 +78,4 @@ public class CrousSmartCardDaoService {
     }
 
 
-    public CrousSmartCard getCrousSmartCard(Card card) {
-        if (card.getCsn() != null && !card.getCsn().isEmpty()) {
-            return findCrousSmartCard(card.getCsn());
-        } else {
-            return new CrousSmartCard();
-        }
-    }
-
-    public Map<Card, CrousSmartCard> getCrousSmartCards(User user) {
-        Map<Card, CrousSmartCard> crousSmartCards = new HashMap<>();
-        if(user!=null) {
-            for (Card card : user.getCards()) {
-                crousSmartCards.put(card, getCrousSmartCard(card));
-            }
-        }
-        return crousSmartCards;
-    }
 }

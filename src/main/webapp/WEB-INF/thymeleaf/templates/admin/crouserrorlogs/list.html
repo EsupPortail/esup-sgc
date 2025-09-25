@@ -37,6 +37,13 @@
                         </select>
                     </div>
                     <div class="col-md-4">
+                        <label>Message d'erreur</label>
+                        <select class="form-control" th:field="*{message}">
+                            <option value=""></option>
+                            <option th:each="msg : ${crousMessages}" th:value="${msg}" th:text="${msg}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <button type="submit" class="btn btn-success">Filtrer</button>
                     </div>
                 </div>
@@ -52,7 +59,7 @@
             </form>
         </div>
     </div>
-    <div class="table-responsive">
+    <div>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
@@ -69,6 +76,9 @@
                     <th><a class="sorting" sd:pagination-sort="esupSgcOperation">Opération ESUP-SGC</a></th>
                     <th><a class="sorting" sd:pagination-sort="crousUrl">URL CROUS</a></th>
                     <th>
+                        <a class="sorting" sd:pagination-sort="tryCount">Nb d'essais</a>
+                    </th>
+                    <th>
                         <a class="sorting" sd:pagination-sort="blocking">Bloquant</a>
                     </th>
                     <th>Actions</th>
@@ -80,7 +90,7 @@
                         <a th:href="@{'/manager/' + ${log.cardId}}" th:text="${log.cardId}"></a>
                     </td>
                     <td>
-                        <a th:href="@{'/manager/?eppn=' + ${log.userEppn}}" th:text="${log.userEppn}"></a>
+                        <a th:href="@{'/manager?eppn=' + ${log.userEppn}}" th:text="${log.userEppn}"></a>
                     </td>
                     <td th:text="${log.userDisplayName}"></td>
                     <td th:text="${log.userEmail}"></td>
@@ -92,6 +102,7 @@
                     <td th:text="${log.crousOperation}"></td>
                     <td th:text="${log.esupSgcOperation}"></td>
                     <td th:text="${log.crousUrl}"></td>
+                    <td th:text="${log.tryCount}"></td>
                     <td th:text="${log.blocking}"></td>
                     <td>
                         <a class="btn btn-primary" th:href="@{/admin/crouserrorlogs/{id}(id=${log.id})}">

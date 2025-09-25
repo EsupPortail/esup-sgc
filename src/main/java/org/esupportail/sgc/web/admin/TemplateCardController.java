@@ -41,8 +41,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedHashMap;
 
 @RequestMapping("/admin/templatecards")
@@ -68,6 +66,9 @@ public class TemplateCardController {
 
     @Resource
     TemplateCardDaoService templateCardDaoService;
+
+	@Resource
+	ObjectMapper objectMapper;
 
 
     @ModelAttribute("active")
@@ -267,8 +268,7 @@ public class TemplateCardController {
 		mapCarte.put("id", card.getId().toString());
 		
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			jsonInString = mapper.writeValueAsString(mapCarte);
+			jsonInString = objectMapper.writeValueAsString(mapCarte);
 			
 		} catch (Exception e) {
 			log.warn("Impossible de récupérer les données" , e);

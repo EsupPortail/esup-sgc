@@ -8,7 +8,7 @@
     <title>Utilisateur</title>
 </head>
 <body>
-<div id="cardShow" layout:fragment="content">
+<div id="cardShow" layout:fragment="content" th:if="${user != null}">
     <script>
         var photorUrl = "[[${'/manager/photo/'}]]";
         var getCrousRightHolderUrl = "[[${'/manager/getCrousRightHolderHtmlPart?eppn=' + user.eppn}]]";
@@ -366,7 +366,7 @@
                                                     </div>
 
                                                     <th:block sec:authorize="hasRole('ROLE_LIVREUR') or hasRole('ROLE_MANAGER')">
-                                                        <div th:if="${livraison and (card.etat.name == 'ENABLED' or card.etat.name == 'ENCODED' or card.etat.name == 'DISABLED' or card.etat.name == 'CADUC' or card.etat.name == 'DESTROYED') and #strings.isEmpty(card.deliveredDate)}">
+                                                        <div th:if="${livraison and (card.etat.name() == 'ENABLED' or card.etat.name() == 'ENCODED' or card.etat.name() == 'DISABLED' or card.etat.name() == 'CADUC' or card.etat.name() == 'DESTROYED') and #strings.isEmpty(card.deliveredDate)}">
                                                             <form th:action="@{/manager/deliver/{id}(id=${card.id})}" method="post">
                                                                 <button class="btn btn-primary btn-block" type="submit">
                                                                     Noter comme livrée
@@ -377,7 +377,7 @@
                                                     <div th:if="${managePermission}" id="btnBlock">
                                                         <th:block th:with="etatActionUrl=@{/manager/action/{id}(id=${card.id})}">
                                                             <div th:each="etatAvailable, jStat : ${card.etatsAvailable}">
-                                                                <th:block th:unless="${#lists.isEmpty(card.cardActionMessages[etatAvailable.name])}">
+                                                                <th:block th:unless="${#lists.isEmpty(card.cardActionMessages.get(etatAvailable))}">
                                                                     <form th:action="${etatActionUrl} + '?etatFinal=' + ${etatAvailable}" th:id="${etatAvailable} + 'Form'" method="post">
                                                                         <button class="btn btn-success btn-block"
                                                                                 th:attr="data-target='#commentEtat' + ${iStat.index} + '-' + ${jStat.index}"
@@ -393,7 +393,7 @@
                                                                                         <h3 class="modal-title">Commentaire</h3>
                                                                                     </div>
                                                                                     <div class="modal-body">
-                                                                                        <div class="form-group" th:if="${etatAvailable.name == 'DISABLED'}">
+                                                                                        <div class="form-group" th:if="${etatAvailable.name() == 'DISABLED'}">
                                                                                             <div class="radio">
                                                                                                 <label>
                                                                                                     <input type="radio" name="motif" value="" checked="checked"/>
@@ -411,15 +411,7 @@
                                                                                                 <textarea class="form-control"
                                                                                                           th:id="'comment_' + ${iStat.index} + '_' + ${jStat.index}"
                                                                                                           name="comment"
-                                                                                                          rows="5">
-                                                                                                    <th:block th:each="entry : ${card.cardActionMessages}">
-                                                                                                        <th:block th:if="${entry.key == etatAvailable}">
-                                                                                                            <th:block th:each="msg : ${entry.value}">
-                                                                                                                <th:block th:if="${msg.defaut}" th:text="${msg.message}"></th:block>
-                                                                                                            </th:block>
-                                                                                                        </th:block>
-                                                                                                    </th:block>
-                                                                                                </textarea>
+                                                                                                          rows="5"><th:block th:utext="${card.cardActionMessages.get(etatAvailable).get(0)?.message}"></textarea>
                                                                                             </div>
                                                                                         </div>
                                                                                         <button class="btn btn-success btn-block" th:id="${etatAvailable}">
@@ -436,7 +428,7 @@
                                                                                             <div class="panel-collapse collapse well"
                                                                                                  th:id="'msgChoice_' + ${iStat.index} + '_' + ${jStat.index}">
                                                                                                 <ul>
-                                                                                                    <li th:each="msg, loop : ${card.cardActionMessages[etatAvailable.name]}">
+                                                                                                    <li th:each="msg, loop : ${card.cardActionMessages.get(etatAvailable)}">
                                                                                                         <button class="btn btn-default btn-xs" type="button">
                                                                                                             <span aria-hidden="true" class="glyphicon glyphicon-edit"
                                                                                                                   th:id="'msg_' + ${iStat.index} + '_' + ${jStat.index} + '_' + ${loop.index}"></span>
@@ -456,7 +448,7 @@
                                                                         </div>
                                                                     </form>
                                                                 </th:block>
-                                                                <form th:if="${#lists.isEmpty(card.cardActionMessages[etatAvailable.name]) and etatAvailable.name == 'DESTROYED'}"
+                                                                <form th:if="${#lists.isEmpty(card.cardActionMessages.get(etatAvailable)) and etatAvailable.name() == 'DESTROYED'}"
                                                                       th:action="${etatActionUrl + '?etatFinal=' + etatAvailable}"
                                                                       th:id="${etatAvailable + 'Form'}" method="post">
                                                                     <button class="btn btn-danger btn-block"
@@ -465,7 +457,7 @@
                                                                         <span th:text="#{${'manager.action.' + card.etat + '-' + etatAvailable}}"></span>
                                                                     </button>
                                                                 </form>
-                                                                <form th:if="${#lists.isEmpty(card.cardActionMessages[etatAvailable.name]) and etatAvailable.name != 'DESTROYED'}"
+                                                                <form th:if="${#lists.isEmpty(card.cardActionMessages.get(etatAvailable)) and etatAvailable.name() != 'DESTROYED'}"
                                                                       th:action="${etatActionUrl + '?etatFinal=' + etatAvailable}"
                                                                       th:id="${etatAvailable + 'Form'}" method="post">
                                                                     <button class="btn btn-success btn-block"
@@ -539,7 +531,7 @@
                                                     <dd th:utext="${card.payCmdNum}"></dd>
                                                     <dt>Motif :</dt>
                                                     <dd>
-                                                        <span th:if="${card.motifDisable != null}" th:text="#{user.motif.${card.motifDisable}}"></span>
+                                                        <span th:if="${card.motifDisable != null}" th:text="#{|user.motif.${card.motifDisable}|}"></span>
                                                     </dd>
                                                     <h4>Modification</h4>
                                                     <dt>Etat Eppn :</dt>
@@ -560,17 +552,17 @@
                                                     <dt>OS:</dt>
                                                     <dd th:utext="${card.requestOs}"></dd>
                                                 </dl>
-                                                <div th:unless="${crousSmartCards.get(card) == null}">
+                                                <div th:unless="${card.crousSmartCard == null}">
                                                     <dl class="dl-horizontal col-lg-5">
                                                         <h4>Restauration CROUS</h4>
-                                                        <dt th:if="${card.crousError != null}" class="dl-horizontal col-lg-5"><span class="badge alert-danger">!</span> Erreur Crous :</dt>
-                                                        <dd th:if="${card.crousError != null}" th:text="${card.crousError}"></dd>
+                                                        <dt th:unless="${#strings.isEmpty(card.crousError)}" class="dl-horizontal col-lg-5"><span class="badge alert-danger">!</span> Erreur Crous :</dt>
+                                                        <dd th:unless="${#strings.isEmpty(card.crousError)}" th:text="${card.crousError}"></dd>
                                                         <dt>Numéro Crous :</dt>
-                                                        <dd th:utext="${crousSmartCards.get(card).idZdc}"></dd>
+                                                        <dd th:utext="${card.crousSmartCard.idZdc}"></dd>
                                                         <dt>Date de création :</dt>
-                                                        <dd th:utext="${#temporals.format(crousSmartCards.get(card).zdcCreationDate, 'dd/MM/yyyy')}"></dd>
+                                                        <dd th:utext="${#temporals.format(card.crousSmartCard.zdcCreationDate, 'dd/MM/yyyy')}"></dd>
                                                         <dt>Emetteur :</dt>
-                                                        <dd th:utext="${crousSmartCards.get(card).idTransmitter}"></dd>
+                                                        <dd th:utext="${card.crousSmartCard.idTransmitter}"></dd>
                                                     </dl>
                                                     <div th:if="${card.csn != null}">
                                                         <h5>
@@ -606,7 +598,7 @@
                                                             Voir logs
                                                         </a>
                                                     </div>
-                                                    <div class="col-lg-5" th:if="${card.etat.name == 'ENABLED' or card.etat.name == 'CADUC' or card.etat.name == 'DISABLED'}">
+                                                    <div class="col-lg-5" th:if="${card.etat.name() == 'ENABLED' or card.etat.name() == 'CADUC' or card.etat.name() == 'DISABLED'}">
                                                         <form th:action="@{/manager/replayValidationOrInvalidation/{id}(id=${card.id})}" method="POST"
                                                               onsubmit="return confirm('Attention, avec cette action, pour la partie CROUS, Izly pourra renvoyer un mail à l\'utilisateur');">
                                                             <div th:each="validateServicesName : ${validateServicesNames}">

@@ -3,9 +3,9 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{./layouts/user.html}">
-<div layout:fragment="content" id="requestDiv">
+<div layout:fragment="content" id="requestDiv" th:if="${user!=null}">
     <script type="text/javascript">
-        var isRejected = "[[${isRejected}]]";
+        var isRejected = "[[${(isRejected ?: false)}]]";
         var rejectedPhotoUrl = "[[@{/user/photo/} + ${id != null ? id : ''}]]";
         var defaultPhotoUrl = "[[${requestUserIsManager ? '/manager/photo?eppn=' + user.eppn : '/user/photo'}]]";
         var defaultPhotoMd5 = "[[${defaultPhotoMd5}]]";
@@ -18,7 +18,7 @@
     <div th:if="${!#strings.isEmpty(user.blockUserMsg)}">
         <div th:utext="${user.blockUserMsg}"></div>
     </div>
-    <div th:if="${displayFormParts['displayForm'] or isRejected}">
+    <div th:if="${displayFormParts['displayForm'] or (isRejected ?: false)}">
         <div th:replace="~{templates/user/includes/freeRenewal :: freeRenewal}"></div>
         <div th:replace="~{templates/user/includes/helpRequest :: helpRequest}"></div>
         <form th:action="@{/user}" method="post" id="cardRequest" enctype="multipart/form-data">
@@ -38,14 +38,14 @@
             <div th:replace="~{templates/user/includes/form_cnil :: form_cnil}"></div>
             <div th:replace="~{templates/user/includes/form_rules :: form_rules}"></div>
 
-            <input type="hidden" name="id" th:if="${isRejected}" th:value="${id}" />
+            <input type="hidden" name="id" th:if="${(isRejected ?: false)}" th:value="${id}" />
             <input type="hidden" name="eppn" th:if="${requestUserIsManager}" th:value="${eppn}" />
 
             <div th:replace="~{templates/user/includes/form_submit :: form_submit}"></div>
             <input type="hidden" name="requestUserIsManager" th:value="${requestUserIsManager}" />
         </form>
     </div>
-    <div th:if="${!(displayFormParts['displayForm'] or isRejected)}">
+    <div th:if="${!(displayFormParts['displayForm'] or (isRejected ?: false))}">
         <div class="alert alert-danger">
             <p>Vous ne pouvez pas demander actuellement de Léocarte.</p>
             <p>Réessayez ultérieurement ou rapprochez-vous de votre correspondant informatique local.</p>

@@ -60,6 +60,9 @@ public class StatsController {
 
     @Resource
     ManagerCardController managerCardController;
+
+	@Resource
+	ObjectMapper objectMapper;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -96,7 +99,6 @@ public class StatsController {
     		type="";
     	}
 		uiModel.addAttribute("selectedType", type);
-		ObjectMapper mapper = new ObjectMapper();
 		String jsonStats = "";
 		String jsonStatsRm = "";
 		List<String> prefsStats = new ArrayList<>();
@@ -105,11 +107,11 @@ public class StatsController {
 			if(preferencesService.getPrefs(eppn, KEY)!=null){
 				prefsStats = Arrays.asList(preferencesService.getPrefs(eppn, KEY).getValue().split("\\s*,\\s*"));
 			}
-			jsonStats = mapper.writeValueAsString(prefsStats);
+			jsonStats = objectMapper.writeValueAsString(prefsStats);
 			if(preferencesService.getPrefs(eppn, KEYRM)!=null){
 				prefsStatsRm = Arrays.asList(preferencesService.getPrefs(eppn, KEYRM).getValue().split("\\s*,\\s*"));
 			}
-			jsonStatsRm = mapper.writeValueAsString(prefsStatsRm);
+			jsonStatsRm = objectMapper.writeValueAsString(prefsStatsRm);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

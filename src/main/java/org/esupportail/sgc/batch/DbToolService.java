@@ -10,6 +10,8 @@ import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.CardEtatService;
+import org.esupportail.sgc.services.crous.CrousErrorLog;
+import org.esupportail.sgc.services.crous.CrousErrorLogDaoService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +59,9 @@ public class DbToolService {
 
     @Resource
     UserDaoService userDaoService;
+
+	@Resource
+	CrousErrorLogDaoService crousErrorLogDaoService;
 
     @Transactional
 	public void upgrade() {
@@ -512,6 +517,9 @@ public class DbToolService {
                 for(Card card : cardDaoService.findAllCards()) {
                     card.updateFullText();
                 }
+				for(CrousErrorLog errorLog : crousErrorLogDaoService.findAllCrousErrorLogs()) {
+					errorLog.setTryCount(1);
+				}
                 esupSgcVersion = "3.0.x";
             }
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);

@@ -27,10 +27,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class SgcPermissionEvaluator implements PermissionEvaluator {
 
 	@Resource 

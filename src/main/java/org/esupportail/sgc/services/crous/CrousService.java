@@ -47,7 +47,7 @@ public class CrousService extends ValidateService {
 		User user = userDaoService.findUser(card.getEppn());
 		if(user.getCrous() && authApiCrousService.isEnabled()) {
 			if(this.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.ACTIVATE)) {
-				CrousSmartCard smartCard = crousSmartCardDaoService.getCrousSmartCard(card);
+				CrousSmartCard smartCard = card.getCrousSmartCard();
 				if(smartCard == null) {
 					throw new SgcRuntimeException("Card with csn " + card.getCsn() + " has not the CROUS/IZLY application encoded ?", null);
 				} else {
@@ -81,7 +81,7 @@ public class CrousService extends ValidateService {
 				}
 			}
 			if(postOrUpdateRightHolderOk4invalication) {
-				CrousSmartCard smartCard = crousSmartCardDaoService.findCrousSmartCard(card.getCsn());
+				CrousSmartCard smartCard = card.getCrousSmartCard();
 				if(smartCard == null) {
 					throw new SgcRuntimeException("Card with csn " + card.getCsn() + " has not the CROUS/IZLY application encoded ?", null);
 				} else {

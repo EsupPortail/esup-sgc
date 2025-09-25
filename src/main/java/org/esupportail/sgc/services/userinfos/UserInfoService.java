@@ -28,6 +28,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -408,7 +409,7 @@ public class UserInfoService {
 
         try {
             DateTimeFormatter formatter = getDateFormatter(); // équivalent de getDateFormatter() mais pour LocalDateTime
-            return LocalDateTime.parse(dateString, formatter);
+            return LocalDate.parse(dateString, formatter).atStartOfDay();
         } catch (DateTimeParseException e) {
             log.error("parsing of date " + dateString + " failed", e);
             return null;

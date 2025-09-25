@@ -52,6 +52,7 @@ public class CrousErrorLogDaoService {
 
     public Page<CrousErrorLog> findCrousErrorLogs(CrousErrorLog searchCrousErrorLog, Pageable pageable) {
         ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnorePaths("tryCount")
                 .withIgnoreNullValues()
                 .withIgnoreCase();
         Example<CrousErrorLog> searchCrousErrorLogQuery = Example.of(searchCrousErrorLog, matcher);
@@ -112,5 +113,14 @@ public class CrousErrorLogDaoService {
         this.entityManager.flush();
         return merged;
     }
-    
+
+    public List<String> getCrousErrorLogMessages() {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<String> cq = cb.createQuery(String.class);
+        Root<CrousErrorLog> root = cq.from(CrousErrorLog.class);
+        cq.select(root.get("message")).distinct(true);
+        cq.orderBy(cb.asc(root.get("message")));
+        TypedQuery<String> query = entityManager.createQuery(cq);
+        return query.getResultList();
+    }
 }

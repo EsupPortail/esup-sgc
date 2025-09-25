@@ -23,8 +23,23 @@ public class DateUtils {
 	
 	private DateTimeFormatter dateTimeFormatterSchacOfBirth = DateTimeFormatter.ofPattern(DATE_FORMAT_SCHACBIRTH_LDAP);
 	
-	private SimpleDateFormat dateFormatterFr = new SimpleDateFormat(DATE_FORMAT_FR);
+	private DateTimeFormatter dateFormatterFr = DateTimeFormatter.ofPattern(DATE_FORMAT_FR);
 
+    /*
+        Don't remove it : can be used in applicationContext-services.xml
+     */
+    public String schadDateOfBirthDay2FrenchDate(String schadDateOfBirthDay) {
+        if (schadDateOfBirthDay == null || schadDateOfBirthDay.isEmpty()) {
+            return null;
+        }
+        try {
+            LocalDate date = LocalDate.parse(schadDateOfBirthDay, dateTimeFormatterSchacOfBirth);
+            return dateFormatterFr.format(date);
+        } catch (DateTimeParseException e) {
+            log.error("parsing of date " + schadDateOfBirthDay + " failed: " + e.getMessage(), e);
+            return null;
+        }
+    }
 
     public LocalDateTime parseSchacDateOfBirth(String dateString) {
         if (dateString == null || dateString.isEmpty()) {

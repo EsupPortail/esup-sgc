@@ -26,8 +26,9 @@ public class CrousLogService {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private final TypeReference<Map<String, List<CrousErrorLog>>> typeCrousErrorLogRef = new TypeReference<Map<String, List<CrousErrorLog>>>(){};
-	
-	private final ObjectMapper crousErrorLogMapper = new ObjectMapper();
+
+	@Resource
+	ObjectMapper crousErrorLogMapper;
 
     @Resource
     CardDaoService cardDaoService;
@@ -94,6 +95,11 @@ public class CrousLogService {
 					crousErrorLogOld.setCode(crousErrorLog.getCode());
 					crousErrorLogOld.setMessage(crousErrorLog.getMessage());
 					crousErrorLogOld.setField(crousErrorLog.getField());
+					if(crousErrorLogOld.getTryCount() != null) {
+						crousErrorLogOld.setTryCount(crousErrorLogOld.getTryCount() + 1);
+					} else {
+						crousErrorLogOld.setTryCount(1);
+					}
 					crousErrorLog = crousErrorLogOld;
 				} 
 				crousErrorLog.setDate(LocalDateTime.now());

@@ -46,8 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 
@@ -109,6 +107,9 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 
     @Resource
     UserDaoService userDaoService;
+
+	@Resource
+	ObjectMapper objectMapper;
 
 	/**
 	 * Example to use it :
@@ -297,11 +298,10 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 				users.add(user);
 			}
 		}
-		ObjectMapper mapper = new ObjectMapper();
 		FilterProvider filters = new SimpleFilterProvider()
 				.addFilter("userFilter", SimpleBeanPropertyFilter.filterOutAllExcept("eppn", "cards", "crous", "europeanStudentCard", "difPhoto", "name", "firstname", "birthday", "email", "dueDate"))
 				.addFilter("cardFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id", "csn", "etat", "dateEtat", "desfireIds", "escnUid"));
-		String jsonUsers = mapper.writer(filters).writeValueAsString(users);
+		String jsonUsers = objectMapper.writer(filters).writeValueAsString(users);
 		return new ResponseEntity<String>(jsonUsers, HttpStatus.OK);
 	}
 	

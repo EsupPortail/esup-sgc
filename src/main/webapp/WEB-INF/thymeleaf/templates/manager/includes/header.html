@@ -49,7 +49,7 @@
         <ul class="nav nav-tabs" role="tablist" id="tabTypes">
             <li th:each="userType : ${userTypes}"
                 th:classappend="${selectedType == userType} ? 'active' : 'sleep'">
-                <a th:href="@{/manager(type=${userType})}" role="tab"
+                <a th:href="@{/manager(type=${userType})} + '&' + ${queryParams}" role="tab"
                    th:text="#{|manager.type.${userType}|}"></a>
             </li>
         </ul>

@@ -415,7 +415,7 @@ public class ApiEscService extends ValidateService {
 		return EscCard.CardType.valueOf(type);
 	}
 
-	private HttpHeaders getJsonHeaders() {	
+	private HttpHeaders getJsonHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + key);
 		headers.set("Accept", "application/json");

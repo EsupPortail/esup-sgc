@@ -22,6 +22,16 @@
 
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
 		<constructor-arg ref="httpClientFactory" />
+		<property name="messageConverters">
+			<list>
+				<bean id="stringConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
+					<constructor-arg value="UTF-8"/>
+				</bean>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+					<property name="objectMapper" ref="objectMapper"/>
+				</bean>
+			</list>
+		</property>
 	</bean>
 
     <bean id="httpClientBuilder" class="org.apache.hc.client5.http.impl.classic.HttpClientBuilder"

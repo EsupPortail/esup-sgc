@@ -128,6 +128,9 @@ public class CrousErrorLogController {
         uiModel.addAttribute("crouserrorlogs", crousErrorLogs);
         uiModel.addAttribute("searchCrousErrorLog", searchCrousErrorLog);
 
+		List<String> crousMessages = crousErrorLogDaoService.getCrousErrorLogMessages();
+		uiModel.addAttribute("crousMessages", crousMessages);
+
         return "templates/admin/crouserrorlogs/list";
     }
     

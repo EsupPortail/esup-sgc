@@ -50,8 +50,7 @@ public class CaducMailService {
 		Date now = new Date();
 		for(CardActionMessage cardActionMessage : cardActionMessageDaoService.findCardActionMessagesWithDateDelay4PreventCaduc()) {
 			LocalDateTime futureCaducLocalDate = LocalDateTime.now().plusDays(cardActionMessage.getDateDelay4PreventCaduc());
-			Date futureCaducDate = Date.from(futureCaducLocalDate.atZone(ZoneId.systemDefault()).toInstant());
-			for (User futureCaducUser : userDaoService.findAllUsersWithDueDateBeforeAndDueDateAfterNow(futureCaducDate).getResultList()) {
+			for (User futureCaducUser : userDaoService.findAllUsersWithDueDateBeforeAndDueDateAfterNow(futureCaducLocalDate).getResultList()) {
 				if (cardActionMessage.getUserTypes().contains(futureCaducUser.getUserType()) &&
                     cardDaoService.countfindCardsByEppnEqualsAndEtatIn(futureCaducUser.getEppn(), Arrays.asList(new Card.Etat[]{Card.Etat.ENABLED}))>0) {
 					// already prevent ?

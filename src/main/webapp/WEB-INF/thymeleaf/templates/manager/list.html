@@ -52,7 +52,7 @@
                 <table class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th data-type="html"><input id="selectall" type="checkbox"></th>
+                        <th data-type="html"><input id="selectall" type="checkbox" th:if="${managePermission}"></th>
                         <th class="hidden">id</th>
                         <th>
                             <a class="sorting" sd:pagination-sort="etat">
@@ -75,7 +75,11 @@
                         <th class="centerCell hidden-xs hidden-sm hidden-md">Dif Photo</th>
                         <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg">ESC</th>
                         <th class="centerCell hidden-xs hidden-sm">Editable</th>
-                        <th class="centerCell hidden-xs hidden-sm">Livraison</th>
+                        <th class="centerCell hidden-xs hidden-sm">
+                            <a class="sorting" sd:pagination-sort="deliveredDate">
+                                Livraison
+                            </a>
+                        </th>
                         <th class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg">
                             <a class="sorting" sd:pagination-sort="nbCards">
                                 Nb Cartes
@@ -91,9 +95,21 @@
                                 Modificateur
                             </a>
                         </th>
-                        <th class="hidden-xs hidden-sm hidden-md">Adresse</th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">Paiement</th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">Motif</th>
+                        <th class="hidden-xs hidden-sm hidden-md">
+                            <a class="sorting" sd:pagination-sort="address">
+                                Adresse
+                            </a>
+                        </th>
+                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
+                            <a class="sorting" sd:pagination-sort="payCmdNum">
+                                Paiement
+                            </a>
+                        </th>
+                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
+                            <a class="sorting" sd:pagination-sort="motifDisable">
+                                Motif
+                            </a>
+                        </th>
                         <th class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
                             <a class="sorting" sd:pagination-sort="requestDate">
                                 Demande
@@ -114,7 +130,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="card : ${cards}">
-                        <td><input th:value="${card.id}" name="case" type="checkbox" class="case"/></td>
+                        <td><input th:value="${card.id}" name="case" type="checkbox" class="case" th:if="${managePermission}"/></td>
                         <td class="hidden" th:text="${card.id}"></td>
                         <td class="etat centerCell">
                             <span th:text="#{|card.label.${card.etat}|}" class="label" th:classappend="${'label-' + #strings.toLowerCase(card.etat)}"/>
@@ -149,10 +165,10 @@
                         <td class="hidden-xs hidden-sm hidden-md" th:text="${card.etatEppn}"></td>
                         <td class="hidden-xs hidden-sm hidden-md" th:text="${card.address}"></td>
                         <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <span th:classappend="${!#strings.isEmpty(card.payCmdNum) ? 'glyphicon-ok text-success' : 'glyphicon-remove text-danger'}" class="glyphicon"></span>
+                            <span th:unless="${#strings.isEmpty(card.payCmdNum)}" class="glyphicon glyphicon-ok text-success"></span>
                         </td>
                         <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <span th:text="${card.motifDisable}" th:if="${!#strings.isEmpty(card.motifDisable)}"/>
+                            <span th:text="#{|user.motif.${card.motifDisable}|}" th:if="${!#strings.isEmpty(card.motifDisable)}"/>
                         </td>
                         <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
                             <span th:text="${#temporals.format(card.requestDate, 'dd/MM/yy HH:mm')}" th:if="${card.requestDate != null}"/>

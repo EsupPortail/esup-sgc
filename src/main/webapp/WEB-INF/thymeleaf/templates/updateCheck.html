@@ -1,0 +1,15 @@
+<!-- Exemple : src/main/resources/templates/manager/card-show.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div id="cardShow">
+    <div class="item" style="width: 100%; background-color: #ede6b4; padding:20px; font-size: 15px; text-align: left;">
+        <h1 th:text="${card.displayName}"></h1>
+        Carte à jour depuis le :<br/><br/>
+        <b>
+            <span th:text="${#temporals.format(card.lastEncodedDate, 'dd/MM/yyyy')}"></span>
+        </b>
+    </div>
+</div>
+</body>
+</html>

@@ -22,10 +22,10 @@
                                     <th:block th:each="cardId : ${cardIds}">
                                         <input type="hidden" name="listeIds" th:value="${cardId}" />
                                     </th:block>
-                                    <th:block th:if="${actionMessages[etatAvailable] != null and etatAvailable != 'REQUEST_CHECKED' and etatAvailable != 'PRINTED' and etatAvailable != 'IN_PRINT' and etatAvailable != 'DESTROYED'}">
+                                    <th:block th:if="${!#lists.isEmpty(actionMessages.get(etatAvailable)) and etatAvailable.name() != 'REQUEST_CHECKED' and etatAvailable.name() != 'PRINTED' and etatAvailable.name() != 'IN_PRINT' and etatAvailable.name() != 'DESTROYED'}">
                                         <button class="btn btn-success btn-block"
                                             th:attr="data-target='#commentEtat_' + ${j.index}, data-toggle='modal', type='button', id=${etatAvailable + 'Btn'}">
-                                            <span th:text="#{manager.action.${etatInit}-${etatAvailable}}"></span>
+                                            <span th:text="#{|manager.action.${etatInit}-${etatAvailable}|}"></span>
                                         </button>
                                         <div class="modal fade" th:id="'commentEtat_' + ${j.index}">
                                             <div class="modal-dialog">
@@ -39,11 +39,11 @@
                                                         <div class="form-group">
                                                             <textarea class="form-control" th:id="'comment_' + ${j.index}"
                                                                 name="comment" rows="5"
-                                                                th:text="${#lists.first(actionMessages[etatAvailable])?.message}"></textarea>
+                                                                th:text="${actionMessages.get(etatAvailable).get(0)?.message}"></textarea>
                                                         </div>
                                                         <button class="btn btn-success btn-block"
                                                             th:id="${etatAvailable}">
-                                                            <span th:text="#{manager.action.${etatInit}-${etatAvailable}}"></span>
+                                                            <span th:text="#{|manager.action.${etatInit}-${etatAvailable}|}"></span>
                                                         </button>
                                                         <h4>Messages prédéfinis</h4>
                                                         <div class="panel-default">
@@ -56,7 +56,7 @@
                                                             </div>
                                                             <div class="panel-collapse well collapse" th:id="'msgChoice_' + ${j.index}">
                                                                 <ul>
-                                                                    <li th:each="msg, loop : ${actionMessages[etatAvailable]}">
+                                                                    <li th:each="msg, loop : ${actionMessages.get(etatAvailable)}">
                                                                         <button class="btn btn-default btn-xs" type="button">
                                                                             <span aria-hidden="true" th:id="'msg_' + ${j.index} + '_' + ${loop.index}"
                                                                                 class="glyphicon glyphicon-edit"></span>
@@ -75,14 +75,14 @@
                                             </div>
                                         </div>
                                     </th:block>
-                                    <th:block th:unless="${actionMessages[etatAvailable] != null and etatAvailable != 'REQUEST_CHECKED' and etatAvailable != 'PRINTED' and etatAvailable != 'IN_PRINT' and etatAvailable != 'DESTROYED'}">
+                                    <th:block th:unless="${!#lists.isEmpty(actionMessages.get(etatAvailable)) and etatAvailable.name() != 'REQUEST_CHECKED' and etatAvailable.name() != 'PRINTED' and etatAvailable.name() != 'IN_PRINT' and etatAvailable.name() != 'DESTROYED'}">
                                         <button th:id="${etatAvailable + 'Btn'}" class="btn btn-success btn-block" type="submit">
                                             <span th:text="#{|manager.action.${etatInit}-${etatAvailable}|}"></span>
                                         </button>
                                     </th:block>
                                 </form>
                             </div>
-                            <th:block th:if="${etatInit == 'NEW' or etatInit == 'RENEWED'}">
+                            <th:block th:if="${etatInit.name() == 'NEW' or etatInit.name() == 'RENEWED'}">
                                 <form th:action="@{/manager/retouche}" method="post" id="retoucheForm">
                                     <th:block th:each="cardId : ${cardIds}">
                                         <input type="hidden" name="listeIds" th:value="${cardId}" />

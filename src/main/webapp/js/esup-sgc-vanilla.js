@@ -1797,7 +1797,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			  if (request.status >= 200 && request.status < 400) {
 				  var message = this.response;
 					if (message && message.length) {
-						escrCard.parentNode.nextSibling.innerHTML = message;
+						escrCard.parentNode.parentNode.getElementsByClassName("getEscrCardDiv")[0].innerHTML = message;
 					}
 			  }
 			};

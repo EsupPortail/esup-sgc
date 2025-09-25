@@ -25,7 +25,7 @@ import java.util.*;
 @Service
 public class CardDaoService {
 
-    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire", "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate", "dueDate", "etatEppn");
+    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire", "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate", "dueDate", "etatEppn", "deliveredDate", "motifDisable", "payCmdNum");
 
     private static final Logger log = LoggerFactory.getLogger(CardDaoService.class);
 
@@ -142,7 +142,7 @@ public class CardDaoService {
         if (desfireId == null || desfireId.length() == 0) throw new IllegalArgumentException("The desfireId argument is required");
         if (appName == null || appName.length() == 0) throw new IllegalArgumentException("The appName argument is required");
         EntityManager em = entityManager;
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o JOIN o.desfireIds d WHERE key(d) = :appName AND d.id = :desfireId");
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o JOIN o.desfireIds d WHERE key(d) = :appName AND value(d) = :desfireId");
         TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
         q.setParameter("appName", appName);
         q.setParameter("desfireId", desfireId);

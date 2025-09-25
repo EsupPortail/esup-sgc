@@ -6,7 +6,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{./layouts/user.html}">
     >
-<div layout:fragment="content">
+<div layout:fragment="content" th:if="${user!= null}">
     <h2>Informations Carte</h2>
     <div th:if="${message != null}">
         <div class="alert alert-danger">
@@ -109,16 +109,25 @@
                                 Une erreur est survenue lors de la synchronisation de votre compte avec la plateforme Crous/Izly.
                                 <br/>Cette erreur a comme libellé : <b th:text="${user.crousError}"></b>
                                 <br/>
-                                Cette erreur peut avoir plusieurs origines [...]
+                                Cette erreur peut avoir plusieurs origines : vous avez peut-être demandé à clôturer votre <a href="https://mon-espace.izly.fr">compte au niveau de l'espace
+                                Crous/Izly</a> par exemple.
+                                <br/>
+                                Ce message d'erreur peut aussi indiquer, si vous êtes étudiant, que les données, issues d'un autre établissement dans lequel vous êtes également inscrit,
+                                sont, au niveau du CROUS/IZLY, prioritaires à celles proposées par notre établissement.
+                                <i>"Le compte a un rne prioritaire qui est différent du rne proposé"</i>.
+                                <br/>
+                                Aussi
                                 <ul>
                                     <li th:if="${!user.crous}">
                                         Vous pouvez retenter de réactiver le crous via
                                         <button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#crousCollapse">cette même interface</button>
                                     </li>
                                     <li>Si vous n'utilisez pas les services Crous/Izly, cette erreur peut ne pas vous poser de problème.</li>
-                                    <li>Si cette situation pose problème [...] <a href="https://help.izly.fr">https://help.izly.fr</a></li>
+                                    <li>Si cette situation pose problème car vous souhaitez utiliser les services Crous/Izly avec votre compte et votre carte, vous pouvez contacter le
+                                        Crous/Izly via <a href="https://help.izly.fr">https://help.izly.fr</a></li>
                                     <li th:if="${user.crous}">
-                                        Si elle empêche l'activation/désactivation des autres services de la carte, vous pouvez désactiver cette synchronisation avec la plateforme Crous/Izly via le bouton ci-dessous [...]
+                                        Si elle empêche l'activation/désactivation des autres services de la carte, vous pouvez désactiver cette synchronisation avec la plateforme Crous/Izly via le bouton ci-dessous
+                                        (vous pourrez réactiver l'option Crous/Izly par la suite via cette même interface).
                                     </li>
                                 </ul>
                             </div>
@@ -128,7 +137,9 @@
                                 </form>
                             </th:block>
                             <th:block th:if="${user.crousError == 'Le compte est cloturé' or user.crousError == 'Account is closed' or user.crousError == 'Le compte est cloturé sur izly'}">
-                                <div>Votre compte CROUS/IZLY est ici clôturé [...]</div>
+                                <div>Votre compte CROUS/IZLY est ici clôturé (suite à une inactivité de celui-ci ou suite à votre demande auprès des services du CROUS par exemple) et vous
+                                    pouvez demander depuis cette interface à le "déclôturer" pour
+                                    pouvoir à nouveau l'utiliser.</div>
                                 <form th:action="@{/user/unclose}" method="post" class="form-horizontal"
                                       onsubmit="return confirm('Vous confirmez vouloir voir votre compte CROUS/IZLY être déclôturé ?');">
                                     <button type="submit" class="btn btn-warning">Déclôturer mon compte CROUS/IZLY</button>
@@ -162,7 +173,7 @@
                             <tbody>
                                 <tr th:each="transac : ${payboxList}">
                                     <td th:text="${#temporals.format(transac.transactionDate, 'dd/MM/yyyy HH:mm:ss')}"></td>
-                                    <td th:text="${transac.montant / 100} + ' €'"></td>
+                                    <td th:text="${transac.montantInt / 100} + ' €'"></td>
                                     <td th:text="${transac.erreur == '00000' ? 'PAYE' : 'NON PAYE'}"></td>
                                 </tr>
                             </tbody>
@@ -229,10 +240,10 @@
                                         <!-- Photo et infos carte -->
                                         <img class="img-thumbnail center col-lg-3" th:src="@{/user/photo/{id}(id=${card.id})}"/>
                                         <dl class="col-lg-9">
-                                            <th:block th:unless="${#strings.isEmpty(crousSmartCards.get(card)?.idZdc)}">
+                                            <th:block th:unless="${card.crousSmartCard == null}">
                                                 <dt>N° Crous :</dt>
-                                                <dd th:text="${crousSmartCards.get(card).idZdc}"></dd>
-                                                <th:block th:if="${card.crousError}">
+                                                <dd th:text="${card.crousSmartCard.idZdc}"></dd>
+                                                <th:block th:unless="${#strings.isEmpty(card.crousError)}">
                                                     <dt class="dl-horizontal col-lg-5"><span class="badge alert-danger">!</span> Erreur Crous/Izly :</dt>
                                                     <dd th:text="${card.crousError}"></dd>
                                                 </th:block>

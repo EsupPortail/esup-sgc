@@ -60,6 +60,8 @@ public class CrousErrorLog {
     private EsupSgcOperation esupSgcOperation;
     
     private String crousUrl;
+
+    Integer tryCount = 1;
     
     public Long getCardId() {
     	if(card!=null) {
@@ -208,5 +210,13 @@ public class CrousErrorLog {
 
 	public void setCrousUrl(String crousUrl) {
         this.crousUrl = crousUrl;
+    }
+
+    public Integer getTryCount() {
+        return this.tryCount;
+    }
+
+    public void setTryCount(Integer tryCount) {
+        this.tryCount = tryCount;
     }
 }

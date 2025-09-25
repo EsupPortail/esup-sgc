@@ -1,5 +1,10 @@
 package org.esupportail.sgc.dao;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.tools.SqlDistinctHackUtils;
@@ -8,12 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -374,10 +374,11 @@ public class UserDaoService {
         return em.createQuery("SELECT o FROM User o", User.class);
     }
 
-    public TypedQuery<User> findAllUsersWithDueDateBeforeAndDueDateAfterNow(Date date) {
+    public TypedQuery<User> findAllUsersWithDueDateBeforeAndDueDateAfterNow(LocalDateTime date) {
         EntityManager em = entityManager;
-        TypedQuery<User> q = em.createQuery("SELECT o FROM User o WHERE dueDate < :date and dueDate > now()", User.class);
+        TypedQuery<User> q = em.createQuery("SELECT o FROM User o WHERE dueDate < :date and dueDate > :now", User.class);
         q.setParameter("date", date);
+        q.setParameter("now", LocalDateTime.now());
         return q;
     }
 

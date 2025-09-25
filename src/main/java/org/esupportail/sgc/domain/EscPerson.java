@@ -94,6 +94,7 @@ public class EscPerson {
 				"id=" + id +
 				", eppn='" + eppn + '\'' +
 				", identifier='" + identifier + '\'' +
+				", fullName='" + fullName + '\'' +
 				", personOrganisationUpdateViews=" + personOrganisationUpdateViews +
 				'}';
 	}

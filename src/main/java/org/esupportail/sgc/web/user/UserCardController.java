@@ -317,7 +317,6 @@ public class UserCardController {
 		uiModel.addAttribute("displayVirtualCard", StringUtils.hasLength(appliConfigService.getBmpCardCommandVirtual()));
 		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
         uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
-        uiModel.addAttribute("crousSmartCards", crousSmartCardDaoService.getCrousSmartCards(user));
 		log.trace(stopWatch.prettyPrint());
 
         Map<Long, List<StepDisplay>> stepsMap = new HashMap<>();

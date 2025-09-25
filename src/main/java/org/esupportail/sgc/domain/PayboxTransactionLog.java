@@ -131,4 +131,8 @@ public class PayboxTransactionLog {
 	public void setSignature(String signature) {
         this.signature = signature;
     }
+
+    public int getMontantInt() {
+        return Integer.parseInt(this.montant);
+    }
 }

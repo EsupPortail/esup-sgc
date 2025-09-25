@@ -206,6 +206,10 @@ public class Card {
 
     @Column
     private String printerEppn;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "csn", referencedColumnName = "uid", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CrousSmartCard crousSmartCard;
 	
 	@PreUpdate
 	@PrePersist
@@ -216,6 +220,9 @@ public class Card {
 		}
         if(StringUtils.isNotEmpty(csn)) {
             fullText += csn + " " + getReverseCsn() + " " + getDecimalCsn() + " " + getDecimalReverseCsn() + " ";
+        }
+        if(getCrousSmartCard() != null) {
+            fullText += getCrousSmartCard().getIdZdc() + " ";
         }
 		fullText += recto1Printed + " ";
 		fullText += recto2Printed + " ";
@@ -750,7 +757,11 @@ public class Card {
         return String.format("%s-%s-%s-%s-%s", escnHexa.substring(0, 8), escnHexa.substring(8, 12), escnHexa.substring(12, 16), escnHexa.substring(16, 20), escnHexa.substring(20, 32));
     }
 
-	public String toString() {
+    public CrousSmartCard getCrousSmartCard() {
+        return crousSmartCard;
+    }
+
+    public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

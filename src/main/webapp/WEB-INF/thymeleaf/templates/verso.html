@@ -1,0 +1,23 @@
+<!-- Exemple : src/main/resources/templates/manager/card-show.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div id="cardShow">
+    <div class="item" style="width: 100%; background-color: #ede6b4; padding:20px; font-size: 15px; text-align: left;">
+        <h1 th:text="${card.displayName}"></h1>
+        <b>
+            <span th:style="'color:' + (${card.etat.name()} == 'ENABLED' ? 'green' : 'red')">
+                <span th:text="#{|card.step.${card.etat}|}"></span>
+            </span><br/>
+            <span th:utext="${card.userAccount.verso1}"></span><br/>
+            <span th:utext="${card.userAccount.verso2}"></span><br/>
+            <span th:utext="${card.userAccount.verso3}"></span><br/>
+            <span th:utext="${card.userAccount.verso4}"></span><br/>
+            <span th:utext="${card.userAccount.verso5}"></span><br/>
+            <span th:utext="${card.userAccount.verso6}"></span><br/>
+            <span th:utext="${card.userAccount.verso7}"></span><br/>
+        </b>
+    </div>
+</div>
+</body>
+</html>

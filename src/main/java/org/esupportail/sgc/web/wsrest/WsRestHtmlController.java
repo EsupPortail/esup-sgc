@@ -74,20 +74,19 @@ public class WsRestHtmlController {
 			uiModel.addAttribute("steps", cardEtatService.getTrackingSteps());
 			uiModel.addAttribute("user", user);
 			uiModel.addAttribute("payboxList", payboxTransactionLogDaoService.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
+			uiModel.addAttribute("user", user);
+			uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
+			uiModel.addAttribute("displayVirtualCard", StringUtils.hasLength(appliConfigService.getBmpCardCommandVirtual()));
+			uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
+			uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
+			uiModel.addAttribute("livraison", appliConfigService.getModeLivraison());
+			Map<Long, List<StepDisplay>> stepsMap = new HashMap<>();
+			for(Card card : user.getCards()) {
+				List<StepDisplay> steps = userCardController.computeSteps(card);
+				stepsMap.put(card.getId(), steps);
+			}
+			uiModel.addAttribute("stepsMap", stepsMap);
 		}
-		uiModel.addAttribute("user", user);
-        uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
-        uiModel.addAttribute("crousSmartCards", crousSmartCardDaoService.getCrousSmartCards(user));
-        uiModel.addAttribute("displayVirtualCard", StringUtils.hasLength(appliConfigService.getBmpCardCommandVirtual()));
-        uiModel.addAttribute("displayFormParts", userService.displayFormParts(user, false));
-        uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
-        uiModel.addAttribute("livraison", appliConfigService.getModeLivraison());
-        Map<Long, List<StepDisplay>> stepsMap = new HashMap<>();
-        for(Card card : user.getCards()) {
-            List<StepDisplay> steps = userCardController.computeSteps(card);
-            stepsMap.put(card.getId(), steps);
-        }
-        uiModel.addAttribute("stepsMap", stepsMap);
 		return "templates/user/card-info";
 	}
 
@@ -95,20 +94,20 @@ public class WsRestHtmlController {
 	public String viewUserInfo(@PathVariable String eppn, Model uiModel) {
 		
         User user = userDaoService.findUser(eppn);
-        if(user != null){
-	        if(!user.getCards().isEmpty()){
-	        	for(Card cardItem : user.getCards()){
-	        		cardEtatService.updateEtatsAvailable4Card(cardItem);
-	        		cardItem.setIsPhotoEditable(cardEtatService.isPhotoEditable(cardItem));
-	        	}
-	        	uiModel.addAttribute("currentCard", user.getCards().get(0));
-	        	
-	        }
-	       
-        }
-        uiModel.addAttribute("user", user);
-        uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
-        uiModel.addAttribute("crousSmartCards", crousSmartCardDaoService.getCrousSmartCards(user));
+        if(user != null) {
+			if (!user.getCards().isEmpty()) {
+				for (Card cardItem : user.getCards()) {
+					cardEtatService.updateEtatsAvailable4Card(cardItem);
+					cardItem.setIsPhotoEditable(cardEtatService.isPhotoEditable(cardItem));
+				}
+				uiModel.addAttribute("currentCard", user.getCards().get(0));
+
+			}
+
+			uiModel.addAttribute("user", user);
+			uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
+
+		}
 		return "templates/manager/show";
 	}
 
