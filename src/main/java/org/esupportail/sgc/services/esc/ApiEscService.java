@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.esc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.esupportail.sgc.dao.CardDaoService;
@@ -146,7 +147,7 @@ public class ApiEscService extends ValidateService {
 			User user = userDaoService.findUser(eppn);
 			if (user.getEuropeanStudentCard() && enable) {
 				EscPerson escPerson = getEscPerson(eppn);
-				if (escPerson == null || escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList().isEmpty()) {
+				if (escPerson == null) {
 					postEscPerson(eppn);
 				} else {
 					updateEscPerson(eppn);
@@ -222,11 +223,20 @@ public class ApiEscService extends ValidateService {
 	}
 
 	protected void updateEscPerson(String eppn) {
-		EscPerson escPersonInEscr = escPersonDaoService.findEscPersonsByEppnEquals(eppn).getSingleResult();
+		EscPerson escPersonInEscr = null;
+		TypedQuery<EscPerson> escPersonInEscrQuery = escPersonDaoService.findEscPersonsByEppnEquals(eppn);
+		if(!escPersonInEscrQuery.getResultList().isEmpty()) {
+			escPersonInEscr = escPersonInEscrQuery.getResultList().get(0);
+		}
 		EscPerson escPersonGoal = computeEscPerson(eppn);
-		if(!escPersonInEscr.equals(escPersonGoal) && escPersonGoal !=null) {
+		if(escPersonInEscr==null || !escPersonInEscr.equals(escPersonGoal) && escPersonGoal !=null) {
+			if(escPersonInEscr==null) {
+				escPersonInEscr = escPersonGoal;
+				escPersonDaoService.persist(escPersonInEscr);
+			} else {
+				escPersonInEscr.updateWith(escPersonGoal);
+			}
 			String europeanPersonIdentifierInEsc =  escPersonInEscr.getIdentifier();
-			escPersonInEscr.updateWith(escPersonGoal);
 			String url = webUrl + "/persons/" + europeanPersonIdentifierInEsc;
 			HttpHeaders headers = this.getJsonHeaders();
 			HttpEntity entity = new HttpEntity(escPersonInEscr, headers);
