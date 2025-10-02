@@ -200,6 +200,11 @@ public class User {
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd@HH:mm:ss.SSSZ")
 	private LocalDateTime updateDate;
+
+	@Column(columnDefinition="TEXT")
+	private String updateComment;
+
+	private Integer nbResyncSuccessives = 0;
 	
 	@PreUpdate
 	@PrePersist
@@ -455,6 +460,14 @@ public class User {
 	public LocalDateTime getBirthday() {
         return this.birthday;
     }
+
+	public String getBirthdayAsString() {
+		//  AAAA-MM-JJ
+		if(birthday!=null) {
+			return String.format("%04d-%02d-%02d", birthday.getYear(), birthday.getMonthValue(), birthday.getDayOfMonth());
+		}
+		return "";
+	}
 
 	public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
@@ -900,6 +913,28 @@ public class User {
         this.updateDate = updateDate;
     }
 
+	public String getUpdateComment() {
+		return this.updateComment;
+	}
+
+	public void setUpdateComment(String updateComment) {
+		this.updateComment = updateComment;
+	}
+
+	public Integer getNbResyncSuccessives() {
+		return this.nbResyncSuccessives;
+	}
+
+	public void setNbResyncSuccessives(Integer nbResyncSuccessives) {
+		this.nbResyncSuccessives = nbResyncSuccessives;
+	}
+
+	public void incrementNbResyncSuccessives() {
+		if(nbResyncSuccessives == null) {
+			this.nbResyncSuccessives = 0;
+		}
+		this.nbResyncSuccessives++;
+	}
 
 	public String toString() {
         return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("cards").toString();

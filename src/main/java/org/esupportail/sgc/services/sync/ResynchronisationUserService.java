@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -172,6 +173,7 @@ public class ResynchronisationUserService {
 			
 			List<String> fieldNotEquals = dummyUser.getFieldNotEquals(user);
 			if(!fieldNotEquals.isEmpty() && (user.getDueDate() != null || dummyUser.getDueDate() != null)) {
+				LocalDateTime oldDueDate = user.getDueDate();
 				if(dummyUser.getDueDate() == null && user.getDueDate().isAfter(LocalDateTime.now())) {
 					// TODO : avec shib, quelle dueDate ??
 					log.warn(user.getEppn() + " has no more dueDate from sql/shib/ldap userInfoService (no more entry) "
@@ -196,7 +198,7 @@ public class ResynchronisationUserService {
 				}
 				
 				log.info(String.format("Synchronize of user %s is needed : %s is/are not synchronized.", eppn, fieldNotEquals));
-				userInfoService.setAdditionalsInfo(user, null);
+				userInfoService.setAdditionalsInfo(user, null, fieldNotEquals);
 				userDaoService.merge(user);
 				// we synchronize users with crous only if user had enable crous and had an email and had cards - same for europeanStudentCard
 				if(user.getEmail() != null && !user.getEmail().isEmpty() && cardDaoService.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.ENABLED, Etat.DISABLED, Etat.CADUC}))>0) {
@@ -215,8 +217,18 @@ public class ResynchronisationUserService {
 				log.debug("Synchronize of user " + eppn + " was needed : done.");
 				updated = true;
 				user.setUpdateDate(LocalDateTime.now());
+				String comment = "";
+				if(!fieldNotEquals.isEmpty()) {
+					comment = "Ces champs n'étaient pas synchronisés : " + String.join(", ", fieldNotEquals);
+				}
+				if(oldDueDate != null && user.getDueDate() != null && !oldDueDate.equals(user.getDueDate())) {
+					comment += String.format("La date de fin est passée de %s à %s", oldDueDate, user.getDueDate());
+				}
+				user.setUpdateComment(comment);
+				user.incrementNbResyncSuccessives();
 			} else {
 				log.trace("Synchronize of user " + eppn + " was not needed.");
+				user.setNbResyncSuccessives(0);
 			}
 		}
 		
@@ -242,7 +254,7 @@ public class ResynchronisationUserService {
 			}
 			// if card is a new (or rejected) request and is already out_of_date we canceled the request
 			if((Etat.NEW.equals(card.getEtat()) || Etat.REJECTED.equals(card.getEtat())) && user.getDueDate().isBefore(LocalDateTime.now())) {
-				SimpleDateFormat dateFormatterFr = new SimpleDateFormat("dd/MM/yyyy");
+				DateTimeFormatter dateFormatterFr = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 				cardEtatService.setCardEtat(card, Etat.CANCELED, "La date limite / de fin (" + dateFormatterFr.format(user.getDueDate()) + ") est dépassée, la demande de carte est annulée.", null, false, true);
 			}
 		}

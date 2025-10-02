@@ -8,15 +8,15 @@
     <title>Détail LogMail</title>
 </head>
 <body>
-<div layout:fragment="content">
+<div layout:fragment="content" th:if="${logmail != null}">
     <h2>Détail du LogMail</h2>
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
                 <th>Action message</th>
                 <td>
-                    <a th:href="@{/admin/actionmessages/{id}(id=${logmail.cardActionMessageId})}"
-                       th:text="${logmail.cardActionMessageId}"></a>
+                    <a th:href="@{/admin/actionmessages/{id}(id=${logmail.cardActionMessage?.id})}"
+                       th:text="${logmail.cardActionMessage?.id}"></a>
                 </td>
             </tr>
             <tr>

@@ -167,9 +167,15 @@ public class CardDaoService {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.desc(u.get("name")));
                     orders.add(criteriaBuilder.desc(u.get("firstname")));
-                }else if ("address".equals(sortFieldName)) {
+                } else if ("address".equals(sortFieldName)) {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.desc(u.get("address")));
+                } else if ("updateDate".equals(sortFieldName)) {
+                    Join<Card, User> u = c.join("userAccount");
+                    orders.add(criteriaBuilder.desc(u.get("updateDate")));
+                } else if ("nbResyncSuccessives".equals(sortFieldName)) {
+                    Join<Card, User> u = c.join("userAccount");
+                    orders.add(criteriaBuilder.desc(u.get("nbResyncSuccessives")));
                 }
             }
         } else {
@@ -186,6 +192,12 @@ public class CardDaoService {
                 } else if("address".equals(sortFieldName)) {
                     Join<Card, User> u = c.join("userAccount");
                     orders.add(criteriaBuilder.asc(u.get("address")));
+                } else if ("updateDate".equals(sortFieldName)) {
+                    Join<Card, User> u = c.join("userAccount");
+                    orders.add(criteriaBuilder.asc(u.get("updateDate")));
+                } else if ("nbResyncSuccessives".equals(sortFieldName)) {
+                    Join<Card, User> u = c.join("userAccount");
+                    orders.add(criteriaBuilder.asc(u.get("nbResyncSuccessives")));
                 }
             }
         }

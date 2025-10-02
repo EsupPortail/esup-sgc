@@ -1,38 +1,22 @@
 package org.esupportail.sgc.web.admin;
 
+import jakarta.annotation.Resource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.SgcHttpSession;
-import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.security.SgcHttpSessionsListenerService;
 import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.pool.factory.PoolingContextSource;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import jakarta.annotation.Resource;
-import javax.naming.ldap.LdapContext;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 @RequestMapping("/admin/javaperf")
 @Controller

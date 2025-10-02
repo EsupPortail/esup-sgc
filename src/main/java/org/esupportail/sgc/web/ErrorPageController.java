@@ -2,6 +2,7 @@ package org.esupportail.sgc.web;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,10 +34,12 @@ public class ErrorPageController {
         return "templates/uncaughtException";
     }
 
-    @RequestMapping("/resourceNotFound")
-    public String handle404(HttpServletRequest request, Model model) {
+    @RequestMapping(value="/resourceNotFound", produces = "text/html")
+    public String handle404(HttpServletRequest request, Model model, HttpServletResponse response) {
         String requestUri = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
         model.addAttribute("requestUri", requestUri);
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        response.setContentType("text/html");
         return "templates/resourceNotFound";
     }
 

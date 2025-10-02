@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -104,14 +102,34 @@ public class UserInfoService {
 		return dateTimeUTCsecFormatter;
 	}
 
+	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request) {
+		return setAdditionalsInfo(user, request, null);
+	}
 	
 	/**
 	 * Get and set userInfos from userInfoservices to user object
 	 * Return false if synchronize is set to false by userInfoservices computing
 	 */
-	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request) {
+	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request, List<String> fields2reinitialize) {
 		Map<String, String> userInfos = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER); 
 		userInfos.put("synchronize", "true");
+		/* Initialize fields to null for fields in list
+		 * Used when synchronize userInfo and some fields must be set to null if not present anymore
+		 */
+		if(fields2reinitialize != null) {
+			for(String field: fields2reinitialize) {
+				if("cnousReferenceStatut".equals(field)) {
+					userInfos.put("referenceStatut", null);
+				} else if("rneEtablissemnt".equals(field)) {
+					userInfos.put("supannEtablissement", null);
+				} else if("dueDate".equals(field)) {
+					userInfos.put("schacExpiryDate", null);
+				} else {
+					userInfos.put(field, null);
+				}
+			}
+		}
+
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
 			if(user.getEppn().matches(extUserInfoService.getEppnFilter())) {
 				userInfos.putAll(extUserInfoService.getUserInfos(user, request, userInfos));
@@ -166,6 +184,8 @@ public class UserInfoService {
 				if(userInfos.get(key) != null && !(userInfos.get(key)).isEmpty()) {
 					Long indice  = Long.valueOf(userInfos.get(key));
 					user.setIndice(indice);
+				} else {
+					user.setIndice(0L);
 				}
 			} else if("schacExpiryDate".equalsIgnoreCase(key)) {
 				LocalDateTime schacExpiryDate = parseDateUTCsec(userInfos.get(key));

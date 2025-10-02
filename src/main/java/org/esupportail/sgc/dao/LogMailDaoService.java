@@ -31,7 +31,7 @@ public class LogMailDaoService {
     @Resource
     LogMailRepository logMailRepository;
 
-    public Long countFindLogMails(CardActionMessage cardActionMessage, String eppn, Date date1, Date date2) {
+    public Long countFindLogMails(CardActionMessage cardActionMessage, String eppn, LocalDateTime date1, LocalDateTime date2) {
         EntityManager em = entityManager;
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LogMail AS o WHERE o.cardActionMessage=:cardActionMessage AND o.eppn=:eppn AND o.logDate > :date1 AND o.logDate < :date2", Long.class);
         q.setParameter("cardActionMessage", cardActionMessage);
@@ -60,7 +60,7 @@ public class LogMailDaoService {
 
     public LogMail findLogMail(Long id) {
         if (id == null) return null;
-        return entityManager.find(LogMail.class, id);
+        return logMailRepository.findById( id).orElse(null);
     }
 
     public Page<LogMail> findLogMailEntries(LogMail searchLog, Pageable pageable) {
@@ -79,19 +79,7 @@ public class LogMailDaoService {
 
     @Transactional
     public void remove(LogMail logMail) {
-        if (this.entityManager.contains(logMail)) {
-            this.entityManager.remove(logMail);
-        } else {
-            LogMail attached = findLogMail(logMail.getId());
-            this.entityManager.remove(attached);
-        }
-    }
-
-    @Transactional
-    public LogMail merge(LogMail logMail) {
-        LogMail merged = this.entityManager.merge(logMail);
-        this.entityManager.flush();
-        return merged;
+        logMailRepository.delete(logMail);
     }
     
 }

@@ -32,6 +32,12 @@ import java.util.*;
 
 public class ApiCrousService {
 
+	public enum CrousResponseStatus {
+		OK,
+		KO,
+		KO_BLOCKED,
+	}
+
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private static Map<MotifDisable, String> motifsDisableCrousMapping = new HashMap<MotifDisable, String>();
@@ -117,7 +123,7 @@ public class ApiCrousService {
 		this.enable = enable;
 	}
 
-	public synchronized void authenticate() {
+	synchronized void authenticate() {
 		if(enable) {
 			if(StringUtils.isBlank(clientId)) {
 				String url = webUrl + "/v1/token";
@@ -181,15 +187,12 @@ public class ApiCrousService {
 	
 	private HttpHeaders getAuthHeaders() {		
 		HttpHeaders headers = getJsonHeaders();
-		if(authToken == null) {
-			authenticate();
-		}
 		headers.set("Authorization", authToken);
 		return headers;
 	}
-	
-	
-	public RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
+
+	@RequireCrousAuth
+	RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
 		if(enable) {
 			String url = webUrl + "/beforeizly/v1/rightholders/" + identifier;
 			HttpHeaders headers = this.getAuthHeaders();	
@@ -204,7 +207,8 @@ public class ApiCrousService {
 		return null;
 	}
 
-	public CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpClientErrorException {
+	@RequireCrousAuth
+	CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpClientErrorException {
 		Card card = cardDaoService.findCardByCsn(csn);
 		CrousSmartCard crousSmartCard = null;
 		if(enable && card!=null) {
@@ -224,15 +228,15 @@ public class ApiCrousService {
 		} 
 		return crousSmartCard;
 	}
-	
-	
-	
-	public boolean postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {	
+
+
+	@RequireCrousAuth
+	CrousResponseStatus postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		User user = userDaoService.findUser(eppn);
 		return postOrUpdateRightHolder(user, esupSgcOperation);
 	}
-	
-	protected boolean postOrUpdateRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {	
+
+	protected CrousResponseStatus postOrUpdateRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		if(enable) {
 			String eppn = user.getEppn();
 			String crousIdentifier = user.getCrousIdentifier();
@@ -255,7 +259,7 @@ public class ApiCrousService {
 				}
 				if(oldRightHolder.getDueDate()!=null && oldRightHolder.getDueDate().isBefore(LocalDateTime.now()) && newRightHolder.getDueDate().isBefore(LocalDateTime.now())) {
 					log.info("Not need to update RightHolder for " + crousIdentifier + " : dueDates have passed");
-					return true;
+					return CrousResponseStatus.OK;
 				}
 				if(!fieldsEqualsOrCanNotBeUpdate(newRightHolder, oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
 					if(!newRightHolder.getIdentifier().equals(oldRightHolder.getIdentifier())) {
@@ -287,13 +291,13 @@ public class ApiCrousService {
 					crousLogService.logErrorCrous(clientEx);
 					log.info("LOCKED : " + clientEx.getErrorBodyAsJson());
 					log.info("Getting Crous RightHolder failed : IZLY account is locked");
-					return false;
+					return CrousResponseStatus.KO;
 				} else {
 					throw clientEx;
 				} 
 			}
 		}
-		return true;
+		return CrousResponseStatus.OK;
 	}
 
 
@@ -313,15 +317,15 @@ public class ApiCrousService {
 			}
 		} else {
 			// NON ETUDIANT
-			if (newRightHolder.getBirthDate() == null) {
-				if (oldRightHolder.birthDate != null) {
-					log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate()));
+			if (StringUtils.isEmpty(newRightHolder.getSimpleBirthDate())) {
+				if (!StringUtils.isEmpty(oldRightHolder.getSimpleBirthDate())) {
+					log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getSimpleBirthDate(), oldRightHolder.getSimpleBirthDate()));
 					return false;
 				}
 			} 
 			// compare only day (without time) for birthday 
-			else if (!newRightHolder.getBirthDate().equals(oldRightHolder.getBirthDate())) {
-				log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate())); 
+			else if (!newRightHolder.getSimpleBirthDate().equals(oldRightHolder.getSimpleBirthDate())) {
+				log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getSimpleBirthDate(), oldRightHolder.getSimpleBirthDate()));
 				return false;
 			}
 
@@ -334,10 +338,10 @@ public class ApiCrousService {
 		return true;
 	}
 
-	private boolean postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	private CrousResponseStatus postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		if(user.getDueDate()!=null && user.getDueDate().isBefore(LocalDateTime.now())) {
 			log.info(String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
-			return false;
+			return CrousResponseStatus.KO_BLOCKED;
 		}
 		String url = webUrl + "/beforeizly/v1/rightholders";
 		HttpHeaders headers = this.getAuthHeaders();			
@@ -352,13 +356,13 @@ public class ApiCrousService {
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 				log.warn(user.getEppn() + " is locked in crous : " + clientEx.getResponseBodyAsString());
 				crousLogService.logErrorCrous(crousHttpClientErrorException);
-				return false;		
+				return CrousResponseStatus.KO;
 			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				if(Arrays.asList(new String[] {"-9", "-8", "-41", "-117", "-42"}).contains(getErrorCode(clientEx.getResponseBodyAsString()))) {
 					crousLogService.logErrorCrous(crousHttpClientErrorException);
 					log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
-					return false;
+					return CrousResponseStatus.KO;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when posting RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
@@ -366,10 +370,10 @@ public class ApiCrousService {
 			throw crousHttpClientErrorException;
 		}
 		log.info(user.getEppn() + " sent in CROUS as RightHolder");	
-		return true;
+		return CrousResponseStatus.OK;
 	}
 
-	private boolean updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	private CrousResponseStatus updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		User user = userDaoService.findUser(eppn);
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
@@ -377,7 +381,7 @@ public class ApiCrousService {
 		// hack crous étudiant doit rester étudiant - si on tente de changer - log d'erreur, on ne met pas à jour, et on n'envoie pas la carte dans le crous/izly (return false)
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate()) && !Long.valueOf(10).equals(rightHolder.getIdCompanyRate())) {
 			log.error(String.format("%s is student in crous/izly (IdCompagnYRate = 10) - IdCompagnYRate %s can't be updated to %s", eppn, oldRightHolder.getIdCompanyRate(), rightHolder.getIdCompanyRate()));
-			return false;
+			return CrousResponseStatus.KO_BLOCKED;
 		}
 		// hack crous tarifs spéciaux étudiants ~boursiers
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
@@ -402,7 +406,7 @@ public class ApiCrousService {
 					oldRightHolder.getDueDate(),
 					rightHolder.getDueDate()));
 			rightHolder.setDueDate(oldRightHolder.getDueDate());
-			return true;
+			return CrousResponseStatus.OK;
 		}
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {
@@ -413,13 +417,13 @@ public class ApiCrousService {
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 				log.warn(eppn + " is locked in crous : " + clientEx.getResponseBodyAsString());
 				crousLogService.logErrorCrous(crousHttpClientErrorException);
-				return false;
+				return CrousResponseStatus.KO;
 			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				if(Arrays.asList(new String[] {"-9", "-8", "-41", "-117", "-42"}).contains(getErrorCode(clientEx.getResponseBodyAsString()))) {
 					crousLogService.logErrorCrous(crousHttpClientErrorException);
 					log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
-					return false;
+					return CrousResponseStatus.KO;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
@@ -431,11 +435,11 @@ public class ApiCrousService {
 				log.info("NOT_ACCEPTABLE : " + clientEx.getResponseBodyAsString());
 				crousLogService.logErrorCrous(crousHttpClientErrorException);
 				log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
-				return false;
+				return CrousResponseStatus.KO;
 			}
 			throw crousHttpClientErrorException;
 		}
-		return true;
+		return CrousResponseStatus.OK;
 	}
 	
 
@@ -466,7 +470,7 @@ public class ApiCrousService {
 		rightHolder.setDueDate(dueDate);
 		rightHolder.setIdCompanyRate(user.getIdCompagnyRate());
 		rightHolder.setIdRate(user.getIdRate());
-		rightHolder.setBirthDate(user.getBirthday());
+		rightHolder.setSimpleBirthDate(user.getBirthdayAsString());
 		rightHolder.setIne(user.getSupannCodeINE());
 		rightHolder.setRneOrgCode(user.getRneEtablissement());
 		return rightHolder;
@@ -501,7 +505,8 @@ public class ApiCrousService {
         return Math.abs(Duration.between(realDueDate, duedateCrous).toMillis()) < 1000 * 60 * 5;
     }
 
-	public boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
+	@RequireCrousAuth
+	boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
 		if(enable) {
 			User user = userDaoService.findUser(card.getEppn());
 			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
@@ -586,7 +591,8 @@ public class ApiCrousService {
 		return true;
 	}
 
-	public boolean invalidateSmartCard(Card card) throws CrousHttpClientErrorException {
+	@RequireCrousAuth
+	boolean invalidateSmartCard(Card card) throws CrousHttpClientErrorException {
 		if(enable) {
 			User user = userDaoService.findUser(card.getEppn());
 			CrousSmartCard smartCard = card.getCrousSmartCard();
@@ -658,9 +664,10 @@ public class ApiCrousService {
 		}
 	    return errorPart;
 	}
-	
 
-	public void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpClientErrorException {
+
+	@RequireCrousAuth
+	void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpClientErrorException {
 		if(enable) {
 			String url = webUrl + "/beforeizly/v1/rightholders/" + patchIdentifier.getCurrentIdentifier();
 			HttpHeaders headers = this.getAuthHeaders();
@@ -687,7 +694,8 @@ public class ApiCrousService {
 		}
 	}
 
-	public List<CrousRule> getTarifRules(String numeroCrous, String rne) {
+	@RequireCrousAuth
+	List<CrousRule> getTarifRules(String numeroCrous, String rne) {
 		if(enable) {
 			HttpHeaders headers = this.getAuthHeaders();
 			HttpEntity entity = new HttpEntity(headers);
@@ -704,7 +712,8 @@ public class ApiCrousService {
 		return new ArrayList<CrousRule>();
 	}
 
-	protected void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	@RequireCrousAuth
+	void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		if(enable) {
 			User user = userDaoService.findUser(eppn);
 			String crousIdentifier = user.getCrousIdentifier();
@@ -729,7 +738,7 @@ public class ApiCrousService {
 		return dateFormat.format(new Date());
 	}
 
-	public boolean isEnabled() {
+	boolean isEnabled() {
 		return enable;
 	}
 }

@@ -47,18 +47,18 @@ public class CaducMailService {
 
 	public void sendMails2PreventCaduc() {
 		log.info("sendMails2PreventCaduc called");
-		Date now = new Date();
+		LocalDateTime now = LocalDateTime.now();
 		for(CardActionMessage cardActionMessage : cardActionMessageDaoService.findCardActionMessagesWithDateDelay4PreventCaduc()) {
-			LocalDateTime futureCaducLocalDate = LocalDateTime.now().plusDays(cardActionMessage.getDateDelay4PreventCaduc());
+			LocalDateTime futureCaducLocalDate = now.plusDays(cardActionMessage.getDateDelay4PreventCaduc());
 			for (User futureCaducUser : userDaoService.findAllUsersWithDueDateBeforeAndDueDateAfterNow(futureCaducLocalDate).getResultList()) {
 				if (cardActionMessage.getUserTypes().contains(futureCaducUser.getUserType()) &&
                     cardDaoService.countfindCardsByEppnEqualsAndEtatIn(futureCaducUser.getEppn(), Arrays.asList(new Card.Etat[]{Card.Etat.ENABLED}))>0) {
 					// already prevent ?
 					LocalDateTime realDueLocalDate = futureCaducUser.getDueDate();
 					LocalDateTime realLocalDate2Prevent = realDueLocalDate.minusDays(cardActionMessage.getDateDelay4PreventCaduc());
-					Date realDate2PreventMinusOne = Date.from(realLocalDate2Prevent.minusDays(1).atZone(ZoneId.systemDefault()).toInstant());
-					Date realDate2PreventPlusOne = Date.from(realLocalDate2Prevent.plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
-					if (realDate2PreventMinusOne.before(now) && realDate2PreventPlusOne.after(now) &&
+					LocalDateTime realDate2PreventMinusOne = realLocalDate2Prevent.minusDays(1);
+					LocalDateTime realDate2PreventPlusOne = realLocalDate2Prevent.plusDays(1);
+					if (realDate2PreventMinusOne.isBefore(now) && realDate2PreventPlusOne.isAfter(now) &&
                             logMailDaoService.countFindLogMails(cardActionMessage, futureCaducUser.getEppn(), realDate2PreventMinusOne, realDate2PreventPlusOne) == 0) {
 						String mailTo = StringUtils.isEmpty(cardActionMessage.getMailTo()) ? futureCaducUser.getEmail() : cardActionMessage.getMailTo();
 						cardService.sendMailCard(futureCaducUser, cardActionMessage, appliConfigService.getNoReplyMsg(), mailTo, appliConfigService.getListePpale(),

@@ -325,7 +325,7 @@
                                             <dd th:unless="${#strings.isEmpty(card.commentaire)}" th:text="${card.commentaire}"></dd>
                                             <th:block th:if="${!card.external}">
                                                 <dt th:if="${card.etat.name == 'ENABLED'}">
-                                                    <form th:action="@{/user/card-disable}" method="post">
+                                                    <form th:action="@{/user/card-disable}" method="get">
                                                         <input type="hidden" th:value="${card.id}" name="id"/>
                                                         <input type="submit" class="btn btn-danger" value="Désactiver"/>
                                                     </form>
@@ -347,7 +347,7 @@
                                                     <p>Veuillez modifier votre demande.</p>
                                                 </div>
                                                 <dt th:if="${card.etat.name == 'REJECTED'}">
-                                                    <form th:action="@{/user/rejectedCase}" method="post">
+                                                    <form th:action="@{/user/rejectedCase}" method="get">
                                                         <input type="hidden" th:value="${card.id}" name="id"/>
                                                         <input type="submit" class="btn btn-danger" value="Modifier"/>
                                                     </form>

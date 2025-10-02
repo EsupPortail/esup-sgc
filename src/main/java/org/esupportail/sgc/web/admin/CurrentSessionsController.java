@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -40,8 +41,8 @@ public class CurrentSessionsController {
 	@Resource
 	UserInfoService userInfoService;
 
-	@Resource
-	SgcHttpSessionsListenerService sgcHttpSessionsListenerService;
+	@Autowired
+	private ServletContext servletContext;
 
     @Resource
     UserDaoService userDaoService;
@@ -68,6 +69,7 @@ public class CurrentSessionsController {
 	@RequestMapping
 	public String getCurrentSessions(Model uiModel) {
 
+		SgcHttpSessionsListenerService sgcHttpSessionsListenerService = (SgcHttpSessionsListenerService) servletContext.getAttribute("sgcHttpSessionsListenerService");
 		Map<String, SgcHttpSession> allSessions = sgcHttpSessionsListenerService.getSessions();
 		List<String> sessions = new Vector<String>();
 		List<Object> principals = sessionRegistry.getAllPrincipals();

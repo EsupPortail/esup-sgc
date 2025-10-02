@@ -35,11 +35,11 @@ public class JsonObjectMapperTest {
     void shouldSerializeLocalDateTimeWithOffsetPattern() throws Exception {
         LocalDateTime date = LocalDateTime.of(2017, 1, 1, 0, 0, 0, 1_000_000); // 2017-01-01T00:00:00.001
         RightHolder rightHolder = new RightHolder();
-        rightHolder.setBirthDate(date);
+        rightHolder.setDueDate(date);
 
         String json = objectMapper.writeValueAsString(rightHolder);
 
-        assertTrue(json.contains("\"birthDate\":\"2017-01-01T00:00:00.001Z\""));
+        assertTrue(json.contains("\"dueDate\":\"2017-01-01T00:00:00.001Z\""));
     }
 
     @Test

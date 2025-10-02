@@ -38,7 +38,7 @@ public class RightHolder {
 
 	Long idRate;
 
-    LocalDateTime birthDate;
+    String simpleBirthDate;
 
 	String ine;
 
@@ -53,10 +53,6 @@ public class RightHolder {
 		return dueDate;
 	}
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
-	public LocalDateTime getBirthDate() {
-		return birthDate;
-	}
 
 	boolean checkEqualsVar(String varStringName, RightHolder other) {	
 		boolean isEquals = true;
@@ -206,10 +202,6 @@ public class RightHolder {
         this.idRate = idRate;
     }
 
-	public void setBirthDate(LocalDateTime birthDate) {
-        this.birthDate = birthDate;
-    }
-
 	public String getIne() {
         return this.ine;
     }
@@ -241,5 +233,13 @@ public class RightHolder {
 	public void setBlockingStatus(BlockingStatus blockingStatus) {
         this.blockingStatus = blockingStatus;
     }
+
+	public String getSimpleBirthDate() {
+		return simpleBirthDate;
+	}
+
+	public void setSimpleBirthDate(String simpleBirthDate) {
+		this.simpleBirthDate = simpleBirthDate;
+	}
 }
 

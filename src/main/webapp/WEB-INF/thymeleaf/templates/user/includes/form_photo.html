@@ -7,7 +7,7 @@
                 <div class="col-lg-5">
                     <div th:if="${isRejected}">
                         <div class="thumbnail">
-                            <img th:src="@{${rejectedPhotoUrl}}" />
+                            <img th:src="@{${'/user/photo/' + id}}" />
                             <div class="caption">
                                 <strong>Photo originale</strong>
                             </div>

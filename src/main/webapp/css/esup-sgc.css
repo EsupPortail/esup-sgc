@@ -16,6 +16,12 @@
 	}
 }
 
+@media (min-width: 1800px) and (max-width: 1999px) {
+	.hidden-xxl {
+		display: none !important;
+	}
+}
+
 body{
 	padding-bottom: 30px;
 }

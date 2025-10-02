@@ -85,5 +85,8 @@ public class CrousHttpClientErrorException extends Exception {
 	public HttpStatusCode getStatusCode() {
 		return httpClientErrorException.getStatusCode();
 	}
-	
+
+	public HttpClientErrorException getHttpClientErrorException() {
+		return httpClientErrorException;
+	}
 }

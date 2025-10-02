@@ -136,7 +136,7 @@ public class PayBoxService {
         payBoxForm.setTotal(montantAsCents);
         String callbackUrl = reponseServerUrl + "/payboxcallback";
         String effectuerUrl = reponseServerUrl + "/user/payboxOk";
-        String annulerUrl = reponseServerUrl + "/user/";
+        String annulerUrl = reponseServerUrl + "/user";
         payBoxForm.setCallbackUrl(callbackUrl);
         payBoxForm.setForwardAnnuleUrl(annulerUrl);
         payBoxForm.setForwardEffectueUrl(effectuerUrl);

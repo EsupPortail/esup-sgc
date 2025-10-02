@@ -36,6 +36,7 @@
                     <th><a class="sorting" sd:pagination-sort="eppn">Eppn</a></th>
                     <th><a class="sorting" sd:pagination-sort="subject">Sujet</a></th>
                     <th><a class="sorting" sd:pagination-sort="mailTo">Mail To</a></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -50,6 +51,11 @@
                     </td>
                     <td th:text="${logmail.subject}"></td>
                     <td th:text="${logmail.mailTo}"></td>
+                    <td>
+                        <a th:href="@{/admin/logmails/{id}(id=${logmail.id})}" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-eye-open"></span> Voir
+                        </a>
+                    </td>
                 </tr>
             </tbody>
         </table>

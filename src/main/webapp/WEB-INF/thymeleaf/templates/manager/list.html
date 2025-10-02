@@ -70,7 +70,7 @@
                             </a>
                         </th>
                         <th class="type centerCell hidden-xs hidden-sm">Type</th>
-                        <th th:if="${userPrefs.listNoImg != 'true' and userPrefs.listNoImg != 'on' and cards.size<=100}">Photo</th>
+                        <th th:if="${userPrefs.listNoImg != 'true' and userPrefs.listNoImg != 'on'}">Photo</th>
                         <th class="centerCell hidden-xs hidden-sm hidden-md">CROUS</th>
                         <th class="centerCell hidden-xs hidden-sm hidden-md">Dif Photo</th>
                         <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg">ESC</th>
@@ -85,7 +85,7 @@
                                 Nb Cartes
                             </a>
                         </th>
-                        <th class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg">
+                        <th class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl">
                             <a class="sorting" sd:pagination-sort="nbRejets">
                                 Nb Rejets
                             </a>
@@ -105,7 +105,7 @@
                                 Paiement
                             </a>
                         </th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
+                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl">
                             <a class="sorting" sd:pagination-sort="motifDisable">
                                 Motif
                             </a>
@@ -125,6 +125,16 @@
                                 Modification
                             </a>
                         </th>
+                        <th class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
+                            <a class="sorting" sd:pagination-sort="updateDate">
+                                Resynchro
+                            </a>
+                        </th>
+                        <th class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
+                            <a class="sorting" sd:pagination-sort="nbResyncSuccessives">
+                                Nb Resynchros
+                            </a>
+                        </th>
                         <th data-type="html">Voir</th>
                     </tr>
                     </thead>
@@ -140,9 +150,12 @@
                         <td class="type centerCell hidden-xs hidden-sm">
                             <span th:title="${card.userType}" class="badge" th:classappend="${'badge-' + #strings.toLowerCase(card.userType)}" th:text="${card.userType}"></span>
                         </td>
-                        <td class="photo centerCell" th:if="${userPrefs.listNoImg != 'true' and userPrefs.listNoImg != 'on' and cards.size<=100}">
+                        <td class="photo centerCell" th:if="${userPrefs.listNoImg != 'true' and userPrefs.listNoImg != 'on'}">
                             <a title="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
-                                <img th:if="${card.photoFile != null}" th:src="@{/manager/photo/{id}(id=${card.id})}" alt="Photo" style="max-width:40px;"/>
+                                <div class="lazy-photo"
+                                     th:attr="data-src=@{/manager/photo/{id}(id=${card.id})}"
+                                     style="width:40px; height:50px; background:#eee; display:inline-block;">
+                                </div>
                             </a>
                         </td>
                         <td class="centerCell hidden-xs hidden-sm hidden-md">
@@ -161,14 +174,14 @@
                             <span th:text="${#temporals.format(card.deliveredDate, 'dd/MM/yy HH:mm')}" th:if="${card.deliveredDate != null}"/>
                         </td>
                         <td class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg" th:text="${card.nbCards}"></td>
-                        <td class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg" th:text="${card.nbRejets}"></td>
+                        <td class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl" th:text="${card.nbRejets}"></td>
                         <td class="hidden-xs hidden-sm hidden-md" th:text="${card.etatEppn}"></td>
                         <td class="hidden-xs hidden-sm hidden-md" th:text="${card.address}"></td>
                         <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
                             <span th:unless="${#strings.isEmpty(card.payCmdNum)}" class="glyphicon glyphicon-ok text-success"></span>
                         </td>
-                        <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <span th:text="#{|user.motif.${card.motifDisable}|}" th:if="${!#strings.isEmpty(card.motifDisable)}"/>
+                        <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl">
+                            <span th:text="#{|user.motif.short.${card.motifDisable}|}" th:if="${!#strings.isEmpty(card.motifDisable)}"/>
                         </td>
                         <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
                             <span th:text="${#temporals.format(card.requestDate, 'dd/MM/yy HH:mm')}" th:if="${card.requestDate != null}"/>
@@ -178,6 +191,12 @@
                         </td>
                         <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
                             <span th:text="${#temporals.format(card.dateEtat, 'dd/MM/yy HH:mm')}" th:if="${card.dateEtat != null}"/>
+                        </td>
+                        <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
+                            <span th:text="${#temporals.format(card.user.updateDate, 'dd/MM/yy HH:mm')}" th:if="${card.user.updateDate != null}"/>
+                        </td>
+                        <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
+                            <span th:text="${card.user.nbResyncSuccessives}"/>
                         </td>
                         <td class="utilbox ">
                             <a class="btn btn-success" title="Show Card" alt="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
@@ -201,6 +220,39 @@
     </div>
 
     <div th:replace="~{templates/manager/includes/modals :: modals}"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const div = entry.target;
+                        const src = div.getAttribute("data-src");
+                        if (src) {
+                            const img = document.createElement("img");
+                            img.src = src;
+                            img.height = 50;
+                            img.width = 40;
+                            div.replaceWith(img);
+
+                            new Popover(img, {
+                                trigger: 'hover',
+                                placement: 'top',
+                                template: '<div class="popover" role="tooltip"><div class="popover-content"><img src="'+ src + '" height="188" width="150"/></div></div>'
+                            });
+
+                            obs.unobserve(div);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll(".lazy-photo").forEach(div => {
+                observer.observe(div);
+            });
+        });
+    </script>
+    
 </div>
 </body>
 </html>

@@ -157,6 +157,10 @@ public class ApiEscService extends ValidateService {
 	}
 
 	public EscPerson getEscPerson(String eppn) {
+		if(!enable) {
+			log.warn("Esc API not enabled");
+			return null;
+		}
 		String europeanPersonIdentifier = getEuropeanPersonIdentifier(eppn);
 		if(europeanPersonIdentifier == null) {
 			log.info("No europeanPersonIdentifier retrieved for " + eppn);

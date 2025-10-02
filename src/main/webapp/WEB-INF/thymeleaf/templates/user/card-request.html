@@ -3,13 +3,13 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{./layouts/user.html}">
-<div layout:fragment="content" id="requestDiv" th:if="${user!=null}">
+<div layout:fragment="content" id="requestDiv" th:if="${user!=null}" th:with="isRejected=${isRejected ?: false}">
+
     <script type="text/javascript">
-        var isRejected = "[[${(isRejected ?: false)}]]";
-        var rejectedPhotoUrl = "[[@{/user/photo/} + ${id != null ? id : ''}]]";
+        var isRejected = [[${isRejected}]];
         var defaultPhotoUrl = "[[${requestUserIsManager ? '/manager/photo?eppn=' + user.eppn : '/user/photo'}]]";
         var defaultPhotoMd5 = "[[${defaultPhotoMd5}]]";
-        var isISmartPhone = "[[${isISmartPhone}]]";
+        var isISmartPhone = [[${isISmartPhone}]];
         var photoSizeMax = "[[${photoSizeMax}]]";
     </script>
 

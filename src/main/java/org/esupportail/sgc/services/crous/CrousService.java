@@ -25,7 +25,7 @@ public class CrousService extends ValidateService {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Resource
-	AuthApiCrousService authApiCrousService;
+	ApiCrousService apiCrousService;
 	
 	@Resource
 	CrousLogService crousLogService;
@@ -45,14 +45,14 @@ public class CrousService extends ValidateService {
 	@Override
 	public void validateInternal(Card card) {
 		User user = userDaoService.findUser(card.getEppn());
-		if(user.getCrous() && authApiCrousService.isEnabled()) {
+		if(user.getCrous() && apiCrousService.isEnabled()) {
 			if(this.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.ACTIVATE)) {
 				CrousSmartCard smartCard = card.getCrousSmartCard();
 				if(smartCard == null) {
 					throw new SgcRuntimeException("Card with csn " + card.getCsn() + " has not the CROUS/IZLY application encoded ?", null);
 				} else {
 					try {
-						if(authApiCrousService.validateSmartCard(card)) {
+						if(apiCrousService.validateSmartCard(card)) {
 							card.setCrousError("");
 						}
 					} catch(CrousHttpClientErrorException clientEx) {
@@ -68,10 +68,10 @@ public class CrousService extends ValidateService {
 	@Override
 	public void invalidateInternal(Card card) {
 		User user = userDaoService.findUser(card.getEppn());
-		if(user.getCrous() && authApiCrousService.isEnabled()) {
-			Boolean postOrUpdateRightHolderOk4invalication = false;
+		if(user.getCrous() && apiCrousService.isEnabled()) {
+			ApiCrousService.CrousResponseStatus postOrUpdateRightHolderOk4invalication = ApiCrousService.CrousResponseStatus.KO;
 			try {
-				postOrUpdateRightHolderOk4invalication = authApiCrousService.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.DESACTIVATE);
+				postOrUpdateRightHolderOk4invalication = apiCrousService.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.DESACTIVATE);
 			} catch(CrousHttpClientErrorException clientEx) {
 				if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) || HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 					// si compte non updatable car non créé, locké, ... on considère que c'est ok pour l'invalidation : pas besoin de la faire.
@@ -80,13 +80,13 @@ public class CrousService extends ValidateService {
 					throw new SgcRuntimeException("Exception calling api crous - crousService.invalidate " + clientEx, clientEx);
 				}
 			}
-			if(postOrUpdateRightHolderOk4invalication) {
+			if(ApiCrousService.CrousResponseStatus.OK.equals(postOrUpdateRightHolderOk4invalication)) {
 				CrousSmartCard smartCard = card.getCrousSmartCard();
 				if(smartCard == null) {
 					throw new SgcRuntimeException("Card with csn " + card.getCsn() + " has not the CROUS/IZLY application encoded ?", null);
 				} else {
 					try {
-						if(authApiCrousService.invalidateSmartCard(card)) {
+						if(apiCrousService.invalidateSmartCard(card)) {
 							card.setCrousError("");
 						}
 					} catch(CrousHttpClientErrorException clientEx) {
@@ -115,7 +115,7 @@ public class CrousService extends ValidateService {
 
 	public RightHolder getRightHolder(String identifier, String eppn) {
 		try {
-			return authApiCrousService.getRightHolder(identifier, eppn, EsupSgcOperation.GET);
+			return apiCrousService.getRightHolder(identifier, eppn, EsupSgcOperation.GET);
 		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				log.debug(String.format("RightHolder %s not found IN API CROUS", identifier, clientEx.getErrorBodyAsJson()));
@@ -135,7 +135,7 @@ public class CrousService extends ValidateService {
 		
 	public CrousSmartCard getCrousSmartCard(String csn) {
 		try {
-			return authApiCrousService.getCrousSmartCard(csn);
+			return apiCrousService.getCrousSmartCard(csn);
 		} catch(CrousHttpClientErrorException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				return null;
@@ -150,8 +150,12 @@ public class CrousService extends ValidateService {
 	public boolean postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) {		
 		User user = userDaoService.findUser(eppn);
 		try {
-			if(authApiCrousService.postOrUpdateRightHolder(eppn, esupSgcOperation)) {
+			ApiCrousService.CrousResponseStatus crousResponseStatus = apiCrousService.postOrUpdateRightHolder(eppn, esupSgcOperation);
+			if(ApiCrousService.CrousResponseStatus.OK.equals(crousResponseStatus)) {
 				user.setCrousError("");
+				return true;
+			} else if(ApiCrousService.CrousResponseStatus.KO.equals(crousResponseStatus)) {
+				log.warn("Error in crous api call for user " + eppn + " on " + esupSgcOperation.name() + " but we doesn't block the operation");
 				return true;
 			} else {
 				return false;
@@ -165,7 +169,7 @@ public class CrousService extends ValidateService {
 	
 	public void patchIdentifier(PatchIdentifier patchIdentifier, EsupSgcOperation esupSgcOperation) {
 		try {
-			authApiCrousService.patchIdentifier(patchIdentifier);
+			apiCrousService.patchIdentifier(patchIdentifier);
 		} catch(CrousHttpClientErrorException clientEx) {
 			List<User> users = userDaoService.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
 			if(!users.isEmpty()) {
@@ -178,7 +182,7 @@ public class CrousService extends ValidateService {
 	}
 
 	public List<CrousRule> getTarifRules(String numeroCrous, String rne) {
-		return authApiCrousService.getTarifRules(numeroCrous, rne);
+		return apiCrousService.getTarifRules(numeroCrous, rne);
 	}
 
 	public void uncloseAndResync(String eppn) {
@@ -196,7 +200,7 @@ public class CrousService extends ValidateService {
 	protected void unclose(String eppn, EsupSgcOperation esupSgcOperation) {
 		User user = userDaoService.findUser(eppn);
 		try {
-			authApiCrousService.unclose(eppn, esupSgcOperation);
+			apiCrousService.unclose(eppn, esupSgcOperation);
 			user.setCrousError("");
 		} catch(CrousHttpClientErrorException clientEx) {
 			crousLogService.logErrorCrousAsync(clientEx);
@@ -217,6 +221,6 @@ public class CrousService extends ValidateService {
 	}
 
 	public Boolean isEnabled() {
-		return authApiCrousService.isEnabled();
+		return apiCrousService.isEnabled();
 	}
 }

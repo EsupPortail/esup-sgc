@@ -1364,7 +1364,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 
-		if(typeof defaultPhotoMd5 != "undefined" && isRejected.length ==0){
+		if(typeof defaultPhotoMd5 != "undefined" && !isRejected){
 			cropper.img.src = defaultPhotoUrl;
 		}
 
@@ -1409,7 +1409,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	currentImg.setAttribute("id","image-preview");
 		    	var imageExif = document.getElementById('image-preview');
 		    	//hack iphone,iPad
-		    	if(isISmartPhone == "true" && orientation == "6"){
+		    	if(isISmartPhone && orientation == "6"){
 		    		cropper.rotateCW();
 		    	}
 		    	cropper.options.exportZoom = photoExportZoom;
@@ -1418,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	document.querySelector('#specimenCarte img#photo').setAttribute("src", image);
 		    	document.querySelectorAll('.ezcrop-image-data')[0].value=image;
 		    	//hack iphone,iPad
-		    	if(isISmartPhone == "true" && orientation == "6"){
+		    	if(isISmartPhone && orientation == "6"){
 		    		cropper.rotateCCW();
 		    	}
 			 });

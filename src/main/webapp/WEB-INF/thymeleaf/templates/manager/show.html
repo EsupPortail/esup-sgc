@@ -170,8 +170,17 @@
                                 <dd th:utext="${user.freeField6}"></dd>
                                 <dt>freeField7</dt>
                                 <dd th:utext="${user.freeField7}"></dd>
-                                <dt>mis à jour :</dt>
+                            </dl>
+                            <h3>
+                                Mise à jour
+                            </h3>
+                            <dl class="dl-horizontal displayWs">
+                                <dt>date de mise à jour</dt>
                                 <dd th:utext="${#temporals.format(user.updateDate, 'dd/MM/yyyy HH:mm')}"></dd>
+                                <dt>raison</dt>
+                                <dd th:utext="${user.updateComment}"></dd>
+                                <dt>nbre synchros successives</dt>
+                                <dd th:utext="${user.nbResyncSuccessives}"></dd>
                             </dl>
                             <th:block th:if="${managePermission}">
                                 <a class="btn btn-danger"

@@ -42,7 +42,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@RequestMapping("/user")
+@RequestMapping(path = {"/user", "/user/"})
 @Controller
 public class UserCardController {
 
@@ -65,6 +65,7 @@ public class UserCardController {
 
     @Resource
     UserDaoService userDaoService;
+
     @Autowired
     private CrousSmartCardDaoService crousSmartCardDaoService;
 
@@ -234,31 +235,43 @@ public class UserCardController {
 			PayBoxForm payBoxForm = payBoxService.getPayBoxForm(eppn, user.getEmail(), appliConfigService.getMontantRenouvellement());
 			uiModel.addAttribute("payBoxForm", payBoxForm);
 			uiModel.addAttribute("displayPayboxForm", true);
-			return  "user/card-payment";
+			return  "templates/user/card-payment";
 		} else {
 			return viewCardInfo(uiModel);
 		}
 	}
 	
-	@RequestMapping(value="/rejectedCase")
-	public String rejectedCardForm(@RequestParam("id") Long id, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
-		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
-		uiModel.addAttribute("id", id);
-		uiModel.addAttribute("isRejected", true);
-		return viewCardRequestForm(uiModel, userAgent);
+	@RequestMapping(value="/rejectedCase", method = RequestMethod.GET)
+	public String rejectedCardForm(Authentication auth, @RequestParam("id") Long id, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
+		String eppn = auth.getName();
+		Card card = cardDaoService.findCard(id);
+		if(card != null && card.getEppn().equals(eppn) && card.getEtat().equals(Etat.REJECTED)){
+			uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
+			uiModel.addAttribute("id", id);
+			uiModel.addAttribute("isRejected", true);
+			return viewCardRequestForm(uiModel, userAgent);
+		} else {
+			log.info("Aucune carte rejetée ({}) trouvée pour cet utilisateur {}");
+			return "redirect:/user";
+		}
 	}	
 	
-	@RequestMapping(value="/card-disable")
-	public String viewDisableCardForm(@RequestParam("id") Long id, Model uiModel) {
-		uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
-		uiModel.addAttribute("id", id);
-
-        return "templates/user/card-disable";
+	@RequestMapping(value="/card-disable", method = RequestMethod.GET)
+	public String viewDisableCardForm(Authentication auth, @RequestParam("id") Long id, Model uiModel) {
+		String eppn = auth.getName();
+		Card card = cardDaoService.findCard(id);
+		if(card != null && card.getEppn().equals(eppn)){
+			uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
+			uiModel.addAttribute("id", id);
+			return "templates/user/card-disable";
+		} else {
+			log.info("Aucune carte {} trouvée pour cet utilisateur {}");
+			return "redirect:/user";
+		}
 	}
 	
 	@RequestMapping(value="/disable", method = RequestMethod.POST)
-	public String disableCard(@RequestParam("id") Long id, @RequestParam(value="motif") MotifDisable motif, Model uiModel, final RedirectAttributes redirectAttributes) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	public String disableCard(Authentication auth, @RequestParam("id") Long id, @RequestParam(value="motif") MotifDisable motif, Model uiModel, final RedirectAttributes redirectAttributes) {
 		String eppn = auth.getName();
 		Card card = cardDaoService.findCard(id);
 		if(card != null && card.getEppn().equals(eppn)){
