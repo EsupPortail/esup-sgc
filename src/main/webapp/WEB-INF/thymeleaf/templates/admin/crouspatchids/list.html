@@ -1,0 +1,135 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/crouspatchids/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Patch identifiants CROUS</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Patch identifiants CROUS</h2>
+    <div th:if="${isInWorking}">
+        En cours ...
+    </div>
+    <div th:unless="${isInWorking}">
+        <div th:if="${havePatchIdentifiersToProceed}">
+            <form th:action="@{/admin/crouspatchids/patchIdentifiers}" method="post">
+                <button class="btn btn-danger"
+                        onclick="return confirm('Lancer le patch crous des identifiants');"
+                        title="patch identifiants crous" type="submit">
+                    patch identifiants crous
+                </button>
+            </form>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Patchs depuis un CSV</h5>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Le CSV attendu doit avoir une entête (la première ligne est ignorée) et les lignes suivantes doivent être de cette forme :
+                        <pre>ancien-identifiant;nouvel-identifiant;mail</pre>
+                        </p>
+                        <form th:action="@{/admin/crouspatchids/addCsvFile}" method="post" enctype="multipart/form-data" class="form-horizontal">
+                            <fieldset>
+                                <legend>Ajout d'un CSV Patch Identifier</legend>
+                                <input id="crouspatchids_out_file" name="file" required="required" type="file"/>
+                                <button type="submit" class="btn btn-success">Valider</button>
+                            </fieldset>
+                        </form>
+                        <ul>
+                            <li>Une fois le fichier CSV envoyé, les éléments sont copiés en base de données.</li>
+                            <li>On peut alors demander à procéder au patch des identifiants côté CROUS via le bouton "patch identifiants crous".</li>
+                            <li>Pour chaque entrée, on garde en mémoire le fait de savoir si le patch de l'identifiant crous a réussi ou non.</li>
+                            <li>Il est possible de retenter l'opération de patch tant que la procédure n'a pas réussi.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${crousIneAsIdentifier}" class="col-lg-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Patchs identifiants eppn-&gt;supannCodeINE (étudiants)</h5>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Depuis le dernier trimestre 2018/2019, le CNOUS demande l'usage de l'INE comme identifiant CROUS/IZLY pour les étudiants.
+                            Cela permet aux étudiants de conserver un seul et même compte durant leurs années d'études.
+                        </p>
+                        <p>
+                            Esup-SGC vous permet d'effectuer cette migration en générant ici les patchidentifiants à passer à l'API CROUS.
+                            Vous pourrez ensuite lancer la procédure via le bouton "patch identifiants crous".
+                        </p>
+                        <form th:action="@{/admin/crouspatchids/generatePatchIdentifiersIne}" method="post">
+                            <button class="btn btn-success" type="submit">
+                                Générer les patchidentifiants EPPN-&gt;INE
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Purges des 'patch identifiants'</h5>
+                </div>
+                <div class="panel-body">
+                    <form th:action="@{/admin/crouspatchids/deletePatchIdentifiants}" method="post">
+                        <button class="btn btn-warning" type="submit">
+                            Purge (suppression) des patchs identifiants stockés en base
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:unless="${#lists.isEmpty(crouspatchidentifiers.content)}">
+        <h3>Liste des patchs identifiants</h3>
+        <div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>Ancien identifiant</th>
+                    <th>Nouveau identifiant</th>
+                    <th>Mail</th>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="patchSuccess">Succès patch</a>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="patch : ${crouspatchidentifiers}">
+                    <td th:text="${patch.oldId}"></td>
+                    <td th:text="${patch.eppnNewId}"></td>
+                    <td th:text="${patch.mail}"></td>
+                    <td th:text="${patch.patchSuccess}"></td>
+                    <td>
+                        <form th:action="@{/admin/crouspatchids/{id}(id=${patch.id})}" th:method="delete" class="form-inline">
+                            <button class="btn btn-danger" type="submit"
+                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce patch identifiant ?');">
+                                <span class="glyphicon glyphicon-trash">Supprimer</span>
+                            </button>
+                        </form>
+                </tr>
+                </tbody>
+            </table>
+         <div class="text-center">
+             <nav>
+                    <div class="btn-group">
+                        <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                        <ul class="btn-group pagination" sd:pagination="full"></ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

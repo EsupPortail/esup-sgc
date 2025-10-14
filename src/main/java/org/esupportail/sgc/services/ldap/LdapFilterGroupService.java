@@ -59,7 +59,7 @@ public class LdapFilterGroupService implements GroupService {
 		
 		for(String ldapFilter: ldapFiltersGroups.keySet()) {
 			
-			String harcodedFilter = MessageFormat.format(memberSearchFilter, new String[] {eppn, ldapFilter});
+			String harcodedFilter = MessageFormat.format(memberSearchFilter, new Object[] {eppn, ldapFilter});
 			
 			List<String> dns = ldapTemplate.search(query().filter(harcodedFilter),
 					new ContextMapper<String>() {

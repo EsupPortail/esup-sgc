@@ -1,0 +1,170 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/crouserrorlogs/show.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Détail erreur CROUS</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>
+        <a th:href="@{'/manager?eppn=' + ${crouserrorlog.userEppn}}" th:text="${crouserrorlog.userEppn}"></a>
+    </h1>
+    <dl class="dl-horizontal">
+        <dt>Code</dt>
+        <dd th:text="${crouserrorlog.code}"></dd>
+        <dt>Message</dt>
+        <dd th:text="${crouserrorlog.message}"></dd>
+        <dt>Champ</dt>
+        <dd th:text="${crouserrorlog.field}"></dd>
+        <dt>Date</dt>
+        <dd th:text="${#temporals.format(crouserrorlog.date, 'dd/MM/yyyy HH:mm')}"></dd>
+        <dt>Bloquant</dt>
+        <dd th:text="${crouserrorlog.blocking}"></dd>
+        <dt>Opération CROUS</dt>
+        <dd th:text="${crouserrorlog.crousOperation}"></dd>
+        <dt>Opération ESUP-SGC</dt>
+        <dd th:text="${crouserrorlog.esupSgcOperation}"></dd>
+        <dt>URL CROUS</dt>
+        <dd th:text="${crouserrorlog.crousUrl}"></dd>
+    </dl>
+    <div class="row">
+        <div class="col-lg-3 well">
+            <h3 th:text="${crouserrorlog.userEppn}"></h3>
+            <span class="text-warning">[ESUP-SGC - correspond à ce que ESUP-SGC souhaite envoyer (enverrait) dans l'API CROUS pour cet EPPN]</span>
+            <div th:if="${esupSgcRightHolder != null}">
+                <dl>
+                    <dt>identifier</dt><dd th:text="${esupSgcRightHolder.identifier}"></dd>
+                    <dt>email</dt><dd th:text="${esupSgcRightHolder.email}"></dd>
+                    <dt>firstName</dt><dd th:text="${esupSgcRightHolder.firstName}"></dd>
+                    <dt>lastName</dt><dd th:text="${esupSgcRightHolder.lastName}"></dd>
+                    <dt>birthDate</dt><dd th:text="${esupSgcRightHolder.simpleBirthDate}"></dd>
+                    <dt>dueDate</dt><dd th:text="${esupSgcRightHolder.dueDate}"></dd>
+                    <dt>idCompanyRate</dt><dd th:text="${esupSgcRightHolder.idCompanyRate}"></dd>
+                    <dt>idRate</dt><dd th:text="${esupSgcRightHolder.idRate}"></dd>
+                    <dt>ine</dt><dd th:text="${esupSgcRightHolder.ine}"></dd>
+                    <dt>rneOrgCode</dt><dd th:text="${esupSgcRightHolder.rneOrgCode}"></dd>
+                    <dt>accountStatus</dt><dd th:text="${esupSgcRightHolder.accountStatus}"></dd>
+                    <dt>blockingStatus</dt><dd th:text="${esupSgcRightHolder.blockingStatus}"></dd>
+                </dl>
+            </div>
+            <div th:if="${esupSgcRightHolder == null}">
+                <span class="warning">Not Found</span>
+            </div>
+        </div>
+        <div class="col-lg-3 well">
+            <h3 th:text="${crouserrorlog.userEppn}"></h3>
+            <span class="text-warning">[CROUS - recherche sur eppn]</span>
+            <div th:if="${crousEppnRightHolder != null}">
+                <dl>
+                    <dt>identifier</dt><dd th:text="${crousEppnRightHolder.identifier}"></dd>
+                    <dt>email</dt><dd th:text="${crousEppnRightHolder.email}"></dd>
+                    <dt>firstName</dt><dd th:text="${crousEppnRightHolder.firstName}"></dd>
+                    <dt>lastName</dt><dd th:text="${crousEppnRightHolder.lastName}"></dd>
+                    <dt>birthDate</dt><dd th:text="${crousEppnRightHolder.simpleBirthDate}"></dd>
+                    <dt>dueDate</dt><dd th:text="${crousEppnRightHolder.dueDate}"></dd>
+                    <dt>idCompanyRate</dt><dd th:text="${crousEppnRightHolder.idCompanyRate}"></dd>
+                    <dt>idRate</dt><dd th:text="${crousEppnRightHolder.idRate}"></dd>
+                    <dt>ine</dt><dd th:text="${crousEppnRightHolder.ine}"></dd>
+                    <dt>rneOrgCode</dt><dd th:text="${crousEppnRightHolder.rneOrgCode}"></dd>
+                    <dt>accountStatus</dt><dd th:text="${crousEppnRightHolder.accountStatus}"></dd>
+                    <dt>blockingStatus</dt><dd th:text="${crousEppnRightHolder.blockingStatus}"></dd>
+                </dl>
+            </div>
+            <div th:if="${crousEppnRightHolderException != null}">
+                <span class="warning" th:text="${crousEppnRightHolderException}"></span>
+            </div>
+            <div th:if="${crousEppnRightHolder == null && crousEppnRightHolderException == null}">
+                <span class="warning">Not Found</span>
+            </div>
+        </div>
+        <div class="col-lg-3 well">
+            <h3 th:text="${crouserrorlog.userEmail}"></h3>
+            <span class="text-warning">[CROUS - recherche sur email]</span>
+            <div th:if="${crousEmailRightHolder != null}">
+                <dl>
+                    <dt>identifier</dt><dd th:text="${crousEmailRightHolder.identifier}"></dd>
+                    <dt>email</dt><dd th:text="${crousEmailRightHolder.email}"></dd>
+                    <dt>firstName</dt><dd th:text="${crousEmailRightHolder.firstName}"></dd>
+                    <dt>lastName</dt><dd th:text="${crousEmailRightHolder.lastName}"></dd>
+                    <dt>birthDate</dt><dd th:text="${crousEmailRightHolder.simpleBirthDate}"></dd>
+                    <dt>dueDate</dt><dd th:text="${crousEmailRightHolder.dueDate}"></dd>
+                    <dt>idCompanyRate</dt><dd th:text="${crousEmailRightHolder.idCompanyRate}"></dd>
+                    <dt>idRate</dt><dd th:text="${crousEmailRightHolder.idRate}"></dd>
+                    <dt>ine</dt><dd th:text="${crousEmailRightHolder.ine}"></dd>
+                    <dt>rneOrgCode</dt><dd th:text="${crousEmailRightHolder.rneOrgCode}"></dd>
+                    <dt>accountStatus</dt><dd th:text="${crousEmailRightHolder.accountStatus}"></dd>
+                    <dt>blockingStatus</dt><dd th:text="${crousEmailRightHolder.blockingStatus}"></dd>
+                </dl>
+            </div>
+            <div th:if="${crousEmailRightHolderException != null}">
+                <span class="warning" th:text="${crousEmailRightHolderException}"></span>
+            </div>
+            <div th:if="${crousEmailRightHolder == null && crousEmailRightHolderException == null}">
+                <span class="warning">Not Found</span>
+            </div>
+        </div>
+        <div class="col-lg-3 well" th:if="${crouserrorlog.userAccount.supannCodeINE != null}">
+            <h3 th:text="${crouserrorlog.userAccount.supannCodeINE}"></h3>
+            <span class="text-warning">[CROUS - recherche sur INE]</span>
+            <div th:if="${crousIneRightHolder != null}">
+                <dl>
+                    <dt>identifier</dt><dd th:text="${crousIneRightHolder.identifier}"></dd>
+                    <dt>email</dt><dd th:text="${crousIneRightHolder.email}"></dd>
+                    <dt>firstName</dt><dd th:text="${crousIneRightHolder.firstName}"></dd>
+                    <dt>lastName</dt><dd th:text="${crousIneRightHolder.lastName}"></dd>
+                    <dt>birthDate</dt><dd th:text="${crousIneRightHolder.simpleBirthDate}"></dd>
+                    <dt>dueDate</dt><dd th:text="${crousIneRightHolder.dueDate}"></dd>
+                    <dt>idCompanyRate</dt><dd th:text="${crousIneRightHolder.idCompanyRate}"></dd>
+                    <dt>idRate</dt><dd th:text="${crousIneRightHolder.idRate}"></dd>
+                    <dt>ine</dt><dd th:text="${crousIneRightHolder.ine}"></dd>
+                    <dt>rneOrgCode</dt><dd th:text="${crousIneRightHolder.rneOrgCode}"></dd>
+                    <dt>accountStatus</dt><dd th:text="${crousIneRightHolder.accountStatus}"></dd>
+                    <dt>blockingStatus</dt><dd th:text="${crousIneRightHolder.blockingStatus}"></dd>
+                </dl>
+            </div>
+            <div th:if="${crousIneRightHolderException != null}">
+                <span class="warning" th:text="${crousIneRightHolderException}"></span>
+            </div>
+            <div th:if="${crousIneRightHolder == null && crousIneRightHolderException == null}">
+                <span class="warning">Not Found</span>
+            </div>
+        </div>
+    </div>
+    <div class="row well danger" th:if="${crousEmailRightHolder != null and crousEmailRightHolder.identifier != esupSgcRightHolder.identifier}">
+        <h3>Modification/Migration de l'identifiant ...</h3>
+        <p>Vous avez ici la possibilité de changer l'identifiant du compte utilisateur pour qu'il corresponde à l'eppn ou ine ; ESUP-SGC pourra alors mettre à jour ce compte avec les informations qu'il a sur cet utilisateur.</p>
+        <p>Assurez-vous avant de procéder à cette modification que ce changement de compte ne pénalisera pas l'utilisateur (tarif étudiant, cnrs ...)</p>
+        <form th:action="@{'/admin/crouserrorlogs/' + ${crouserrorlog.id} + '/patchIdentifier'}" method="post" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-md-3">currentIdentifier</label>
+                <input class="col-lg-6" name="currentIdentifier" type="text" th:value="${crousEmailRightHolder.identifier}"/>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3">email</label>
+                <input class="col-lg-6" name="email" type="text" th:value="${crouserrorlog.userEmail}"/>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3">newIdentifier</label>
+                <input class="col-lg-6" name="newIdentifier" type="text" th:value="${esupSgcRightHolder.identifier}"/>
+            </div>
+            <div class="col-md-offset-3 col-md-9">
+                <input class="btn btn-danger" id="proceed" onclick="return confirm('Êtes-vous sûr de précéder à cette modification d\'identifiants ?');" type="submit" value="Valider"/>
+            </div>
+        </form>
+    </div>
+    <div class="row well danger">
+        <h3>Désactivation CROUS</h3>
+        <p>Dans certains cas particuliers, et même si l'utilisateur a demandé explicitement d'avoir le service CROUS d'activé, il est en fait préférable de désactiver le service CROUS pour cette carte / personne.</p>
+        <form th:action="@{'/admin/crouserrorlogs/' + ${crouserrorlog.id} + '/desactivateCrous'}" method="post" class="form-horizontal">
+            <div class="col-md-offset-3 col-md-9">
+                <input class="btn btn-danger" id="proceed" onclick="return confirm('Êtes-vous sûr ?');" type="submit" value="Désactiver l'option CROUS"/>
+            </div>
+        </form>
+    </div>
+    <a th:href="@{/admin/crouserrorlogs}" class="btn btn-default">Retour à la liste</a>
+</div>
+</body>
+</html>

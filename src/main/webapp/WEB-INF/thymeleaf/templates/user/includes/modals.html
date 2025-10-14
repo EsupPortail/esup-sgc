@@ -1,0 +1,82 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/modals.html -->
+<div th:fragment="modals">
+    <!-- Modal Règlement -->
+    <div class="modal fade" id="reglementCarte">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title">Règlement</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <div th:replace="~{templates/user/includes/reglement :: reglement}"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Prévisualisation carte -->
+    <div class="modal fade" id="previewCarte">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title">Prévisualisation de votre carte</h3>
+                </div>
+                <div class="modal-body">
+                    <div id="create-preview">
+                        <style>
+                            @media screen {
+                                #specimenCarte {
+                                    background: url([[${'/user/templatePhoto/masque/' + templateCard.id}]]);
+                                    line-height: 1;
+                                }
+                            }
+                            #specimenCarte * {
+                                -webkit-box-sizing: content-box;
+                                -moz-box-sizing: content-box;
+                                box-sizing: content-box;
+                            }
+                        </style>
+                        <style id="mainStyle">
+                            @media screen and (min-width: 451px) {
+                                [[${templateCard.cssStyle}]]
+                            }
+                            @media screen and (max-width: 450px) {
+                                [[${templateCard.cssMobileStyle}]]
+                            }
+                        </style>
+                        <div id="specimenCarte">
+                            <div id="left">
+                                <p id="recto1" th:utext="${user.recto1}"></p>
+                                <p id="recto2" th:utext="${user.recto2}"></p>
+                                <p id="recto3" th:utext="${user.recto3}"></p>
+                                <p id="recto4" th:utext="${user.recto4}"></p>
+                                <p id="recto5" th:utext="${user.recto5}"></p>
+                                <p id="recto6" th:utext="${user.recto6}"></p>
+                                <p id="recto7" th:utext="${user.recto7}"></p>
+                                <img alt="qrcode" id="qrcode" th:src="@{/user/templatePhoto/qrCode/{id}(id=${templateCard.id})}"/>
+                            </div>
+                            <div id="right">
+                                <img id="photo" th:src="@{/user/photo}"/>
+                                <img id="logo-ur" th:src="@{/user/templatePhoto/logo/{id}(id=${templateCard.id})}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="alert alert-warning">
+                        <p class="text-center">
+                            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true">&nbsp;</span>
+                            Vous devez changer ou recadrer votre photo si votre visage n'est pas assez visible sur la carte.
+                        </p>
+                        <button id="confirmPhoto" class="btn btn-danger btn-block"><strong>Confirmer ma photo</strong></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

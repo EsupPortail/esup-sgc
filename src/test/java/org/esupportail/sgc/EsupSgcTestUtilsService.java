@@ -3,13 +3,16 @@ package org.esupportail.sgc;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.persistence.TypedQuery;
+import jakarta.annotation.Resource;
+import jakarta.persistence.TypedQuery;
 
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +23,18 @@ public class EsupSgcTestUtilsService {
 	@Resource
 	LdapPersonService ldapPersonService;
 
-	@Value("${test.userinfo.eppn2test:}") 
-	String eppn2testFromConfig; 
+    @Resource
+    CardDaoService cardDaoService;
 
-	public String getEppnFromDb() {
+    @Resource
+    UserDaoService userDaoService;
+
+	@Value("${test.userinfo.eppn2test:}") 
+	String eppn2testFromConfig;
+
+    public String getEppnFromDb() {
 		String eppn2test = null;
-		List<String> eppns = User.findAllEppns();
+		List<String> eppns = userDaoService.findAllEppns();
 		if(!eppns.isEmpty()) {
 			eppn2test = eppns.get(0);
 		}
@@ -33,8 +42,8 @@ public class EsupSgcTestUtilsService {
 	}
 
 	public User getUserFromDb() {
-		if(User.countUsers()>0) {
-			return User.findAllUsersQuery().setMaxResults(1).getSingleResult();
+		if(userDaoService.countUsers()>0) {
+			return userDaoService.findAllUsersQuery().setMaxResults(1).getSingleResult();
 		}
 		return null;
 	}
@@ -56,7 +65,7 @@ public class EsupSgcTestUtilsService {
 	}
 
 	public Card getEncodedCardFromDb() {
-		TypedQuery<Card> cardQuery = Card.findCardsByEtatIn(Arrays.asList(Card.Etat.ENABLED)).setMaxResults(1);
+		TypedQuery<Card> cardQuery = cardDaoService.findCardsByEtatIn(Arrays.asList(Card.Etat.ENABLED)).setMaxResults(1);
 		if(cardQuery.getResultList().size()>0) {
 			return cardQuery.getSingleResult();
 		}

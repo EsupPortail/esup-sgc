@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.ac;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -11,11 +12,13 @@ import org.esupportail.sgc.services.fs.AccessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,7 +30,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	
 	final static String ENCODING_P2S = "ISO-8859-1";
 	
-	final static Date DATE_MAX = new Date(2037-1900, 11, 31);
+	final static LocalDateTime DATE_MAX = LocalDateTime.of(2037, 12, 31, 0, 0);
 	
 	public final static List<String> genericCartesLibelles = Arrays.asList(new String[] {"Exterieur", "Service"});
 	
@@ -40,6 +43,9 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	
 	@Resource
 	AppliConfigService appliConfigService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	public CsvExportSynchronicService(AccessService accessService) {
 		super();
@@ -108,7 +114,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	private String sgc2csv(Card card) {
 		ArrayList<String> fields = new ArrayList<String>();
 		
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		
 		fields.add(user.getSecondaryId());
 		fields.add(user.getName());	
@@ -139,10 +145,10 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	 * -> YYYY/MM/DD
 	 * @return
 	 */
-	private String formatDate(Date date) {
+	private String formatDate(LocalDateTime date) {
 		String dateFt = "";
 		if(date!=null) {
-			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 			dateFt = df.format(date);
 		}
 		return dateFt;
@@ -153,13 +159,13 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	 * -> YYYY/MM/DD
 	 * @return
 	 */
-	private String formatDate4Synchronic(Date date) {
+	private String formatDate4Synchronic(LocalDateTime date) {
 		String dateFt = "";
 		if(date!=null) {
-			if(date.after(DATE_MAX)) {
+			if(date.isAfter(DATE_MAX)) {
 				date = DATE_MAX;
 			}
-			SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd");
 			dateFt = df.format(date);
 		}
 		return dateFt;

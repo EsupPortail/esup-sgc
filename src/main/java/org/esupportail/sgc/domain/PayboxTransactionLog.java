@@ -1,26 +1,32 @@
 package org.esupportail.sgc.domain;
-import java.util.Date;
-import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
+import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord(finders = { "findPayboxTransactionLogsByIdtransEquals", "findPayboxTransactionLogsByReferenceEquals", "findPayboxTransactionLogsByEppnEquals" })
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Entity
 public class PayboxTransactionLog {
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+@SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
+    @Column(name = "id")
+    private Long id;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
+
     @DateTimeFormat(style = "MM")
-    private Date transactionDate;
+    private LocalDateTime transactionDate;
 
     private String eppn;
 
@@ -38,23 +44,95 @@ public class PayboxTransactionLog {
     private String signature;
 
     public String getMontantDevise() {
-        Double mnt = new Double(montant) / 100.0;
-        return mnt.toString();
+        double mnt = Double.parseDouble(montant) / 100.0;
+        return Double.toString(mnt);
     }
-    
-    public static List<Object[]> countNbPayboxByYearEtat() {
-        EntityManager em = PayboxTransactionLog.entityManager();
-        String sql = "SELECT CASE WHEN(DATE_PART('month', transaction_date)<7) "
-        		+ "THEN CONCAT(CAST(DATE_PART('year', transaction_date)-1 AS TEXT),'-',CAST(DATE_PART('year', transaction_date) AS TEXT)) "
-        		+ "ELSE CONCAT(CAST(DATE_PART('year', transaction_date) AS TEXT),'-',CAST(DATE_PART('year', transaction_date)+1 AS TEXT)) END AS Saison, CASE WHEN montant = '1' THEN '' ELSE 'FINALISE' END AS etat, count(*) FROM paybox_transaction_log "
-        		+ "WHERE reference IN (SELECT pay_cmd_num FROM card WHERE pay_cmd_num IS NOT NULL) GROUP BY Saison, etat UNION "
-        		+ "SELECT CASE WHEN(DATE_PART('month', transaction_date)<7) "
-        		+ "THEN CONCAT(CAST(DATE_PART('year', transaction_date)-1 AS TEXT),'-',CAST(DATE_PART('year', transaction_date) AS TEXT)) "
-        		+ "ELSE CONCAT(CAST(DATE_PART('year', transaction_date) AS TEXT),'-',CAST(DATE_PART('year', transaction_date)+1 AS TEXT)) END AS Saison, CASE WHEN montant = '1' THEN '' ELSE 'PAYE' END AS etat, count(*) FROM paybox_transaction_log "
-        		+ "WHERE reference NOT IN (SELECT pay_cmd_num FROM card WHERE pay_cmd_num IS NOT NULL) GROUP BY Saison, etat ORDER BY Saison ASC";
 
-        Query q = em.createNativeQuery(sql);
+	public Long getId() {
+        return this.id;
+    }
 
-        return q.getResultList();
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public LocalDateTime getTransactionDate() {
+        return this.transactionDate;
+    }
+
+	public void setTransactionDate(LocalDateTime transactionDate) {
+        this.transactionDate = transactionDate;
+    }
+
+	public String getEppn() {
+        return this.eppn;
+    }
+
+	public void setEppn(String eppn) {
+        this.eppn = eppn;
+    }
+
+	public String getReference() {
+        return this.reference;
+    }
+
+	public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+	public String getMontant() {
+        return this.montant;
+    }
+
+	public void setMontant(String montant) {
+        this.montant = montant;
+    }
+
+	public String getAuto() {
+        return this.auto;
+    }
+
+	public void setAuto(String auto) {
+        this.auto = auto;
+    }
+
+	public String getErreur() {
+        return this.erreur;
+    }
+
+	public void setErreur(String erreur) {
+        this.erreur = erreur;
+    }
+
+	public String getIdtrans() {
+        return this.idtrans;
+    }
+
+	public void setIdtrans(String idtrans) {
+        this.idtrans = idtrans;
+    }
+
+	public String getSignature() {
+        return this.signature;
+    }
+
+	public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public int getMontantInt() {
+        return Integer.parseInt(this.montant);
     }
 }

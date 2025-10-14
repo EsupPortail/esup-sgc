@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.expression.EvaluationContext;
@@ -20,8 +21,11 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 public class SpelGroupService implements GroupService {
 	
 	@Resource
-	private UserInfoService userInfoService;
-	
+	UserInfoService userInfoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
 	private Map<String, String> groups4eppnSpel = new HashMap<String, String>();
 
 	String beanName;
@@ -51,7 +55,7 @@ public class SpelGroupService implements GroupService {
 		
 		List<String> groups = new ArrayList<String>();
 		
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(user==null) { // first connection, not yet in database ...
 			user = new User();
 			user.setEppn(eppn);
@@ -80,7 +84,7 @@ public class SpelGroupService implements GroupService {
 
 		Set<String> members = new HashSet<String>();
 
-		for(String eppn : User.findAllEppns()) {
+		for(String eppn : userDaoService.findAllEppns()) {
 			if(getGroupsForEppn(eppn).contains(groupName)) {
 				members.add(eppn);
 			}

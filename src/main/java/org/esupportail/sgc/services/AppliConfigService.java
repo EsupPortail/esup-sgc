@@ -1,15 +1,18 @@
 package org.esupportail.sgc.services;
 
+import jakarta.annotation.Resource;
+import org.esupportail.sgc.dao.AppliConfigDaoService;
+import org.esupportail.sgc.dao.AppliVersionDaoService;
 import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.AppliConfig.TypeConfig;
-import org.esupportail.sgc.domain.AppliVersion;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 
@@ -19,6 +22,8 @@ public class AppliConfigService {
 	private static final String DELIMITER_MULTIPLE_VALUES = ";";
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private AppliVersionDaoService appliVersionDaoService;
 
     enum AppliConfigKey {
 		DISPLAY_FORM_CNIL, DISPLAY_FORM_CROUS, DISPLAY_FORM_ADRESSE, DISPLAY_FORM_RULES, MONTANT_RENOUVELLEMENT, MAIL_LISTE_PRINCIPALE, MAIL_SUBJECT_AUTO,
@@ -35,7 +40,9 @@ public class AppliConfigService {
 
 		PRINTER_ROLE_CONFIG
 	}
-	
+
+    @Resource
+    AppliConfigDaoService appliConfigDaoService;
 
 	private List<String> splitConfigValues(AppliConfig appliConfig) {
 		String userTypeAsString = appliConfig.getValue().trim();
@@ -51,17 +58,17 @@ public class AppliConfigService {
 	}  
 	
 	public void merge(AppliConfig appliConfig) {
-		appliConfig.merge();
+        appliConfigDaoService.merge(appliConfig);
 	}
 	
 	
 	public void remove(AppliConfig appliConfig) {
-		appliConfig.remove();
+        appliConfigDaoService.remove(appliConfig);
 	}
 
 	
 	public void persist(AppliConfig appliConfig) {
-		appliConfig.persist();
+        appliConfigDaoService.persist(appliConfig);
 	}
 	
 	
@@ -90,7 +97,7 @@ public class AppliConfigService {
 	
 	public Double getMontantRenouvellement() {
 		AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.MONTANT_RENOUVELLEMENT);
-		return new Double(appliConfig.getValue());
+		return Double.valueOf(appliConfig.getValue());
 	}
 	
 	
@@ -171,7 +178,7 @@ public class AppliConfigService {
 	
 	
 	public String getCurrentAnneeUniv() {
-		if(AppliConfig.countFindAppliConfigsByKeyEquals("ANNEE_UNIV")>0){
+		if(appliConfigDaoService.countFindAppliConfigsByKeyEquals("ANNEE_UNIV")>0){
 			AppliConfig appliConfig = getAppliConfigByKey(AppliConfigKey.ANNEE_UNIV);
 			return appliConfig.getValue();
 		}else{
@@ -306,9 +313,9 @@ public class AppliConfigService {
 		return Long.valueOf(getAppliConfigByKey(AppliConfigKey.DEFAULT_CNOUS_ID_RATE).getValue());
 	}
 	
-	public Date getDefaultDateFinDroits() {
+	public LocalDateTime getDefaultDateFinDroits() {
 		String timeString = getAppliConfigByKey(AppliConfigKey.DEFAULT_DATE_FIN_DROITS).getValue();
-		Date dateFinDroits = new DateTime(timeString).toDate();
+		LocalDateTime dateFinDroits = LocalDate.parse(timeString).atStartOfDay();
 		return dateFinDroits;
 	}
 	
@@ -322,7 +329,7 @@ public class AppliConfigService {
 	}
 	
 	public Boolean getPhotoBordereau() {
-		return AppliConfig.countFindAppliConfigsByKeyLike(AppliConfigKey.PHOTO_BORDEREAU.name())==0 ? false : Boolean.valueOf(getAppliConfigByKey(AppliConfigKey.PHOTO_BORDEREAU).getValue());
+		return appliConfigDaoService.countFindAppliConfigsByKeyLike(AppliConfigKey.PHOTO_BORDEREAU.name())==0 ? false : Boolean.valueOf(getAppliConfigByKey(AppliConfigKey.PHOTO_BORDEREAU).getValue());
 	}
 	
 	public String getPaiementAlertMailto() {
@@ -341,7 +348,7 @@ public class AppliConfigService {
 	}
 
 	protected AppliConfig getAppliConfigByKey(AppliConfigKey appliConfigKey) {
-		return AppliConfig.findAppliConfigByKey(appliConfigKey.name());
+		return appliConfigDaoService.findAppliConfigByKey(appliConfigKey.name());
 	}
 
 	private String getEsupSgcEtablissementName() {
@@ -350,7 +357,12 @@ public class AppliConfigService {
 	}
 	
 	public String getEsupSgcAsHttpUserAgent() {
-		String userAgent = String.format("ESUP-SGC/%s ; %s", AppliVersion.getAppliVersion().getEsupSgcVersion(), getEsupSgcEtablissementName());
+		String userAgent = String.format("ESUP-SGC/%s ; %s", appliVersionDaoService.getAppliVersion().getEsupSgcVersion(), getEsupSgcEtablissementName());
+		return userAgent;
+	}
+
+	public String getEsupSgcWoEtablissementAsHttpUserAgent() {
+		String userAgent = String.format("ESUP-SGC/%s", appliVersionDaoService.getAppliVersion().getEsupSgcVersion());
 		return userAgent;
 	}
 
@@ -380,7 +392,7 @@ public class AppliConfigService {
 	}
 
 	public Boolean getPrinterRoleConfig() {
-		return AppliConfig.countFindAppliConfigsByKeyLike(AppliConfigKey.PRINTER_ROLE_CONFIG.name())==0 ? false : Boolean.valueOf(getAppliConfigByKey(AppliConfigKey.PRINTER_ROLE_CONFIG).getValue());
+		return appliConfigDaoService.countFindAppliConfigsByKeyLike(AppliConfigKey.PRINTER_ROLE_CONFIG.name())==0 ? false : Boolean.valueOf(getAppliConfigByKey(AppliConfigKey.PRINTER_ROLE_CONFIG).getValue());
 	}
 
 }

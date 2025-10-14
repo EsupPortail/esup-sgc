@@ -2,8 +2,12 @@ package org.esupportail.sgc.services.crous;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.CrousSmartCardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.MotifDisable;
 import org.esupportail.sgc.domain.CrousSmartCard;
@@ -12,31 +16,27 @@ import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.crous.CrousErrorLog.CrousOperation;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
-import org.joda.time.DateTimeComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class ApiCrousService {
+
+	public enum CrousResponseStatus {
+		OK,
+		KO,
+		KO_BLOCKED,
+	}
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -56,6 +56,18 @@ public class ApiCrousService {
     
 	@Resource
 	AppliConfigService appliConfigService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    CrousSmartCardDaoService crousSmartCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+	@Resource
+	ObjectMapper objectMapper;
 	
 	RestTemplate restTemplate;
 	
@@ -111,7 +123,7 @@ public class ApiCrousService {
 		this.enable = enable;
 	}
 
-	public synchronized void authenticate() {
+	synchronized void authenticate() {
 		if(enable) {
 			if(StringUtils.isBlank(clientId)) {
 				String url = webUrl + "/v1/token";
@@ -119,7 +131,7 @@ public class ApiCrousService {
 				basicAuthorisation = Base64.encodeBase64String(basicAuthorisation.getBytes());
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("Content-Type", "application/x-www-form-urlencoded");
-				headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+				headers.set("User-Agent", appliConfigService.getEsupSgcWoEtablissementAsHttpUserAgent());
 				headers.set("Authorization", basicAuthorisation);
 				log.trace(String.format("Headers for CROUS API authentication : %s", headers));
 				String body = "grant_type=client_credentials";
@@ -151,7 +163,7 @@ public class ApiCrousService {
 				String base64Creds = Base64.encodeBase64String(String.format("%s:%s", clientId, clientSecret).getBytes());
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("Authorization", "Basic " + base64Creds);
-				headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+				headers.set("User-Agent", appliConfigService.getEsupSgcWoEtablissementAsHttpUserAgent());
 				HttpEntity entity = new HttpEntity(headers);
 				ResponseEntity<Map<String, String>> response = restTemplate.exchange(url, HttpMethod.POST, entity, new ParameterizedTypeReference<Map<String, String>>() {});
 				authToken = response.getBody().get("access_token");
@@ -169,21 +181,18 @@ public class ApiCrousService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", "application/json");
 		headers.set("Content-Type", "application/json");
-		headers.set("User-Agent", appliConfigService.getEsupSgcAsHttpUserAgent());
+		headers.set("User-Agent", appliConfigService.getEsupSgcWoEtablissementAsHttpUserAgent());
 		return headers;
 	}
 	
 	private HttpHeaders getAuthHeaders() {		
 		HttpHeaders headers = getJsonHeaders();
-		if(authToken == null) {
-			authenticate();
-		}
 		headers.set("Authorization", authToken);
 		return headers;
 	}
-	
-	
-	public RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
+
+	@RequireCrousAuth
+	RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
 		if(enable) {
 			String url = webUrl + "/beforeizly/v1/rightholders/" + identifier;
 			HttpHeaders headers = this.getAuthHeaders();	
@@ -198,12 +207,13 @@ public class ApiCrousService {
 		return null;
 	}
 
-	public CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpClientErrorException {
-		Card card = Card.findCardByCsn(csn);
+	@RequireCrousAuth
+	CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpClientErrorException {
+		Card card = cardDaoService.findCardByCsn(csn);
 		CrousSmartCard crousSmartCard = null;
 		if(enable && card!=null) {
 			if(enable) {
-				User user = User.findUser(card.getEppn());
+				User user = userDaoService.findUser(card.getEppn());
 				String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 				HttpHeaders headers = this.getAuthHeaders();	
 				HttpEntity entity = new HttpEntity(headers);	
@@ -218,15 +228,15 @@ public class ApiCrousService {
 		} 
 		return crousSmartCard;
 	}
-	
-	
-	
-	public boolean postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {	
-		User user = User.findUser(eppn);
+
+
+	@RequireCrousAuth
+	CrousResponseStatus postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+		User user = userDaoService.findUser(eppn);
 		return postOrUpdateRightHolder(user, esupSgcOperation);
 	}
-	
-	protected boolean postOrUpdateRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {	
+
+	protected CrousResponseStatus postOrUpdateRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		if(enable) {
 			String eppn = user.getEppn();
 			String crousIdentifier = user.getCrousIdentifier();
@@ -247,9 +257,9 @@ public class ApiCrousService {
 					// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore - bis
 					user.setCrousIdentifier(crousIdentifier);
 				}
-				if(oldRightHolder.getDueDate()!=null && oldRightHolder.getDueDate().before(new Date()) && newRightHolder.getDueDate().before(new Date())) {
+				if(oldRightHolder.getDueDate()!=null && oldRightHolder.getDueDate().isBefore(LocalDateTime.now()) && newRightHolder.getDueDate().isBefore(LocalDateTime.now())) {
 					log.info("Not need to update RightHolder for " + crousIdentifier + " : dueDates have passed");
-					return true;
+					return CrousResponseStatus.OK;
 				}
 				if(!fieldsEqualsOrCanNotBeUpdate(newRightHolder, oldRightHolder) || mustUpdateDueDateCrous(oldRightHolder, eppn)) {
 					if(!newRightHolder.getIdentifier().equals(oldRightHolder.getIdentifier())) {
@@ -281,13 +291,13 @@ public class ApiCrousService {
 					crousLogService.logErrorCrous(clientEx);
 					log.info("LOCKED : " + clientEx.getErrorBodyAsJson());
 					log.info("Getting Crous RightHolder failed : IZLY account is locked");
-					return false;
+					return CrousResponseStatus.KO;
 				} else {
 					throw clientEx;
 				} 
 			}
 		}
-		return true;
+		return CrousResponseStatus.OK;
 	}
 
 
@@ -302,20 +312,20 @@ public class ApiCrousService {
 					return false;
 				}
 			}
-			if(oldRightHolder.getDueDate()!=null && oldRightHolder.getDueDate().after(newRightHolder.getDueDate())) {
+			if(oldRightHolder.getDueDate()!=null && oldRightHolder.getDueDate().isAfter(newRightHolder.getDueDate())) {
 				return false;
 			}
 		} else {
 			// NON ETUDIANT
-			if (newRightHolder.getBirthDate() == null) {
-				if (oldRightHolder.birthDate != null) {
-					log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate()));
+			if (StringUtils.isEmpty(newRightHolder.getSimpleBirthDate())) {
+				if (!StringUtils.isEmpty(oldRightHolder.getSimpleBirthDate())) {
+					log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getSimpleBirthDate(), oldRightHolder.getSimpleBirthDate()));
 					return false;
 				}
 			} 
 			// compare only day (without time) for birthday 
-			else if (DateTimeComparator.getDateOnlyInstance().compare(newRightHolder.getBirthDate(), oldRightHolder.getBirthDate())!=0) {
-				log.info(String.format("RightHolder not equals because birthDate is not equals : %s <> %s", newRightHolder.getBirthDate(), oldRightHolder.getBirthDate())); 
+			else if (!newRightHolder.getSimpleBirthDate().equals(oldRightHolder.getSimpleBirthDate())) {
+				log.info(String.format("RightHolders not equals because birthDate is not equals : %s <> %s", newRightHolder.getSimpleBirthDate(), oldRightHolder.getSimpleBirthDate()));
 				return false;
 			}
 
@@ -328,10 +338,10 @@ public class ApiCrousService {
 		return true;
 	}
 
-	private boolean postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
-		if(user.getDueDate()!=null && user.getDueDate().before(new Date())) {
+	private CrousResponseStatus postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+		if(user.getDueDate()!=null && user.getDueDate().isBefore(LocalDateTime.now())) {
 			log.info(String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
-			return false;
+			return CrousResponseStatus.KO_BLOCKED;
 		}
 		String url = webUrl + "/beforeizly/v1/rightholders";
 		HttpHeaders headers = this.getAuthHeaders();			
@@ -346,13 +356,13 @@ public class ApiCrousService {
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 				log.warn(user.getEppn() + " is locked in crous : " + clientEx.getResponseBodyAsString());
 				crousLogService.logErrorCrous(crousHttpClientErrorException);
-				return false;		
+				return CrousResponseStatus.KO;
 			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				if(Arrays.asList(new String[] {"-9", "-8", "-41", "-117", "-42"}).contains(getErrorCode(clientEx.getResponseBodyAsString()))) {
 					crousLogService.logErrorCrous(crousHttpClientErrorException);
 					log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
-					return false;
+					return CrousResponseStatus.KO;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when posting RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
@@ -360,18 +370,18 @@ public class ApiCrousService {
 			throw crousHttpClientErrorException;
 		}
 		log.info(user.getEppn() + " sent in CROUS as RightHolder");	
-		return true;
+		return CrousResponseStatus.OK;
 	}
 
-	private boolean updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
-		User user = User.findUser(eppn);
+	private CrousResponseStatus updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+		User user = userDaoService.findUser(eppn);
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
 		// hack crous étudiant doit rester étudiant - si on tente de changer - log d'erreur, on ne met pas à jour, et on n'envoie pas la carte dans le crous/izly (return false)
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate()) && !Long.valueOf(10).equals(rightHolder.getIdCompanyRate())) {
 			log.error(String.format("%s is student in crous/izly (IdCompagnYRate = 10) - IdCompagnYRate %s can't be updated to %s", eppn, oldRightHolder.getIdCompanyRate(), rightHolder.getIdCompanyRate()));
-			return false;
+			return CrousResponseStatus.KO_BLOCKED;
 		}
 		// hack crous tarifs spéciaux étudiants ~boursiers
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
@@ -388,7 +398,7 @@ public class ApiCrousService {
 		// hack crous duedate étudiants
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
 				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
-				&& oldRightHolder.getDueDate().after(rightHolder.getDueDate())) {
+				&& oldRightHolder.getDueDate().isAfter(rightHolder.getDueDate())) {
 			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case for %s."
 							+ "Actual dueDate : %s ; wanted dueDate : %s -> we keep the actual dueDate and others elements - crous update not needed but consider all is ok" +
 							" so that we enable/disable the card in crous",
@@ -396,7 +406,7 @@ public class ApiCrousService {
 					oldRightHolder.getDueDate(),
 					rightHolder.getDueDate()));
 			rightHolder.setDueDate(oldRightHolder.getDueDate());
-			return true;
+			return CrousResponseStatus.OK;
 		}
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {
@@ -407,13 +417,13 @@ public class ApiCrousService {
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 				log.warn(eppn + " is locked in crous : " + clientEx.getResponseBodyAsString());
 				crousLogService.logErrorCrous(crousHttpClientErrorException);
-				return false;
+				return CrousResponseStatus.KO;
 			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				if(Arrays.asList(new String[] {"-9", "-8", "-41", "-117", "-42"}).contains(getErrorCode(clientEx.getResponseBodyAsString()))) {
 					crousLogService.logErrorCrous(crousHttpClientErrorException);
 					log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
-					return false;
+					return CrousResponseStatus.KO;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when updating RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
@@ -425,11 +435,11 @@ public class ApiCrousService {
 				log.info("NOT_ACCEPTABLE : " + clientEx.getResponseBodyAsString());
 				crousLogService.logErrorCrous(crousHttpClientErrorException);
 				log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
-				return false;
+				return CrousResponseStatus.KO;
 			}
 			throw crousHttpClientErrorException;
 		}
-		return true;
+		return CrousResponseStatus.OK;
 	}
 	
 
@@ -449,12 +459,9 @@ public class ApiCrousService {
 		rightHolder.setEmail(user.getEmail());
 		
 		// dueDate can't be past in IZLY -> max = now + 3 hours
-		Date dueDate = user.getDueDate();
-		Calendar cal = Calendar.getInstance(); // creates calendar
-		cal.setTime(new Date());
-		cal.add(Calendar.HOUR_OF_DAY, 3);
-		Date nowDate =  cal.getTime(); 
-		if(dueDate!=null && dueDate.before(nowDate)) {
+        LocalDateTime dueDate = user.getDueDate();
+        LocalDateTime nowDate =  LocalDateTime.now().plusHours(3);
+		if(dueDate!=null && dueDate.isBefore(nowDate)) {
 			dueDate = nowDate;
 		} else {
 			dueDate = user.getDueDate();
@@ -463,7 +470,7 @@ public class ApiCrousService {
 		rightHolder.setDueDate(dueDate);
 		rightHolder.setIdCompanyRate(user.getIdCompagnyRate());
 		rightHolder.setIdRate(user.getIdRate());
-		rightHolder.setBirthDate(user.getBirthday());
+		rightHolder.setSimpleBirthDate(user.getBirthdayAsString());
 		rightHolder.setIne(user.getSupannCodeINE());
 		rightHolder.setRneOrgCode(user.getRneEtablissement());
 		return rightHolder;
@@ -471,18 +478,18 @@ public class ApiCrousService {
 	
 	private boolean mustUpdateDueDateCrous(RightHolder oldRightHolder, String eppn) {
 		// dueDate can't be past in IZLY -> hack ...
-		User user = User.findUser(eppn);
-		if(user != null) {		
-			Date now = new Date();
-			Date duedateCrous = oldRightHolder.getDueDate();
-			Date realDueDate = user.getDueDate();
+		User user = userDaoService.findUser(eppn);
+		if(user != null) {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime duedateCrous = oldRightHolder.getDueDate();
+            LocalDateTime realDueDate = user.getDueDate();
 			if(StringUtils.isNotEmpty(oldRightHolder.getIne())) {
 				// ETUDIANT : pas de màj si dudate après duedate local (étudiant autre établissement par ex.)
-				if (oldRightHolder.getDueDate() != null && oldRightHolder.getDueDate().after(realDueDate)) {
+				if (oldRightHolder.getDueDate() != null && oldRightHolder.getDueDate().isAfter(realDueDate)) {
 					return false;
 				}
 			}
-			if(duedateCrous!=null && realDueDate.before(now) && duedateCrous.before(now)) {
+			if(duedateCrous!=null && realDueDate.isBefore(now) && duedateCrous.isBefore(now)) {
 				return false;
 			}
 			return !equalsWithInterval(realDueDate, duedateCrous);
@@ -494,13 +501,14 @@ public class ApiCrousService {
 	/**
 	 * True si les dates sont égales à 5 minutes près.
 	 */
-	private boolean equalsWithInterval(Date realDueDate, Date duedateCrous) {
-		return Math.abs(realDueDate.getTime() - duedateCrous.getTime()) < 1000*60*5;
-	}
+	private boolean equalsWithInterval(LocalDateTime realDueDate, LocalDateTime duedateCrous) {
+        return Math.abs(Duration.between(realDueDate, duedateCrous).toMillis()) < 1000 * 60 * 5;
+    }
 
-	public boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
+	@RequireCrousAuth
+	boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
 		if(enable) {
-			User user = User.findUser(card.getEppn());
+			User user = userDaoService.findUser(card.getEppn());
 			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();	
 			HttpEntity entity = new HttpEntity(headers);		
@@ -522,7 +530,7 @@ public class ApiCrousService {
 	}
 	
 	private boolean validateNewSmartCard(Card card) throws CrousHttpClientErrorException {
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard";
 		HttpHeaders headers = this.getAuthHeaders();
 		CrousSmartCard smartCard = card.getCrousSmartCard();
@@ -558,7 +566,7 @@ public class ApiCrousService {
 	
 	
 	private boolean revalidateSmartCard(Card card) throws CrousHttpClientErrorException {
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 		HttpHeaders headers = this.getAuthHeaders();
 		headers.add("uid", card.getCsn().toUpperCase());
@@ -583,10 +591,11 @@ public class ApiCrousService {
 		return true;
 	}
 
-	public boolean invalidateSmartCard(Card card) throws CrousHttpClientErrorException {
+	@RequireCrousAuth
+	boolean invalidateSmartCard(Card card) throws CrousHttpClientErrorException {
 		if(enable) {
-			User user = User.findUser(card.getEppn());
-			CrousSmartCard smartCard = CrousSmartCard.findCrousSmartCard(card.getCsn());
+			User user = userDaoService.findUser(card.getEppn());
+			CrousSmartCard smartCard = card.getCrousSmartCard();
 			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + smartCard.getIdZdc();
 			HttpHeaders headers = this.getAuthHeaders();
 			headers.add("uid", card.getCsn().toUpperCase());
@@ -637,13 +646,12 @@ public class ApiCrousService {
 	
 	private String getErrorPart(String errorsAsJsonString, String part) {
 		String errorPart = null;
-		ObjectMapper mapper = new ObjectMapper(); 
 	    TypeReference<Map<String,List<Map<String, String>>>> typeRef 
 	            = new TypeReference<Map<String,List<Map<String, String>>>>() {};
 
 	            Map<String,List<Map<String, String>>> errorsMap = null;
 		try {
-			errorsMap = mapper.readValue(errorsAsJsonString, typeRef);
+			errorsMap = objectMapper.readValue(errorsAsJsonString, typeRef);
 		} catch (IOException e) {
 			log.error("Can't parse errors : " + errorsAsJsonString, e);
 		} 
@@ -656,18 +664,19 @@ public class ApiCrousService {
 		}
 	    return errorPart;
 	}
-	
 
-	public void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpClientErrorException {
+
+	@RequireCrousAuth
+	void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpClientErrorException {
 		if(enable) {
 			String url = webUrl + "/beforeizly/v1/rightholders/" + patchIdentifier.getCurrentIdentifier();
 			HttpHeaders headers = this.getAuthHeaders();
 			HttpEntity entity = new HttpEntity(patchIdentifier, headers);
 			User user = null;
-			List<User> users = User.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
+			List<User> users = userDaoService.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
 			if(!users.isEmpty()) {
 				user = users.get(0);
-				if(user.getDueDate()!=null && user.getDueDate().before(new Date())) {
+				if(user.getDueDate()!=null && user.getDueDate().isBefore(LocalDateTime.now())) {
 					log.warn(String.format("%s not patched in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
 					return;
 				}
@@ -676,7 +685,7 @@ public class ApiCrousService {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);	
 				if(user != null) {
 					user.setCrousIdentifier(patchIdentifier.getNewIdentifier());
-					user.merge();
+					userDaoService.merge(user);
 				}
 				log.info("patchIdentifier : " + patchIdentifier + " OK : " + response.getBody());
 			} catch(HttpClientErrorException clientEx) {
@@ -685,7 +694,8 @@ public class ApiCrousService {
 		}
 	}
 
-	public List<CrousRule> getTarifRules(String numeroCrous, String rne) {
+	@RequireCrousAuth
+	List<CrousRule> getTarifRules(String numeroCrous, String rne) {
 		if(enable) {
 			HttpHeaders headers = this.getAuthHeaders();
 			HttpEntity entity = new HttpEntity(headers);
@@ -702,9 +712,10 @@ public class ApiCrousService {
 		return new ArrayList<CrousRule>();
 	}
 
-	protected void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	@RequireCrousAuth
+	void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
 		if(enable) {
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			String crousIdentifier = user.getCrousIdentifier();
 			if (crousIdentifier == null || crousIdentifier.isEmpty()) {
 				// cas où le compte existe déjà côté izly sans qu'esup-sgc ne le connaisse encore
@@ -727,7 +738,7 @@ public class ApiCrousService {
 		return dateFormat.format(new Date());
 	}
 
-	public boolean isEnabled() {
+	boolean isEnabled() {
 		return enable;
 	}
 }

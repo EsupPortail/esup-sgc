@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
-	xmlns:context="http://www.springframework.org/schema/context" 
-	xmlns:mvc="http://www.springframework.org/schema/mvc" 
-	xmlns:p="http://www.springframework.org/schema/p" 
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:sec="http://www.springframework.org/schema/security"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd                 
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd                 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
-                
-    <!-- The controllers are autodetected POJOs labeled with the @Controller annotation. -->
-    <context:component-scan base-package="org.esupportail.sgc" use-default-filters="false">
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+<!-- The controllers are autodetected POJOs labeled with the @Controller annotation. -->
+    <context:component-scan base-package="org.esupportail.sgc">
         <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
         <context:include-filter expression="org.springframework.web.bind.annotation.ControllerAdvice" type="annotation"/>
     </context:component-scan>
     
     <!-- Turns on support for mapping requests to Spring MVC @Controller methods
          Also registers default Formatters and Validators for use across all @Controllers -->
-    <mvc:annotation-driven conversion-service="applicationConversionService"/>
+    <mvc:annotation-driven conversion-service="applicationConversionService">
+        <mvc:argument-resolvers>
+            <bean class="org.esupportail.sgc.web.SessionAwarePageableResolver"/>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
     
     <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/**" order="1">
         <mvc:cache-control cache-public="true" max-age="86400"/>
@@ -38,91 +40,65 @@
         <mvc:cache-control cache-public="true" max-age="86400"/>
         <mvc:resource-chain resource-cache="true"/>
     </mvc:resources>
-
     
 
     <!-- Allows for mapping the DispatcherServlet to "/" by forwarding static resource 
     requests to the container's default Servlet -->
     <mvc:default-servlet-handler/>
 
+    <bean name="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"/>
+
     <!-- Register "global" interceptor beans to apply to all registered HandlerMappings -->
     <mvc:interceptors>
         <bean class="org.springframework.web.servlet.theme.ThemeChangeInterceptor"/>
         <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="lang"/>
     </mvc:interceptors>
-
-    <!-- Selects a static view for rendering without the need for an explicit controller -->
-    <mvc:view-controller path="/" view-name="index"/>
-    <mvc:view-controller path="/uncaughtException"/>
-    <mvc:view-controller path="/resourceNotFound"/>
-    <mvc:view-controller path="/dataAccessFailure"/>
   
     <!-- Store preferred language configuration in a cookie -->
     <bean class="org.springframework.web.servlet.i18n.CookieLocaleResolver" id="localeResolver" p:cookieName="locale"/>
 
-    <!-- Resolves localized <theme_name>.properties files in the classpath to allow for theme support -->
-    <bean class="org.springframework.ui.context.support.ResourceBundleThemeSource" id="themeSource"/>
 
-    <!-- Store preferred theme configuration in a cookie -->
-    <bean class="org.springframework.web.servlet.theme.CookieThemeResolver" id="themeResolver" p:cookieName="theme" p:defaultThemeName="standard"/>
+    <bean class="org.esupportail.sgc.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
 
-    <!-- This bean resolves specific types of exceptions to corresponding logical - view names for error views. 
-    The default behaviour of DispatcherServlet - is to propagate all exceptions to the servlet 
-    container: this will happen - here with all other types of exceptions. -->
-    <bean class="org.esupportail.sgc.web.LoggingExceptionResolver" p:defaultErrorView="uncaughtException" p:defaultStatusCode="500">
-        <property name="exceptionMappings"> 
-            <props>
-                <prop key=".DataAccessException">dataAccessFailure</prop>
-                <prop key=".NoSuchRequestHandlingMethodException">resourceNotFound</prop>
-                <prop key=".TypeMismatchException">resourceNotFound</prop>
-                <prop key=".MissingServletRequestParameterException">resourceNotFound</prop>
-                <prop key=".SgcNotFoundException">resourceNotFound</prop>
-                <prop key=".AccessDeniedException">denied</prop>
-            </props>
-        </property>
-        <property name="statusCodes">
-            <map>
-                <entry key="resourceNotFound" value="404"/>
-                <entry key="denied" value="403"/>
-            </map>
+    <mvc:interceptors>
+        <bean class="org.esupportail.sgc.web.ConfigInterceptor" />
+    </mvc:interceptors>
+
+    <tx:annotation-driven />
+
+
+    <!-- Template Resolver -->
+    <bean id="templateResolver" class="org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/WEB-INF/thymeleaf/" />
+        <property name="suffix" value=".html" />
+        <property name="templateMode" value="HTML" />
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="cacheable" value="false" />
+    </bean>
+
+    <!-- Template Engine -->
+    <bean id="templateEngine" class="org.thymeleaf.spring6.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver" />
+        <property name="enableSpringELCompiler" value="true"/>
+        <property name="additionalDialects">
+            <set>
+                <bean class="nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect"/>
+                <bean class="org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect"/>
+                <bean class="org.thymeleaf.dialect.springdata.SpringDataDialect"/>
+            </set>
         </property>
     </bean>
 
-    <!-- Enable this for integration of file upload functionality -->
-    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
-<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" id="tilesViewResolver">
-    <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
-  </bean>
-    <bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer" id="tilesConfigurer">
-    <property name="definitions">
-      <list>
-        <value>/WEB-INF/layouts/layouts.xml</value>
-        <!-- Scan views directory for Tiles configurations -->
-        <value>/WEB-INF/views/**/views.xml</value>
-      </list>
-    </property>
-  </bean>
-<bean class="org.esupportail.sgc.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
+    <!-- Thymeleaf ViewResolver -->
+    <bean class="org.thymeleaf.spring6.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine" />
+        <property name="order" value="1" />
+        <property name="viewNames">
+            <list>
+                <value>templates/*</value>
+            </list>
+        </property>
+        <property name="characterEncoding" value="UTF-8" />
+    </bean>
 
- <!-- enable support for Expression-based annotations in Spring Security -->
- <sec:global-method-security pre-post-annotations="enabled">
-    <sec:expression-handler ref="expressionHandler" />
- </sec:global-method-security>
-
-    <mvc:interceptors>
-        <bean class="org.esupportail.sgc.web.ConfigInterceptor" autowire="constructor" />
-    </mvc:interceptors>
-    
- <!-- à décommenter pour monitorer les perfs de ManagerCardController ...
-  <aop:aspectj-autoproxy/>  
-   <bean id="springMonitoringAspectInterceptor"
-         class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor">
-   </bean>
-   <aop:config>
-	<aop:pointcut id="springMonitoringPointcut" 
-		expression="execution(public * org.esupportail.sgc.web.manager.ManagerCardController.*(..))" />
-	<aop:advisor pointcut-ref="springMonitoringPointcut" advice-ref="springMonitoringAspectInterceptor"/>
-   </aop:config>
- -->
-    
 </beans>

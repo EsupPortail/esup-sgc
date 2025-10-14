@@ -1,0 +1,72 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/groupsroles.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Groupes et rôles</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Groupes et rôles</h2>
+    <form th:action="@{/admin/groupsroles}" method="get">
+        <div class="jumbotron">
+            <div class="form-group">
+                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible :</label>
+                <div class="col-lg-2 col-md-2 col-xs-4">
+                    <input type="text" class="form-control" placeholder="eppn" id="searchEppn" name="eppn" maxlength="100" th:value="${eppn}"/>
+                </div>
+                <button type="submit" class="btn btn-success col-lg-1 col-md-1">Test Groupes/Rôles</button>
+            </div>
+        </div>
+    </form>
+    <div class="panel-body">
+        <div class="col-lg-3">
+            <h3 th:text="'Groupes de ' + ${eppn}"></h3>
+            <div th:each="groupsEntry : ${groupsMap}">
+                <h4>
+                    <span th:text="${groupsEntry.key}"></span>
+                    <span th:text="${durations[groupsEntry.key]} + 'ms'"></span>
+                </h4>
+                <ul>
+                    <li th:each="group : ${groupsEntry.value}" th:text="${group}"></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <h3 th:text="'Rôles de ' + ${eppn} + ' - ' + ${rolesDuration} + 'ms'"></h3>
+            <ul>
+                <li th:each="role : ${roles}" class="bold" th:text="${role}"></li>
+            </ul>
+            <h3 th:text="'Rôles Effectifs de ' + ${eppn} + ' (en BD actuellement, et implictes - admin->manager)'"></h3>
+            <ul>
+                <li th:each="role : ${rolesReachableDb}" class="bold" th:text="${role}"></li>
+            </ul>
+        </div>
+        <div class="col-lg-3">
+            <h3>Membres des groupes</h3>
+            <div th:each="groupsEntry : ${groupsMembers}">
+                <h4>
+                    <span th:text="${groupsEntry.key}"></span>
+                    <span th:text="${membersDurations[groupsEntry.key]} + 'ms'"></span>
+                </h4>
+                <dl>
+                    <div th:each="group : ${groupsEntry.value}">
+                        <dt th:text="${group.key}"></dt>
+                        <dd th:text="${group.value} + ' membre(s)'"></dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <h3>Membres des rôles</h3>
+            <dl th:each="role : ${rolesMembers}">
+                <dt th:text="${role.key}"></dt>
+                <dd th:text="${role.value} + ' membre(s)'"></dd>
+            </dl>
+        </div>
+    </div>
+</div>
+</body>
+</html>

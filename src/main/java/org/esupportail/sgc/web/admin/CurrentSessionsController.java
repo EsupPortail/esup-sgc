@@ -10,9 +10,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
+import jakarta.annotation.Resource;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.SgcHttpSession;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.security.SgcHttpSessionsListenerService;
@@ -38,8 +41,15 @@ public class CurrentSessionsController {
 	@Resource
 	UserInfoService userInfoService;
 
-	@Resource
-	SgcHttpSessionsListenerService sgcHttpSessionsListenerService;
+	@Autowired
+	private ServletContext servletContext;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    @Autowired
+    @Qualifier("sessionRegistry")
+    private SessionRegistry sessionRegistry;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -54,15 +64,12 @@ public class CurrentSessionsController {
 	@ModelAttribute("footer")
 	public String getFooter() {
 		return appliConfigService.pageFooter();
-	}  
-
-	@Autowired
-	@Qualifier("sessionRegistry")
-	private SessionRegistry sessionRegistry;
+	}
 	
 	@RequestMapping
-	public String getCurrentSessions(Model uiModel) throws IOException {
+	public String getCurrentSessions(Model uiModel) {
 
+		SgcHttpSessionsListenerService sgcHttpSessionsListenerService = (SgcHttpSessionsListenerService) servletContext.getAttribute("sgcHttpSessionsListenerService");
 		Map<String, SgcHttpSession> allSessions = sgcHttpSessionsListenerService.getSessions();
 		List<String> sessions = new Vector<String>();
 		List<Object> principals = sessionRegistry.getAllPrincipals();
@@ -82,7 +89,7 @@ public class CurrentSessionsController {
 		Collections.sort(sessions);
 		
 		for(String eppn : sessions){
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			if(!users.containsKey(user.getUserType())) {
 				users.put(user.getUserType(), new ArrayList<User>());
 			}
@@ -97,7 +104,7 @@ public class CurrentSessionsController {
 		uiModel.addAttribute("userTypes", userInfoService.getListExistingType());
 		uiModel.addAttribute("allSessions", allSessions.values());
 
-		return "admin/currentsessions";
+        return  "templates/admin/currentsessions";
 	}
 
 }

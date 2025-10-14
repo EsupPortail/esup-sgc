@@ -105,6 +105,13 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
         <async-supported>true</async-supported>
+        <multipart-config>
+            <location>/tmp</location>
+            <!-- 50MB=50*1024*1024=52428800 -->
+            <max-file-size>52428800</max-file-size>
+            <max-request-size>52428800</max-request-size>
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
     </servlet>
     
     <servlet-mapping>
@@ -115,22 +122,12 @@
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
-    
-    <servlet>
-        <servlet-name>ServletExceptionHandler</servlet-name>
-        <servlet-class>org.esupportail.sgc.web.ServletExceptionHandler</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>ServletExceptionHandler</servlet-name>
-        <url-pattern>/ServletExceptionHandler</url-pattern>
-	</servlet-mapping>
 
     <error-page>
         <exception-type>java.lang.Exception</exception-type>
-        <location>/ServletExceptionHandler</location>
+        <location>/uncaughtException</location>
     </error-page>
-    
+
     <error-page>
         <error-code>404</error-code>
         <location>/resourceNotFound</location>
@@ -139,12 +136,6 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-
-    <listener>
-	  <listener-class>
-	    org.springframework.security.web.session.HttpSessionEventPublisher
-	  </listener-class>
-	</listener> 
 
 	<listener>
 	    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>

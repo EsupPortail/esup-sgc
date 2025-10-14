@@ -1,16 +1,21 @@
 package org.esupportail.sgc.services;
 
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -21,7 +26,14 @@ public class ExternalCardService {
 	private UserInfoService userInfoService;
 	
     @Resource
+    @Lazy // Avoid circular dependency issues
     ResynchronisationUserService resynchronisationUserService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 
 	public Card getExternalCard(String eppn, HttpServletRequest request) {
 		User dummyUser = new User();
@@ -37,11 +49,11 @@ public class ExternalCardService {
 	}
 
 	public Card importExternalCard(String eppn, HttpServletRequest request) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(user == null) {
 			user = new User();
 			user.setEppn(eppn);
-			user.persist();
+			userDaoService.persist(user);
 		}
 		Card externalCard = null;
 		for(Card card : user.getCards()) {
@@ -66,13 +78,13 @@ public class ExternalCardService {
 		user.getCards().add(externalCard);
 		externalCard.setEppn(user.getEppn());
         externalCard.setEtat(Etat.DISABLED);
-        externalCard.setDateEtat(new Date());
-        externalCard.setDeliveredDate(new Date());
+        externalCard.setDateEtat(LocalDateTime.now());
+        externalCard.setDeliveredDate(LocalDateTime.now());
         externalCard.setExternal(true);
         userInfoService.setPrintedInfo(externalCard);
         user.setCrous(false);
         user.setDifPhoto(false);
-        externalCard.persist();
+        cardDaoService.persist(externalCard);
         return externalCard;
 	}
 

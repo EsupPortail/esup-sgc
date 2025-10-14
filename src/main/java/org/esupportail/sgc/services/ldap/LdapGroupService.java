@@ -97,7 +97,7 @@ public class LdapGroupService implements GroupService {
 		
 		if(!dns.isEmpty()) {
 			String userDn = dns.get(0);
-			String formattedFilter = MessageFormat.format(groupSearchFilter, new String[] { userDn, username });
+			String formattedFilter = MessageFormat.format(groupSearchFilter, new Object[] { userDn, username });
 			
 			groups = ldapTemplate.search(
 					groupSearchBase, formattedFilter,new ContextMapper<String>() {
@@ -118,7 +118,7 @@ public class LdapGroupService implements GroupService {
 	@Override
 	public List<String> getMembers(String groupName) {
 
-		String formattedFilter = MessageFormat.format(memberSearchFilter, new String[] {groupName});
+		String formattedFilter = MessageFormat.format(memberSearchFilter, new Object[] {groupName});
 			
 		List<String> eppns = ldapTemplate.search(
 				memberSearchBase, formattedFilter,new ContextMapper<String>() {

@@ -1,0 +1,76 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/print-card-b64.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Impression carte</title>
+    <script>
+        // Recharge la fenêtre parente pour rafraîchir l'état des actions
+        window.opener && window.opener.location.reload();
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        @page {
+            margin: 0;
+            padding: 0;
+            size: 8.57cm 5.403cm;
+        }
+        body {
+            padding: 0cm;
+            margin: 0cm;
+        }
+    </style>
+    <style th:if="${type == 'black'}">
+        #right::before,
+        #right::after,
+        #right img {
+            display: none !important;
+        }
+    </style>
+    <style th:if="${type == 'color'}">
+        #left::before,
+        #left::after,
+        #left p,
+        #left img {
+            display: none !important;
+        }
+    </style>
+    <style th:if="${type == 'virtual'}" th:inline="text">
+        #specimenCarte {
+            background: url("data:[[${templateCard.photoFileMasque.contentType}]];base64, [[${masqueBase64}]]");
+            line-height : 1;
+            background-size: 8.56cm 5.398cm;
+        }
+    </style>
+    <style th:inline="text">
+        @media screen {
+            #specimenCarte {
+                background: url("data:[[${templateCard.photoFileMasque.contentType}]];base64, [[${masqueBase64}]]");
+                line-height: 1;
+            }
+        }
+        [[${templateCard.cssStyle}]]
+    </style>
+</head>
+<body>
+    <div id="specimenCarte">
+        <div id="left">
+            <p id="recto1" th:utext="${card.user.recto1}"></p>
+            <p id="recto2" th:utext="${card.user.recto2}"></p>
+            <p id="recto3" th:utext="${card.user.recto3}"></p>
+            <p id="recto4" th:utext="${card.user.recto4}"></p>
+            <p id="recto5" th:utext="${card.user.recto5}"></p>
+            <p id="recto6" th:utext="${card.user.recto6}"></p>
+            <p id="recto7" th:utext="${card.user.recto7}"></p>
+            <img alt="qrcode" th:src="'data:image/png;base64, ' + ${qrcodeBase64}" id="qrcode"/>
+        </div>
+        <div id="right">
+            <img th:src="'data:' + ${templateCard.photoFileLogo.contentType} + ';base64, ' + ${photoBase64}" id="photo"/>
+            <img th:src="'data:' + ${card.photoFile.contentType} + ';base64, ' + ${logoBase64}" id="logo-ur"/>
+        </div>
+    </div>
+</body>
+</html>

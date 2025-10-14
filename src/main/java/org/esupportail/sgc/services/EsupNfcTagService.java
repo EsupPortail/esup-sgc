@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.esupportail.sgc.dao.EsupNfcSgcJwsDeviceDaoService;
 import org.esupportail.sgc.domain.EsupNfcSgcJwsDevice;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.springframework.http.HttpEntity;
@@ -14,7 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import jakarta.annotation.Resource;
+
 public class EsupNfcTagService {
+
+    @Resource
+    EsupNfcSgcJwsDeviceDaoService esupNfcSgcJwsDeviceDaoService;
 
 	RestTemplate restTemplate;
 
@@ -49,19 +55,19 @@ public class EsupNfcTagService {
 
 		EsupNfcSgcJwsDevice device = null;
 
-		List<EsupNfcSgcJwsDevice> devices = EsupNfcSgcJwsDevice.findEsupNfcSgcJwsDevicesByEppnInitEquals(eppnInit).getResultList();
+		List<EsupNfcSgcJwsDevice> devices = esupNfcSgcJwsDeviceDaoService.findEsupNfcSgcJwsDevicesByEppnInitEquals(eppnInit).getResultList();
 		if(devices.isEmpty()) {
 			String numeroId = registerNewDeviceOnEsupNfcTagServer(eppnInit);
 			device = new EsupNfcSgcJwsDevice();
 			device.setEppnInit(eppnInit);
 			device.setNumeroId(numeroId);
-			device.persist();
+            esupNfcSgcJwsDeviceDaoService.persist(device);
 		} else {
 			device = devices.get(0);
 			if(controlDevice(device.getNumeroId())==null || !controlDevice(device.getNumeroId()).equals(eppnInit)){
 				String numeroId = registerNewDeviceOnEsupNfcTagServer(eppnInit);
 				device.setNumeroId(numeroId);
-				device.merge();
+                esupNfcSgcJwsDeviceDaoService.merge(device);
 			}
 		}
 		return device.getNumeroId();

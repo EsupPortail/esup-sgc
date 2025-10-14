@@ -1,0 +1,226 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/templatecards/update.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Modifier le thème carte</title>
+</head>
+<body>
+<div id="updateTemplateCard" layout:fragment="content"
+     th:with="photoLocalPrefix=@{/admin/templatecards/photo/}">
+    <div class="row">
+        <script type="text/javascript">
+            var searchEppnUrl =  "[[@{/manager/searchEppn}]]";
+            var submitUrl =  "[[@{/admin/templatecards/fillTemplate}]]";
+        </script>
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Édition</h5>
+                </div>
+                <div class="panel-body">
+                    <form th:action="@{/admin/templatecards/update}" th:object="${templateCard}" method="post" enctype="multipart/form-data" class="form-horizontal well">
+                        <input type="hidden" th:field="*{id}"/>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="key">Clé</label>
+                            <div class="col-md-6">
+                                <input class="form-control" th:field="*{key}" id="key" required="required"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="numVersion">Version</label>
+                            <div class="col-md-6">
+                                <input class="form-control" th:field="*{numVersion}" id="numVersion" required="required"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="name">Nom</label>
+                            <div class="col-md-6">
+                                <input class="form-control" th:field="*{name}" id="name" required="required"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="description">Description</label>
+                            <div class="col-md-6">
+                                <textarea class="form-control" th:field="*{description}" id="description" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="_cssStyle_id">Style CSS</label>
+                            <div class="col-md-6">
+                                <textarea class="form-control" th:field="*{cssStyle}" id="_cssStyle_id" rows="15"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="_cssMobileStyle_id">CSS mobile</label>
+                            <div class="col-md-6">
+                                <textarea class="form-control" th:field="*{cssMobileStyle}" id="_cssMobileStyle_id" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="_cssBackStyle_id">CSS verso</label>
+                            <div class="col-md-6">
+                                <textarea class="form-control" th:field="*{cssBackStyle}" id="_cssBackStyle_id" rows="15"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="templateMasque">Masque</label>
+                            <div class="col-md-6">
+                                <input id="templateMasque" name="masque" type="file"/>
+                                <div>
+                                    <img class="thumb-image" th:src="${photoLocalPrefix + 'masque/' + templateCard.id}" alt="masque"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="templateLogo">Logo</label>
+                            <div class="col-md-6">
+                                <input id="templateLogo" name="logo" type="file"/>
+                                <div>
+                                    <img class="thumb-image" th:src="${photoLocalPrefix + 'logo/' + templateCard.id}" alt="logo"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" for="templateQrCode">Qr Code</label>
+                            <div class="col-md-6">
+                                <input id="templateQrCode" name="qrCode" type="file"/>
+                                <div>
+                                    <img class="thumb-image" th:src="${photoLocalPrefix + 'qrCode/' + templateCard.id}" alt="qrCode"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Code-barres</label>
+                            <div class="col-md-6">
+                                <input type="checkbox" th:field="*{codeBarres}" id="codeBarres"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Impression Verso</label>
+                            <div class="col-md-6">
+                                <input type="checkbox" th:field="*{backSupported}" id="backSupported"/>
+                            </div>
+                        </div>
+                        <input type="hidden" th:field="*{dateModification}"/>
+                        <input type="hidden" th:field="*{modificateur}"/>
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-6">
+                                <button type="submit" class="btn btn-success" id="proceed">Valider</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Prévisualisation à droite -->
+        <div class="col-lg-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Prévisualisation</h5>
+                </div>
+                <div class="panel-body">
+                    <div class="col-lg-6">
+                        <div id="create-preview">
+                            <style th:inline="text">
+                                @media screen {
+                                    #specimenCarte {
+                                        background: url([[${photoLocalPrefix + 'masque/' + templateCard.id}]]); line-height: 1;
+                                    }
+                                }
+                                #specimenCarte * {
+                                    -webkit-box-sizing: content-box;
+                                    -moz-box-sizing: content-box;
+                                    box-sizing: content-box;
+                                }
+                                @media screen and (min-width: 451px) {
+                                    [[${templateCard.cssStyle}]]
+                                }
+                                @media screen and (max-width: 450px) {
+                                    [[${templateCard.cssMobileStyle}]]
+                                }
+                            </style>
+                            <div id="specimenCarte">
+                                <div id="left">
+                                    <p id="recto1">étudiant</p>
+                                    <p id="recto2">Nom patronymique</p>
+                                    <p id="recto3">Prénom</p>
+                                    <p id="recto4">Né le : 01/01/1970</p>
+                                    <p id="recto5">N° Etudiant : 00000000000</p>
+                                    <p id="recto6">xxxxxxxxxx</p>
+                                    <p id="recto7">yyyyyyyyyy</p>
+                                    <img alt="qrcode" id="qrcode" th:src="${photoLocalPrefix + 'qrCode/' + templateCard.id}"/>
+                                </div>
+                                <div id="right">
+                                    <img id="photo" th:src="@{/images/NoPhoto.jpg}"/>
+                                    <img id="logo-ur" th:src="${photoLocalPrefix + 'logo/' + templateCard.id}"/>
+                                </div>
+                            </div>
+                            <hr/>
+                        </div>
+                        <div th:if="${templateCard.backSupported}">
+                            <br/><br/>
+                            <div id="back-preview">
+                                <style>
+                                    @media screen {
+                                        #backCarte {
+                                            border: 1px solid black;
+                                            border-radius: 20px;
+                                        }
+                                    }
+                                    #backCarte {
+                                        -webkit-box-sizing: content-box;
+                                        -moz-box-sizing: content-box;
+                                        box-sizing: content-box;
+                                    }
+                                </style>
+                                <style th:inline="text" id="backStyle">
+                                    @media screen {
+                                        [[${templateCard.cssBackStyle}]]
+                                    }
+                                </style>
+                                <div id="backCarte">
+                                    <p id="verso1">verso1</p>
+                                    <p id="verso2">verso2</p>
+                                    <p id="verso3">verso3</p>
+                                    <p id="verso4">verso4</p>
+                                    <p id="verso5">verso5</p>
+                                    <p id="verso6">verso6</p>
+                                    <p id="verso7">verso7</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        backStyle = "[[${templateCard.backSupported ? 'block' : 'none'}]]";
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.getElementById('back-preview').style.display = backStyle;
+                            document.getElementById('_c_org_esupportail_sgc_domain_TemplateCard_cssBackStyle_id').style.display = backStyle;
+                            document.getElementsByName('backSupported')[0].addEventListener('change', function() {
+                                document.getElementById('back-preview').style.display = this.checked ? 'block' : 'none';
+                                document.getElementById('_c_org_esupportail_sgc_domain_TemplateCard_cssBackStyle_id').style.display = this.checked ? 'block' : 'none';
+                            });
+                        });
+                    </script>
+                    <div class="col-lg-6">
+                        <div class="alert alert-info">
+                            Les champs "recto" seront remplacés par les infos de l'utilisateur.
+                        </div>
+                        <div class="alert alert-info">
+                            <form th:action="@{/admin/templatecards/fillTemplate}" class="form-inline" id="searchEppnForm" role="search">
+                                <div class="form-group">
+                                    <label>Utilisateur test</label>
+                                    <input class="form-control" id="searchEppnTemp" name="searchText" placeholder="Login" type="text" th:value="${searchBean?.searchText}"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

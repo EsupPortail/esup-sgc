@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -46,12 +49,15 @@ public class UserService {
 	
 	@Resource
 	DateUtils dateUtils;
-	
-	@Resource
-	PermissionService permissionService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 
 	public boolean isFirstRequest(User user){
-		return Card.countfindCardsByEppnEqualsAndEtatNotIn(user.getEppn(), Arrays.asList(new Etat[] {Etat.CANCELED})) == 0;
+		return cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(user.getEppn(), Arrays.asList(new Etat[] {Etat.CANCELED})) == 0;
 	}
 
     public boolean isFreeRenewal(User user){
@@ -109,7 +115,7 @@ public class UserService {
 	}
 	
 	private boolean isOutOfDueDate(User user) {
-		return user.getDueDate()==null || user.getDueDate().before(new Date());
+		return user.getDueDate()==null || user.getDueDate().isBefore(LocalDateTime.now());
 	}
 	
 	public boolean hasDeliveredCard(User user){
@@ -212,7 +218,7 @@ public class UserService {
 		
 		for(PersonLdap item: ldapResults){
 			if(item.getEduPersonPrincipalName() !=null && !item.getEduPersonPrincipalName().isEmpty()) {
-				User user = User.findUser(item.getEduPersonPrincipalName());
+				User user = userDaoService.findUser(item.getEduPersonPrincipalName());
 				if(user == null){
 					user = new User();
 					user.setEppn(item.getEduPersonPrincipalName());

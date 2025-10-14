@@ -1,10 +1,8 @@
 package org.esupportail.sgc.domain.ldap;
 
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-@RooJavaBean
-@RooToString
 public class PersonLdap {
 	
 	private String eduPersonPrincipalName;
@@ -48,6 +46,74 @@ public class PersonLdap {
 		return true;
 	}
 
+
+	public String getEduPersonPrincipalName() {
+        return this.eduPersonPrincipalName;
+    }
+
+	public void setEduPersonPrincipalName(String eduPersonPrincipalName) {
+        this.eduPersonPrincipalName = eduPersonPrincipalName;
+    }
+
+	public String getCn() {
+        return this.cn;
+    }
+
+	public void setCn(String cn) {
+        this.cn = cn;
+    }
+
+	public String getSn() {
+        return this.sn;
+    }
+
+	public void setSn(String sn) {
+        this.sn = sn;
+    }
+
+	public String getGivenName() {
+        return this.givenName;
+    }
+
+	public void setGivenName(String givenName) {
+        this.givenName = givenName;
+    }
+
+	public String getMail() {
+        return this.mail;
+    }
+
+	public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+	public String getSchacDateOfBirth() {
+        return this.schacDateOfBirth;
+    }
+
+	public void setSchacDateOfBirth(String schacDateOfBirth) {
+        this.schacDateOfBirth = schacDateOfBirth;
+    }
+
+	public String getSupannEntiteAffectationPrincipale() {
+        return this.supannEntiteAffectationPrincipale;
+    }
+
+	public void setSupannEntiteAffectationPrincipale(String supannEntiteAffectationPrincipale) {
+        this.supannEntiteAffectationPrincipale = supannEntiteAffectationPrincipale;
+    }
+
+	public String getEduPersonPrimaryAffiliation() {
+        return this.eduPersonPrimaryAffiliation;
+    }
+
+	public void setEduPersonPrimaryAffiliation(String eduPersonPrimaryAffiliation) {
+        this.eduPersonPrimaryAffiliation = eduPersonPrimaryAffiliation;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }
 	
 	

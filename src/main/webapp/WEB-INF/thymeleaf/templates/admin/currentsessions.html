@@ -1,0 +1,62 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/currentsessions.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Sessions</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Sessions</h2>
+
+    <div class="jumbotron" id="sessionsUsers">
+        <ul>
+            <li th:each="userSession : ${allUsers}"
+                th:class="'session session' + ${userSession.userType}">
+                <a th:href="@{/manager(eppn=${userSession.eppn})}" th:text="${userSession.eppn}"></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="alert alert-info" id="sessionsdiv">
+        <h3>Utilisateurs connectés (sessions spring).</h3>
+        <p>
+            <strong th:text="${#lists.size(allUsers)} + ' session(s) active(s)'"></strong>
+        </p>
+        <br/>
+        <div class="well">
+            <ul class="list-inline">
+                <li th:each="userType : ${userTypes}"
+                    th:class="'session session' + ${userType}">
+                    <span th:text="#{|manager.type.${userType}|}"></span> :
+                    <span class="badge" th:text="${#lists.isEmpty(users.get(userType)) ? 0 : #lists.size(users.get(userType))}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <h3>Ensemble des Sessions HTTP</h3>
+        <p>
+            <strong th:text="${#lists.size(allSessions)} + ' session(s) active(s)'"></strong>
+        </p>
+        <br/>
+        <p><strong>sessionId - createdDate - remoteIp - originRequestUri - eppn</strong></p>
+        <div class="well">
+            <ul class="list">
+                <li th:each="userSession : ${allSessions}"
+                    th:class="${userSession.userEppn == null} ? 'alert-danger' : ''">
+                    <span th:text="${userSession.sessionId}"></span>
+                    - <span th:text="${userSession.createdDate}"></span>
+                    - <span th:text="${userSession.remoteIp}"></span>
+                    - <span th:text="${userSession.originRequestUri}"></span>
+                    - <span th:text="${userSession.userEppn}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

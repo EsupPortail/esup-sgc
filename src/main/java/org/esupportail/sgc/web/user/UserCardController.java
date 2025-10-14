@@ -2,26 +2,15 @@ package org.esupportail.sgc.web.user;
 
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.commons.io.IOUtils;
-import org.esupportail.sgc.domain.Card;
+import org.esupportail.sgc.dao.*;
+import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
-import org.esupportail.sgc.domain.PayBoxForm;
-import org.esupportail.sgc.domain.PayboxTransactionLog;
-import org.esupportail.sgc.domain.PhotoFile;
-import org.esupportail.sgc.domain.TemplateCard;
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.security.ShibAuthenticatedUserDetailsService;
-import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.CardEtatService;
-import org.esupportail.sgc.services.CardService;
-import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
-import org.esupportail.sgc.services.ExternalCardService;
-import org.esupportail.sgc.services.LogService;
+import org.esupportail.sgc.services.*;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
-import org.esupportail.sgc.services.TemplateCardService;
-import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.esc.ApiEscService;
 import org.esupportail.sgc.services.ie.ImportExportCardService;
@@ -41,26 +30,19 @@ import org.springframework.ui.Model;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
-@RequestMapping("/user")
+@RequestMapping(path = {"/user", "/user/"})
 @Controller
 public class UserCardController {
 
@@ -74,8 +56,20 @@ public class UserCardController {
 	
 	@Resource
 	ImportExportCardService importExportCardService;
-	
-	@ModelAttribute("footer")
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    PayboxTransactionLogDaoService payboxTransactionLogDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    @Autowired
+    private CrousSmartCardDaoService crousSmartCardDaoService;
+
+    @ModelAttribute("footer")
 	public String getFooter() {
 		return appliConfigService.pageFooter();
 	}   
@@ -139,6 +133,9 @@ public class UserCardController {
 
 	@Resource
 	EsupSgcBmpAsBase64Service esupSgcBmpAsBase64Service;
+
+    @Resource
+    TemplateCardDaoService templateCardDaoService;
 	
 	@RequestMapping
 	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
@@ -152,17 +149,17 @@ public class UserCardController {
 			Card externalCard = externalCardService.getExternalCard(eppn, request);
 			
 			if(externalCard != null) {
-				return viewExternalCardRequestForm(uiModel, request, externalCard);
+				return viewExternalCardRequestForm(uiModel, externalCard);
 			} else {
-				return viewCardRequestForm(uiModel, request, userAgent);
+				return viewCardRequestForm(uiModel, userAgent);
 			}
 		} else {
-			return viewCardInfo(locale, uiModel, request);
+			return viewCardInfo(uiModel);
 		}
 	}
 	
 	@Transactional
-	public String viewExternalCardRequestForm(Model uiModel, HttpServletRequest request, Card externalCard) {
+	public String viewExternalCardRequestForm(Model uiModel,  Card externalCard) {
 		uiModel.addAttribute("externalCard", externalCard);
 		byte[] externalCardPhoto = null;
 		try {
@@ -174,7 +171,7 @@ public class UserCardController {
 		}
 		
 		uiModel.addAttribute("externalCardPhoto", java.util.Base64.getEncoder().encodeToString(externalCardPhoto));
-		return "user/external-card-request";
+        return "templates/user/external-card-request";
 	}
 	
 	
@@ -195,10 +192,10 @@ public class UserCardController {
 
 	@Transactional
 	@RequestMapping(value="/card-request-form")
-	public String viewCardRequestForm(Model uiModel, HttpServletRequest request, @RequestHeader("User-Agent") String userAgent) {
+	public String viewCardRequestForm(Model uiModel, @RequestHeader("User-Agent") String userAgent) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		uiModel.addAttribute("user", user);
 		
 		String defaultPhotoMd5 = null;
@@ -223,46 +220,60 @@ public class UserCardController {
 		uiModel.addAttribute("requestUserIsManager", false);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
 		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
-		return "user/card-request";
+
+        return "templates/user/card-request";
 	}
 	
 	
 	@RequestMapping(value="/card-payment")
-	public String viewPaymentCardRequestForm(Locale locale, Model uiModel, HttpServletRequest request, final RedirectAttributes redirectAttributes) {
+	public String viewPaymentCardRequestForm(Model uiModel, final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(! userService.isFreeRenewal(user)){
 			uiModel.addAttribute("isFreeRenewal",  userService.isFreeRenewal(user));
 			PayBoxForm payBoxForm = payBoxService.getPayBoxForm(eppn, user.getEmail(), appliConfigService.getMontantRenouvellement());
 			uiModel.addAttribute("payBoxForm", payBoxForm);
 			uiModel.addAttribute("displayPayboxForm", true);
-			return  "user/card-payment";
+			return  "templates/user/card-payment";
 		} else {
-			return viewCardInfo(locale, uiModel, request);
+			return viewCardInfo(uiModel);
 		}
 	}
 	
-	@RequestMapping(value="/rejectedCase")
-	public String rejectedCardForm(@RequestParam("id") Long id, Model uiModel, HttpServletRequest request, @RequestHeader("User-Agent") String userAgent) {
-		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
-		uiModel.addAttribute("id", id);
-		uiModel.addAttribute("isRejected", true);
-		return viewCardRequestForm(uiModel, request, userAgent);
+	@RequestMapping(value="/rejectedCase", method = RequestMethod.GET)
+	public String rejectedCardForm(Authentication auth, @RequestParam("id") Long id, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
+		String eppn = auth.getName();
+		Card card = cardDaoService.findCard(id);
+		if(card != null && card.getEppn().equals(eppn) && card.getEtat().equals(Etat.REJECTED)){
+			uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
+			uiModel.addAttribute("id", id);
+			uiModel.addAttribute("isRejected", true);
+			return viewCardRequestForm(uiModel, userAgent);
+		} else {
+			log.info("Aucune carte rejetée ({}) trouvée pour cet utilisateur {}");
+			return "redirect:/user";
+		}
 	}	
 	
-	@RequestMapping(value="/card-disable")
-	public String viewDisableCardForm(@RequestParam("id") Long id, Model uiModel, HttpServletRequest request) {
-		uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
-		uiModel.addAttribute("id", id);
-		return "user/card-disable";
+	@RequestMapping(value="/card-disable", method = RequestMethod.GET)
+	public String viewDisableCardForm(Authentication auth, @RequestParam("id") Long id, Model uiModel) {
+		String eppn = auth.getName();
+		Card card = cardDaoService.findCard(id);
+		if(card != null && card.getEppn().equals(eppn)){
+			uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
+			uiModel.addAttribute("id", id);
+			return "templates/user/card-disable";
+		} else {
+			log.info("Aucune carte {} trouvée pour cet utilisateur {}");
+			return "redirect:/user";
+		}
 	}
 	
 	@RequestMapping(value="/disable", method = RequestMethod.POST)
-	public String disableCard(@RequestParam("id") Long id, @RequestParam(value="motif") MotifDisable motif, Model uiModel, final RedirectAttributes redirectAttributes) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	public String disableCard(Authentication auth, @RequestParam("id") Long id, @RequestParam(value="motif") MotifDisable motif, Model uiModel, final RedirectAttributes redirectAttributes) {
 		String eppn = auth.getName();
-		Card card = Card.findCard(id);
+		Card card = cardDaoService.findCard(id);
 		if(card != null && card.getEppn().equals(eppn)){
 			try {
 				cardEtatService.disableCardWithMotif(card, motif, false);
@@ -283,7 +294,7 @@ public class UserCardController {
 	public String enableCard(@RequestParam("id") Long id, Model uiModel, final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		Card card = Card.findCard(id);
+		Card card = cardDaoService.findCard(id);
 		if(card != null && card.getEppn().equals(eppn)){
 			try {
 				cardEtatService.setCardEtat(card, Etat.ENABLED, "Réactivation de la carte par l'utilisateur", null, false, false);
@@ -300,17 +311,17 @@ public class UserCardController {
 		return "redirect:/user";
 	}
 	
-	protected String viewCardInfo(Locale locale, Model uiModel, HttpServletRequest request) {
+	protected String viewCardInfo(Model uiModel) {
 		StopWatch stopWatch = new PrettyStopWatch();
 		stopWatch.start("auth");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		stopWatch.start("steps");
 		uiModel.addAttribute("steps", cardEtatService.getTrackingSteps());
 		uiModel.addAttribute("user", user);
 		stopWatch.start("payboxList");
-		uiModel.addAttribute("payboxList", PayboxTransactionLog.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
+		uiModel.addAttribute("payboxList", payboxTransactionLogDaoService.findPayboxTransactionLogsByEppnEquals(eppn).getResultList());
 		stopWatch.start("montant");
 		uiModel.addAttribute("montant", appliConfigService.getMontantRenouvellement());
 		stopWatch.start("displayFormParts");
@@ -318,9 +329,41 @@ public class UserCardController {
 		stopWatch.stop();
 		uiModel.addAttribute("displayVirtualCard", StringUtils.hasLength(appliConfigService.getBmpCardCommandVirtual()));
 		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
+        uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
 		log.trace(stopWatch.prettyPrint());
-		return "user/card-info";
+
+        Map<Long, List<StepDisplay>> stepsMap = new HashMap<>();
+        for(Card card : user.getCards()) {
+            List<StepDisplay> steps = computeSteps(card);
+            stepsMap.put(card.getId(), steps);
+        }
+        uiModel.addAttribute("stepsMap", stepsMap);
+
+        return "templates/user/card-info";
 	}
+
+    public List<StepDisplay> computeSteps(Card card) {
+        Etat etat = card.getEtat();
+        List<StepDisplay> result = new ArrayList<>();
+        boolean activeStepFound = false;
+        for (Etat step : cardEtatService.getTrackingSteps()) {
+            if (!activeStepFound) {
+                boolean isActive = step.equals(etat) ||
+                        (step.equals(Etat.REQUEST_CHECKED) &&
+                                (etat.equals(Etat.IN_PRINT) || etat.equals(Etat.PRINTED) || etat.equals(Etat.IN_ENCODE)));
+
+                if (isActive) {
+                    result.add(new StepDisplay(step, "active"));
+                    activeStepFound = true;
+                } else {
+                    result.add(new StepDisplay(step, "completed"));
+                }
+            } else {
+                result.add(new StepDisplay(step, ""));
+            }
+        }
+        return result;
+    }
 
 	
 	@RequestMapping(method = RequestMethod.POST)
@@ -335,7 +378,7 @@ public class UserCardController {
 		String eppn = auth.getName();
 		String redirect = "redirect:/user";
 		
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 
 		if(requestUserIsManager) {
 			// -> user = manager
@@ -386,7 +429,7 @@ public class UserCardController {
 		String eppn = SecurityContextHolder.getContext().getAuthentication().getName();
 		PhotoFile photoFile = null;
 		Card lastCard = cardService.findLastCardByEppnEquals(eppn);
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(lastCard !=null){
 			photoFile = lastCard.getPhotoFile();
 		} else if(user.getDefaultPhoto() != null && user.getDefaultPhoto().getBigFile().getMd5() != null) {
@@ -408,7 +451,7 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		
 		if(card.getEppn()!=null && eppn.equals(card.getEppn())) {
 			PhotoFile photoFile = card.getPhotoFile();
@@ -428,7 +471,7 @@ public class UserCardController {
 		String queryString = request.getQueryString();
 		if (payBoxService.payboxCallback(montant, reference, auto, erreur, idtrans, signature, queryString, ip)) {
  			String eppn = SecurityContextHolder.getContext().getAuthentication().getName();
- 			User user = User.findUser(eppn);
+ 			User user = userDaoService.findUser(eppn);
  			try {
  				cardService.sendMailCard(user, null, appliConfigService.getNoReplyMsg(),user.getEmail() ,appliConfigService.getListePpale(),
  						appliConfigService.getSubjectAutoCard().concat(" -- ".concat(user.getEppn())), appliConfigService.getPayboxMessage());
@@ -446,10 +489,10 @@ public class UserCardController {
 		// TODO : remove  @RequestParam("eppn") String eppn
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		eppn = auth.getName();
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		Boolean oldDifPhoto = user.getDifPhoto();
 		user.setDifPhoto(diffusionphoto);
-		user.merge();
+        userDaoService.merge(user);
 		logService.log(user.getCards().get(0).getId(), ACTION.DIFPHOTO, RETCODE.SUCCESS, oldDifPhoto == null ? "null" : oldDifPhoto + " --> " + diffusionphoto, user.getEppn(), null);
 		return "redirect:/user";
 	}
@@ -460,9 +503,9 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		if(shibService.isPreviousAdmin(auth)){
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			user.setRequestFree(true);
-			user.merge();
+            userDaoService.merge(user);
 			logService.log(user.getCards().get(0).getId(), ACTION.FORCEDFREEREQUEST, RETCODE.SUCCESS, "", user.getEppn(), null);
 		}
 		return "redirect:/user";
@@ -473,10 +516,10 @@ public class UserCardController {
 	public String deliver(@PathVariable("cardId") Long cardId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		if(eppn.equals(card.getEppn())) {
-			card.setDeliveredDate(new Date());
-			card.merge();
+			card.setDeliveredDate(LocalDateTime.now());
+            cardDaoService.merge(card);
 			logService.log(card.getId(), ACTION.USER_DELIVERY, RETCODE.SUCCESS, "", card.getEppn(), null);
 		}
 		return "redirect:/user";
@@ -519,11 +562,11 @@ public class UserCardController {
 	public String disableCrous(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		// autorisé qu'en cas d'erreur crous
 		if(user.getCrousError() != null && !user.getCrousError().isEmpty()) {
 			user.setCrous(false);
-			user.merge();
+            userDaoService.merge(user);
 		}
 		logService.log(null, ACTION.DISABLECROUS, RETCODE.SUCCESS, "Erreur CROUS : " + user.getCrousError(), eppn, null);
 		return "redirect:/user";
@@ -534,7 +577,7 @@ public class UserCardController {
 	public String enableEuropeanCard(final RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		user.setEuropeanStudentCard(true);
 		Card enabledCard = user.getEnabledCard();
 		if(enabledCard != null) {
@@ -556,9 +599,9 @@ public class UserCardController {
 			if (apiEscService.isEppnMatches(eppn)) {
 				if (apiEscService.isEscEnabled()) {
 					apiEscService.deleteEscPerson(eppn);
-					User user = User.findUser(eppn);
+					User user = userDaoService.findUser(eppn);
 					user.setEuropeanStudentCard(false);
-					user.merge();
+                    userDaoService.merge(user);
 					logService.log(user.getCards().get(0).getId(), ACTION.DISABLEEUROPEANCARD, RETCODE.SUCCESS, "", eppn, null);
 					redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "european.disable");
 				} else {
@@ -574,7 +617,7 @@ public class UserCardController {
 	@Transactional
 	public void getPhoto(@PathVariable String type, @PathVariable Long templateId, HttpServletResponse response) throws IOException, SQLException {
 		
-		TemplateCard templateCard = TemplateCard.findTemplateCard(templateId);
+		TemplateCard templateCard = templateCardDaoService.findTemplateCard(templateId);
 		PhotoFile photoFile = null;
 		if(templateCard != null) {
 			if("logo".equals(type)){
@@ -598,12 +641,13 @@ public class UserCardController {
 		log.debug("getCardBmpB64 with cardId = " + cardId);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		if(eppn.equals(card.getEppn())) {
 			String bmpAsBase64 = esupSgcBmpAsBase64Service.getBmpCard(card.getId(), EsupSgcBmpAsBase64Service.BmpType.virtual);
 			uiModel.addAttribute("bmpAsBase64", bmpAsBase64);
 		}
-		return "user/card-b64";
+
+        return "templates/user/card-b64";
 	}
 }
 

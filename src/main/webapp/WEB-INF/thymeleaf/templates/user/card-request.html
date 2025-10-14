@@ -1,0 +1,56 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/user/card-request.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{./layouts/user.html}">
+<div layout:fragment="content" id="requestDiv" th:if="${user!=null}" th:with="isRejected=${isRejected ?: false}">
+
+    <script type="text/javascript">
+        var isRejected = [[${isRejected}]];
+        var defaultPhotoUrl = "[[${requestUserIsManager ? '/manager/photo?eppn=' + user.eppn : '/user/photo'}]]";
+        var defaultPhotoMd5 = "[[${defaultPhotoMd5}]]";
+        var isISmartPhone = [[${isISmartPhone}]];
+        var photoSizeMax = "[[${photoSizeMax}]]";
+    </script>
+
+    <h2>Demande de carte</h2>
+
+    <div th:if="${!#strings.isEmpty(user.blockUserMsg)}">
+        <div th:utext="${user.blockUserMsg}"></div>
+    </div>
+    <div th:if="${displayFormParts['displayForm'] or (isRejected ?: false)}">
+        <div th:replace="~{templates/user/includes/freeRenewal :: freeRenewal}"></div>
+        <div th:replace="~{templates/user/includes/helpRequest :: helpRequest}"></div>
+        <form th:action="@{/user}" method="post" id="cardRequest" enctype="multipart/form-data">
+            <div th:replace="~{templates/user/includes/form_photo :: form_photo}"></div>
+
+            <div th:replace="~{templates/user/includes/form_crous :: form_crous}"></div>
+            <input type="hidden" name="crousTransient"
+                   th:if="${!displayFormParts['displayCrous']}"
+                   th:value="${displayFormParts['enableCrous']}" />
+
+            <div th:replace="~{templates/user/includes/form_europeanCard :: form_europeanCard}"></div>
+            <input type="hidden" name="europeanTransient"
+                   th:if="${!displayFormParts['displayEuropeanCard']}"
+                   th:value="${displayFormParts['enableEuropeanCard']}" />
+
+            <div th:replace="~{templates/user/includes/form_adress :: form_adress}"></div>
+            <div th:replace="~{templates/user/includes/form_cnil :: form_cnil}"></div>
+            <div th:replace="~{templates/user/includes/form_rules :: form_rules}"></div>
+
+            <input type="hidden" name="id" th:if="${(isRejected ?: false)}" th:value="${id}" />
+            <input type="hidden" name="eppn" th:if="${requestUserIsManager}" th:value="${eppn}" />
+
+            <div th:replace="~{templates/user/includes/form_submit :: form_submit}"></div>
+            <input type="hidden" name="requestUserIsManager" th:value="${requestUserIsManager}" />
+        </form>
+    </div>
+    <div th:if="${!(displayFormParts['displayForm'] or (isRejected ?: false))}">
+        <div class="alert alert-danger">
+            <p>Vous ne pouvez pas demander actuellement de Léocarte.</p>
+            <p>Réessayez ultérieurement ou rapprochez-vous de votre correspondant informatique local.</p>
+        </div>
+    </div>
+    <div th:replace="~{templates/user/includes/modals :: modals}"></div>
+</div>
+</html>

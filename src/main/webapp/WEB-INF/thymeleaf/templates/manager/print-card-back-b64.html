@@ -1,0 +1,41 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/print-card-back-b64.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Impression verso carte</title>
+    <script>
+        // Recharge la fenêtre parente pour rafraîchir l'état des actions
+        window.opener && window.opener.location.reload();
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        @page {
+            margin: 0;
+            padding: 0;
+            size: 8.57cm 5.403cm;
+        }
+        body {
+            padding: 0cm;
+            margin: 0cm;
+        }
+    </style>
+    <style th:inline="text">
+        [[${templateCard.cssBackStyle}]]
+    </style>
+</head>
+<body>
+    <div id="backCarte">
+        <p id="verso1" th:utext="${card.user.verso1}"></p>
+        <p id="verso2" th:utext="${card.user.verso2}"></p>
+        <p id="verso3" th:utext="${card.user.verso3}"></p>
+        <p id="verso4" th:utext="${card.user.verso4}"></p>
+        <p id="verso5" th:utext="${card.user.verso5}"></p>
+        <p id="verso6" th:utext="${card.user.verso6}"></p>
+        <p id="verso7" th:utext="${card.user.verso7}"></p>
+    </div>
+</body>
+</html>

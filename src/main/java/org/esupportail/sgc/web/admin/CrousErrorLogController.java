@@ -3,39 +3,37 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
+import org.esupportail.sgc.dao.UserDaoService;
+import org.esupportail.sgc.domain.CrousPatchIdentifier;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.LogService;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
-import org.esupportail.sgc.services.crous.ApiCrousService;
-import org.esupportail.sgc.services.crous.CrousErrorLog;
+import org.esupportail.sgc.services.crous.*;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
-import org.esupportail.sgc.services.crous.CrousService;
-import org.esupportail.sgc.services.crous.PatchIdentifier;
-import org.esupportail.sgc.services.crous.RightHolder;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.supercsv.cellprocessor.ConvertNullTo;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.dozer.CsvDozerBeanWriter;
@@ -43,7 +41,6 @@ import org.supercsv.prefs.CsvPreference;
 
 @RequestMapping("/admin/crouserrorlogs")
 @Controller
-@RooWebScaffold(path = "admin/crouserrorlogs", formBackingObject = CrousErrorLog.class, create=false, delete=false, update=false)
 public class CrousErrorLogController {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -70,7 +67,13 @@ public class CrousErrorLogController {
 	AppliConfigService appliConfigService;
 	
 	@Resource
-	private UserInfoService userInfoService;
+	UserInfoService userInfoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+    @Resource
+    CrousErrorLogDaoService crousErrorLogDaoService;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
@@ -97,43 +100,45 @@ public class CrousErrorLogController {
 	public EsupSgcOperation[] getEsupSgcOperations() {
 		return CrousErrorLog.EsupSgcOperation.values();
 	}
-	
+
+    /*
+        Empty value strings are trimmed to null.
+        Usefull for jpa repositories to avoid empty string queries.
+    */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
 	
 	@RequestMapping(method = RequestMethod.DELETE, produces = "text/html")
     public String purgeAllLogs() {
-		List<CrousErrorLog> logs = CrousErrorLog.findAllCrousErrorLogs();
+		List<CrousErrorLog> logs = crousErrorLogDaoService.findAllCrousErrorLogs();
 		for(CrousErrorLog log : logs) {
-			log.remove();
+            crousErrorLogDaoService.remove(log);
 		}		
         return "redirect:/admin/crouserrorlogs";
     }
 	
     @RequestMapping(produces = "text/html")
-    public String list(CrousErrorLog searchCrousErrorLog, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, 
-    		@RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel, HttpServletRequest request) {
-    	if(sortFieldName == null) {
-    		sortFieldName = "date";
-    		sortOrder = "desc";
-    	}
-    	if(size == null) {
-    		Object sizeInSession = request.getSession().getAttribute("size_in_session");
-    		size = sizeInSession != null ? (Integer)sizeInSession : 10;
-    		page = 1;
-    	}
-        int sizeNo = size == null ? 10 : size.intValue();
-        final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-        uiModel.addAttribute("crouserrorlogs", CrousErrorLog.findCrousErrorLogs(searchCrousErrorLog, firstResult, sizeNo, sortFieldName, sortOrder));
-        float nrOfPages = (float) CrousErrorLog.countCrousErrorLogs(searchCrousErrorLog) / sizeNo;
-        uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+    public String list(CrousErrorLog searchCrousErrorLog,
+                       @PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "date") Pageable pageable,
+                       Model uiModel) {
+
+        Page<CrousErrorLog> crousErrorLogs = crousErrorLogDaoService.findCrousErrorLogs(searchCrousErrorLog, pageable);
+        uiModel.addAttribute("crouserrorlogs", crousErrorLogs);
         uiModel.addAttribute("searchCrousErrorLog", searchCrousErrorLog);
-        return "admin/crouserrorlogs/list";
+
+		List<String> crousMessages = crousErrorLogDaoService.getCrousErrorLogMessages();
+		uiModel.addAttribute("crousMessages", crousMessages);
+
+        return "templates/admin/crouserrorlogs/list";
     }
     
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String show(@PathVariable("id") Long id, Model uiModel) {
-    	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
-        uiModel.addAttribute("crouserrorlog", CrousErrorLog.findCrousErrorLog(id));
+    	CrousErrorLog crousErrorLog = crousErrorLogDaoService.findCrousErrorLog(id);
+        uiModel.addAttribute("crouserrorlog", crousErrorLogDaoService.findCrousErrorLog(id));
         uiModel.addAttribute("itemId", id);
         RightHolder esupSgcRightHolder = computeEsupSgcRightHolderWithSynchronizedInfos(crousErrorLog.getUserEppn());
         uiModel.addAttribute("esupSgcRightHolder", esupSgcRightHolder);
@@ -158,11 +163,11 @@ public class CrousErrorLogController {
 	        }
     	}
 
-        return "admin/crouserrorlogs/show";
+        return "templates/admin/crouserrorlogs/show";
     }
 
 	protected RightHolder computeEsupSgcRightHolderWithSynchronizedInfos(String eppn) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
         User dummyUser = new User();
 		dummyUser.setEppn(user.getEppn());
 		dummyUser.setCrous(user.getCrous());
@@ -174,7 +179,7 @@ public class CrousErrorLogController {
     
     @RequestMapping(value = "/{id}/patchIdentifier", produces = "text/html", method = RequestMethod.POST)
     public String  patchIdentifier(@PathVariable("id") Long id, @Valid PatchIdentifier patchIdentifier, BindingResult bindingResult, Model uiModel) {
-    	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
+    	CrousErrorLog crousErrorLog = crousErrorLogDaoService.findCrousErrorLog(id);
     	crousService.patchIdentifier(patchIdentifier, EsupSgcOperation.PATCH);
     	logService.log(crousErrorLog.getCardId(), ACTION.CROUS_PATCH_IDENTIFIER, RETCODE.SUCCESS, "PatchIdentifier CROUS : " + patchIdentifier, crousErrorLog.getUserEppn(), null);
         return "redirect:/admin/crouserrorlogs/" + id;
@@ -184,10 +189,10 @@ public class CrousErrorLogController {
     @Transactional
     @RequestMapping(value = "/{id}/desactivateCrous", produces = "text/html", method = RequestMethod.POST)
     public String  desactivateCrous(@PathVariable("id") Long id, Model uiModel) {
-    	CrousErrorLog crousErrorLog = CrousErrorLog.findCrousErrorLog(id);
+    	CrousErrorLog crousErrorLog = crousErrorLogDaoService.findCrousErrorLog(id);
     	User user = crousErrorLog.getUserAccount();
     	user.setCrous(false);
-    	user.merge();
+    	userDaoService.merge(user);
     	logService.log(crousErrorLog.getCardId(), ACTION.CROUS_DESACTIVATION, RETCODE.SUCCESS, "Désactivation CROUS suite à erreur API : " + crousErrorLog.toString(), user.getEppn(), null);
         return "redirect:/manager?eppn=" + user.getEppn();
     }
@@ -210,7 +215,7 @@ public class CrousErrorLogController {
 			beanWriter.writeHeader(CSV_FIELDS);
 
             beanWriter.configureBeanMapping(CrousErrorLog.class, FIELD_MAPPING);
-			List<CrousErrorLog> logs = CrousErrorLog.findAllCrousErrorLogs("date", "desc");
+			List<CrousErrorLog> logs = crousErrorLogDaoService.findAllCrousErrorLogs("date", "desc");
 			for(CrousErrorLog log : logs) {
 				beanWriter.write(log, CSV_PROCESSORS);
 			}		

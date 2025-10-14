@@ -1,0 +1,41 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/import.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Import</title>
+</head>
+<body>
+<div id="imports" layout:fragment="content">
+    <h2>Import</h2>
+    <h3>Import CSV</h3>
+    <div>
+        Le CSV attendu doit avoir une entête (la première ligne est en fait ici simplement ignorée) et les lignes suivantes doivent être de cette forme :
+        <pre>28/01/2015 14:40:35;14/06/2017 23:05:29;803412abcd5704;Autorisée;100020000002120;testju@univ-rouen.fr</pre>
+        qui correspondent à :
+        <pre>date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn</pre>
+        Les autres informations sont en effet récupérées depuis le SI par ESUP-SGC (ldap, base de données ; le lien étant fait via l'eppn) ou encore depuis l'import csv crous
+        (pour la récupération des identifiants crous ; le lien étant fait via le CSN).
+    </div>
+    <div class="well">
+        <div th:if="${isInWorking}">
+            Importation en cours ...
+        </div>
+        <form th:if="${!isInWorking}" th:action="@{/admin/import/importCsvFile}" method="post" enctype="multipart/form-data" th:object="${file}">
+            <div class="form-group">
+                <label for="import_csv_file">Import CSV</label>
+                <input id="import_csv_file" name="file" required="required" type="file" class="form-control"/>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input name="inverseCsn" type="checkbox"/> Inverser les CSN
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success">Valider</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,12 +1,15 @@
 package org.esupportail.sgc.services;
 
+import org.esupportail.sgc.dao.PrinterDaoService;
 import org.esupportail.sgc.domain.Printer;
 import org.esupportail.sgc.services.ldap.GroupService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -23,21 +26,24 @@ public class PrinterService {
     @Resource
     EncodeAndPringLongPollService encodeAndPringLongPollService;
 
+    @Resource
+    PrinterDaoService printerDaoService;
+
     @Transactional
     @Async
     public void setMaintenanInfo(String eppn, String maiuntenanceInfo, String ip) {
         Printer printer = null;
-        List<Printer> printers = Printer.findPrintersByEppn(eppn).getResultList();
+        List<Printer> printers = printerDaoService. findPrintersByEppn(eppn).getResultList();
         if(printers.size()!=0) {
             printer = printers.get(0);
         } else {
             printer = new Printer();
             printer.setEppn(eppn);
-            printer.persist();
+            printerDaoService.persist(printer);
         }
         printer.setIp(ip);
         printer.setMaintenanceInfo(maiuntenanceInfo);
-        printer.setConnectionDate(new Date());
+        printer.setConnectionDate(LocalDateTime.now());
     }
 
     /*
@@ -46,7 +52,7 @@ public class PrinterService {
     public SortedMap<Printer, Boolean> getPrinters(String eppn, List<String> groups) {
         Set<Printer> printers = new HashSet<>();
         Set<String> connectedEppnPrinters = encodeAndPringLongPollService.getManagersPrintEncodeEppns();
-        printers.addAll(Printer.findPrintersByEppnOrByEppnInPrinterUsersOryEppnInPrinterGroups(eppn, groups).getResultList());
+        printers.addAll(printerDaoService. findPrintersByEppnOrByEppnInPrinterUsersOryEppnInPrinterGroups(eppn, groups).getResultList());
         SortedMap<Printer, Boolean> printersMap = new TreeMap<Printer, Boolean>((a, b) -> a.getLabel().compareTo(b.getLabel()));
         for(Printer printer: printers) {
             printersMap.put(printer, connectedEppnPrinters.contains(printer.getEppn()));

@@ -1,0 +1,659 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/stats.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Statistiques</title>
+</head>
+<body>
+<div id="statsManager" layout:fragment="content">
+    <th:block>
+        <div id="prefsContainer" th:data-prefs="${prefs}" th:data-prefsRm="${prefsRm}"><!-- --></div>
+        <script>
+            var statsRootUrl = "[[@{/manager/stats}]]";
+            var tabsUrl = "[[@{/manager/stats/tabs/}]]";
+            var selectedType = "[[${selectedType}]]";
+            var userAgent = "[[${userAgent}]]";
+            const prefsRaw = document.getElementById("prefsContainer")
+            var prefsStats = JSON.parse(prefsRaw.dataset.prefs || "[]");
+            var prefsStatsRm = JSON.parse(prefsRaw.dataset.prefsRm || "[]");
+        </script>
+        <h2>
+            Statistiques
+            <a class="btn btn-primary pull-right" th:href="@{/manager(index='first')}" type="button">
+                <span class="glyphicon glyphicon-home"></span>
+            </a>
+            <a class="btn btn-warning pull-right" th:href="@{/manager/stats/table}" type="button">
+                <span class="glyphicon glyphicon-list-alt"></span>
+            </a>
+            <a class="btn btn-default pull-right" data-target="#settings" data-toggle="modal" title="Préférences" href="#">
+                <span class="glyphicon glyphicon-cog"></span>
+            </a>
+        </h2>
+
+        <div class="well">
+            <ul>
+                <li>
+                    Les années universitaire utilisées dans les statistiques vont de debut juillet à fin juin de l'année suivante.
+                </li>
+                <li>
+                    Les statistiques "Navigateurs", "Appareils" et "Systèmes d'exploitation" concernent les navigateurs et appareils utilisés lors d'une demande de carte.
+                </li>
+            </ul>
+        </div>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" th:classappend="${#strings.isEmpty(selectedType)} ? 'active' : 'sleep'">
+                <a href="#0" role="tab" data-toggle="tab" th:utext="#{manager.type.All}"></a>
+            </li>
+            <li th:if="${types != null}" th:each="type : ${types}" role="presentation"
+                th:classappend="${selectedType} == ${type} ? 'active' : 'sleep'">
+                <a th:href="'#' + ${type}" role="tab" data-toggle="tab" th:utext="#{|manager.type.${type}|}"></a>
+            </li>
+        </ul>
+
+        <div id="statsPanels">
+            <!-- Bloc principal : Cartes éditées -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesEditesAnneeUniv">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Cartes éditées
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="cardsEdited" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Années d'édition des cartes encodées/activées -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cardsOldStats">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Années d'édition des cartes encodées/activées
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="cardsOld" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes par date de demande et état -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDemandeEtEtat">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Cartes par date de demande et état
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="cardsByYearEtat" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes par état -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesParEtat">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Cartes par état
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="cardsByEtat" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dernières cartes encodées -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="dernieresCartesEncodees">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Dernières cartes encodées
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="encodedCardsByday" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demandes des 30 derniers jours -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="dernieresDemandes">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Demandes des 30 derniers jours
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="cardsByDay" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demandes et encodage de carte par mois -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="demandesParMois">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Demandes et encodage de carte par mois
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="cardsByMonth" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date limite des demandes nouvelles ou rejetées -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="dateLimite">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Date limite des demandes nouvelles ou rejetées
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="dueDate" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloc conditionnel : Carte européenne étudiante -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="europeanCard" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Carte européenne étudiante
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="europeanCardChart" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloc conditionnel : Livraison -->
+            <div th:if="${livraison}">
+                <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDeLivraison">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>Cartes par date de livraison
+                                <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                    <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                                </button>
+                            </h5>
+                        </div>
+                        <div class="panel-body ">
+                            <canvas id="deliveredCardsByDay" width="400" height="400">&nbsp;</canvas>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#strings.isEmpty(selectedType)}">
+                    <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="livréesParUtilisateur">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5>Livrées par l'utilisateur
+                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+                                </h5>
+                            </div>
+                            <div class="panel-body ">
+                                <canvas id="userDeliveries" width="400" height="400">&amp;nbsp;</canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nonLivreesParAdresse">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5>Non livrées par adresse
+                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+                                    <sec:authorize access="hasRole('ROLE_ADMIN')">
+                                        <a href="${downloadUrl}/deliveryByAdress" title="${downloadUrl}/deliveryByAdress" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
+                                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span></a>
+                                    </sec:authorize>
+                                </h5>
+                            </div>
+                            <div class="panel-body ">
+                                <canvas id="deliveryByAdress" width="400" height="400">&amp;nbsp;</canvas>
+                                <div class="chartjs-tooltip">
+                                    <table>
+                                        <!--  -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nonEditablesParAdresse">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5>Demandes non éditables par adresse
+                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+                                </h5>
+                            </div>
+                            <div class="panel-body ">
+                                <canvas id="noneditableByAdress" width="400" height="400">&amp;nbsp;</canvas>
+                                <div class="chartjs-tooltip">
+                                    <table>
+                                        <!--  -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editeesNonLivrees">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5>Editées, non livrées
+                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+                                </h5>
+                            </div>
+                            <div class="panel-body ">
+                                <canvas id="notDelivered" width="400" height="400">&amp;nbsp;</canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloc conditionnel : Cartes éditables -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editables" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Cartes editables pour les nouvelles demandes
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                                <a th:href="@{/admin/import/exportCsvFile/editable}"
+                                   th:title="@{/admin/import/exportCsvFile/editable}"
+                                   class="btn btn-sm btn-info downloadBtn" id="statsEdit">
+                                    <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                                </a>
+                            </th:block>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="editable" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Périodes de demande de cartes -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="periodesDemandeDeCarte">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Périodes de demande de cartes
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="dates" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Périodes d'édition des cartes -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="periodesEncodageCarte">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Périodes d'édition des cartes
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="encodagedates" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demandes en cours -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesEnAttente">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Demandes en cours
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="pendingCards" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demandes rejetées en attente -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="rejetsEnAttente">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Demandes rejetées en attente
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="nbRejetsByMonth" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nb de rejets par utilisateur -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="rejets">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Nb de rejets par utilisateur
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="nbRejets" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribution des rôles -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="roles" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Distribution des rôles
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="nbRoles" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes par personne -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesParPersonne">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Cartes par personne
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="nbCards" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autorisations Crous -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="autorisationCrous">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Autorisations Crous
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="crous" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarifs Crous -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="tarifsCrous" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Tarifs Crous (comptes actifs, échelle logarithmique)
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="tarifsCrousBars" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diffusion photo -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="diffusionPhoto">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Diffusion photo
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="difPhoto" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appareils -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="appareils">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Appareils
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="os" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Systèmes d'exploitation -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="systemesexploit">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Systèmes d'exploitation
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="realos" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigateurs -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="navigateurs">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Navigateurs
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="browsers" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloc conditionnel : Flag 'demande nouvelle carte gratuite' -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDemandeEtEtat" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Flag 'demande nouvelle carte gratuite'
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="requestFree" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thèmes cartes activées (Enabled) -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="themes" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Thèmes cartes activées (Enabled)
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="templateCards" width="400" height="400">&nbsp;</canvas>
+                        <div class="chartjs-tooltip">
+                            <table></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prochains comptes 'caducs' (d'ici 1 an) -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nextDueDatesOneYearByTypeDiv" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Prochains comptes 'caducs' (d'ici 1 an)
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="nextDueDatesOneYearByType" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prochains comptes 'caducs' (d'ici 1 mois) -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nextDueDatesOneMonthByTypeDiv" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Prochains comptes 'caducs' (d'ici 1 mois)
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="nextDueDatesOneMonthByType" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Paybox -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="transactionsPaybox" th:if="${#strings.isEmpty(selectedType)}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Transactions Paybox
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="paybox" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Motifs de désactivation -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="motifsDeDesactivation">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h5>Motifs de désactivation
+                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
+                            </button>
+                        </h5>
+                    </div>
+                    <div class="panel-body ">
+                        <canvas id="motifs" width="400" height="400">&nbsp;</canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:replace="~{templates/manager/includes/modals :: modals}"></div>
+    </th:block>
+</div>
+</body>
+</html>

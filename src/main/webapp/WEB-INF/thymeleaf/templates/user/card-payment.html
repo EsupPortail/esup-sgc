@@ -1,0 +1,31 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/card-payment.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Paiement</title>
+</head>
+<body>
+<div id="paymentDiv" layout:fragment="content">
+    <script>
+        var displayPayboxForm = [[${displayPayboxForm}]];
+    </script>
+    <h2>Paiement</h2>
+    <div class="col-lg-2" th:if="${payBoxForm != null}">
+        <form method="POST" th:action="${payBoxForm.actionUrl}" id="payboxForm">
+            <input type="hidden" th:each="payBoxParam : ${payBoxForm.orderedParams}"
+                   th:name="${payBoxParam.key}" th:value="${payBoxParam.value}" />
+            <input type="hidden" name="PBX_HMAC" th:value="${payBoxForm.hmac}" />
+        </form>
+    </div>
+    <div class="jumbotron">
+        <strong>
+            Vous allez être redirigé vers la page de paiement! <br />
+            <img th:src="@{/images/loader2.gif}" />
+        </strong>
+    </div>
+</div>
+</body>
+</html>

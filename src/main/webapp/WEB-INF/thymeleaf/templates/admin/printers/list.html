@@ -1,0 +1,64 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/printers/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Liste des imprimantes</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Liste des imprimantes</h2>
+    <div>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Libellé</th>
+                    <th>EPPN</th>
+                    <th>IP</th>
+                    <th>Infos maintenance</th>
+                    <th>Utilisateurs</th>
+                    <th>Groupes</th>
+                    <th>Date connexion</th>
+                    <th>Voir</th>
+                    <th>Modifier</th>
+                    <th>Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="printer : ${printers}">
+                    <td>
+                        <a th:href="@{'/admin/printers/' + ${printer.id}}" th:text="${printer.label}"></a>
+                    </td>
+                    <td th:text="${printer.eppn}"></td>
+                    <td th:text="${printer.ip}"></td>
+                    <td th:text="${printer.maintenanceInfo}"></td>
+                    <td th:text="${printer.printerUsers}"></td>
+                    <td th:text="${printer.printerGroups}"></td>
+                    <td th:text="${#temporals.format(printer.connectionDate, printer_connectiondate_date_format)}"></td>
+                    <td>
+                        <a th:href="@{/admin/printers/{id}(id=${printer.id})}" class="btn btn-info">
+                            <span class="glyphicon glyphicon-eye-open"></span> Voir
+                        </a>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/printers/{id}?form(id=${printer.id})}" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-edit"></span> Modifier
+                        </a>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/printers/{id}(id=${printer.id})}" th:method="delete"
+                              style="display:inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette imprimante ?');">
+                            <button type="submit" class="btn btn-danger">
+                                <span class="glyphicon glyphicon-trash"></span> Supprimer
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

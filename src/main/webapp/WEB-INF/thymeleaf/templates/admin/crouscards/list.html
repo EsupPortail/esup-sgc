@@ -1,0 +1,78 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/crouscards/list.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sd="http://www.thymeleaf.org/spring-data"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Liste des cartes CROUS</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Crous</h2>
+    <div th:if="${isInWorking}">
+        Importation en cours ...
+    </div>
+    <div th:unless="${isInWorking}">
+        <form th:action="@{/admin/crouscards/addCrousCsvFile}" method="post" enctype="multipart/form-data" class="well form-horizontal">
+            <fieldset>
+                <legend>Ajout d'un CSV CROUS/IZLY</legend>
+                <label for="crous_csv_out_file">Ajout d'un CSV CROUS/IZLY</label>
+                <input id="crous_csv_out_file" name="file" required="required" type="file"/>
+                <label>
+                    <input name="inverseCsn" type="checkbox" value="true"/> Inverser les CSN
+                </label>
+                <button type="submit" class="btn btn-success">Valider</button>
+            </fieldset>
+        </form>
+    </div>
+    <div>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="uid">CSN</a>
+                    </th>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="zdcCreationDate">Date création</a>
+                    </th>
+                    <th>
+                        <a class="sorting" sd:pagination-sort="idTransmitter">Id Transmitter</a>
+                    </th>
+                    <th>Id Mapping</th>
+                    <th>Id Zdc</th>
+                    <th>Pix SS</th>
+                    <th>Pix NN</th>
+                    <th>Voir</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="card : ${croussmartcards}">
+                    <td th:text="${card.uid}"></td>
+                    <td th:text="${#temporals.format(card.zdcCreationDate, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${card.idTransmitter}"></td>
+                    <td th:text="${card.idMapping}"></td>
+                    <td th:text="${card.idZdc}"></td>
+                    <td th:text="${card.pixSs}"></td>
+                    <td th:text="${card.pixNn}"></td>
+                    <td>
+                        <a th:href="@{/admin/crouscards/{id}(id=${card.id})}" class="btn btn-info">
+                            <span class="glyphicon glyphicon-eye-open"></span> Détail
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+         <div class="text-center">
+             <nav>
+                <div class="btn-group">
+                    <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
+                    <ul class="btn-group pagination" sd:pagination="full"></ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

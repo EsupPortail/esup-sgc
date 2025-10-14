@@ -1,0 +1,75 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/print-card.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Impression carte</title>
+    <style>
+        @page { margin: 0; }
+        body { padding: 0cm; margin: 0cm; }
+        #pagebreak { page-break-after: always; }
+    </style>
+    <script>
+        // Recharge la fenêtre parente pour rafraîchir l'état des actions
+        window.opener && window.opener.location.reload();
+    </script>
+</head>
+<body>
+    <div th:each="card, loop : ${cards}">
+        <th:block th:with="cssId=${'specimenCarte' + loop.index},
+                           template=${userTemplatesCards.get(card)},
+                           masqueUrl=@{/manager/templatePhoto/masque/{id}(id=${template.id})},
+                           logoUrl=@{/manager/templatePhoto/logo/{id}(id=${template.id})},
+                           photoUrl=@{/manager/photo/{id}(id=${card.id})},
+                           qrCodeUrl=@{/manager/QRCode(cardId=${card.id})},
+                           css=${#strings.replace(template.cssStyle, 'specimenCarte', cssId)}">
+            <style>
+                @media screen {
+                    #[[${cssId}]] {
+                        background: url([[${masqueUrl}]]);
+                        line-height: 1;
+                    }
+                }
+                [[${css}]]
+            </style>
+            <div th:id="${cssId}">
+                <div id="left">
+                    <p id="recto1" th:utext="${card.user.recto1}"></p>
+                    <p id="recto2" th:utext="${card.user.recto2}"></p>
+                    <p id="recto3" th:utext="${card.user.recto3}"></p>
+                    <p id="recto4" th:utext="${card.user.recto4}"></p>
+                    <p id="recto5" th:utext="${card.user.recto5}"></p>
+                    <p id="recto6" th:utext="${card.user.recto6}"></p>
+                    <p id="recto7" th:utext="${card.user.recto7}"></p>
+                    <img alt="qrcode" th:src="${qrCodeUrl}" id="qrcode"/>
+                </div>
+                <div id="right">
+                    <img th:src="${photoUrl}" id="photo"/>
+                    <img th:src="${logoUrl}" id="logo-ur"/>
+                </div>
+            </div>
+            <th:block th:if="${template.backSupported}">
+                <div id="pagebreak"></div>
+                <th:block th:with="cssBackId=${'backCarte' + loop.index},
+                                   cssBack=${#strings.replace(template.cssBackStyle, 'backCarte', cssBackId)}">
+                    <style>
+                        [[${cssBack}]]
+                    </style>
+                    <div th:id="${cssBackId}">
+                        <p id="verso1">verso1</p>
+                        <p id="verso2">verso2</p>
+                        <p id="verso3">verso3</p>
+                        <p id="verso4">verso4</p>
+                        <p id="verso5">verso5</p>
+                        <p id="verso6">verso6</p>
+                        <p id="verso7">verso7</p>
+                    </div>
+                </th:block>
+            </th:block>
+            <th:block th:if="${!loop.last}">
+                <div id="pagebreak"></div>
+            </th:block>
+        </th:block>
+    </div>
+</body>
+</html>

@@ -1,22 +1,22 @@
 package org.esupportail.sgc.services.userinfos;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import org.esupportail.sgc.EsupSgcTestUtilsService;
 import org.esupportail.sgc.domain.User;
-import org.junit.Assume;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.jupiter.api.Assumptions.*;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations={"classpath*:META-INF/spring/applicationContext*.xml"})
 public class UserInfoServiceTest {
 	
@@ -44,7 +44,7 @@ public class UserInfoServiceTest {
     }
     
 	protected void testAdditionalsInfo(String eppn2test) {
-		Assume.assumeTrue(eppn2test != null);
+		assumeTrue(eppn2test != null);
 	    User dummyUser = new User();
 		dummyUser.setEppn(eppn2test);
 		userInfoService.setAdditionalsInfo(dummyUser, null);
@@ -56,7 +56,7 @@ public class UserInfoServiceTest {
     @Test
     public void testUserFieldsEquals() {
     	User user = esupSgcTestUtilsService.getUserFromDb();
-		Assume.assumeTrue(user!=null);
+		assumeTrue(user!=null);
     	log.info(String.format("Test User.fieldsEquals on %s", user.getEppn()));
 		// TODO : user == user -> getFieldNotEquals is not really tested here :(
     	assertTrue(user.getFieldNotEquals(user).isEmpty());

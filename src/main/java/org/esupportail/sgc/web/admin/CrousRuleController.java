@@ -1,30 +1,25 @@
 package org.esupportail.sgc.web.admin;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.crous.CrousRule;
-import org.esupportail.sgc.services.crous.CrousRuleConfig;
+import org.esupportail.sgc.services.crous.CrousRuleConfigDaoService;
+import org.esupportail.sgc.services.crous.CrousRuleDaoService;
 import org.esupportail.sgc.services.crous.EsistCrousService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.util.UriUtils;
-import org.springframework.web.util.WebUtils;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @RequestMapping("/admin/crousrules")
 @Controller
-@RooWebScaffold(path = "admin/crousrules", formBackingObject = CrousRule.class)
 public class CrousRuleController {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -35,14 +30,15 @@ public class CrousRuleController {
 	@Resource
 	AppliConfigService appliConfigService;
 
+    @Resource
+    CrousRuleDaoService crousRuleDaoService;
+
+    @Resource
+    CrousRuleConfigDaoService crousRuleConfigDaoService;
+
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "crousrules";
-	}
-
-	@RequestMapping(value = "/{id}", produces = "text/html")
-	public String show(Model uiModel) {
-		return "redirect:/admin/crousrules";
 	}
 
 	@RequestMapping(value="/updateCrousRules", method = RequestMethod.POST, produces = "text/html")
@@ -53,23 +49,23 @@ public class CrousRuleController {
 
 	@RequestMapping(produces = "text/html")
 	public String list(Model uiModel) {
-		uiModel.addAttribute("crousruleconfigs", CrousRuleConfig.findAllCrousRuleConfigs());
-		uiModel.addAttribute("crousrulesApi", CrousRule.findAllCrousRulesApi());
-		uiModel.addAttribute("crousrulesCustom", CrousRule.findAllCrousRulesCustom());
+		uiModel.addAttribute("crousruleconfigs", crousRuleConfigDaoService.findAllCrousRuleConfigs());
+		uiModel.addAttribute("crousrulesApi", crousRuleDaoService.findAllCrousRulesApi());
+		uiModel.addAttribute("crousrulesCustom", crousRuleDaoService.findAllCrousRulesCustom());
 		uiModel.addAttribute("defaultCnousIdCompagnyRate", appliConfigService.getDefaultCnousIdCompagnyRate());
 		uiModel.addAttribute("defaultCnousIdRate", appliConfigService.getDefaultCnousIdRate());
-		return "admin/crousrules/list";
+        return "templates/admin/crousrules/list";
 	}
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
 	public String create(@Valid CrousRule crousRule, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
 		if (bindingResult.hasErrors()) {
 			populateEditForm(uiModel, crousRule);
-			return "admin/crousrules/create";
+			return "templates/admin/crousrules/create";
 		}
 		uiModel.asMap().clear();
-		crousRule.setUpdateDate(new Date());
-		crousRule.persist();
+		crousRule.setUpdateDate(LocalDateTime.now());
+		crousRuleDaoService.persist(crousRule);
 		return "redirect:/admin/crousrules";
 	}
 
@@ -77,20 +73,38 @@ public class CrousRuleController {
 	public String update(@Valid CrousRule crousRule, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
 		if (bindingResult.hasErrors()) {
 			populateEditForm(uiModel, crousRule);
-			return "admin/crousrules/update";
+			return "templates/admin/crousrules/update";
 		}
 		uiModel.asMap().clear();
-		crousRule.setUpdateDate(new Date());
-		crousRule.merge();
+		crousRule.setUpdateDate(LocalDateTime.now());
+        crousRuleDaoService.merge(crousRule);
 		return "redirect:/admin/crousrules";
 	}
 
-	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-		String enc = httpServletRequest.getCharacterEncoding();
-		if (enc == null) {
-			enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-		}
-		pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-		return pathSegment;
-	}
+	@RequestMapping(params = "form", produces = "text/html")
+    public String createForm(Model uiModel) {
+        populateEditForm(uiModel, new CrousRule());
+        return "templates/admin/crousrules/update";
+    }
+
+	@RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String updateForm(@PathVariable("id") Long id, Model uiModel) {
+        populateEditForm(uiModel, crousRuleDaoService.findCrousRule(id));
+        return "templates/admin/crousrules/update";
+    }
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        CrousRule crousRule = crousRuleDaoService.findCrousRule(id);
+        crousRuleDaoService.remove(crousRule);
+        uiModel.asMap().clear();
+        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
+        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
+        return "redirect:/admin/crousrules";
+    }
+
+	void populateEditForm(Model uiModel, CrousRule crousRule) {
+        uiModel.addAttribute("crousRule", crousRule);
+        uiModel.addAttribute("crousruleconfigs", crousRuleConfigDaoService.findAllCrousRuleConfigs());
+    }
 }

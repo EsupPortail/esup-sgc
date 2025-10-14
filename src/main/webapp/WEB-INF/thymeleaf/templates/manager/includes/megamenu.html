@@ -1,0 +1,114 @@
+<!-- src/main/resources/templates/manager/includes/megamenu.html -->
+<div th:fragment="megamenu">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="collapse navbar-collapse" id="searchCollapse">
+            <div class="alert alert-info" id="searchBar">
+                <form th:action="@{/manager}" method="get" class="navbar-form navbar-left form-inline" role="search" id="searchEppnForm" th:object="${searchBean}">
+                    <div class="form-group">
+                        <label style="display:none">-- Etat --</label>
+                        <select th:field="*{etat}" id="searchBeanEtat" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option th:each="etat : ${etats}" th:value="${etat}" th:text="#{|card.step.${etat}|}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Adresse --</label>
+                        <select th:field="*{address}" id="searchBeanAdress" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option th:each="address : ${addresses}" th:value="${address.key}" th:text="${address.value}"></option>
+                        </select>
+                    </div>
+                    <div class="" style="display:none">
+                        <select th:field="*{type}" id="searchBeanType" class="megamenu">
+                            <option value="">-- Population --</option>
+                            <option th:each="type : ${types}" th:value="${type}" th:text="#{|manager.type.${type}|}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Dernier thème --</label>
+                        <select th:field="*{lastTemplateCardPrinted.id}" id="searchBeanLastTemplateCardPrinted" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option th:each="tpl : ${lastTemplateCardsPrinted}" th:value="${tpl.id}" th:text="${tpl}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Statut --</label>
+                        <select th:field="*{editable}" id="searchBeanEditable" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option value="true">Editable</option>
+                            <option value="false">Non editable</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Gestion --</label>
+                        <select th:field="*{ownOrFreeCard}" id="searchBeanOwnOrFreeCard" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option value="true">Libres ou gérées par moi</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Nb Cartes --</label>
+                        <select th:field="*{nbCards}" id="searchBeanNbCards" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option th:each="nbCard : ${nbCards}" th:value="${nbCard}" th:text="${nbCard} + ' carte(s)'"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Nb Rejets --</label>
+                        <select th:field="*{nbRejets}" id="searchBeanNbRejets" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option th:each="nbRejet : ${nbRejets}" th:value="${nbRejet}" th:text="${nbRejet} + ' rejet(s)'"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Type adresse --</label>
+                        <select th:field="*{flagAdresse}" id="searchBeanFlagAdresse" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option value="INT">Adresse interne</option>
+                            <option value="EXT">Adresse externe</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:none">-- Demande en cours --</label>
+                        <select th:field="*{hasRequestCard}" id="searchBeanHasRequestCard" class="megamenu">
+                            <option value="" data-placeholder="true"></option>
+                            <option value="true">oui</option>
+                            <option value="false">non</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control megamenu" placeholder="nom, prénom, email, n°" id="searchEppn" th:field="*{searchText}"/>
+                    </div>
+                    <button type="submit" class="btn btn-success">OK</button>
+                    <button type="button" class="btn btn-danger" id="nofilter" title="Enlever tous les filtres">
+                        <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#advancedSearch">+ de filtres</button>
+                    <div class="col-lg-12 collapse" id="advancedSearch">
+                        <div th:each="item, status : ${nbFields}">
+                            <div class="col-lg-2">
+                                <label style="display:none">-- Champ libre --</label>
+                                <select th:field="*{freeField[__${status.index}__]}" class="freeSelect" data-width="fit" data-dropup-auto="false" data-live-search="true" th:id="'fields' + ${status.index}">
+                                    <option value="" data-placeholder="true"></option>
+                                    <option th:each="field : ${freeFields}" th:value="${field.key}" th:text="${field.value}"></option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2">
+                                <label style="display:none">-- Champ libre : résultats -</label>
+                                <select multiple="multiple" data-dropup-auto="false" data-live-search="true" th:name="'freeFieldValue[' + ${status.index} + ']'" th:id="'freeFieldValue' + ${status.index}" data-size="15" class="megamenu">
+                                    <option value="" data-placeholder="true"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <hr />
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div id="traitementLot">
+            <!--  -->
+        </div>
+    </div>
+</div>

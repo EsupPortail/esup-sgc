@@ -3,6 +3,8 @@ package org.esupportail.sgc.services.ac;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -147,10 +149,10 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService {
 	/**
 	 * -> dd/MM/yyyy hh:mm
 	 */
-	private String formatDate(Date date) {
+	private String formatDate(LocalDateTime date) {
 		String dateFt = "";
 		if(date!=null) {
-			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
 			dateFt = df.format(date);
 		}
 		return dateFt;

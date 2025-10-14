@@ -1,11 +1,9 @@
 package org.esupportail.sgc.web.admin;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
-import javax.annotation.Resource;
-
+import jakarta.annotation.Resource;
+import net.sf.cglib.core.Local;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
@@ -17,12 +15,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @RequestMapping("/admin/purge")
 @Controller
@@ -38,6 +38,12 @@ public class PurgeController {
 
 	@Resource
 	UserInfoService userInfoService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
@@ -66,33 +72,32 @@ public class PurgeController {
 
 	
 	@ModelAttribute("datePurge")
-	public Date getDefaultDatePurge() {
-		Date date = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.YEAR, -3);
-		return cal.getTime();
+	public LocalDateTime getDefaultDatePurge() {
+		LocalDateTime date = LocalDateTime.now();
+		return date.minusYears(3);
 	} 
 	
 	
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
 	public String index(Model uiModel) {
-		uiModel.addAttribute("userWithNoCardsNb", User.countFindUsersWithNoCards());
-		return "admin/purge";
+		uiModel.addAttribute("userWithNoCardsNb", userDaoService.countFindUsersWithNoCards());
+        return "templates/admin/purge";
 	}
 
 	@RequestMapping(value="/count")
 	@ResponseBody
-	public Long card2purgeCount(@DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
-		return Card.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date);
+	public Long card2purgeCount(@DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
+		LocalDateTime dateTime = date.atStartOfDay();
+        return cardDaoService.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, dateTime);
 	}
 	
 	// @Transactional - pas de transactionnal ici -> purge de chaque carte dans sa propre transaction
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
-	public synchronized String purge(RedirectAttributes redirectAttrs, @DateTimeFormat(pattern="yyyy-MM-dd") Date date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
-		long nbCardsRemoved = 0;
-		log.info(Card.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date) + " cartes vont être supprimées/purgées");
-		for(Card card : Card.findCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, date).getResultList()) {
+	public synchronized String purge(RedirectAttributes redirectAttrs, @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date, @RequestParam Etat etat, @RequestParam(required = false) String userType) {
+        LocalDateTime dateTime = date.atStartOfDay();
+        long nbCardsRemoved = 0;
+		log.info(cardDaoService.countFindCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, dateTime) + " cartes vont être supprimées/purgées");
+		for(Card card : cardDaoService.findCardsByEtatAndUserTypeAndDateEtatLessThan(etat, userType, dateTime).getResultList()) {
 			try {
 				purgeService.purge(card);
 				nbCardsRemoved++;
@@ -109,8 +114,8 @@ public class PurgeController {
 	@RequestMapping(params = "users", method = RequestMethod.POST, produces = "text/html")
 	public synchronized String purgeUsers(RedirectAttributes redirectAttrs) {
 		long nbUsersRemoved = 0;
-		log.info(User.countFindUsersWithNoCards() + " utilisateurs vont être supprimés/purgés");
-		for(User user : User.findUsersWithNoCards().getResultList()) {
+		log.info(userDaoService.countFindUsersWithNoCards() + " utilisateurs vont être supprimés/purgés");
+		for(User user : userDaoService.findUsersWithNoCards().getResultList()) {
 			try {
 				purgeService.purge(user);
 				nbUsersRemoved++;

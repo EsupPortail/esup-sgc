@@ -1,10 +1,14 @@
 package org.esupportail.sgc.services.esc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.dao.EscCardDaoService;
 import org.esupportail.sgc.dao.EscPersonDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.ValidateService;
@@ -15,18 +19,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
-import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 public class ApiEscService extends ValidateService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	@Resource
 	AppliConfigService appliConfigService;
@@ -36,6 +42,12 @@ public class ApiEscService extends ValidateService {
 
 	@Resource
 	EscCardDaoService escCardDaoService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 
 	RestTemplate restTemplate;
 
@@ -53,7 +65,7 @@ public class ApiEscService extends ValidateService {
 
 	String cardType;
 
-	Map<Date, String> cardTypes = new HashMap<>();
+	Map<LocalDateTime, String> cardTypes = new HashMap<>();
 	
 	boolean abortActivationIfEscFails = false;
 
@@ -90,16 +102,16 @@ public class ApiEscService extends ValidateService {
 	}
 
 	public void setCardTypes(Map<String, String> cardTypesDateAsString) throws ParseException {
-		cardTypes = new HashMap<Date, String>();
+		cardTypes = new HashMap<LocalDateTime, String>();
 		for(String dateAsString : cardTypesDateAsString.keySet()) {
-			Date date = dateFormat.parse(dateAsString);
+            LocalDateTime date = LocalDateTime.parse(dateAsString, dateFormat);
 			cardTypes.put(date, cardTypesDateAsString.get(dateAsString));
 		}
 	}
 
 	@Override
 	public void validateInternal(Card card) {
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		if(user.getEuropeanStudentCard() && enable) {
 			try {
 				postOrUpdateEscPerson(card.getEppn());
@@ -117,7 +129,7 @@ public class ApiEscService extends ValidateService {
 
 	@Override
 	public void invalidateInternal(Card card) {
-		User user = User.findUser(card.getEppn());
+		User user = userDaoService.findUser(card.getEppn());
 		if(user.getEuropeanStudentCard() && enable) {
 			try {
 				postOrUpdateEscPerson(card.getEppn());
@@ -132,7 +144,7 @@ public class ApiEscService extends ValidateService {
 
 	public void postOrUpdateEscPerson(String eppn) {
 		if(eppn.matches(this.getEppnFilter())) {
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			if (user.getEuropeanStudentCard() && enable) {
 				EscPerson escPerson = getEscPerson(eppn);
 				if (escPerson == null) {
@@ -145,6 +157,10 @@ public class ApiEscService extends ValidateService {
 	}
 
 	public EscPerson getEscPerson(String eppn) {
+		if(!enable) {
+			log.warn("Esc API not enabled");
+			return null;
+		}
 		String europeanPersonIdentifier = getEuropeanPersonIdentifier(eppn);
 		if(europeanPersonIdentifier == null) {
 			log.info("No europeanPersonIdentifier retrieved for " + eppn);
@@ -272,8 +288,8 @@ public class ApiEscService extends ValidateService {
 		EscPerson escPerson = new EscPerson();
 		escPerson.setEppn(eppn);
 		escPerson.setIdentifier(europeanPersonIdentifier);
-		escPerson.setFullName(User.findUser(eppn).getDisplayName());
-		User user = User.findUser(eppn);
+		escPerson.setFullName(userDaoService.findUser(eppn).getDisplayName());
+		User user = userDaoService.findUser(eppn);
 		EscPersonOrganisationUpdateView escPersonOrganisationUpdateView = new EscPersonOrganisationUpdateView();
 		escPersonOrganisationUpdateView.setEmail(user.getEmail());
 		if(user.getAcademicLevel()!=null) {
@@ -287,7 +303,7 @@ public class ApiEscService extends ValidateService {
 		}
 		Long pic = picInstitutionCode;
 		if(!StringUtils.isEmpty(user.getPic())) {
-			pic = new Long(user.getPic());
+			pic = Long.valueOf(user.getPic());
 		}
 		escPersonOrganisationUpdateView.setOrganisationIdentifier(pic.toString());
 		escPerson.getPersonOrganisationUpdateViews().add(escPersonOrganisationUpdateView);
@@ -296,7 +312,7 @@ public class ApiEscService extends ValidateService {
 	}
 
 	public EscCard getEscCard(String eppn, String csn) {
-		Card card = Card.findCardByCsn(csn);
+		Card card = cardDaoService.findCardByCsn(csn);
 		if(card.getEscnUid() == null || card.getEscnUid().isEmpty() || getEuropeanPersonIdentifier(eppn) == null || !enable) {
 			return null;
 		} else {
@@ -380,7 +396,7 @@ public class ApiEscService extends ValidateService {
 		escCard.setIssuedAt(card.getEncodedDate());
 		Long pic = picInstitutionCode;
 		if(!StringUtils.isEmpty(card.getUser().getPic())) {
-			pic = new Long(card.getUser().getPic());
+			pic = Long.valueOf(card.getUser().getPic());
 		}
 
 		escCard.setIssuerIdentifier(pic.toString());
@@ -394,16 +410,16 @@ public class ApiEscService extends ValidateService {
 
 	protected EscCard.CardType getCardType(Card card) {
 		String type = cardType;
-		TreeSet<Date> dates = new TreeSet<Date>(cardTypes.keySet());
-		for(Date date : dates) {
-			if(card.getEncodedDate().after(date)) {
+		TreeSet<LocalDateTime> dates = new TreeSet<LocalDateTime>(cardTypes.keySet());
+		for(LocalDateTime date : dates) {
+			if(card.getEncodedDate().isAfter(date)) {
 				type = cardTypes.get(date);
 			}
 		}
 		return EscCard.CardType.valueOf(type);
 	}
 
-	private HttpHeaders getJsonHeaders() {	
+	private HttpHeaders getJsonHeaders() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + key);
 		headers.set("Accept", "application/json");
@@ -422,7 +438,7 @@ public class ApiEscService extends ValidateService {
 				EscPerson escPersonInESCR = escPersonsInESCR.get(0);
 				esi = escPersonInESCR.getIdentifier();
 			} else {
-				User user = User.findUser(eppn);
+				User user = userDaoService.findUser(eppn);
 				String supannCodeINE = user.getSupannCodeINE();
 				if (supannCodeINE == null || supannCodeINE.isEmpty()) {
 					log.info(eppn + " has no or empty supannCodeINE and this attribute is required for the European Person Card !");
@@ -436,7 +452,7 @@ public class ApiEscService extends ValidateService {
 
 	@Transactional
 	public boolean validateESCenableCard(String eppn) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		Card enabledCard = user.getEnabledCard();			
 		if(enabledCard != null && enabledCard.getEscnUid() != null && !enabledCard.getEscnUid().isEmpty()) {
 			if(escPersonDaoService.findEscPersonsByEppnEquals(user.getEppn()).getResultList().isEmpty() || escCardDaoService.findEscCardsByCardNumberEquals(enabledCard.getEscnUid()).getResultList().isEmpty()) {

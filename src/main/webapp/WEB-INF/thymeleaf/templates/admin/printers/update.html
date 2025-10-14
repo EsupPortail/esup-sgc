@@ -1,0 +1,63 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/printers/update.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Modifier imprimante</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Modifier une imprimante</h2>
+    <form th:action="@{/admin/printers}" th:object="${printer}" th:method="put" class="form-horizontal well">
+        <input type="hidden" th:field="*{id}" class="form-control" id="id"/>
+        <input type="hidden" th:field="*{version}" class="form-control" id="version"/>
+        <input type="hidden" th:field="*{connectionDate}" class="form-control" id="connectionDate"
+                       th:value="${#temporals.format(printer.connectionDate, printer_connectiondate_date_format)}"/>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="label">Libellé</label>
+            <div class="col-md-10">
+                <input type="text" th:field="*{label}" class="form-control" id="label"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="eppn">EPPN</label>
+            <div class="col-md-10">
+                <input type="text" th:field="*{eppn}" class="form-control" id="eppn" readonly="readonly"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="ip">IP</label>
+            <div class="col-md-10">
+                <input type="text" th:field="*{ip}" class="form-control" id="ip" readonly="readonly"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="maintenanceInfo">Infos maintenance</label>
+            <div class="col-md-10">
+                <input type="text" th:field="*{maintenanceInfo}" class="form-control" id="maintenanceInfo" readonly="readonly"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="printerUsers">Utilisateurs</label>
+            <div class="col-md-10">
+                <textarea th:field="*{printerUsersAsString}" class="form-control" id="printerUsers"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="printerGroups">Groupes</label>
+            <div class="col-md-10">
+                <textarea th:field="*{printerGroupsAsString}" class="form-control" id="printerGroups"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a th:href="@{/admin/printers}" class="btn btn-default">Annuler</a>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

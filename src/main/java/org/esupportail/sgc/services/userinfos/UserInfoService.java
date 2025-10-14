@@ -1,6 +1,12 @@
 package org.esupportail.sgc.services.userinfos;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.BigFileDaoService;
+import org.esupportail.sgc.dao.PhotoFileDaoService;
+import org.esupportail.sgc.dao.TemplateCardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.PhotoFile;
@@ -20,21 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 @Transactional
 public class UserInfoService {
@@ -49,9 +45,9 @@ public class UserInfoService {
 	
 	private final static String DATE_FORMAT_UTCSEC_LDAP = "yyyyMMddHHmmss'Z'";
 	
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+	private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 	
-	private SimpleDateFormat dateFormatter2 = new SimpleDateFormat(DATE_FORMAT_2);
+	private DateTimeFormatter dateFormatter2 = DateTimeFormatter.ofPattern(DATE_FORMAT_2);
 	
 	String caducIfEmpty = null;
 	
@@ -68,6 +64,18 @@ public class UserInfoService {
 	
 	@Resource
 	AppliConfigService appliConfigService;
+
+    @Resource
+    BigFileDaoService bigFileDaoService;
+
+    @Resource
+    PhotoFileDaoService photoFileDaoService;
+
+    @Resource
+    TemplateCardDaoService templateCardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	@Autowired
 	public void setExtUserInfoServices(List<ExtUserInfoService> extUserInfoServices) {
@@ -79,11 +87,11 @@ public class UserInfoService {
 		this.caducIfEmpty = caducIfEmpty;
 	}
 
-	protected SimpleDateFormat getDateFormatter() {
+	protected DateTimeFormatter getDateFormatter() {
 		return dateFormatter;
 	}
 	
-	protected SimpleDateFormat getDateFormatter2() {
+	protected DateTimeFormatter getDateFormatter2() {
 		return dateFormatter2;
 	}
 	
@@ -94,14 +102,34 @@ public class UserInfoService {
 		return dateTimeUTCsecFormatter;
 	}
 
+	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request) {
+		return setAdditionalsInfo(user, request, null);
+	}
 	
 	/**
 	 * Get and set userInfos from userInfoservices to user object
 	 * Return false if synchronize is set to false by userInfoservices computing
 	 */
-	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request) {
+	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request, List<String> fields2reinitialize) {
 		Map<String, String> userInfos = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER); 
 		userInfos.put("synchronize", "true");
+		/* Initialize fields to null for fields in list
+		 * Used when synchronize userInfo and some fields must be set to null if not present anymore
+		 */
+		if(fields2reinitialize != null) {
+			for(String field: fields2reinitialize) {
+				if("cnousReferenceStatut".equals(field)) {
+					userInfos.put("referenceStatut", null);
+				} else if("rneEtablissemnt".equals(field)) {
+					userInfos.put("supannEtablissement", null);
+				} else if("dueDate".equals(field)) {
+					userInfos.put("schacExpiryDate", null);
+				} else {
+					userInfos.put(field, null);
+				}
+			}
+		}
+
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
 			if(user.getEppn().matches(extUserInfoService.getEppnFilter())) {
 				userInfos.putAll(extUserInfoService.getUserInfos(user, request, userInfos));
@@ -124,7 +152,7 @@ public class UserInfoService {
 			} else if("supannCodeINE".equalsIgnoreCase(key)) {
 				user.setSupannCodeINE(userInfos.get(key));
 			} else if("birthday".equalsIgnoreCase(key)) {
-				Date birthday = parseDate(userInfos.get(key));
+				LocalDateTime birthday = parseDate(userInfos.get(key));
 				user.setBirthday(birthday);
 			} else if("email".equalsIgnoreCase(key)) {
 				user.setEmail(userInfos.get(key));
@@ -156,9 +184,11 @@ public class UserInfoService {
 				if(userInfos.get(key) != null && !(userInfos.get(key)).isEmpty()) {
 					Long indice  = Long.valueOf(userInfos.get(key));
 					user.setIndice(indice);
+				} else {
+					user.setIndice(0L);
 				}
 			} else if("schacExpiryDate".equalsIgnoreCase(key)) {
-				Date schacExpiryDate = parseDateUTCsec(userInfos.get(key));
+				LocalDateTime schacExpiryDate = parseDateUTCsec(userInfos.get(key));
 				user.setDueDate(schacExpiryDate);
 			} else if("secondaryId".equalsIgnoreCase(key)) {
 				String secondaryId  = userInfos.get(key);
@@ -242,7 +272,7 @@ public class UserInfoService {
 				String templateKey  = userInfos.get(key);
 				user.setTemplateKey(templateKey);
 			} else if("schacDateOfBirth".equalsIgnoreCase(key)) {
-				Date birthday = dateUtils.parseSchacDateOfBirth(userInfos.get(key));
+                LocalDateTime birthday = dateUtils.parseSchacDateOfBirth(userInfos.get(key));
 				user.setBirthday(birthday);
 			} else if("supannRefId4ExternalCard".equalsIgnoreCase(key)) {
 				// supannRefId4ExternalCard deprecated : use csn4ExternalCard and access-control4ExternalCard fields
@@ -270,7 +300,7 @@ public class UserInfoService {
 				if(userInfos.get(key) != null && !userInfos.get(key).isEmpty()) {
 					bytes = java.util.Base64.getDecoder().decode(userInfos.get(key));
 				}
-				user.getExternalCard().getPhotoFile().getBigFile().setBinaryFile(bytes);
+                bigFileDaoService.setBinaryFile(user.getExternalCard().getPhotoFile().getBigFile(), bytes);
 				user.getExternalCard().getPhotoFile().setFileSize((long)bytes.length);
 				user.getExternalCard().getPhotoFile().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
 			} else if("editable".equalsIgnoreCase(key)) {
@@ -292,9 +322,9 @@ public class UserInfoService {
 					byte[] bytes = org.apache.commons.codec.binary.Base64.decodeBase64(userInfos.get(key));
 					if(user.getDefaultPhoto() == null) {
 						user.setDefaultPhoto(new PhotoFile());
-						user.getDefaultPhoto().persist();
+                        photoFileDaoService.persist(user.getDefaultPhoto());
 					}
-					user.getDefaultPhoto().getBigFile().setBinaryFile(bytes);
+                    bigFileDaoService.setBinaryFile(user.getDefaultPhoto().getBigFile(), bytes);
 					user.getDefaultPhoto().setFileSize((long)bytes.length);
 					user.getDefaultPhoto().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
 				}
@@ -341,7 +371,7 @@ public class UserInfoService {
 		boolean forceCaduc = false;
 		if(caducIfEmpty != null && !caducIfEmpty.isEmpty()) {
 			String caducIfEmptyValue = userInfos.get(caducIfEmpty);
-			if((caducIfEmptyValue == null || caducIfEmptyValue.isEmpty()) && user.getDueDate().after(new Date())) {
+			if((caducIfEmptyValue == null || caducIfEmptyValue.isEmpty()) && user.getDueDate().isAfter(LocalDateTime.now())) {
 				// si plus d'entrée ldap ou similaire -> user.getMustBeCaduc = true -> caduc
 				forceDueDateCaduc(user);
 				forceCaduc = true;
@@ -359,10 +389,7 @@ public class UserInfoService {
 
 	public void forceDueDateCaduc(User user) {
 		//  caduc -> on surcharge la date de fin
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.HOUR, - User.DUE_DATE_INCLUDED_DELAY);
-		Date dueDateIncluded = cal.getTime();
+        LocalDateTime dueDateIncluded = LocalDateTime.now();
 		user.setDueDate(dueDateIncluded);
 	}
 	
@@ -375,18 +402,17 @@ public class UserInfoService {
 		card.setRecto5Printed(user.getRecto5());
 		card.setRecto6Printed(user.getRecto6());
 		card.setRecto7Printed(user.getRecto7());
-		if(user.getTemplateCard().getBackSupported()) {
+        TemplateCard templateCard = templateCardDaoService.getTemplateCard(user);
+		if(templateCard.getBackSupported()) {
 			card.setVersoTextPrinted(StringUtils.join(user.getVersoText(), "\n"));
 		}
-		card.setTemplateCard(user.getTemplateCard());
-		if(user.getTemplateCard() != null) {
-			card.getUser().setLastCardTemplatePrinted(user.getTemplateCard());
-		}
+		card.setTemplateCard(templateCard);
+        card.getUser().setLastCardTemplatePrinted(templateCard);
 	}
 
 	public void setDefaultValues4NullAttributes(Map<String, String> userInfos, User user) {
 		if(!userInfos.containsKey("schacExpiryDate") || userInfos.get("schacExpiryDate") == null || (userInfos.get("schacExpiryDate")).isEmpty()) {
-			Date dateFinDroits = appliConfigService.getDefaultDateFinDroits();
+            LocalDateTime dateFinDroits = appliConfigService.getDefaultDateFinDroits();
 			user.setDueDate(dateFinDroits);
 		} 
 		if(!userInfos.containsKey("institute") || (userInfos.get("institute")).isEmpty()) {
@@ -394,67 +420,54 @@ public class UserInfoService {
 		}
 	}
 
-	public Date parseDate(String dateString) {
-		Date date = null;
-		if(dateString!=null && !dateString.isEmpty()) {
-			log.debug("parsing of date : " + dateString);
-			try {
-				date = getDateFormatter().parse(dateString);
-			} catch (ParseException e) {
-				log.error("parsing of date " + dateString + " failed");
-			}
-		}
-		return date;
-	}
+    public LocalDateTime parseDate(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            return null;
+        }
+
+        log.debug("parsing of date : " + dateString);
+
+        try {
+            DateTimeFormatter formatter = getDateFormatter(); // équivalent de getDateFormatter() mais pour LocalDateTime
+            return LocalDate.parse(dateString, formatter).atStartOfDay();
+        } catch (DateTimeParseException e) {
+            log.error("parsing of date " + dateString + " failed", e);
+            return null;
+        }
+    }
 
 
+    public LocalDateTime parseDateUTCsec(String dateString) {
+        if (dateString != null && !dateString.isEmpty()) {
+            log.trace("parsing of date : " + dateString);
+            try {
+                return LocalDateTime.parse(dateString, getDateTimeUTCsecFormatter());
+            } catch (Exception e) {
+                log.warn("parsing of date " + dateString + " failed", e);
+            }
+        }
+        return null;
+    }
 
-	public Date parseDateUTCsec(String dateString) {
-		Date date = null;
-		if(dateString!=null && !dateString.isEmpty()) {
-			log.trace("parsing of date : " + dateString);
-			try {
-				date = Date.from(LocalDateTime.parse(dateString, getDateTimeUTCsecFormatter()).atZone(ZoneId.systemDefault()).toInstant());
-			} catch (Exception e) {
-				log.warn("parsing of date " + dateString + " failed", e);
-			}
-		}
-		return date;
-	}
-	
-
-	public Date parseDate2(String dateString) {
-		Date date = null;
-		if(dateString!=null && !dateString.isEmpty()) {
-			log.trace("parsing of date : " + dateString);
-			try {
-				date = getDateFormatter2().parse(dateString);
-			} catch (Exception e) {
-				log.warn("parsing of date " + dateString + " failed", e);
-			}
-		}
-		return date;
-	}
-	
 	public void updateUser(String eppn, HttpServletRequest request) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		setAdditionalsInfo(user, request);
 		log.info("UserInfo of " + user.getEppn() + " now : " + user);
 	}
 	
 	public List<String> getListExistingType(){
 		List<String> listTypes = new ArrayList<String>();
-		listTypes = User.findDistinctUserType();
+		listTypes = userDaoService.findDistinctUserType();
 		return listTypes;	
 	}
 	
 	public List<String> getListAddresses(String userType, Etat etat) {
-		List<String> adresses = User.findDistinctAddresses(userType, etat);
+		List<String> adresses = userDaoService.findDistinctAddresses(userType, etat);
 		return adresses;
 	}
 
 	public List<TemplateCard> getDistinctLastTemplateCardsPrinted() {
-		return User.findDistinctLastTemplateCardsPrinted();
+		return templateCardDaoService.findDistinctLastTemplateCardsPrinted();
 	}
 }
 

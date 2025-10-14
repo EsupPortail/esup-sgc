@@ -1,36 +1,33 @@
 package org.esupportail.sgc.web.admin;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.esupportail.sgc.dao.CardActionMessageDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CardActionMessage;
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardActionMessageService;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.WebUtils;
+
+import jakarta.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @RequestMapping("/admin/actionmessages")
 @Controller
-@RooWebScaffold(path = "admin/actionmessages", formBackingObject = CardActionMessage.class)
 public class CardActionMessageController {
 	
 	@ModelAttribute("active")
@@ -43,6 +40,12 @@ public class CardActionMessageController {
 	
 	@Resource
 	CardActionMessageService cardActionMessageService;
+
+    @Resource
+    CardActionMessageDaoService cardActionMessageDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	@ModelAttribute("help")
 	public String getHelp() {
@@ -61,7 +64,7 @@ public class CardActionMessageController {
 	
 	@ModelAttribute("userTypes")
 	public List<String> getUserTypes() {
-		return User.findDistinctUserType();
+		return userDaoService.findDistinctUserType();
 	}
 	
 	@ModelAttribute("footer")
@@ -70,21 +73,14 @@ public class CardActionMessageController {
 	}  
     
     @RequestMapping(produces = "text/html")
-    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, 
-    		@RequestParam(value = "sortFieldName", required = false, defaultValue="etatFinal") String sortFieldName, @RequestParam(value = "sortOrder", required = false, defaultValue="ASC") String sortOrder, Model uiModel) {
-        if (page != null || size != null) {
-            int sizeNo = size == null ? 10 : size.intValue();
-            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("cardactionmessages", CardActionMessage.findCardActionMessageEntries(firstResult, sizeNo, sortFieldName, sortOrder));
-            float nrOfPages = (float) CardActionMessage.countCardActionMessages() / sizeNo;
-            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
-        } else {
-            uiModel.addAttribute("cardactionmessages", CardActionMessage.findAllCardActionMessages(sortFieldName, sortOrder));
-        }
+    public String list(@PageableDefault(size = 10, direction = Sort.Direction.ASC, sort = "etatFinal") Pageable pageable,
+                       Model uiModel) {
+        Page<CardActionMessage> cardactionmessages = cardActionMessageDaoService.findCardActionMessages(pageable);
+        uiModel.addAttribute("cardactionmessages", cardactionmessages);
         uiModel.addAttribute("cardActionsMessagesConflictsList", cardActionMessageService.getCardActionMessagesAutoInConflict());
         uiModel.addAttribute("cardActionsMessagesUnreachableList", cardActionMessageService.getCardActionMessagesUnreachable());
-        
-        return "admin/actionmessages/list";
+
+        return "templates/admin/actionmessages/list";
     }
     
     
@@ -92,7 +88,7 @@ public class CardActionMessageController {
     public String create(@Valid CardActionMessage cardActionMessage, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, cardActionMessage);
-            return "admin/actionmessages/create";
+            return "templates/admin/actionmessages/update";
         }
         uiModel.asMap().clear();
         cardActionMessageService.persist(cardActionMessage);
@@ -100,20 +96,20 @@ public class CardActionMessageController {
     }
     
     @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
-    public String update(@Valid CardActionMessage cardActionMessage, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String update(@Valid CardActionMessage cardActionMessage, BindingResult bindingResult, Model uiModel, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, cardActionMessage);
-            return "admin/actionmessages/update";
+            return "templates/admin/actionmessages/update";
         }
         uiModel.asMap().clear();
         cardActionMessageService.merge(cardActionMessage);
-        return "redirect:/admin/actionmessages/" + encodeUrlPathSegment(cardActionMessage.getId().toString(), httpServletRequest);
+        return "redirect:/admin/actionmessages/" + encodeUrlPathSegment(cardActionMessage.getId().toString(), request);
     }
 
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        CardActionMessage cardActionMessage = CardActionMessage.findCardActionMessage(id);
+        CardActionMessage cardActionMessage = cardActionMessageDaoService.findCardActionMessage(id);
         cardActionMessageService.remove(cardActionMessage);
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
@@ -122,4 +118,30 @@ public class CardActionMessageController {
     }
     
 	
+
+	@RequestMapping(params = "form", produces = "text/html")
+    public String createForm(Model uiModel) {
+        populateEditForm(uiModel, new CardActionMessage());
+        return "templates/admin/actionmessages/update";
+    }
+
+	@RequestMapping(value = "/{id}", produces = "text/html")
+    public String updateForm(@PathVariable("id") Long id, Model uiModel) {
+        populateEditForm(uiModel, cardActionMessageDaoService.findCardActionMessage(id));
+        uiModel.addAttribute("itemId", id);
+        return "templates/admin/actionmessages/update";
+    }
+
+	void populateEditForm(Model uiModel, CardActionMessage cardActionMessage) {
+        uiModel.addAttribute("cardActionMessage", cardActionMessage);
+    }
+
+	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+        String enc = httpServletRequest.getCharacterEncoding();
+        if (enc == null) {
+            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
+        }
+        pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
+        return pathSegment;
+    }
 }

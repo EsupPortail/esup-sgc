@@ -17,44 +17,45 @@
  */
 package org.esupportail.sgc.web;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.esupportail.sgc.dao.NavBarAppDaoService;
 import org.esupportail.sgc.domain.NavBarApp;
 import org.esupportail.sgc.domain.NavBarApp.VisibleRole;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.WebRequestInterceptor;
 
-public class ConfigInterceptor extends HandlerInterceptorAdapter {
-	
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+import jakarta.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
-		// we want to add usual model in modelAndView only when needed, ie with
+public class ConfigInterceptor implements WebRequestInterceptor{
+
+    @Resource
+    NavBarAppDaoService navBarAppDaoService;
+
+
+    @Override
+    public void preHandle(WebRequest request) throws Exception {
+    }
+
+    @Override
+    public void postHandle(WebRequest request, @Nullable ModelMap model) throws Exception {
+
+		// we want to add usual model in model only when needed, ie with
 		// direct html view :
 		// not for download response (for example) because we don't need it
 		// not for redirect view because we don't need it and we don't want that
 		// they appears in the url
 
-		if (modelAndView != null && modelAndView.hasView()) {
+		if (model != null) {
 
-			boolean isViewObject = modelAndView.getView() == null;
-
-			boolean isRedirectView = !isViewObject && modelAndView.getView() instanceof RedirectView;
-
-			boolean viewNameStartsWithRedirect = isViewObject && modelAndView.getViewName().startsWith(UrlBasedViewResolver.REDIRECT_URL_PREFIX);
-
-			if (!isRedirectView && !viewNameStartsWithRedirect) {		
 		        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 				if(authentication != null) {
 					List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
@@ -75,19 +76,36 @@ public class ConfigInterceptor extends HandlerInterceptorAdapter {
 				    	roles.add(VisibleRole.LIVREUR);
 				    }
 				    if(!roles.isEmpty()) {
-				    	modelAndView.addObject("navBarApps", NavBarApp.findNavBarAppsByVisible4role(roles));
+				    	model.addAttribute("navBarApps", navBarAppDaoService.findNavBarAppsByVisible4role(roles));
 				    }
-				}	
-			}
-		
-			if(request.getParameter("size")!=null) {
-				Integer size = Integer.valueOf(request.getParameter("size"));
-				request.getSession().setAttribute("size_in_session", size);
-			} else if(request.getSession(false)!=null && request.getSession().getAttribute("size_in_session") == null) {
-				request.getSession().setAttribute("size_in_session", new Integer(10));
+				}
+
+                String active = (String) model.getAttribute("active");
+                String role;
+                if ("user".equals(active)) {
+                    role = "user";
+                } else if ("manager".equals(active) || "stats".equals(active)) {
+                    role = "manager";
+                } else if ("su".equals(active)) {
+                    role = "supervisor";
+                } else if (Arrays.asList(
+                        "admin", "sessions", "paybox", "logs", "nfc", "crousError", "crouspatchids",
+                        "configs", "crous", "import", "actionmsgs", "tools", "prefs", "template",
+                        "navbar", "crousrules", "logmails", "purge", "printers", "userinfos",
+                        "groupsroles", "locations", "javaperf"
+                ).contains(active)) {
+                    role = "admin";
+                } else {
+                    role = "user";
+                }
+                model.addAttribute("role", role);
 			}
 		
 		}
-	}
+
+    @Override
+    public void afterCompletion(WebRequest request, Exception ex) throws Exception {
+
+    }
 
 }

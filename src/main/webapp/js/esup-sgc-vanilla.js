@@ -1182,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //Recherche simple
     idSlimSelect.forEach(function(element, i) {
     	if(document.getElementById(element) != null ){
-    		var selectLabel = document.getElementById(element).previousSibling.innerText;
+    		var selectLabel = document.getElementById(element).previousElementSibling.innerText;
 	    	var showSearch = false;
 	    	if(element == 'searchBeanAdress'){
 	    		showSearch = true;
@@ -1213,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(typeof nbFields != "undefined"){
 	    for (var i = 0; i < nbFields; i++) {
 	    	if(document.getElementById('fields' + i) != null ){
-	    		var selectLabel = document.getElementById('fields' + i).previousSibling.innerText;
+	    		var selectLabel = document.getElementById('fields' + i).previousElementSibling.innerText;
 			    new SlimSelect({
 			    	  select: '#fields' + i,
 						settings: {
@@ -1223,7 +1223,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    	})
 	    	}
 		    if(document.getElementById('freeFieldValue' + i) != null ){
-		    	selectLabel = document.getElementById('freeFieldValue' + i).previousSibling.innerText;
+		    	selectLabel = document.getElementById('freeFieldValue' + i).previousElementSibling.innerText;
 			    new SlimSelect({
 			    	  select: '#freeFieldValue' + i,
 						settings: {
@@ -1364,7 +1364,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 
-		if(typeof defaultPhotoMd5 != "undefined" && isRejected.length ==0){
+		if(typeof defaultPhotoMd5 != "undefined" && !isRejected){
 			cropper.img.src = defaultPhotoUrl;
 		}
 
@@ -1409,7 +1409,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	currentImg.setAttribute("id","image-preview");
 		    	var imageExif = document.getElementById('image-preview');
 		    	//hack iphone,iPad
-		    	if(isISmartPhone == "true" && orientation == "6"){
+		    	if(isISmartPhone && orientation == "6"){
 		    		cropper.rotateCW();
 		    	}
 		    	cropper.options.exportZoom = photoExportZoom;
@@ -1418,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    	document.querySelector('#specimenCarte img#photo').setAttribute("src", image);
 		    	document.querySelectorAll('.ezcrop-image-data')[0].value=image;
 		    	//hack iphone,iPad
-		    	if(isISmartPhone == "true" && orientation == "6"){
+		    	if(isISmartPhone && orientation == "6"){
 		    		cropper.rotateCCW();
 		    	}
 			 });
@@ -1758,7 +1758,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			  if (request.status >= 200 && request.status < 400) {
 				  var message = this.response;
 					if (message && message.length) {
-						crousSmartCard.parentNode.nextSibling.innerHTML = message;
+                        crousSmartCard.parentNode.parentNode.getElementsByClassName("getCrousSmartCardDiv")[0].innerHTML = message;
 					}
 			  }
 			};
@@ -1797,7 +1797,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			  if (request.status >= 200 && request.status < 400) {
 				  var message = this.response;
 					if (message && message.length) {
-						escrCard.parentNode.nextSibling.innerHTML = message;
+						escrCard.parentNode.parentNode.getElementsByClassName("getEscrCardDiv")[0].innerHTML = message;
 					}
 			  }
 			};

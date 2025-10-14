@@ -3,6 +3,7 @@ package org.esupportail.sgc.services.crous;
 import org.esupportail.sgc.services.crous.CrousErrorLog.CrousOperation;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientResponseException;
 
@@ -81,8 +82,11 @@ public class CrousHttpClientErrorException extends Exception {
 				+ "]";
 	}
 
-	public HttpStatus getStatusCode() {
+	public HttpStatusCode getStatusCode() {
 		return httpClientErrorException.getStatusCode();
 	}
-	
+
+	public HttpClientErrorException getHttpClientErrorException() {
+		return httpClientErrorException;
+	}
 }

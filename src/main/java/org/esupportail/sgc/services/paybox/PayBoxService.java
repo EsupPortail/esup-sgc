@@ -1,5 +1,21 @@
 package org.esupportail.sgc.services.paybox;
 
+import org.esupportail.sgc.dao.PayBoxFormDaoService;
+import org.esupportail.sgc.dao.PayboxTransactionLogDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
+import org.esupportail.sgc.domain.PayBoxForm;
+import org.esupportail.sgc.domain.PayboxTransactionLog;
+import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.services.AppliConfigService;
+import org.esupportail.sgc.services.EmailService;
+import org.esupportail.sgc.tools.MutexFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import jakarta.annotation.Resource;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,25 +29,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
-import javax.annotation.Resource;
-
-import org.esupportail.sgc.domain.PayBoxForm;
-import org.esupportail.sgc.domain.PayboxTransactionLog;
-import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.EmailService;
-import org.esupportail.sgc.tools.MutexFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.scheduling.annotation.Scheduled;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class PayBoxService {
 
@@ -49,6 +48,15 @@ public class PayBoxService {
 	
 	@Autowired
 	private MutexFactory<String> mutexFactory;
+
+    @Resource
+    PayBoxFormDaoService payBoxFormDaoService;
+
+    @Resource
+    PayboxTransactionLogDaoService payboxTransactionLogDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 
     private String site;
 
@@ -112,7 +120,7 @@ public class PayBoxService {
     }
 
     public PayBoxForm getPayBoxForm(String eppn, String mail, double montant) {
-        String montantAsCents = Integer.toString(new Double(montant * 100).intValue());
+        String montantAsCents = Integer.toString(Double.valueOf(montant * 100).intValue());
         PayBoxForm payBoxForm = new PayBoxForm();
         payBoxForm.setActionUrl(getPayBoxActionUrl());
         payBoxForm.setClientEmail(mail);
@@ -128,7 +136,7 @@ public class PayBoxService {
         payBoxForm.setTotal(montantAsCents);
         String callbackUrl = reponseServerUrl + "/payboxcallback";
         String effectuerUrl = reponseServerUrl + "/user/payboxOk";
-        String annulerUrl = reponseServerUrl + "/user/";
+        String annulerUrl = reponseServerUrl + "/user";
         payBoxForm.setCallbackUrl(callbackUrl);
         payBoxForm.setForwardAnnuleUrl(annulerUrl);
         payBoxForm.setForwardEffectueUrl(effectuerUrl);
@@ -137,7 +145,7 @@ public class PayBoxService {
         payBoxForm.setHmac(hMac);
         payBoxForm.setEppn(eppn);
         payBoxForm.setRequestDate(new Date());
-        payBoxForm.persist();
+        payBoxFormDaoService.persist(payBoxForm);
         return payBoxForm;
     }
 
@@ -151,7 +159,7 @@ public class PayBoxService {
     }
 
 	private String replaceWithUserFields(String eppn, String numCommand) {
-		User user = User.findUser(eppn);
+		User user = userDaoService.findUser(eppn);
 		if(user != null) {
 			numCommand = numCommand.replaceAll("%email%", user.getEmail());
 			numCommand = numCommand.replaceAll("%name%", user.getName());
@@ -212,7 +220,7 @@ public class PayBoxService {
 
     public boolean payboxCallback(String montant, String reference, String auto, String erreur, String idtrans, String signature, String queryString, String ip) {
     	synchronized(mutexFactory.getMutex(reference)) {
-	        List<PayboxTransactionLog> txLogs = PayboxTransactionLog.findPayboxTransactionLogsByIdtransEquals(idtrans).getResultList();
+	        List<PayboxTransactionLog> txLogs = payboxTransactionLogDaoService.findPayboxTransactionLogsByIdtransEquals(idtrans).getResultList();
 	        boolean newTxLog = txLogs.size() == 0;
 	        PayboxTransactionLog txLog = txLogs.size() > 0 ? txLogs.get(0) : null;
 	        if (txLog == null) {
@@ -229,16 +237,16 @@ public class PayBoxService {
 	        txLog.setErreur(erreur);
 	        txLog.setIdtrans(idtrans);
 	        txLog.setSignature(signature);
-	        txLog.setTransactionDate(new Date());
+	        txLog.setTransactionDate(LocalDateTime.now());
 	        String eppn = getEppn(reference);
 	        txLog.setEppn(eppn);
 	        if (this.checkPayboxSignature(queryString, signature)) {
 	                if ("00000".equals(erreur)) {
 	                	log.info("Transaction : " + reference + " pour un montant de " + montant + " OK !");
 	                	if (newTxLog) {
-	                		txLog.persist();
+                            payboxTransactionLogDaoService.persist(txLog);
 	                	} else {
-	                		txLog.merge();
+                            payboxTransactionLogDaoService.merge(txLog);
 	                	}
 	                	try {
 	                		String paiementAlertMailto = appliConfigService.getPaiementAlertMailto();
@@ -263,7 +271,7 @@ public class PayBoxService {
 
     public String getEppn(String reference) {
     	String eppn = null;
-    	List<PayBoxForm> payBoxForms =  PayBoxForm.findPayBoxFormsByCommandeEquals(reference).getResultList();
+    	List<PayBoxForm> payBoxForms =  payBoxFormDaoService.findPayBoxFormsByCommandeEquals(reference).getResultList();
     	if(!payBoxForms.isEmpty()) {
     		eppn= payBoxForms.get(0).getEppn();
     	}
@@ -274,14 +282,11 @@ public class PayBoxService {
     @Scheduled(cron="0 0 10 * * *")
     public void purgeOldPayBoxForm() {
 		int daysNb = 1;
-		Date currentDate = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(currentDate);
-		cal.add(Calendar.DAY_OF_MONTH, -daysNb);
-		Date datePurge = cal.getTime();
-		List<PayBoxForm> payboxForms = PayBoxForm.findPayBoxFormsByRequestDateLessThan(datePurge).getResultList();
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime datePurge = currentDate.minusDays(daysNb);
+		List<PayBoxForm> payboxForms = payBoxFormDaoService.findPayBoxFormsByRequestDateLessThan(datePurge).getResultList();
 		for(PayBoxForm payboxForm: payboxForms) {
-			payboxForm.remove();
+            payBoxFormDaoService.remove(payboxForm);
 		}
         log.info(payboxForms.size() + " formulaires de paiement en base vieux de " + daysNb  + " jour(s) purgés"); 	
     }

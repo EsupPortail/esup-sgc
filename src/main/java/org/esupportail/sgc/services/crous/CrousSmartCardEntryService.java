@@ -1,10 +1,6 @@
 package org.esupportail.sgc.services.crous;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import org.esupportail.sgc.dao.CrousSmartCardDaoService;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.tools.HexStringUtils;
@@ -13,13 +9,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Resource;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 @Transactional
 @Service
 public class CrousSmartCardEntryService {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	
-	SimpleDateFormat csvDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+    DateTimeFormatter csvDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    @Resource
+    CrousSmartCardDaoService crousSmartCardDaoService;
 
 	/*
 	 * 
@@ -56,7 +64,7 @@ public class CrousSmartCardEntryService {
 				String numCarte = fields[10];
 				String dateCreation = fields[11];
 				
-				CrousSmartCard smartCard = CrousSmartCard.findCrousSmartCard(numProtocolaire);
+				CrousSmartCard smartCard = crousSmartCardDaoService.findCrousSmartCard(numProtocolaire);
 				if(smartCard==null) {
 					smartCard = new CrousSmartCard();
 				} else {
@@ -73,7 +81,7 @@ public class CrousSmartCardEntryService {
 				if(numCarte!=null && !numCarte.isEmpty()) {
 					smartCard.setIdZdc(Long.valueOf(numCarte));
 				}
-				Date zdcCreationDate = csvDateFormat.parse(dateCreation);
+                LocalDateTime zdcCreationDate = LocalDate.parse(dateCreation, csvDateFormat).atStartOfDay();
 				smartCard.setZdcCreationDate(zdcCreationDate);
 				smartCard.setPixSs(pixSs);
 				smartCard.setPixNn(pixNn);
@@ -87,7 +95,7 @@ public class CrousSmartCardEntryService {
 				smartCard.setUid(numProtocolaire);
 				smartCard.setRid(numApplicatif);	
 				if(smartCard.getId() == null) {
-					smartCard.persist();
+                    crousSmartCardDaoService.persist(smartCard);
 				} 
 	}
 

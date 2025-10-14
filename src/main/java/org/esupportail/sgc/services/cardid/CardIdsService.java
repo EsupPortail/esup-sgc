@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.esc.EscUidFactoryService;
@@ -22,6 +23,9 @@ public class CardIdsService {
 
 	@Resource
 	AppliConfigService appliConfigService;
+
+    @Resource
+    CardDaoService cardDaoService;
 	
 	Map<String, CardIdService> cardIdServices = new HashMap<String, CardIdService>();
 
@@ -62,7 +66,7 @@ public class CardIdsService {
 		
 		// TODO : findCardsByDesfireIdAndAppNameEquals by CardIdService implementation !
 		// Here it's for @GenericCardIdService
-		List<Card> cards = Card.findCardsByDesfireIdAndAppNameEquals(desfireId, appName).getResultList();
+		List<Card> cards = cardDaoService.findCardsByDesfireIdAndAppNameEquals(desfireId, appName).getResultList();
 		if(cards.size()==0) {
 			return null;
 		} else {

@@ -1,30 +1,36 @@
 package org.esupportail.sgc.domain;
 
+import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
 
-import javax.persistence.Column;
-import javax.persistence.EntityManager;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord(finders = {"findLogMailsByLogDateLessThan", "findLogMailsByEppn", "findLogMailsByCardActionMessage"})
+@Entity
 public class LogMail {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+@SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
+    @Column(name = "id")
+    private Long id;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
+
     @ManyToOne
+    @JoinColumn(name = "card_action_message", nullable = false)
     private CardActionMessage cardActionMessage;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd/MM/yyyy - HH:mm")
-    private Date logDate;
+    private LocalDateTime logDate;
 
     private String eppn;
 
@@ -35,19 +41,75 @@ public class LogMail {
     @Column(columnDefinition = "TEXT")
     private String message;
 
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public CardActionMessage getCardActionMessage() {
+        return this.cardActionMessage;
+    }
+
+    public void setCardActionMessage(CardActionMessage cardActionMessage) {
+        this.cardActionMessage = cardActionMessage;
+    }
+
+    public LocalDateTime getLogDate() {
+        return this.logDate;
+    }
+
+    public void setLogDate(LocalDateTime logDate) {
+        this.logDate = logDate;
+    }
+
+    public String getEppn() {
+        return this.eppn;
+    }
+
+    public void setEppn(String eppn) {
+        this.eppn = eppn;
+    }
+
+    public String getSubject() {
+        return this.subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getMailTo() {
+        return this.mailTo;
+    }
+
+    public void setMailTo(String mailTo) {
+        this.mailTo = mailTo;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
     public Long getCardActionMessageId() {
         return getCardActionMessage()!=null ? getCardActionMessage().getId() : null;
     }
 
-    public static Long countFindLogMails(CardActionMessage cardActionMessage, String eppn, Date date1, Date date2) {
-        EntityManager em = LogMail.entityManager();
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LogMail AS o WHERE o.cardActionMessage=:cardActionMessage AND o.eppn=:eppn AND o.logDate > :date1 AND o.logDate < :date2", Long.class);
-        q.setParameter("cardActionMessage", cardActionMessage);
-        q.setParameter("eppn", eppn);
-        q.setParameter("date1", date1);
-        q.setParameter("date2", date2);
-        return ((Long) q.getSingleResult());
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
-
 
 }

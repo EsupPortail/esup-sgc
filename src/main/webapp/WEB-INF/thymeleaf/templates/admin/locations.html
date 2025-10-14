@@ -1,0 +1,67 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/locations.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Salles de badgeage NFC</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Salles de badgeage potentiellement accessibles depuis esup-nfc pour un utilisateur</h2>
+    <div class="row">
+        <div class="well">
+            Esup-SGC propose des salles de badgeage NFC à déclarer dans esup-nfc-tag-server.
+            Ces salles permettent via des périphériques NFC et en passant par ESUP-SGC divers usages :
+            <ul>
+                <li>Encodage de la carte</li>
+                <li>Mise à jour de la carte</li>
+                <li>Recherche d'une carte</li>
+                <li>Affichage du verso</li>
+                <li>...</li>
+            </ul>
+            <p>
+                Pour pouvoir en bénéficier, il faut déclarer les salles dans esup-nfc-tag-server.
+            </p>
+            <p>
+                Il faut aussi que l'utilisateur ait les droits d'accès à ces salles dans esup-sgc.
+            </p>
+            <p>
+                Cette page permet de vérifier si un utilisateur a les droits d'accès à ces salles portées par esup-sgc.
+            </p>
+            <p>
+                Merci de consulter la documentation d'esup-sgc et esup-nfc-tag-server à ce propos :
+                <a target="_blank" href="https://esup-portail.org/wiki/pages/viewpage.action?pageId=613384423#ApplicationsESUPSGC/ESUPNFCTAGoptionnelles-LivraisonSGC">Documentation ESUP-SGC/ESUP-NFC</a>
+            </p>
+        </div>
+    </div>
+    <form th:action="@{/admin/locations}" method="get">
+        <div class="jumbotron">
+            <div class="form-group">
+                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible :</label>
+                <div class="col-lg-2 col-md-2 col-xs-4">
+                    <input type="text" class="form-control" placeholder="eppn" id="searchEppn" name="eppn" maxlength="100" th:value="${eppn}"/>
+                </div>
+                <button type="submit" class="btn btn-success col-lg-1 col-md-1">Test des Locations</button>
+            </div>
+        </div>
+    </form>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div th:each="locationEntry : ${locationsMap}">
+                <h4>
+                    <span th:text="${locationEntry.key}"></span> -
+                    <a th:href="@{'/wsrest/nfc/' + ${locationEntry.key}}" th:text="@{'/wsrest/nfc/' + ${locationEntry.key}}"></a> -
+                    <span th:if="${#lists.isEmpty(locationEntry.value)}" class="text-danger glyphicon glyphicon-remove"></span>
+                    <span th:if="${!#lists.isEmpty(locationEntry.value)}" class="text-success glyphicon glyphicon-ok"></span>
+                </h4>
+                <ul>
+                    <li th:each="location : ${locationEntry.value}" th:text="${location}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

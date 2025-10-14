@@ -1,6 +1,8 @@
 package org.esupportail.sgc.services;
 
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.CardActionMessageDaoService;
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.Card.MotifDisable;
@@ -21,7 +23,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -110,6 +114,12 @@ public class CardEtatService {
 
 	@Resource
 	EncodeAndPringLongPollService encodeAndPringLongPollService;
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    CardActionMessageDaoService cardActionMessageDaoService;
 	
 	@Transactional
 	public void disableCardWithMotif(Card card, MotifDisable motifDisable, boolean actionFromAnAdmin) {
@@ -125,7 +135,7 @@ public class CardEtatService {
 		} catch (InterruptedException e) {
 			log.warn("Error during sleep ...", e);
 		}	
-		this.setCardEtat(Card.findCard(cardId), etat, comment, mailMessage, actionFromAnAdmin, force);
+		this.setCardEtat(cardDaoService.findCard(cardId), etat, comment, mailMessage, actionFromAnAdmin, force);
 	}
 
 	@Transactional
@@ -199,18 +209,18 @@ public class CardEtatService {
 		
 		card.setEtat(etat);
 		card.setEtatEppn(eppn);
-		card.setDateEtat(new Date());
+		card.setDateEtat(LocalDateTime.now());
 		card.setCommentaire(comment);
 		
 
 		if(Etat.ENCODED.equals(etat)) {
-			Date encodedDate = new Date();
+            LocalDateTime encodedDate = LocalDateTime.now();
 			card.setEncodedDate(encodedDate);
 			card.setLastEncodedDate(encodedDate);
 		}
 		
 		if(Etat.ENABLED.equals(etat)) {
-			card.setEnnabledDate(new Date());
+			card.setEnnabledDate(LocalDateTime.now());
 			card.setMotifDisable(null);
 			card.setDueDate(card.getUser().getDueDate());
 			for(ValidateService validateService : validateServices) {
@@ -271,7 +281,7 @@ public class CardEtatService {
 	}
 	
 	public List<Etat> getEtatsAvailable4Cards(List<Long> cardIds, String printerEppn) {
-		List<Card> cards = Card.findAllCards(cardIds);
+		List<Card> cards = cardDaoService.findAllCards(cardIds);
 		updateEtatsAvailable4Card(cards.get(0), printerEppn);
 		Set<Etat> etatsAvailable = new HashSet<Etat>(cards.get(0).getEtatsAvailable());
 		for(Card card : cards) {
@@ -285,35 +295,35 @@ public class CardEtatService {
 	}
 
 	public boolean hasRequestCard(String eppn) {
-		return Card.countfindCardsByEppnEqualsAndEtatIn(eppn, etatsRequest)>0;
+		return cardDaoService.countfindCardsByEppnEqualsAndEtatIn(eppn, etatsRequest)>0;
 	}
 	
 
 	public boolean hasRejectedCard(String eppn) {
-		return Card.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.REJECTED}))>0;
+		return cardDaoService.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.REJECTED}))>0;
 	}
 	
 	public boolean hasNewCard(String eppn){
 		
-		return Card.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.NEW}))>0;
+		return cardDaoService.countfindCardsByEppnEqualsAndEtatIn(eppn, Arrays.asList(new Etat[] {Etat.NEW}))>0;
 	}
 	
 
 	public List<Card> getAllEncodedCards() {
-		return Card.findCardsByEtatIn(etatsEncoded).getResultList();
+		return cardDaoService.findCardsByEtatIn(etatsEncoded).getResultList();
 	}
 
 	public List<Card> getAllEncodedCards(List<String> eppns) {
-		return Card.findCardsByEppnInAndEtatIn(eppns, etatsEncoded, null, null).getResultList();
+		return cardDaoService.findCardsByEppnInAndEtatIn(eppns, etatsEncoded, null, null).getResultList();
 	}
 
 	public List<Card> getAllEnableableCardsWithEppnDistinct() {
-		List<Card> cards = Card.findCardsByEtatIn(etatsEnableable).getResultList();
+		List<Card> cards = cardDaoService.findCardsByEtatIn(etatsEnableable).getResultList();
 		return groupByEppn(cards);
 	}
 
 	public List<Card> getAllEnableableCardsWithEppnDistinct(List<String> eppns) {
-		List<Card> cards =  Card.findCardsByEppnInAndEtatIn(eppns, etatsEnableable).getResultList();
+		List<Card> cards =  cardDaoService.findCardsByEppnInAndEtatIn(eppns, etatsEnableable).getResultList();
 		return groupByEppn(cards);
 	}
 
@@ -344,7 +354,7 @@ public class CardEtatService {
 		if(user.getEmail() != null && !user.getEmail().isEmpty()) {
 			CardActionMessage cardActionMessage = null;
 			if(mailMessage == null || mailMessage.isEmpty()) {
-				List<CardActionMessage> messages = CardActionMessage.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), true);
+				List<CardActionMessage> messages = cardActionMessageDaoService.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), true);
 				if(messages.size()>0) {
 					if(messages.size()>1) {
 						log.warn(String.format("Multiples messages found for CardActionMessage with auto=true,  etatInitial=%s, etatFinal=%s and user.getUserType()=%s", etatInitial, etatFinal, user.getUserType()));
@@ -363,7 +373,7 @@ public class CardEtatService {
 			}
 		}
 		
-		for(CardActionMessage mailToCardActionMessage : CardActionMessage.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), false)) {
+		for(CardActionMessage mailToCardActionMessage : cardActionMessageDaoService.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(true, etatInitial, etatFinal, user.getUserType(), false)) {
 			try {
 				cardService.sendMailCard(user, mailToCardActionMessage, appliConfigService.getNoReplyMsg(), mailToCardActionMessage.getMailTo(), appliConfigService.getListePpale(),
 				appliConfigService.getSubjectAutoCard().concat(" -- ".concat(user.getEppn())), mailToCardActionMessage.getMessage());
@@ -376,7 +386,7 @@ public class CardEtatService {
 	@Transactional
 	@Async("synchroExecutor")
 	public void replayValidationOrInvalidation(Long cardId, List<String> validateServicesNames, Boolean resynchro) {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		// synchronized on eppn to avoid parallel modifications on ldap (and avoid to add /remove ldap_value %secondary_id%)
 		String lockKey = "CardEtatService.replayValidationOrInvalidation-" + card.getEppn();
 		synchronized (lockKey.intern()) {
@@ -410,7 +420,7 @@ public class CardEtatService {
 		for(Etat etat:  Arrays.asList(Etat.values())){
 			etats.add(etat.name());
 		}
-		List <String>  distinctEtats = Card.findDistinctEtats();
+		List <String>  distinctEtats = cardDaoService.findDistinctEtats();
 		etats.retainAll(distinctEtats);
 		
 		return etats;
@@ -419,12 +429,12 @@ public class CardEtatService {
 	/**
 	 * Used for the tracking steps infos
 	 */
-	public List<String> getTrackingSteps(){
-		List<String> steps = new ArrayList<String>();
-		steps.add(Etat.NEW.name());
-		steps.add(Etat.REQUEST_CHECKED.name());
-		steps.add(Etat.ENCODED.name());
-		steps.add(Etat.ENABLED.name());
+	public List<Etat> getTrackingSteps(){
+		List<Etat> steps = new ArrayList<Etat>();
+		steps.add(Etat.NEW);
+		steps.add(Etat.REQUEST_CHECKED);
+		steps.add(Etat.ENCODED);
+		steps.add(Etat.ENABLED);
 		return steps;
 	}
 
@@ -434,7 +444,7 @@ public class CardEtatService {
 		}
 		Long nbRejets = 1 + card.getNbRejets();
 		card.setNbRejets(nbRejets);
-		card.merge();
+        cardDaoService.merge(card);
  	}
 	
 	public List<String> getValidateServicesNames() {
@@ -446,11 +456,11 @@ public class CardEtatService {
 	}
 	
 	public Boolean areCardsReadyToBeDelivered(List<Long> cardIds){
-		return Card.areCardsReadyToBeDelivered(cardIds);
+		return cardDaoService.areCardsReadyToBeDelivered(cardIds);
 	}
 	
 	public Boolean areCardsReadyToBeValidated(List<Long> cardIds){
-		return Card.areCardsReadyToBeValidated(cardIds);
+		return cardDaoService.areCardsReadyToBeValidated(cardIds);
 	}
 }
 

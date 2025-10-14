@@ -9,9 +9,9 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.esupportail.sgc.domain.ExportBean;
 import org.esupportail.sgc.services.AppliConfigService;
@@ -64,7 +64,7 @@ public class ImportExportController {
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
 	public String index(Model uiModel) {
 		uiModel.addAttribute("isInWorking", importExportService.isInWorking());
-		return "admin/import";
+        return "templates/admin/import";
 	}
 	
 	

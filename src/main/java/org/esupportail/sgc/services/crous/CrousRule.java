@@ -2,20 +2,19 @@ package org.esupportail.sgc.services.crous;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.dbre.RooDbManaged;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-@RooToString
-@RooDbManaged(automaticallyDelete = true)
-@RooJpaActiveRecord
+@Configurable
+@Entity
 public class CrousRule {
 
 	String rne;
@@ -33,10 +32,11 @@ public class CrousRule {
 	Long priority = 1L;
 
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "crous_rule_config")
 	CrousRuleConfig crousRuleConfig;
 
 	@DateTimeFormat(pattern="dd/MM/yyyy HH:mm:ss")
-	Date updateDate;
+    LocalDateTime updateDate;
 
 	public String getRne() {
 		return rne;
@@ -106,27 +106,45 @@ public class CrousRule {
 		this.crousRuleConfig = crousRuleConfig;
 	}
 
-	public Date getUpdateDate() {
+	public LocalDateTime getUpdateDate() {
 		return updateDate;
 	}
 	
-	public void setUpdateDate(Date updateDate) {
+	public void setUpdateDate(LocalDateTime updateDate) {
 		this.updateDate = updateDate;
 	}
 
-	public static List<CrousRule> findAllCrousRules(CrousRuleConfig crousRuleConfig) {
-		String jpaQuery = "SELECT o FROM CrousRule o where o.crousRuleConfig=:crousRuleConfig";
-		return entityManager().createQuery(jpaQuery, CrousRule.class)
-				.setParameter("crousRuleConfig", crousRuleConfig)
-				.getResultList();
-	}
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 
-	public static List<CrousRule> findAllCrousRulesApi() {
-		return entityManager().createQuery("SELECT o FROM CrousRule o where o.crousRuleConfig!= null", CrousRule.class).getResultList();
-	}
+	@Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
+    @SequenceGenerator(
+        name = "my_seq",
+        sequenceName = "hibernate_sequence",
+        allocationSize = 1
+)
+    @Column(name = "id")
+    private Long id;
 
-	public static List<CrousRule> findAllCrousRulesCustom() {
-		return entityManager().createQuery("SELECT o FROM CrousRule o where o.crousRuleConfig = null", CrousRule.class).getResultList();
-	}
+	@Version
+    @Column(name = "version")
+    private Integer version;
 
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
 }

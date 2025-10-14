@@ -1,34 +1,37 @@
 package org.esupportail.sgc.security;
 
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 import org.esupportail.sgc.domain.SgcHttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.event.EventListener;
-import org.springframework.security.web.session.HttpSessionCreatedEvent;
-import org.springframework.security.web.session.HttpSessionDestroyedEvent;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-@Service
-public class SgcHttpSessionsListenerService {
+@WebListener
+public class SgcHttpSessionsListenerService implements HttpSessionListener, ServletContextListener {
 
     Logger log = LoggerFactory.getLogger(SgcHttpSessionsListenerService.class);
 
     Map<String, SgcHttpSession> sessions = new HashMap<>();
 
-    @EventListener
-    public void onHttpSessionCreatedEvent(HttpSessionCreatedEvent event) {
-        String id = event.getSession().getId();
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        sce.getServletContext().setAttribute("sgcHttpSessionsListenerService", this);
+        log.info("sgcHttpSessionsListenerService initialized and set in servlet context");
+    }
+
+    @Override
+    public void sessionCreated(HttpSessionEvent se) {
+        String id = se.getSession().getId();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String remoteIp = request.getRemoteAddr();
         String originRequestUri = request.getRequestURI();
@@ -41,9 +44,9 @@ public class SgcHttpSessionsListenerService {
         sessions.put(id, session);
     }
 
-    @EventListener
-    public void onHttpSessionDestroyedEvent(HttpSessionDestroyedEvent event) {
-        sessions.remove(event.getSession().getId());
+    @Override
+    public void sessionDestroyed(HttpSessionEvent se) {
+        sessions.remove(se.getSession().getId());
     }
 
     public Map<String, SgcHttpSession> getSessions() {

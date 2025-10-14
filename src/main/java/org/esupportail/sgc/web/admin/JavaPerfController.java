@@ -1,37 +1,22 @@
 package org.esupportail.sgc.web.admin;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import jakarta.annotation.Resource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
-import org.esupportail.sgc.domain.SgcHttpSession;
-import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.security.SgcHttpSessionsListenerService;
 import org.esupportail.sgc.services.AppliConfigService;
-import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.pool.factory.PoolingContextSource;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.annotation.Resource;
-import javax.naming.ldap.LdapContext;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 @RequestMapping("/admin/javaperf")
 @Controller
@@ -103,9 +88,112 @@ public class JavaPerfController {
 		long currentThreadId = Thread.currentThread().getId();
 		uiModel.addAttribute("currentThreadId", currentThreadId);
 
+        uiModel.addAttribute("javaPerfWrapper", new JavaPerfWrapper(threadMXBean, threadInfos));
 
-
-		return "admin/javaperf";
+        return "templates/admin/javaperf";
 	}
 
+
+    class JavaPerfWrapper {
+        private final ThreadMXBean threadMXBean;
+        private final List<ThreadInfo> threadInfos;
+        public JavaPerfWrapper(ThreadMXBean threadMXBean, List<ThreadInfo> threadInfos) {
+            this.threadMXBean = threadMXBean;
+            this.threadInfos = threadInfos;
+        }
+        public ThreadMXBean getThreadMXBean() {
+            return threadMXBean;
+        }
+        public List<ThreadInfo> getThreadInfos() {
+            return threadInfos;
+        }
+        public int getThreadCount() {
+            return threadMXBean.getThreadCount();
+        }
+        public int getPeakThreadCount() {
+            return threadMXBean.getPeakThreadCount();
+        }
+        public List<ThreadInfoWrapper> getThreadInfoWrappers() {
+            List<ThreadInfoWrapper> wrappers = new ArrayList<>();
+            for (ThreadInfo threadInfo : threadInfos) {
+                wrappers.add(new ThreadInfoWrapper(threadInfo));
+            }
+            return wrappers;
+        }
+    }
+
+    /*
+    Permet d'accéder aux informations d'un ThreadInfo via thymeleaf
+                threadId
+               threadName
+               threadState
+               blockedCount
+               blockedTime
+               waitedCount
+               waitedTime
+               stackTrace
+     */
+    class ThreadInfoWrapper {
+        private final ThreadInfo threadInfo;
+        public ThreadInfoWrapper(ThreadInfo threadInfo) {
+            this.threadInfo = threadInfo;
+        }
+        public long getThreadId() {
+            return threadInfo.getThreadId();
+        }
+        public String getThreadName() {
+            return threadInfo.getThreadName();
+        }
+        public String getThreadState() {
+            return threadInfo.getThreadState().name();
+        }
+        public long getBlockedCount() {
+            return threadInfo.getBlockedCount();
+        }
+        public long getBlockedTime() {
+            return threadInfo.getBlockedTime();
+        }
+        public long getWaitedCount() {
+            return threadInfo.getWaitedCount();
+        }
+        public long getWaitedTime() {
+            return threadInfo.getWaitedTime();
+        }
+        public StackTraceElementWrapper[] getStackTrace() {
+            StackTraceElement[] stackTraceElements = threadInfo.getStackTrace();
+            StackTraceElementWrapper[] wrappers = new StackTraceElementWrapper[stackTraceElements.length];
+            for (int i = 0; i < stackTraceElements.length; i++) {
+                wrappers[i] = new StackTraceElementWrapper(stackTraceElements[i]);
+            }
+            return wrappers;
+        }
+    }
+
+    class StackTraceElementWrapper {
+        private final StackTraceElement stackTraceElement;
+
+        public StackTraceElementWrapper(StackTraceElement stackTraceElement) {
+            this.stackTraceElement = stackTraceElement;
+        }
+
+        public String getClassName() {
+            return stackTraceElement.getClassName();
+        }
+
+        public String getMethodName() {
+            return stackTraceElement.getMethodName();
+        }
+
+        public String getFileName() {
+            return stackTraceElement.getFileName();
+        }
+
+        public int getLineNumber() {
+            return stackTraceElement.getLineNumber();
+        }
+
+        public String getToString() {
+            return stackTraceElement.toString();
+        }
+    }
 }

@@ -1,19 +1,13 @@
 package org.esupportail.sgc.services.ie;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.BigFileDaoService;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
-import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.HexStringUtils;
@@ -24,13 +18,23 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Resource;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
+
 @Transactional
 @Service
 public class ImportExportCardService {
 
 	private final static Logger log = LoggerFactory.getLogger(ImportExportCardService.class);
 
-	static DateFormat importDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	static DateTimeFormatter importDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
 	static final String DEFAULT_PHOTO = "media/nophoto.png";
 	
@@ -41,13 +45,18 @@ public class ImportExportCardService {
 	static final public String PHOTO_DIRECTORY_IMPORT = "/opt/photos-import/";
 
 	@Resource
-	CardEtatService cardEtatService;
-
-	@Resource
 	UserInfoService userInfoService;
 
-	private static byte[] noImgPhoto = null;
+    @Resource
+    BigFileDaoService bigFileDaoService;
 
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
+	private static byte[] noImgPhoto = null;
 
 	public boolean importCsvLine(String csv, Boolean inverseCsn) throws IOException {
 
@@ -58,13 +67,13 @@ public class ImportExportCardService {
 		if(fields.length>5) {
 			eppn = fields[5];
 		}
-		if(eppn != null && User.findUser(eppn) != null) {
+		if(eppn != null && userDaoService.findUser(eppn) != null) {
 			log.info(eppn + " exists already ?");
 			//return false;
 		}
 
-		Date printedDate = null;
-		Date lastModificationDate = null;
+        LocalDateTime printedDate = null;
+        LocalDateTime lastModificationDate = null;
 
 		if(!fields[0].isEmpty()) {
 			printedDate = parseDate(fields[0]);
@@ -82,7 +91,7 @@ public class ImportExportCardService {
 		String desfireId = fields[4];
 
 		if(eppn != null) {
-			User user = User.findUser(eppn);
+			User user = userDaoService.findUser(eppn);
 			if(user != null) {
 				log.info(eppn + " exists already ?");
 				//return false;
@@ -119,16 +128,16 @@ public class ImportExportCardService {
 				}
 			}
 			Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
-			card.getPhotoFile().getBigFile().setBinaryFile(bytes);
+            bigFileDaoService.setBinaryFile(card.getPhotoFile().getBigFile(), bytes);
 			card.getPhotoFile().setFilename(photoFileNameFound);
 			card.getPhotoFile().setContentType(DEFAULT_PHOTO_MIME_TYPE);
 			card.getPhotoFile().setFileSize(fileSize);
 			card.setUserAccount(user);
-			user.persist();
+			userDaoService.persist(user);
 			userInfoService.setPrintedInfo(card);
 			card.setEtat(Etat.ENABLED);
-			card.setDateEtat(new Date());
-			card.persist();
+			card.setDateEtat(LocalDateTime.now());
+            cardDaoService.persist(card);
 			log.info("Card added for: " + eppn);
 			return true;
 		}
@@ -136,11 +145,11 @@ public class ImportExportCardService {
 	}
 
 
-	private Date parseDate(String dateAsString) {
-		Date date = null;
+	private LocalDateTime parseDate(String dateAsString) {
+        LocalDateTime date = null;
 		try {
-			date = importDateFormat.parse(dateAsString);
-		} catch (ParseException e) {
+			date = LocalDateTime.parse(dateAsString, importDateFormat);
+		} catch (DateTimeParseException e) {
 			log.debug("Error parsing this date " + dateAsString, e);
 		}
 		return date;

@@ -1,0 +1,51 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/external-card-request.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{./layouts/user.html}">
+<head>
+    <title>Léocarte extérieure détectée</title>
+</head>
+<body>
+<div layout:fragment="content" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel-heading">
+                <h5>Léocarte extérieure détectée</h5>
+            </div>
+            <div class="panel-body">
+                <p>
+                    Vous avez une Léocarte non connue de notre Système de Gestion de Carte.
+                    Vous pouvez si vous le souhaitez accepter que nous l'importions dans notre système d'information.
+                    Elle pourra ainsi être utilisée dans nos services de contrôle d'accès.
+                </p>
+                <div id="specimenleocarte">
+                    <div id="left">
+                        <p id="recto1" th:text="${externalCard.recto1Printed}"></p>
+                        <p id="recto2" th:text="${externalCard.recto2Printed}"></p>
+                        <p id="recto3" th:text="${externalCard.recto3Printed}"></p>
+                        <p id="recto4" th:text="${externalCard.recto4Printed}"></p>
+                        <p id="recto5" th:text="${externalCard.recto5Printed}"></p>
+                        <p id="recto6" th:text="${externalCard.recto6Printed}"></p>
+                        <p id="recto7" th:text="${externalCard.recto7Printed}"></p>
+                    </div>
+                    <div id="right">
+                        <img id="photo" th:src="'data:image/jpeg;base64,' + ${externalCardPhoto}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <form th:action="@{/user/externalCardEnable}" method="post">
+                <div class="form-group">
+                    <button class="btn btn-success" type="submit"
+                            onclick="return confirm('Vous confirmez ?');">
+                        Je souhaite pouvoir utiliser ma Leocarte dans votre établissement
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

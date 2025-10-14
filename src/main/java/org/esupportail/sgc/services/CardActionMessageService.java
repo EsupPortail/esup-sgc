@@ -1,35 +1,41 @@
 package org.esupportail.sgc.services;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import org.esupportail.sgc.dao.CardActionMessageDaoService;
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.User;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.Resource;
+import java.util.*;
+
 @Service
 public class CardActionMessageService {
 
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    CardActionMessageDaoService cardActionMessageDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	public void persist(CardActionMessage cardActionMessage) {
-		cardActionMessage.persist();
+        cardActionMessageDaoService.persist(cardActionMessage);
 	}
 
 	
 	public void merge(CardActionMessage cardActionMessage) {
-		cardActionMessage.merge();
+        cardActionMessageDaoService.merge(cardActionMessage);
 	}
 
 	
 	public void remove(CardActionMessage cardActionMessage) {
-		cardActionMessage.remove();
+        cardActionMessageDaoService.remove(cardActionMessage);
 	}
 
 	
@@ -37,7 +43,7 @@ public class CardActionMessageService {
 		Map<Etat, List<CardActionMessage>> messages = new HashMap<Etat, List<CardActionMessage>>();
 		for(Etat etatFinal : card.getEtatsAvailable()) {
 			if(card.getUser().getUserType() != null) {
-				messages.put(etatFinal, CardActionMessage.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(null, card.getEtat(), etatFinal, card.getUser().getUserType(), true));
+				messages.put(etatFinal, cardActionMessageDaoService.findCardActionMessagesByAutoByEtatInitialAndEtatFinalAndUserTypeWithMailToEmptyOrNull(null, card.getEtat(), etatFinal, card.getUser().getUserType(), true));
 			}
 		}
 		card.setCardActionMessages(messages);
@@ -45,7 +51,7 @@ public class CardActionMessageService {
 	
 	
 	public Map<Etat, List<CardActionMessage>> getCardActionMessagesForCards(List<Long> cardIds) {
-		List<Card> cards = Card.findAllCards(cardIds);
+		List<Card> cards = cardDaoService.findAllCards(cardIds);
 		updateCardActionMessages(cards.get(0));
 		Map<Etat, List<CardActionMessage>> messages = cards.get(0).getCardActionMessages();
 		for(Card card : cards) {
@@ -62,8 +68,8 @@ public class CardActionMessageService {
 	}
 	
 	public Map<String, Set<CardActionMessage>> getCardActionMessagesAutoInConflict() {
-		List<String> allUserTypes = User.findDistinctUserType();
-		List<CardActionMessage> autoCardActionsMessages = CardActionMessage.findAllCardActionMessagesAutoWithMailToEmptyOrNull();
+		List<String> allUserTypes = userDaoService.findDistinctUserType();
+		List<CardActionMessage> autoCardActionsMessages = cardActionMessageDaoService.findAllCardActionMessagesAutoWithMailToEmptyOrNull();
 		Map<String, Set<CardActionMessage>> cardActionsMessagesAutoInConflict = new HashMap<String, Set<CardActionMessage>>();
 		for(CardActionMessage cardActionMessage : autoCardActionsMessages) {
 			List<Etat> etatsInitiaux = new ArrayList<Etat>();
@@ -99,7 +105,7 @@ public class CardActionMessageService {
 
 	public Map<String, Set<CardActionMessage>> getCardActionMessagesUnreachable() {
 		Map<String, Set<CardActionMessage>> cardActionsMessagesUnreachable = new HashMap<String, Set<CardActionMessage>>();
-		for(CardActionMessage cardActionMessage : CardActionMessage.findAllCardActionMessages()) {
+		for(CardActionMessage cardActionMessage : cardActionMessageDaoService.findAllCardActionMessages()) {
 			if(CardEtatService.workflow4messages.get(cardActionMessage.getEtatInitial())!=null && !CardEtatService.workflow4messages.get(cardActionMessage.getEtatInitial()).contains(cardActionMessage.getEtatFinal())) {
 				String idMap = String.format("%s/%s", cardActionMessage.getEtatInitial(), cardActionMessage.getEtatFinal());
 				if(cardActionsMessagesUnreachable.get(idMap) == null) {

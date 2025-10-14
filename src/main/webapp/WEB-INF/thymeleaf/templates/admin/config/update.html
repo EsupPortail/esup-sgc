@@ -1,0 +1,62 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/config/update.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Modification configuration</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>Configurations</h2>
+    <form th:action="@{/admin/config}" th:object="${appliConfig}" th:method="put" class="form-horizontal" id="appliConfig">
+        <input type="hidden" th:field="*{id}" />
+        <!-- Clé (lecture seule) -->
+        <div class="form-group">
+            <label class="col-md-3 control-label"><strong>Clé</strong></label>
+            <div class="col-md-3">
+                <p class="form-control-static" th:text="*{key}"></p>
+            </div>
+        </div>
+        <!-- Type (select) -->
+        <div class="form-group">
+            <label class="col-md-3 control-label"><strong>Type</strong></label>
+            <div class="col-md-3">
+                <select class="form-control" th:field="*{type}" id="type" name="type">
+                    <option value="TEXT" th:selected="*{type} == 'TEXT'">Texte</option>
+                    <option value="HTML" th:selected="*{type} == 'HTML'">Html</option>
+                    <option value="BOOLEAN" th:selected="*{type} == 'BOOLEAN'">Booléen</option>
+                </select>
+            </div>
+        </div>
+        <!-- Valeur -->
+        <div class="form-group">
+            <div>
+                <label class="col-md-3 control-label" for="valeur" id="areaEditor">Valeur</label>
+            </div>
+        </div>
+        <!-- Description (lecture seule) -->
+        <div class="form-group">
+            <label class="col-md-3 control-label"><strong>Description</strong></label>
+            <div class="col-md-3">
+                <div class="alert alert-info">
+                    <p class="form-control-static" th:text="*{description}"><!-- --></p>
+                </div>
+            </div>
+        </div>
+        <!-- Champs cachés -->
+        <input type="hidden" th:field="*{key}" />
+        <input type="hidden" th:field="*{type}" />
+        <input type="hidden" th:field="*{description}" />
+        <input type="hidden" id="hiddenValeur" th:value="*{value}" />
+        <!-- Bouton de validation -->
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-3">
+                <button type="submit" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

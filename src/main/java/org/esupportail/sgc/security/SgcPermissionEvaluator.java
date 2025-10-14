@@ -17,12 +17,8 @@
  */
 package org.esupportail.sgc.security;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
+import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
@@ -30,11 +26,25 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+
+@Service
 public class SgcPermissionEvaluator implements PermissionEvaluator {
 
 	@Resource 
 	UserInfoService userInfoService;
-	
+
+    @Resource
+    CardDaoService cardDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
+
 	@Override
 	public boolean hasPermission(Authentication auth, Object targetDomainObject, Object permission) {
 		
@@ -71,7 +81,7 @@ public class SgcPermissionEvaluator implements PermissionEvaluator {
         }
         
         String eppn = auth.getName();
-        User user = User.findUser(eppn);
+        User user = userDaoService.findUser(eppn);
         
         if(user != null) {
 	        String userType = null;
@@ -80,10 +90,10 @@ public class SgcPermissionEvaluator implements PermissionEvaluator {
 	        	if(cardIds.isEmpty()) {
 	        		return true;
 	        	}
-	        	List<String> userTypes = Card.findDistinctUserTypes(cardIds);
+	        	List<String> userTypes = cardDaoService.findDistinctUserTypes(cardIds);
 	        	userType = userTypes.size()==1 ? userTypes.get(0) : null;
 	        } else {
-	        	Card card = Card.findCard((Long)targetDomainObject);
+	        	Card card = cardDaoService.findCard((Long)targetDomainObject);
 	        	userType = card.getUserType()!=null ? card.getUserType() : null;
 	        }
 			if(userType!=null) {

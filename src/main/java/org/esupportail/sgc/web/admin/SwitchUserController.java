@@ -1,6 +1,7 @@
 package org.esupportail.sgc.web.admin;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.services.AppliConfigService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,8 +34,8 @@ public class SwitchUserController {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')")
 	@RequestMapping
-	public String index(Model uiModel) {		
-		return "manager/su";
+	public String index(Model uiModel, HttpServletRequest request) {
+        return "templates/admin/su";
 	}
 
 }

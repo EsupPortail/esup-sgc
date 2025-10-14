@@ -1,12 +1,7 @@
 package org.esupportail.sgc.services.crous;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import javax.annotation.Resource;
-
+import org.esupportail.sgc.dao.CrousPatchIdentifierDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.CrousPatchIdentifier;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
@@ -15,6 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.annotation.Resource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 @Service
 public class CrousPatchIdentifierService {
@@ -28,6 +29,12 @@ public class CrousPatchIdentifierService {
 	
 	@Resource
 	CrousService crousService;
+
+    @Resource
+    CrousPatchIdentifierDaoService crousPatchIdentifierDaoService;
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	public Boolean isInWorking() {
 		return inWorking;
@@ -60,7 +67,7 @@ public class CrousPatchIdentifierService {
 	@Async
 	public synchronized void patchIdentifiers() {
 		inWorking = true;
-		for(CrousPatchIdentifier crousPatchIdentifier : CrousPatchIdentifier.findCrousPatchIdentifiersByPatchSuccessNotEquals(true).getResultList()) {
+		for(CrousPatchIdentifier crousPatchIdentifier : crousPatchIdentifierDaoService.findCrousPatchIdentifiersByPatchSuccessNotEquals(true).getResultList()) {
 			patchIdentifier(crousPatchIdentifier);
 		}	
 		inWorking = false;
@@ -75,11 +82,11 @@ public class CrousPatchIdentifierService {
 			patchIdentifier.setEmail(crousPatchIdentifier.getMail());
 			crousService.patchIdentifier(patchIdentifier, EsupSgcOperation.PATCH);
 			crousPatchIdentifier.setPatchSuccess(true);
-			crousPatchIdentifier.merge();
+			crousPatchIdentifierDaoService.merge(crousPatchIdentifier);
 			log.info("crous patchIdentifier " + crousPatchIdentifier + " ok");
 		} catch(Exception e) {
 			crousPatchIdentifier.setPatchSuccess(false);
-			crousPatchIdentifier.merge();
+            crousPatchIdentifierDaoService.merge(crousPatchIdentifier);
 			log.warn("Error patchIdentifier : " + crousPatchIdentifier + " - " + e.getMessage());
 		}
 	}
@@ -88,7 +95,7 @@ public class CrousPatchIdentifierService {
     @Transactional
 	public synchronized void deletePatchIdentifiants() {
 		inWorking = true;
-		CrousPatchIdentifier.removeAll();
+		crousPatchIdentifierDaoService.removeAll();
 		inWorking = false;
 	}
 
@@ -96,13 +103,13 @@ public class CrousPatchIdentifierService {
 	@Async
 	public synchronized void generatePatchIdentifiersIne() {
 		inWorking = true;
-		for(User user : User.findUsers4PatchIdentifiersIne()) {
+		for(User user : userDaoService.findUsers4PatchIdentifiersIne()) {
 			try {
 				CrousPatchIdentifier patchIdentifier = new CrousPatchIdentifier();
 				patchIdentifier.setOldId(user.getCrousIdentifier());
 				patchIdentifier.setEppnNewId(user.getSupannCodeINE());
 				patchIdentifier.setMail(user.getEmail());
-				patchIdentifier.persist();
+                crousPatchIdentifierDaoService.persist(patchIdentifier);
 			} catch(Exception e) {
 				log.error("Error trying generating Patch Identifier with Ine for " + user.getEppn() + " : " + e.getMessage(), e);
 			}

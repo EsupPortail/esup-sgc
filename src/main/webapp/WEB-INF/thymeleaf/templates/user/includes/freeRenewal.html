@@ -1,0 +1,16 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/freeRenewal.html -->
+<div th:fragment="freeRenewal" class="well" th:if="${displayFormParts['isFreeRenewal']}">
+    <p>
+        Vous avez la possibilité de demander la réédition d’une nouvelle carte si vous
+        jugez celle possédée comme étant usée. Nous faisons appel à votre civisme pour
+        ne faire la demande que dans un des cas d’usure listé ci-dessous.
+    </p>
+    <p>
+        Nous considérerons comme inopérante une carte avec les défauts suivants :
+    </p>
+    <ul>
+        <li>la couche de protection décollée</li>
+        <li>des écritures liées au porteur effacées</li>
+        <li>une zone de réinscription des données annuelles « piquée »</li>
+    </ul>
+</div>

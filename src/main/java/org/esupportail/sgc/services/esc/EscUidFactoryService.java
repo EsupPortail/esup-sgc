@@ -1,5 +1,6 @@
 package org.esupportail.sgc.services.esc;
 
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
@@ -10,10 +11,15 @@ import org.springframework.util.StringUtils;
 import eu.europeanstudentcard.esc.EscnFactory;
 import eu.europeanstudentcard.esc.EscnFactoryException;
 
+import jakarta.annotation.Resource;
+
 
 public class EscUidFactoryService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
+
+    @Resource
+    UserDaoService userDaoService;
 	
 	private String defaultPic;
 	
@@ -38,7 +44,7 @@ public class EscUidFactoryService {
 			User user = card.getUser();
 			if(user==null) {
 				// renouvellement ...
-				user = User.findUser(card.getEppn());
+				user = userDaoService.findUser(card.getEppn());
 			}
 			String pic = this.defaultPic;
 			if(!StringUtils.isEmpty(user.getPic())) {

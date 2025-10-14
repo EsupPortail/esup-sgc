@@ -1,14 +1,13 @@
 package org.esupportail.sgc.services.cardid;
 
-import java.math.BigInteger;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +17,9 @@ public class GenericCardIdService implements CardIdService {
 	
 	@PersistenceContext
 	EntityManager entityManager;
+
+    @Resource
+    CardDaoService cardDaoService;
 	
 	private Long idCounterBegin;
 	
@@ -50,20 +52,20 @@ public class GenericCardIdService implements CardIdService {
 
 	@Override
 	public String generateCardId(Long cardId) {
-		Card card = Card.findCard(cardId);
+		Card card = cardDaoService.findCard(cardId);
 		if(card.getDesfireIds().get(appName) == null || card.getDesfireIds().get(appName).isEmpty()) {
 			Session session = (Session) entityManager.getDelegate();
-			SQLQuery existSequenceQuery = session.createSQLQuery("SELECT 1 FROM pg_class where relname = '" + postgresqlSequence + "'");
+            NativeQuery existSequenceQuery = session.createNativeQuery("SELECT 1 FROM pg_class where relname = '" + postgresqlSequence + "'");
 			if(existSequenceQuery.list().isEmpty()) {
-				SQLQuery createSequenceQuery = session.createSQLQuery("CREATE SEQUENCE " + postgresqlSequence);
+                NativeQuery createSequenceQuery = session.createNativeQuery("CREATE SEQUENCE " + postgresqlSequence);
 				int createSequenceQueryResult = createSequenceQuery.executeUpdate();
 				log.info("create sequence result : " + createSequenceQueryResult);
 			}
-			SQLQuery nextValQuery = session.createSQLQuery("SELECT nextval('" + postgresqlSequence + "')");
-			BigInteger nextVal = (BigInteger)nextValQuery.list().get(0);
+            NativeQuery nextValQuery = session.createNativeQuery("SELECT nextval('" + postgresqlSequence + "')");
+			Long nextVal = (Long)nextValQuery.list().get(0);
 			String desfireId = Long.toString(nextVal.longValue() + getIdCounterBegin(card));
 			card.getDesfireIds().put(appName, desfireId);
-			card.merge();
+            cardDaoService.merge(card);
 			log.info("generate card Id for " + card.getEppn() + " : " + appName + " -> "  + desfireId);
 		}
 		return card.getDesfireIds().get(appName);

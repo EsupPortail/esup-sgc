@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.esupportail.sgc.dao.CrousPatchIdentifierDaoService;
 import org.esupportail.sgc.domain.CrousPatchIdentifier;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
@@ -14,12 +15,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Resource;
+
 @Transactional
 @Service
 public class CrousPatchIdentifierEntryService {
 	
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
+    @Resource
+    CrousPatchIdentifierDaoService crousPatchIdentifierDaoService;
 
 	/*
 	/*
@@ -37,7 +42,7 @@ public class CrousPatchIdentifierEntryService {
 		crousPatchIdentifier.setOldId(oldId);
 		crousPatchIdentifier.setEppnNewId(eppnNewId);
 		crousPatchIdentifier.setMail(mail);
-		crousPatchIdentifier.persist();
+        crousPatchIdentifierDaoService.persist(crousPatchIdentifier);
 	}
 
 }

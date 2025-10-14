@@ -1,0 +1,33 @@
+<!-- src/main/resources/templates/manager/includes/printer.html -->
+<div th:fragment="printer">
+    <div th:unless="${#maps.isEmpty(printers)}" class="nav navbar-nav navbar-right">
+        <form id="printerEppnForm" th:action="@{/manager/setPrinterEppn}" method="post">
+            <span th:classappend="${currentPrinter!=null and printers.get(currentPrinter) != null and printers.get(currentPrinter)} ? 'text-success glyphicon glyphicon-ok-sign' : 'text-danger glyphicon glyphicon-minus-sign'"></span>
+            <select name="printerEppn" class="btn" th:classappend="${currentPrinter!=null and printers.get(currentPrinter) != null and printers.get(currentPrinter)} ? 'text-success' : 'text-danger'">
+                <option value="">Aucune imprimante sélectionnée</option>
+                <option th:each="printer : ${printers}"
+                        th:value="${printer.key.eppn}"
+                        th:selected="${printerEppn == printer.key.eppn}"
+                        th:text="${printer.key.label}"></option>
+            </select>
+        </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementsByName("printerEppn").forEach(function(element) {
+                    element.addEventListener('change', function() {
+                        var xhr = new XMLHttpRequest();
+                        var setPrinterEppnUrl = document.getElementById('printerEppnForm').action;
+                        xhr.open('POST', setPrinterEppnUrl, true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.send('printerEppn=' + element.value);
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                location.reload();
+                            }
+                        };
+                    });
+                });
+            });
+        </script>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Carte virtuelle</title>
+    <style>
+        img { cursor: pointer; }
+    </style>
+    <script th:inline="javascript">
+        function getreqfullscreen(){
+            var root = document.documentElement
+            return root.requestFullscreen || root.webkitRequestFullscreen || root.mozRequestFullScreen || root.msRequestFullscreen
+        }
+        function getexitfullscreen(){
+            return document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen
+        }
+        function getfullscreenelement(){
+            return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
+        }
+        var globalreqfullscreen = getreqfullscreen()
+        var globalexitfullscreen = getexitfullscreen()
+        document.addEventListener('click', function(e){
+            var target = e.target
+            if (target.tagName == "IMG"){
+                if (getfullscreenelement() == null){
+                    globalreqfullscreen.call(target)
+                }
+                else{
+                    globalexitfullscreen.call(document)
+                }
+            }
+        }, false)
+    </script>
+</head>
+<body>
+<div>
+    <img th:src="'data:image/bmp;base64, ' + ${bmpAsBase64}" id="bmpAsBase64"/>
+    <br/>
+    <a class="preview btn btn-success" th:href="@{/user}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-back-up" width="48" height="48" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M9 13l-4 -4l4 -4m-4 4h11a4 4 0 0 1 0 8h-1" />
+        </svg>
+    </a>
+</div>
+</body>
+</html>

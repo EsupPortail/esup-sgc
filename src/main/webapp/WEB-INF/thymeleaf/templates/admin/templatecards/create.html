@@ -1,0 +1,87 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/templatecards/create.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Création thème carte</title>
+</head>
+<body>
+<div id="createTemplateCard" layout:fragment="content"
+     th:with="photoLocalPrefix=@{/admin/templatecards/photo/}">
+    <h2>Création thème carte</h2>
+    <form th:action="@{/admin/templatecards}" th:object="${templateCard}" method="post" enctype="multipart/form-data" class="form-horizontal well">
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="key">Clé</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{key}" id="key" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="name">Nom</label>
+            <div class="col-md-6">
+                <input class="form-control" th:field="*{name}" id="name" required="required"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="description">Description</label>
+            <div class="col-md-6">
+                <textarea class="form-control" th:field="*{description}" id="description" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="cssStyle">Style CSS</label>
+            <div class="col-md-6">
+                <textarea class="form-control" th:field="*{cssStyle}" id="cssStyle" rows="8"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="cssMobileStyle">CSS mobile</label>
+            <div class="col-md-6">
+                <textarea class="form-control" th:field="*{cssMobileStyle}" id="cssMobileStyle" rows="8"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="templateMasque">Masque</label>
+            <div class="col-md-6">
+                <input id="templateMasque" name="masque" type="file"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="templateLogo">Logo</label>
+            <div class="col-md-6">
+                <input id="templateLogo" name="logo" type="file"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label" for="templateQrCode">Qr Code</label>
+            <div class="col-md-6">
+                <input id="templateQrCode" name="qrCode" type="file"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label">Code-barres</label>
+            <div class="col-md-6">
+                <input type="checkbox" th:field="*{codeBarres}" id="codeBarres"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label">Impression Verso</label>
+            <div class="col-md-6">
+                <input type="checkbox" th:field="*{backSupported}" id="backSupported"/>
+            </div>
+        </div>
+        <input type="hidden" th:field="*{numVersion}"/>
+        <input type="hidden" th:field="*{dateModification}"/>
+        <input type="hidden" th:field="*{modificateur}"/>
+        <input type="hidden" th:field="*{cssBackStyle}"/>
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-6">
+                <button type="submit" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
