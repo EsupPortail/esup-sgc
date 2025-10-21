@@ -429,7 +429,7 @@ public class ManagerCardController {
     @RequestMapping(produces = "text/html")
     @Transactional(readOnly = true)
     public String search(@RequestParam Map<String, String> params,
-						 @PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "dateEtat") Pageable pageable,
+						 Pageable pageable,
                          @Valid CardSearchBean searchBean,
                          @RequestParam(value = "index", required = false) String index,
                          Model uiModel,
@@ -443,9 +443,19 @@ public class ManagerCardController {
 				.collect(Collectors.joining("&"));
 		uiModel.addAttribute("queryParams", queryParams);
 
-        Sort sort = pageable.getSort();
-        String sortFieldName = sort.stream().iterator().next().getProperty();
-        String sortOrder = sort.stream().iterator().next().getDirection().name();
+		String sortFieldName = null;
+		String sortOrder = null;
+				Sort sort = pageable.getSort();
+		if(sort.isUnsorted()) {
+			// si searchBean.getSearchText() est précisé : tri par pertinence
+			if(StringUtils.isEmpty(searchBean.getSearchText())) {
+				sortFieldName = "dateEtat";
+				sortOrder = "desc";
+			}
+		} else {
+			sortFieldName = sort.stream().iterator().next().getProperty();
+			sortOrder = sort.stream().iterator().next().getDirection().name();
+		}
         int size = pageable.getPageSize();
         int page = pageable.getPageNumber();
 
