@@ -85,7 +85,7 @@
                         <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
                     </button>
                     <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#advancedSearch">+ de filtres</button>
-                    <div class="col-lg-12 collapse" id="advancedSearch">
+                    <div class="col-lg-12" id="advancedSearch" th:classappend="${#maps.isEmpty(searchBean.freeField) ? 'collapse' : ''}">
                         <div th:each="item, status : ${nbFields}">
                             <div class="col-lg-2">
                                 <label style="display:none">-- Champ libre --</label>
