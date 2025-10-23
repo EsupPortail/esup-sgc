@@ -1,6 +1,7 @@
 package org.esupportail.sgc.services.crous;
 
 import org.esupportail.sgc.dao.CrousSmartCardDaoService;
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.tools.HexStringUtils;
@@ -99,4 +100,36 @@ public class CrousSmartCardEntryService {
 				} 
 	}
 
+    @Transactional(readOnly=true)
+    public String exportCrousCsvLine(Card card) {
+        CrousSmartCard crousSmartCard = card.getCrousSmartCard();
+        if(crousSmartCard == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(crousSmartCard.getPixSs() != null ? crousSmartCard.getPixSs() : "").append(";");
+        sb.append(crousSmartCard.getPixNn() != null ? crousSmartCard.getPixNn() : "").append(";");
+        sb.append(crousSmartCard.getAppl() != null ? crousSmartCard.getAppl() : "").append(";");
+        sb.append(crousSmartCard.getUid() != null ? crousSmartCard.getUid() : "").append(";");
+        sb.append(crousSmartCard.getRid() != null ? crousSmartCard.getRid() : "").append(";");
+        sb.append(";");
+        sb.append(";");
+        sb.append(";");
+        sb.append(crousSmartCard.getIdTransmitter() != null ? String.format("%04X", crousSmartCard.getIdTransmitter()) : "").append(";");
+        sb.append(crousSmartCard.getIdMapping() != null ? crousSmartCard.getIdMapping().toString() : "").append(";");
+        sb.append(crousSmartCard.getIdZdc() != null ? crousSmartCard.getIdZdc().toString() : "").append(";");
+        sb.append(crousSmartCard.getZdcCreationDate() != null ? crousSmartCard.getZdcCreationDate().format(csvDateFormat) : "");
+        return sb.toString();
+    }
+
+    public void consumeCrousCsv(String crousCardsCsv) {
+        String[] lines = crousCardsCsv.split("\\r?\\n");
+        for(String line : lines) {
+            try {
+                consumeCsvLine(line, false);
+            } catch (Exception e) {
+                log.error("Error during parsing crous csv line : " + line, e);
+            }
+        }
+    }
 }

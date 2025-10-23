@@ -19,6 +19,7 @@
         Les autres informations sont en effet récupérées depuis le SI par ESUP-SGC (ldap, base de données ; le lien étant fait via l'eppn) ou encore depuis l'import csv crous
         (pour la récupération des identifiants crous ; le lien étant fait via le CSN).
     </div>
+
     <div class="well">
         <div th:if="${isInWorking}">
             Importation en cours ...
@@ -32,6 +33,23 @@
                 <label>
                     <input name="inverseCsn" type="checkbox"/> Inverser les CSN
                 </label>
+            </div>
+            <button type="submit" class="btn btn-success">Valider</button>
+        </form>
+    </div>
+
+    <h3>Import ZIP</h3>
+    <div>
+        Le ZIP attendu correspond au ZIP généré par ESUP-SGC lors de l'export ZIP (accessible depuis la vue manager en tant qu'admin, via la case à cocher 'Export ZIP' visible dans "+ de filtres").
+    </div>
+    <div class="well">
+        <div th:if="${isInWorkingZip}">
+            Importation en cours ...
+        </div>
+        <form th:if="${!isInWorkingZip}" th:action="@{/admin/import/importZipFile}" method="post" enctype="multipart/form-data" th:object="${file}">
+            <div class="form-group">
+                <label for="import_zip_file">Import ZIP</label>
+                <input id="import_zip_file" name="file" required="required" type="file" class="form-control"/>
             </div>
             <button type="submit" class="btn btn-success">Valider</button>
         </form>

@@ -149,6 +149,10 @@ public class CardDaoService {
         return q;
     }
 
+    /*
+        * Search cards with CardSearchBean criteria
+        * eppn is used to filter own or free cards if specified in searchBean
+     */
     public TypedQuery<Card> findCards(CardSearchBean searchBean, String eppn, String sortFieldName, String sortOrder) {
         EntityManager em = entityManager;
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();

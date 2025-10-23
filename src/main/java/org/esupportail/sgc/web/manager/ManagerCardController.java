@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.dao.*;
 import org.esupportail.sgc.domain.*;
@@ -22,6 +23,7 @@ import org.esupportail.sgc.services.sync.ResynchronisationUserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.tools.MapUtils;
 import org.esupportail.sgc.tools.PrettyStopWatch;
+import org.esupportail.sgc.web.admin.ImportExportController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
@@ -132,7 +134,7 @@ public class ManagerCardController {
     UserDaoService userDaoService;
 
     @Resource
-    CrousSmartCardDaoService crousSmartCardDaoService;
+    ImportExportController importExportController;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -418,11 +420,11 @@ public class ManagerCardController {
 	public String defaultSearch(@RequestParam Map<String, String> params,
 								@PageableDefault(size = 10, direction = Sort.Direction.ASC, sort = "key") Pageable pageable,
     							@RequestParam(value = "index", required = false) String index,
-								Model uiModel, HttpServletRequest request, Authentication auth) {
+								Model uiModel, HttpServletRequest request, HttpServletResponse response, Authentication auth) {
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		CardSearchBean searchBean = new CardSearchBean();
 		searchBean.setType(permissionService.getDefaultTypeTab(roles));
-		return search(params, pageable, searchBean, index, uiModel, request, auth);
+		return search(params, pageable, searchBean, index, false, uiModel, request, response, auth);
 	}
 	
 	
@@ -432,9 +434,19 @@ public class ManagerCardController {
 						 Pageable pageable,
                          @Valid CardSearchBean searchBean,
                          @RequestParam(value = "index", required = false) String index,
+                         @RequestParam(required = false) Boolean zipExport,
                          Model uiModel,
                          HttpServletRequest request,
+                         HttpServletResponse response,
                          Authentication auth) {
+
+        if(BooleanUtils.isTrue(zipExport)) {
+            Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
+            if(roles.contains("ROLE_ADMIN")) {
+                importExportController.export(response, searchBean);
+                return null;
+            }
+        }
 
 		// used to keep search params in the tabs links
 		String queryParams = params.entrySet().stream()

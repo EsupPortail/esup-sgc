@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,25 +28,27 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipOutputStream;
 
 @Transactional
 @Service
 public class ImportExportCardService {
 
-	private final static Logger log = LoggerFactory.getLogger(ImportExportCardService.class);
+    private final static Logger log = LoggerFactory.getLogger(ImportExportCardService.class);
 
-	static DateTimeFormatter importDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    static DateTimeFormatter importDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-	static final String DEFAULT_PHOTO = "media/nophoto.png";
-	
-	static final String DEFAULT_ESCR_PHOTO = "media/photo_esc.png";
+    static final String DEFAULT_PHOTO = "media/nophoto.png";
 
-	static final public String DEFAULT_PHOTO_MIME_TYPE = "image/jpg";
+    static final String DEFAULT_ESCR_PHOTO = "media/photo_esc.png";
 
-	static final public String PHOTO_DIRECTORY_IMPORT = "/opt/photos-import/";
+    static final public String DEFAULT_PHOTO_MIME_TYPE = "image/jpg";
 
-	@Resource
-	UserInfoService userInfoService;
+    static final public String PHOTO_DIRECTORY_IMPORT = "/opt/photos-import/";
+
+    @Resource
+    UserInfoService userInfoService;
 
     @Resource
     BigFileDaoService bigFileDaoService;
@@ -56,9 +59,18 @@ public class ImportExportCardService {
     @Resource
     UserDaoService userDaoService;
 
-	private static byte[] noImgPhoto = null;
+    private static byte[] noImgPhoto = null;
 
-	public boolean importCsvLine(String csv, Boolean inverseCsn) throws IOException {
+    /*
+        * Import une ligne CSV
+        * Format attendu :
+        * date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn;diffusion photo (Oui/Non);etat de la carte
+        * Soit :
+        * encodedDate;lastEncodedDate;csn;crous;desfireId;eppn;difPhoto;etat
+        * Exemple :
+        * 28/01/2015 14:40:35;14/06/2017 23:05:29;803412abcd5704;Autorisée;100020000002120;testju@univ-rouen.fr;Oui;ENABLED
+     */
+	public boolean importCsvLine(String csv, Boolean inverseCsn, byte[] bytesPhoto) throws IOException {
 
 		String[] fields = csv.split(";");
 
@@ -90,6 +102,19 @@ public class ImportExportCardService {
 		Boolean crous = "Autorisée".equals(fields[3]);
 		String desfireId = fields[4];
 
+        Boolean difPhoto = false;
+        if(fields.length>6) {
+            difPhoto = "Oui".equals(fields[6]);
+        }
+        Etat etat = Etat.ENABLED;
+        if(fields.length>7) {
+            try {
+                etat = Etat.valueOf(fields[7]);
+            } catch(Exception e) {
+                log.debug("Error parsing this etat " + fields[7], e);
+            }
+        }
+
 		if(eppn != null) {
 			User user = userDaoService.findUser(eppn);
 			if(user != null) {
@@ -113,20 +138,25 @@ public class ImportExportCardService {
 			card.setDateEtat(lastModificationDate);
 			userInfoService.setAdditionalsInfo(user, null);
 			String photoFileNameFound = "";
-			byte[] bytes = loadNoImgPhoto();
-			// on tente de récupérer la photo depuis différents noms de fichiers (eppn, supannEtuId, etc.) -> à garder ?
-			for(String photoFileName : new String[] {StringUtils.leftPad(user.getSecondaryId(), 8, "0"), user.getSecondaryId(), 
-					StringUtils.leftPad(user.getSupannEtuId(), 8, "0"), user.getSupannEtuId(),
-					StringUtils.leftPad(user.getSupannEmpId(), 8, "0"), user.getSupannEmpId(),
-					user.getEppn().replaceAll("@.*", ""), StringUtils.leftPad(user.getEppn(), 8, "0"), user.getEppn()}) {
-				try{
-					bytes = loadPhoto("file://" + PHOTO_DIRECTORY_IMPORT + photoFileName + ".jpg");
-					photoFileNameFound = "photoFileName";
-					break;
-				}  catch (IOException e) {
-					//
-				}
-			}
+			byte[] bytes = null;
+            if(bytesPhoto!=null) {
+                bytes = bytesPhoto;
+            } else {
+                bytes = loadNoImgPhoto();
+                // on tente de récupérer la photo depuis différents noms de fichiers (eppn, supannEtuId, etc.) -> à garder ?
+                for (String photoFileName : new String[]{StringUtils.leftPad(user.getSecondaryId(), 8, "0"), user.getSecondaryId(),
+                        StringUtils.leftPad(user.getSupannEtuId(), 8, "0"), user.getSupannEtuId(),
+                        StringUtils.leftPad(user.getSupannEmpId(), 8, "0"), user.getSupannEmpId(),
+                        user.getEppn().replaceAll("@.*", ""), StringUtils.leftPad(user.getEppn(), 8, "0"), user.getEppn()}) {
+                    try {
+                        bytes = loadPhoto("file://" + PHOTO_DIRECTORY_IMPORT + photoFileName + ".jpg");
+                        photoFileNameFound = "photoFileName";
+                        break;
+                    } catch (IOException e) {
+                        //
+                    }
+                }
+            }
 			Long fileSize = Long.valueOf(Integer.valueOf(bytes.length));
             bigFileDaoService.setBinaryFile(card.getPhotoFile().getBigFile(), bytes);
 			card.getPhotoFile().setFilename(photoFileNameFound);
@@ -135,7 +165,8 @@ public class ImportExportCardService {
 			card.setUserAccount(user);
 			userDaoService.persist(user);
 			userInfoService.setPrintedInfo(card);
-			card.setEtat(Etat.ENABLED);
+			card.setEtat(etat);
+            card.setDifPhoto(difPhoto);
 			card.setDateEtat(LocalDateTime.now());
             cardDaoService.persist(card);
 			log.info("Card added for: " + eppn);
@@ -187,6 +218,59 @@ public class ImportExportCardService {
 		bytes = IOUtils.toByteArray(photoResource.getInputStream());
 		return bytes;
 	}
+
+
+    /*
+        * Retourne l'entrée CSV d'une carte
+        * Correspond aux chanps permettant un import
+        * Cf la méthode importCsvLine
+        * encodedDate;lastEncodedDate;csn;crous;card.getDesfireIds().get(AccessControlService.AC_APP_NAME);eppn;difPhoto;id;etat
+        *
+     */
+    public String exportCsvLine(Card card) {
+        StringBuilder sb = new StringBuilder();
+        DateTimeFormatter exportDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        if(card.getEncodedDate() != null) {
+            sb.append(card.getEncodedDate().format(exportDateFormat));
+        }
+        sb.append(";");
+        if(card.getLastEncodedDate() != null) {
+            sb.append(card.getLastEncodedDate().format(exportDateFormat));
+        }
+        sb.append(";");
+        if(card.getCsn() != null) {
+            sb.append(card.getCsn());
+        }
+        sb.append(";");
+        if(card.getUserAccount() != null && card.getUserAccount().getCrous() != null) {
+            sb.append(card.getUserAccount().getCrous() ? "Autorisée" : "Interdite");
+        }
+        sb.append(";");
+        String desfireId = card.getDesfireIds().get(AccessControlService.AC_APP_NAME);
+        if(desfireId != null) {
+            sb.append(desfireId);
+        }
+        sb.append(";");
+        if(card.getEppn() != null) {
+            sb.append(card.getEppn());
+        }
+        sb.append(";");
+        if(card.getUserAccount() != null && card.getUserAccount().getDifPhoto() != null) {
+            sb.append(card.getUserAccount().getDifPhoto() ? "Oui" : "Non");
+        }
+        sb.append(";");
+        sb.append(card.getId());
+        sb.append(";");
+        if(card.getEtat() != null) {
+            sb.append(card.getEtat().toString());
+        }
+        return sb.toString();
+    }
+
+    @Transactional
+    public void putPhotoInStream(Card card, ZipOutputStream zos) throws SQLException, IOException {
+        zos.write(card.getPhotoFile().getBigFile().getBinaryFileasBytes());
+    }
 
 
 }

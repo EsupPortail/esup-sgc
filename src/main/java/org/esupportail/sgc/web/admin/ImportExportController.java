@@ -1,31 +1,33 @@
 package org.esupportail.sgc.web.admin;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 
-import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.ExportBean;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.ExportService;
 import org.esupportail.sgc.services.ie.ImportExportService;
+import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
@@ -64,6 +66,7 @@ public class ImportExportController {
 	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
 	public String index(Model uiModel) {
 		uiModel.addAttribute("isInWorking", importExportService.isInWorking());
+        uiModel.addAttribute("isInWorkingZip", importExportService.isInWorkingZip());
         return "templates/admin/import";
 	}
 	
@@ -72,12 +75,23 @@ public class ImportExportController {
 	public String importCsvFile(MultipartFile file, @RequestParam(defaultValue="False") Boolean inverseCsn) throws IOException, ParseException {
 		if(file != null) {
 			String filename = file.getOriginalFilename();
-			log.info("CrousSmartCardController retrieving file " + filename);
+			log.info("importCsvFile retrieving file " + filename);
 			InputStream stream = new  ByteArrayInputStream(file.getBytes());
 			importExportService.consumeCsv(stream, inverseCsn);
 		}
 		return "redirect:/admin/import";
 	}
+
+    @RequestMapping(value = "/importZipFile", method = RequestMethod.POST, produces = "text/html")
+    public String importZipFile(MultipartFile file) throws IOException, ParseException {
+        if(file != null) {
+            String filename = file.getOriginalFilename();
+            log.info("importZipFile retrieving file " + filename);
+            InputStream stream = file.getInputStream();
+            importExportService.consumeZip(stream);
+        }
+        return "redirect:/admin/import";
+    }
 
 	@RequestMapping(value = "/exportCsvFile/{stats}", method = RequestMethod.GET)
 	public void getCsv(@PathVariable("stats") String stats, HttpServletRequest request, HttpServletResponse response, Locale locale) throws IOException {
@@ -146,4 +160,23 @@ public class ImportExportController {
             }
 		}
 	}
+
+    @GetMapping(value = "/export.zip", produces = "application/zip")
+    public void exportAll(HttpServletResponse response) {
+        export(response, new CardSearchBean());
+    }
+
+    public void export(HttpServletResponse response, CardSearchBean searchBean)  {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"export.zip\"");
+        try (OutputStream out = response.getOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(out, StandardCharsets.UTF_8)) {
+            importExportService.exportToZip(searchBean, zos);
+            zos.finish();
+        } catch (IOException | SQLException e) {
+            log.error("Error during export", e);
+        }
+    }
+
 }
