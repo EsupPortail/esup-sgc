@@ -28,7 +28,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 @Transactional
@@ -64,7 +66,7 @@ public class ImportExportCardService {
     /*
         * Import une ligne CSV
         * Format attendu :
-        * date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn;diffusion photo (Oui/Non);id;etat de la carte
+        * date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn;diffusion photo (Oui/Non);id;etat de la carte;generatedIds
         * Soit :
         * encodedDate;lastEncodedDate;csn;crous;desfireId;eppn;difPhoto;etat
         * Exemple :
@@ -114,6 +116,19 @@ public class ImportExportCardService {
                 log.debug("Error parsing this etat " + fields[8], e);
             }
         }
+        Map<String, String> generatedIdsMap = new HashMap<>();
+        if(fields.length>9) {
+            // generatedIds
+            String generatedIds = fields[9];
+            String[] appIds = generatedIds.split("\\|");
+            for(String appId : appIds) {
+                String[] pair = appId.split("=");
+                if(pair.length==2) {
+                    log.debug("GeneratedId for app " + pair[0] + " = " + pair[1]);
+                    generatedIdsMap.put(pair[0], pair[1]);
+                }
+            }
+        }
 
 		if(eppn != null) {
 			User user = userDaoService.findUser(eppn);
@@ -130,6 +145,9 @@ public class ImportExportCardService {
 			card.setEppn(eppn);
 			card.setCsn(csn);
 			card.getDesfireIds().put(AccessControlService.AC_APP_NAME, desfireId);
+            for(String appName : generatedIdsMap.keySet()) {
+                card.getDesfireIds().put(appName, generatedIdsMap.get(appName));
+            }
 			card.setDeliveredDate(printedDate);
 			card.setEnnabledDate(printedDate);
 			card.setRequestDate(printedDate);
@@ -224,7 +242,7 @@ public class ImportExportCardService {
         * Retourne l'entrée CSV d'une carte
         * Correspond aux chanps permettant un import
         * Cf la méthode importCsvLine
-        * encodedDate;lastEncodedDate;csn;crous;card.getDesfireIds().get(AccessControlService.AC_APP_NAME);eppn;difPhoto;id;etat
+        * encodedDate;lastEncodedDate;csn;crous;card.getDesfireIds().get(AccessControlService.AC_APP_NAME);eppn;difPhoto;id;etat;generatedIds
         *
      */
     public String exportCsvLine(Card card) {
@@ -264,6 +282,15 @@ public class ImportExportCardService {
         if(card.getEtat() != null) {
             sb.append(card.getEtat().toString());
         }
+        sb.append(";");
+        String generatedIds = "";
+        for(String appName : card.getDesfireIds().keySet()) {
+            if(!generatedIds.isEmpty()) {
+                generatedIds += "|";
+            }
+            generatedIds += appName + "=" + card.getDesfireIds().get(appName);
+        }
+        sb.append(generatedIds);
         return sb.toString();
     }
 
