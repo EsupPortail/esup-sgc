@@ -23,6 +23,7 @@
                 <input type="hidden" id="nbRejets" th:field="*{nbRejets}" />
                 <input type="hidden" id="flagAdresse" th:field="*{flagAdresse}" />
                 <input type="hidden" id="searchText" th:field="*{searchText}" />
+                <input type="hidden" name="sort" th:value="${sortParam}" />
                 <th:block th:each="filtre, status : ${csvFiltres}">
                     <input type="hidden" th:id="'freeField' + ${status.index}" th:name="'freeField[' + ${status.index} + ']'" th:value="${searchBean.freeField[status.index]}" />
                     <th:block th:if="${fieldsValueEncoded != null}">

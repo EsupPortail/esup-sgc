@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -587,6 +588,12 @@ public class ManagerCardController {
         PageRequest pageRequest = PageRequest.of(page, sizeNo, sort);
         Page<Card> pageCards = new PageImpl<>(cards, pageRequest, countCards);
         uiModel.addAttribute("cards", pageCards);
+
+        if (sort.isSorted()) {
+            Sort.Order order = sort.iterator().next();
+            uiModel.addAttribute("sortParam", order.getProperty() + "," + order.getDirection().name().toLowerCase());
+        }
+
         return "templates/manager/list";
     }
 
@@ -831,7 +838,7 @@ public class ManagerCardController {
 	}
 	
 	@RequestMapping(value="/bordereau", method = RequestMethod.GET)
-	public String getBordereau(@ModelAttribute("searchBean") CardSearchBean searchBean, Model uiModel){
+	public String getBordereau(@ModelAttribute("searchBean") CardSearchBean searchBean, @PageableDefault(size = Integer.MAX_VALUE) Pageable pageable, Model uiModel){
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
@@ -856,7 +863,13 @@ public class ManagerCardController {
     	Long nbCards = cardDaoService.countFindCards(searchBean, eppn);
     	boolean msgbordereau = false;
     	if(nbCards < 500){
-    		List<Card> cards = cardDaoService.findCards(searchBean, eppn, new SortCriterion("address", "ASC")).getResultList();
+            List<SortCriterion> sortCriteria = new ArrayList<>();
+            sortCriteria.add(new SortCriterion("address", "ASC"));
+            pageable.getSort();
+            for (Sort.Order order : pageable.getSort()) {
+                sortCriteria.add(new SortCriterion(order.getProperty(), order.getDirection().name()));
+            }
+            List<Card> cards = cardDaoService.findCards(searchBean, eppn, sortCriteria.toArray(new SortCriterion[0])).getResultList();
     		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());
 
             List<CardWithCounter> cardsWithCounters = new ArrayList<>();
