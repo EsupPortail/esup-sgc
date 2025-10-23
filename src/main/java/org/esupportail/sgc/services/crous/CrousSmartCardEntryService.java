@@ -124,12 +124,17 @@ public class CrousSmartCardEntryService {
 
     public void consumeCrousCsv(String crousCardsCsv) {
         String[] lines = crousCardsCsv.split("\\r?\\n");
+        int i = 0;
         for(String line : lines) {
-            try {
-                consumeCsvLine(line, false);
-            } catch (Exception e) {
-                log.error("Error during parsing crous csv line : " + line, e);
+            // ignore header line
+            if(i!=0) {
+                try {
+                    consumeCsvLine(line, false);
+                } catch (Exception e) {
+                    log.error("Error during parsing crous csv line : " + line, e);
+                }
             }
+            i++;
         }
     }
 }

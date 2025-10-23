@@ -184,6 +184,9 @@ public class ImportExportService {
     public void addCsvCardsToZip(TypedQuery<Card> cardsTypedQuery, ZipOutputStream zos) throws IOException {
         ZipEntry fileEntry = new ZipEntry("cards.csv");
         zos.putNextEntry(fileEntry);
+        String header =  "encodedDate;lastEncodedDate;csn;crous;access-control-id;eppn;difPhoto;id;etat";
+        zos.write(header.getBytes());
+        zos.write(System.lineSeparator().getBytes());
         for(Card card : cardsTypedQuery.getResultList()) {
             String csvLine = importExportCardService.exportCsvLine(card);
             zos.write(csvLine.getBytes());
@@ -195,6 +198,9 @@ public class ImportExportService {
     public void addCrousCsvCardsToZip(TypedQuery<Card> cardsTypedQuery, ZipOutputStream zos) throws IOException {
         ZipEntry fileEntry = new ZipEntry("crous_cards.csv");
         zos.putNextEntry(fileEntry);
+        String header = "PIX.SS;PIX.NN;AAPL;NUM_PROTOCOLAIRE;NUM_APPLICATIF;NFO;CNOUS;CROUS;EMETTEUR;MAPPING;NUM_CARTE;DATE_CREATION";
+        zos.write(header.getBytes());
+        zos.write(System.lineSeparator().getBytes());
         for(Card card : cardsTypedQuery.getResultList()) {
             if(card.getUserAccount() != null && card.getUserAccount().getCrous() != null) {
                 String csvLine = crousSmartCardEntryService.exportCrousCsvLine(card);
@@ -240,7 +246,7 @@ public class ImportExportService {
                 log.debug("Processing zip entry : " + entryName);
                 if (entryName.equals("cards.csv")) {
                     String cardsCsv = IOUtils.toString(zis);
-                    for (String line : cardsCsv.split("\n")) {
+                    for (String line : cardsCsv.split("\\r?\\n")) {
                         String[] parts = line.split(";");
                         if (parts.length > 0) {
                             String key = parts[7];
