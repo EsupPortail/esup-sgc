@@ -1242,10 +1242,17 @@ document.addEventListener('DOMContentLoaded', function() {
 							searchEppnForm.submit();
 						},
 						addable: function (value) {
-							var item = this.data.data.find(item => item.innerHTML === value);
-							return {
-								text: value,
-								value: item.value ? item.value : value
+						    if(this.data !== undefined) {
+                                var item = this.data.data.find(item => item.innerHTML === value);
+                                return {
+                                    text: value,
+                                    value: item.value ? item.value : value
+                                }
+							} else {
+                                return {
+                                    text: value,
+                                    value: value
+                                }
 							}
 						}
 					}
