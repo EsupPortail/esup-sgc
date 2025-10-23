@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.ConvertNullTo;
 import org.supercsv.cellprocessor.FmtDate;
 import org.supercsv.cellprocessor.Optional;
@@ -227,6 +228,7 @@ public class ImportExportService {
         }
     }
 
+    @Transactional
     public void exportToZip(CardSearchBean searchBean, ZipOutputStream zos) throws IOException, SQLException {
        TypedQuery<Card> cardsTypedQuery = cardDaoService.findCards(searchBean, null, null, null);
        addCsvCardsToZip(cardsTypedQuery, zos);
