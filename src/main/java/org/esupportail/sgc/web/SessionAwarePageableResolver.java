@@ -14,12 +14,18 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  * @see PageableHandlerMethodArgumentResolver
  * Resolver de Pageable qui regarde dans la session si un paramètre size a été sauvegardé.
  * Si oui, il l'utilise pour créer le Pageable.
- * Si non, il utilise la valeur par défaut.
+ * Si non, il utilise la valeur donnée dans le fichier de configuration (par défaut 20).
  * Si un paramètre size est présent dans la requête, il l'utilise et le sauvegarde en session.
  */
 public class SessionAwarePageableResolver extends PageableHandlerMethodArgumentResolver {
 
     private static final String SIZE_IN_SESSION = "paginationSize";
+
+    private int defaultPageSize = 20;
+
+    public void setDefaultPageSize(int defaultPageSize) {
+        this.defaultPageSize = defaultPageSize;
+    }
 
     @Override
     public Pageable resolveArgument(MethodParameter methodParameter, @Nullable ModelAndViewContainer mavContainer, NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) {
@@ -29,6 +35,8 @@ public class SessionAwarePageableResolver extends PageableHandlerMethodArgumentR
             if (sessionSize != null) {
                 int size = (int) sessionSize;
                 pageable = PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
+            } else {
+                pageable = PageRequest.of(pageable.getPageNumber(), defaultPageSize, pageable.getSort());
             }
         } else {
             webRequest.setAttribute(SIZE_IN_SESSION, pageable.getPageSize(), NativeWebRequest.SCOPE_SESSION);
