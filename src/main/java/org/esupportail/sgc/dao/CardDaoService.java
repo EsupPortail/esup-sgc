@@ -153,70 +153,31 @@ public class CardDaoService {
         * Search cards with CardSearchBean criteria
         * eppn is used to filter own or free cards if specified in searchBean
      */
-    public TypedQuery<Card> findCards(CardSearchBean searchBean, String eppn, String sortFieldName, String sortOrder) {
+    public TypedQuery<Card> findCards(CardSearchBean searchBean, String eppn, SortCriterion... sortCriteria) {
         EntityManager em = entityManager;
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Card> query = criteriaBuilder.createQuery(Card.class);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Card> query = cb.createQuery(Card.class);
         Root<Card> c = query.from(Card.class);
 
-        final List<Order> orders = new ArrayList<Order>();
-        if ("DESC".equalsIgnoreCase(sortOrder)) {
-            if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-                orders.add(criteriaBuilder.desc(c.get(sortFieldName)));
-            } else {
-                if ("nbCards".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.desc(u.get("nbCards")));
-                } else if ("displayName".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.desc(u.get("name")));
-                    orders.add(criteriaBuilder.desc(u.get("firstname")));
-                } else if ("address".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.desc(u.get("address")));
-                } else if ("updateDate".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.desc(u.get("updateDate")));
-                } else if ("nbResyncSuccessives".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.desc(u.get("nbResyncSuccessives")));
-                }
-            }
-        } else {
-            if(fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-                orders.add(criteriaBuilder.asc(c.get(sortFieldName)));
-            } else {
-                if("nbCards".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.asc(u.get("nbCards")));
-                } else if("displayName".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.asc(u.get("name")));
-                    orders.add(criteriaBuilder.asc(u.get("firstname")));
-                } else if("address".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.asc(u.get("address")));
-                } else if ("updateDate".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.asc(u.get("updateDate")));
-                } else if ("nbResyncSuccessives".equals(sortFieldName)) {
-                    Join<Card, User> u = c.join("userAccount");
-                    orders.add(criteriaBuilder.asc(u.get("nbResyncSuccessives")));
-                }
-            }
+        List<Order> orders = new ArrayList<>();
+        Join<Card, User> userJoin = null; // Lazy join
+
+        // Traiter les critères de tri demandés
+        for (SortCriterion criterion : sortCriteria) {
+            userJoin = addSortOrders(cb, c, orders, criterion, userJoin);
         }
 
+        // Ajouter les tris par défaut
         if (!searchBean.getSearchText().isEmpty()) {
             String searchString = computeSearchString(searchBean.getSearchText());
-            Expression<Double> fullTestSearchRanking = getFullTestSearchRanking(criteriaBuilder, searchString);
-            orders.add(criteriaBuilder.desc(fullTestSearchRanking));
+            Expression<Double> fullTestSearchRanking = getFullTestSearchRanking(cb, searchString);
+            orders.add(cb.desc(fullTestSearchRanking));
         }
-        orders.add(criteriaBuilder.desc(c.get("dateEtat")));
-        orders.add(criteriaBuilder.desc(c.get("id")));
+        orders.add(cb.desc(c.get("dateEtat")));
+        orders.add(cb.desc(c.get("id")));
 
-        final List<Predicate> predicates = getPredicates4CardSearchBean(searchBean, eppn, criteriaBuilder, c);
-
-        query.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+        List<Predicate> predicates = getPredicates4CardSearchBean(searchBean, eppn, cb, c);
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
         query.orderBy(orders);
         query.select(c);
         if (searchBean.getSearchText().isEmpty() && searchBean.getFreeField() != null && searchBean.getFreeField().values().contains("desfire_ids")) {
@@ -228,6 +189,43 @@ public class CardDaoService {
         return em.createQuery(query);
     }
 
+    private Join<Card, User> addSortOrders(CriteriaBuilder cb, Root<Card> c,
+                                           List<Order> orders, SortCriterion criterion,
+                                           Join<Card, User> existingJoin) {
+        String fieldName = criterion.getFieldName();
+        boolean isDesc = criterion.isDesc();
+        Join<Card, User> userJoin = existingJoin;
+
+        if(fieldName == null) {
+            return userJoin;
+        }
+
+        // Champs directs sur Card
+        if (fieldNames4OrderClauseFilter.contains(fieldName)) {
+            orders.add(isDesc ? cb.desc(c.get(fieldName)) : cb.asc(c.get(fieldName)));
+            return userJoin;
+        }
+
+        // Champs nécessitant un join sur User
+        if (userJoin == null) {
+            userJoin = c.join("userAccount");
+        }
+
+        switch (fieldName) {
+            case "displayName":
+                orders.add(isDesc ? cb.desc(userJoin.get("name")) : cb.asc(userJoin.get("name")));
+                orders.add(isDesc ? cb.desc(userJoin.get("firstname")) : cb.asc(userJoin.get("firstname")));
+                break;
+            case "nbCards":
+            case "address":
+            case "updateDate":
+            case "nbResyncSuccessives":
+                orders.add(isDesc ? cb.desc(userJoin.get(fieldName)) : cb.asc(userJoin.get(fieldName)));
+                break;
+        }
+
+        return userJoin;
+    }
 
     public long countFindCards(CardSearchBean searchBean, String eppn) {
         EntityManager em = entityManager;

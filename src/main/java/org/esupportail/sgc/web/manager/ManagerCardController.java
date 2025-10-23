@@ -550,7 +550,7 @@ public class ManagerCardController {
     	firstResult = page * sizeNo;
     	long countCards = cardDaoService.countFindCards(searchBean, eppn);
 		stopWatch.start("cards search");
-    	List<Card> cards = cardDaoService.findCards(searchBean, eppn, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
+    	List<Card> cards = cardDaoService.findCards(searchBean, eppn, new SortCriterion(sortFieldName, sortOrder)).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList();
         float nrOfPages = (float) countCards / sizeNo;
 
 		stopWatch.start("filters");
@@ -856,7 +856,7 @@ public class ManagerCardController {
     	Long nbCards = cardDaoService.countFindCards(searchBean, eppn);
     	boolean msgbordereau = false;
     	if(nbCards < 500){
-    		List<Card> cards = cardDaoService.findCards(searchBean, eppn, "address", "ASC").getResultList();
+    		List<Card> cards = cardDaoService.findCards(searchBean, eppn, new SortCriterion("address", "ASC")).getResultList();
     		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());
 
             List<CardWithCounter> cardsWithCounters = new ArrayList<>();
