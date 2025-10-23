@@ -237,12 +237,13 @@ public class ImportExportService {
             Map<String, String> cardsEntries = new HashMap<>();
             while ((entry = zis.getNextEntry()) != null) {
                 String entryName = entry.getName();
+                log.debug("Processing zip entry : " + entryName);
                 if (entryName.equals("cards.csv")) {
                     String cardsCsv = IOUtils.toString(zis);
                     for (String line : cardsCsv.split("\n")) {
                         String[] parts = line.split(";");
                         if (parts.length > 0) {
-                            String key = parts[parts.length - 1]; // dernier élément
+                            String key = parts[7];
                             cardsEntries.put(key, line);
                         }
                     }
@@ -250,6 +251,9 @@ public class ImportExportService {
                     String crousCardsCsv = IOUtils.toString(zis);
                     crousSmartCardEntryService.consumeCrousCsv(crousCardsCsv);
                 } else {
+                    if(cardsEntries.isEmpty()) {
+                        log.error("cards.csv non trouvé - " + entryName + " le précède ? - cards.csv doit être avant les photos dans le zip !");
+                    }
                     if(entryName.startsWith("photos/") && entryName.endsWith(".jpg")) {
                         String cardId = entryName.substring(7, entryName.length() - 4);
                         String csvLine = cardsEntries.get(cardId);

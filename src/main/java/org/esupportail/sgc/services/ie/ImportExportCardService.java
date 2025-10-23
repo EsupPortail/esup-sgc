@@ -64,7 +64,7 @@ public class ImportExportCardService {
     /*
         * Import une ligne CSV
         * Format attendu :
-        * date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn;diffusion photo (Oui/Non);etat de la carte
+        * date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn;diffusion photo (Oui/Non);id;etat de la carte
         * Soit :
         * encodedDate;lastEncodedDate;csn;crous;desfireId;eppn;difPhoto;etat
         * Exemple :
@@ -107,11 +107,11 @@ public class ImportExportCardService {
             difPhoto = "Oui".equals(fields[6]);
         }
         Etat etat = Etat.ENABLED;
-        if(fields.length>7) {
+        if(fields.length>8) {
             try {
-                etat = Etat.valueOf(fields[7]);
+                etat = Etat.valueOf(fields[8]);
             } catch(Exception e) {
-                log.debug("Error parsing this etat " + fields[7], e);
+                log.debug("Error parsing this etat " + fields[8], e);
             }
         }
 
