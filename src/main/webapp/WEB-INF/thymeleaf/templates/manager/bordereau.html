@@ -1,7 +1,10 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/bordereau.html -->
-<div id="tableBordereau" th:fragment="bordereau">
-    <h2>
-        Bordereau
+<div xmlns:th="http://www.thymeleaf.org"
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{layouts/user.html}"
+     layout:fragment="content"
+     id="tableBordereau">
+    <h2>Bordereau
         <a class="btn btn-primary pull-right hidden-print" th:href="@{/manager(index='first')}" type="button">
             <span class="glyphicon glyphicon-home"></span>
         </a>
@@ -9,45 +12,38 @@
             <span class="glyphicon glyphicon-print"></span>
         </a>
     </h2>
-    <th:block th:if="${msgbordereau}">
-        <div class="alert alert-danger" th:text="#{manager.msg.bordereau}"></div>
-    </th:block>
-    <th:block th:unless="${msgbordereau}">
+
+    <div th:if="${msgbordereau}" class="alert alert-danger" th:text="#{manager.msg.bordereau}"></div>
+
+    <div th:unless="${msgbordereau}">
         <table class="table table-bordered">
             <thead>
-                <tr>
-                    <th>#</th>
-                    <th th:if="${displayPhoto}">Photo</th>
-                    <th>N° Etu/Pers</th>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>INE / --</th>
-                </tr>
+            <tr>
+                <th>#</th>
+                <th th:if="${displayPhoto}">Photo</th>
+                <th>N° Etu/Pers</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>INE / --</th>
+            </tr>
             </thead>
             <tbody>
-                <th:block th:with="lastAdress='none', lastCcount=0">
-                    <th:block th:each="card, status : ${cards}">
-                        <th:block th:if="${card.userAccount.address != lastAdress}">
-                            <tr class="info">
-                                <td colspan="6" th:text="${card.userAccount.address}"></td>
-                            </tr>
-                            <th:block th:with="lastCcount=0"></th:block>
-                        </th:block>
-                        <th:block th:with="lastCcount=${lastCcount + 1}"></th:block>
-                        <tr>
-                            <td th:text="${lastCcount}"></td>
-                            <td th:if="${displayPhoto}">
-                                <img th:src="@{/manager/photo/{id}(id=${card.id})}" width="60" height="75"/>
-                            </td>
-                            <td th:text="${card.userAccount.supannEmpId + card.userAccount.supannEtuId}"></td>
-                            <td th:text="${card.userAccount.name}"></td>
-                            <td th:text="${card.userAccount.firstname}"></td>
-                            <td th:text="${#strings.isEmpty(card.userAccount.supannCodeINE) ? '--' : card.userAccount.supannCodeINE}"></td>
-                        </tr>
-                        <th:block th:with="lastAdress=${card.userAccount.address}"></th:block>
-                    </th:block>
-                </th:block>
+            <th:block th:each="cardWrapper : ${cardsWithCounters}">
+                <tr th:if="${cardWrapper.newAddress}" class="info">
+                    <td colspan="6" th:text="${cardWrapper.card.userAccount.address}"></td>
+                </tr>
+                <tr>
+                    <td th:text="${cardWrapper.counter}"></td>
+                    <td th:if="${displayPhoto}">
+                        <img th:src="@{/manager/photo/{id}(id=${cardWrapper.card.id})}" width="60" height="75"/>
+                    </td>
+                    <td th:text="${cardWrapper.card.userAccount.supannEmpId} + ${cardWrapper.card.userAccount.supannEtuId}"></td>
+                    <td th:text="${cardWrapper.card.userAccount.name}"></td>
+                    <td th:text="${cardWrapper.card.userAccount.firstname}"></td>
+                    <td th:text="${cardWrapper.card.userAccount.supannCodeINE != null && !cardWrapper.card.userAccount.supannCodeINE.isEmpty() ? cardWrapper.card.userAccount.supannCodeINE : '--'}"></td>
+                </tr>
+            </th:block>
             </tbody>
         </table>
-    </th:block>
+    </div>
 </div>

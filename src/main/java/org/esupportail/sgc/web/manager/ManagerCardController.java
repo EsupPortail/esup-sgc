@@ -857,8 +857,23 @@ public class ManagerCardController {
     	boolean msgbordereau = false;
     	if(nbCards < 500){
     		List<Card> cards = cardDaoService.findCards(searchBean, eppn, "address", "ASC").getResultList();
-    		uiModel.addAttribute("cards", cards);
     		uiModel.addAttribute("displayPhoto", appliConfigService.getPhotoBordereau());
+
+            List<CardWithCounter> cardsWithCounters = new ArrayList<>();
+            String lastAddress = null;
+            int counter = 0;
+
+            for (Card card : cards) {
+                boolean isNewAddress = !card.getUserAccount().getAddress().equals(lastAddress);
+                if (isNewAddress) {
+                    counter = 1;
+                    lastAddress = card.getUserAccount().getAddress();
+                } else {
+                    counter++;
+                }
+                cardsWithCounters.add(new CardWithCounter(card, counter, isNewAddress));
+            }
+            uiModel.addAttribute("cardsWithCounters", cardsWithCounters);
     	}else{
     		msgbordereau = true;
     	}
