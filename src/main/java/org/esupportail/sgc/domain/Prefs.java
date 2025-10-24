@@ -9,15 +9,22 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
+@Table(name = "prefs", indexes = {
+        @Index(name = "prefs_eppn_key_id", columnList = "eppn ,key")
+})
 public class Prefs {
+
+    public enum PrefKey {
+        STATSRM, STATS, PREF_VISIBLE_COLUMNS, EDITABLE, OWNORFREECARD, USERTYPE, PAGE_SIZE
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
-@SequenceGenerator(
-        name = "my_seq",
-        sequenceName = "hibernate_sequence",
-        allocationSize = 1
-)
+    @SequenceGenerator(
+            name = "my_seq",
+            sequenceName = "hibernate_sequence",
+            allocationSize = 1
+    )
     @Column(name = "id")
     private Long id;
 
@@ -36,7 +43,8 @@ public class Prefs {
     private String value;
 
     @Column
-    private String key;
+    @Enumerated(EnumType.STRING)
+    private PrefKey key;
 
     public Long getId() {
         return this.id;
@@ -78,11 +86,11 @@ public class Prefs {
         this.value = value;
     }
 
-	public String getKey() {
+	public PrefKey getKey() {
         return this.key;
     }
 
-	public void setKey(String key) {
+	public void setKey(PrefKey key) {
         this.key = key;
     }
 

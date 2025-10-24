@@ -20,7 +20,7 @@
          Also registers default Formatters and Validators for use across all @Controllers -->
     <mvc:annotation-driven conversion-service="applicationConversionService">
         <mvc:argument-resolvers>
-            <bean class="org.esupportail.sgc.web.SessionAwarePageableResolver">
+            <bean class="org.esupportail.sgc.web.PrefAwarePageableResolver">
                 <property name="defaultPageSize" value="10"/>
             </bean>
         </mvc:argument-resolvers>

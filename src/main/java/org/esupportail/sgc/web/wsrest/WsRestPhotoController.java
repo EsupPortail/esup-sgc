@@ -52,13 +52,13 @@ public class WsRestPhotoController extends AbstractRestController {
 	public ResponseEntity getPhoto(@PathVariable String eppn, @RequestParam(required=false) Etat cardEtat,
                                    @RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime dateEtatAfter, HttpServletResponse response) throws IOException, SQLException {
 		List<Card> validCards = null;
-		if(cardEtat==null) {
-			Etat [] etatsIn = {Etat.ENABLED,  Etat.CADUC, Etat.DISABLED};
-			String [] eppns = {eppn};
-			validCards = cardDaoService.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
-		} else {
-			validCards = cardDaoService.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
+		String [] eppns = {eppn};
+		Etat[] etatsIn = {Etat.ENABLED, Etat.CADUC, Etat.DISABLED};
+
+		if(cardEtat!=null) {
+			etatsIn = new Etat[]{cardEtat};
 		}
+		validCards = cardDaoService.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn)).getResultList();
 		if(!validCards.isEmpty()) {
 			if(dateEtatAfter==null) { 
 				Card lastValidCard = validCards.get(0);
@@ -112,13 +112,12 @@ public class WsRestPhotoController extends AbstractRestController {
 	public ResponseEntity getAuthorizedPhoto(@PathVariable String eppn, @RequestParam(required=false) Etat cardEtat, 
 			@RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime dateEtatAfter, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
 		List<Card> validCards = null;
-		if(cardEtat==null) {
-			Etat [] etatsIn = {Etat.ENABLED,  Etat.CADUC, Etat.DISABLED};
-			String [] eppns = {eppn};
-			validCards = cardDaoService.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn), "dateEtat", "desc").getResultList();
-		} else {
-			validCards = cardDaoService.findCardsByEppnAndEtatEquals(eppn, cardEtat, "dateEtat", "desc").getResultList();
+		Etat [] etatsIn = {Etat.ENABLED,  Etat.CADUC, Etat.DISABLED};
+		String [] eppns = {eppn};
+		if(cardEtat!=null) {
+			etatsIn = new Etat[] {cardEtat};
 		}
+		validCards = cardDaoService.findCardsByEppnInAndEtatIn(Arrays.asList(eppns), Arrays.asList(etatsIn)).getResultList();
 		if(!validCards.isEmpty()) {
 			if(validCards.get(0).getUser().getDifPhoto()) {
 				if(dateEtatAfter==null) { 

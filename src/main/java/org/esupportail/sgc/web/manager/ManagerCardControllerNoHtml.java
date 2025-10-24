@@ -218,7 +218,7 @@ public class ManagerCardControllerNoHtml {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<Card> eppnList = new ArrayList<Card>();
 		if(!searchString.trim().isEmpty()) {
-			eppnList = cardDaoService.findCardsByEppnLike(searchString, "eppn", "ASC").setMaxResults(100).getResultList();
+			eppnList = cardDaoService.findCardsByEppnLike(searchString).setMaxResults(100).getResultList();
 			// hack : we keep only one card for one eppn
 			Map<String, Card> cardsMap = eppnList.stream()
 					.collect(

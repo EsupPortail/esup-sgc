@@ -25,7 +25,15 @@ import java.util.*;
 @Service
 public class CardDaoService {
 
-    public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire", "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate", "dueDate", "etatEppn", "deliveredDate", "motifDisable", "payCmdNum");
+    static final List<String> fieldNames4OrderCard = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire",
+            "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate", "dueDate", "etatEppn", "deliveredDate", "motifDisable", "payCmdNum");
+
+    static final List<String> fieldNames4OrderUser = java.util.Arrays.asList("displayName", "nbCards", "address", "updateDate", "nbResyncSuccessives",
+            "userType", "firstname", "name", "email", "birthday", "institute", "eduPersonPrimaryAffiliation", "rneEtablissement", "idCompagnyRate", "idRate",
+            "supannEmpId", "supannEtuId", "supannEntiteAffectationPrincipale", "supannCodeINE", "secondaryId", "externalAddress",
+            "recto1", "recto2", "recto3", "recto4", "recto5", "recto6", "recto7",
+            "verso1", "verso2", "verso3", "verso4", "verso5", "verso6", "verso7",
+            "freeField1", "freeField2", "freeField3", "freeField4", "freeField5");
 
     private static final Logger log = LoggerFactory.getLogger(CardDaoService.class);
 
@@ -51,21 +59,6 @@ public class CardDaoService {
     public TypedQuery<Card> findCardsByEtatIn(List<Card.Etat> etats) {
         EntityManager em = entityManager;
         TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.etat IN (:etats) order by dateEtat desc", Card.class);
-        q.setParameter("etats", etats);
-        return q;
-    }
-
-    public TypedQuery<Card> findCardsByEppnInAndEtatIn(List<String> eppns, List<Card.Etat> etats, String sortFieldName, String sortOrder) {
-        EntityManager em = entityManager;
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE o.eppn IN (:eppns) AND o.etat IN (:etats)");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("eppns", eppns);
         q.setParameter("etats", etats);
         return q;
     }
@@ -115,25 +108,6 @@ public class CardDaoService {
         TypedQuery q = em.createQuery("SELECT o FROM Card AS o WHERE o.qrcode = :qrcode AND o.etat IN (:etats) order by dateEtat desc", Card.class);
         q.setParameter("qrcode", qrcode);
         q.setParameter("etats", etats);
-        return q;
-    }
-
-
-
-    public TypedQuery<Card> findCardsByEppnAndEtatEquals(String eppn, Card.Etat etat, String sortFieldName, String sortOrder) {
-        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
-        if (etat == null) throw new IllegalArgumentException("The etat argument is required");
-        EntityManager em = entityManager;
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE o.eppn = :eppn AND o.etat = :etat");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("eppn", eppn);
-        q.setParameter("etat", etat);
         return q;
     }
 
@@ -200,7 +174,7 @@ public class CardDaoService {
         Join<Card, User> userJoin = existingJoin;
 
         // Champs directs sur Card
-        if (fieldNames4OrderClauseFilter.contains(fieldName)) {
+        if (fieldNames4OrderCard.contains(fieldName)) {
             orders.add(isDesc ? cb.desc(c.get(fieldName)) : cb.asc(c.get(fieldName)));
             return userJoin;
         }
@@ -210,19 +184,12 @@ public class CardDaoService {
             userJoin = c.join("userAccount");
         }
 
-        switch (fieldName) {
-            case "displayName":
-                orders.add(isDesc ? cb.desc(userJoin.get("name")) : cb.asc(userJoin.get("name")));
-                orders.add(isDesc ? cb.desc(userJoin.get("firstname")) : cb.asc(userJoin.get("firstname")));
-                break;
-            case "nbCards":
-            case "address":
-            case "updateDate":
-            case "nbResyncSuccessives":
-                orders.add(isDesc ? cb.desc(userJoin.get(fieldName)) : cb.asc(userJoin.get(fieldName)));
-                break;
+        if("displayName".equals(fieldName)) {
+            orders.add(isDesc ? cb.desc(userJoin.get("name")) : cb.asc(userJoin.get("name")));
+            orders.add(isDesc ? cb.desc(userJoin.get("firstname")) : cb.asc(userJoin.get("firstname")));
+        } else if(fieldNames4OrderUser.contains(fieldName)) {
+            orders.add(isDesc ? cb.desc(userJoin.get(fieldName)) : cb.asc(userJoin.get(fieldName)));
         }
-
         return userJoin;
     }
 
@@ -636,29 +603,6 @@ public class CardDaoService {
         return q;
     }
 
-    public TypedQuery<Card> findCardsByCsn(String csn, String sortFieldName, String sortOrder) {
-        if (csn == null || csn.length() == 0) throw new IllegalArgumentException("The csn argument is required");
-        EntityManager em = entityManager;
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE o.csn = upper(:csn)");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("csn", csn);
-        return q;
-    }
-
-    public Long countFindCardsByCsn(String csn) {
-        if (csn == null || csn.length() == 0) throw new IllegalArgumentException("The csn argument is required");
-        EntityManager em = entityManager;
-        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.csn = upper(:csn)", Long.class);
-        q.setParameter("csn", csn);
-        return ((Long) q.getSingleResult());
-    }
-
     public List<Object[]> countDeliveryByAddress() {
         EntityManager em = entityManager;
         String sql = "SELECT address, count(*) FROM card INNER JOIN user_account ON card.user_account=user_account.id AND delivered_date is null GROUP BY address ORDER BY count DESC";
@@ -887,45 +831,14 @@ public class CardDaoService {
         return q;
     }
 
-    public TypedQuery<Card> findCardsByEppnAndEtatNotEquals(String eppn, Card.Etat etat, String sortFieldName, String sortOrder) {
-        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
-        if (etat == null) throw new IllegalArgumentException("The etat argument is required");
-        EntityManager em = entityManager;
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE o.eppn = :eppn AND o.etat != :etat");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("eppn", eppn);
-        q.setParameter("etat", etat);
-        return q;
-    }
-
     public TypedQuery<Card> findCardsByEppnEquals(String eppn) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
         EntityManager em = entityManager;
-        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.eppn = :eppn", Card.class);
+        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE o.eppn = :eppn order by requestDate DESC", Card.class);
         q.setParameter("eppn", eppn);
         return q;
     }
 
-    public TypedQuery<Card> findCardsByEppnEquals(String eppn, String sortFieldName, String sortOrder) {
-        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
-        EntityManager em = entityManager;
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE o.eppn = :eppn");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("eppn", eppn);
-        return q;
-    }
 
     public TypedQuery<Card> findCardsByEppnLike(String eppn) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
@@ -937,33 +850,10 @@ public class CardDaoService {
             eppn = eppn + "%";
         }
         EntityManager em = entityManager;
-        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE LOWER(o.eppn) LIKE LOWER(:eppn)", Card.class);
+        TypedQuery<Card> q = em.createQuery("SELECT o FROM Card AS o WHERE LOWER(o.eppn) LIKE LOWER(:eppn) order by eppn ASC", Card.class);
         q.setParameter("eppn", eppn);
         return q;
     }
-
-    public TypedQuery<Card> findCardsByEppnLike(String eppn, String sortFieldName, String sortOrder) {
-        if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
-        eppn = eppn.replace('*', '%');
-        if (eppn.charAt(0) != '%') {
-            eppn = "%" + eppn;
-        }
-        if (eppn.charAt(eppn.length() - 1) != '%') {
-            eppn = eppn + "%";
-        }
-        EntityManager em = entityManager;
-        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Card AS o WHERE LOWER(o.eppn) LIKE LOWER(:eppn)");
-        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
-            queryBuilder.append(" ORDER BY ").append(sortFieldName);
-            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
-                queryBuilder.append(" ").append(sortOrder);
-            }
-        }
-        TypedQuery<Card> q = em.createQuery(queryBuilder.toString(), Card.class);
-        q.setParameter("eppn", eppn);
-        return q;
-    }
-
 
     public long countCards() {
         return entityManager.createQuery("SELECT COUNT(o) FROM Card o", Long.class).getSingleResult();

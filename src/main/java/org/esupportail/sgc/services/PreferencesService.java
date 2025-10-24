@@ -19,13 +19,14 @@ public class PreferencesService {
 
     public final Logger log = LoggerFactory.getLogger(getClass());
 
+
 	@Resource
 	LogService logService;
 
     @Resource
     PrefsDaoService prefsDaoService;
 	
-	public void setPrefs(String eppn, String key, String value){
+	public void setPrefs(String eppn, Prefs.PrefKey key, String value){
 		
 		try {
 			if(prefsDaoService.countFindPrefsesByEppnEqualsAndKeyEquals(eppn, key)>0){
@@ -42,14 +43,14 @@ public class PreferencesService {
                 prefsDaoService.persist(pref);
 				//log... creation et update STATS DELETED
 			}
-			logService.log(null, ACTION.UPDATEPREFS, RETCODE.SUCCESS, key, eppn, null);
+			logService.log(null, ACTION.UPDATEPREFS, RETCODE.SUCCESS, key.name(), eppn, null);
 		} catch (Exception e) {
 			log.warn("Erreur lors de mise à jour ou création d'une préférence, " + key);
 		}
 		
 	}
 	
-	public Prefs getPrefs(String eppn, String key){
+	public Prefs getPrefs(String eppn, Prefs.PrefKey key){
 		if(prefsDaoService.countFindPrefsesByEppnEqualsAndKeyEquals(eppn, key)>0){
 			return prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, key).getSingleResult();
 		}else{
@@ -57,18 +58,16 @@ public class PreferencesService {
 		}
 	}
 	
-	public String getPrefValue(String eppn, String key){
+	public String getPrefValue(String eppn, Prefs.PrefKey key){
 		Prefs prefs = this.getPrefs(eppn, key);
 		String value = "";
 		if(prefs == null){
-			if(ManagerCardController.MANAGER_SEARCH_PREF.EDITABLE.name().equals(key)){
+			if(Prefs.PrefKey.EDITABLE.equals(key)){
 				value = "all";
-			}else if(ManagerCardController.MANAGER_SEARCH_PREF.OWNORFREECARD.name().equals(key)){
+			} else if(Prefs.PrefKey.OWNORFREECARD.equals(key)){
 				value = "false";
-			}else if(ManagerCardController.MANAGER_SEARCH_PREF.LIST_NO_IMG.name().equals(key)){
-                value = "false";
-            }
-		}else{
+			}
+		} else{
 			value = prefs.getValue();
 		}
 		

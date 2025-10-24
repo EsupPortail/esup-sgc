@@ -78,7 +78,7 @@ public class CardService {
 
     public Card findLastCardByEppnEquals(String eppn) {
 		Card lastCard = null;
-		List<Card> cards =  cardDaoService.findCardsByEppnEquals(eppn,"requestDate","DESC").getResultList();
+		List<Card> cards =  cardDaoService.findCardsByEppnEquals(eppn).getResultList();
 		if(!cards.isEmpty()) {
 			lastCard = cards.get(0);
 		}

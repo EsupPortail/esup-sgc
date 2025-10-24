@@ -10,9 +10,13 @@
 </head>
 <body>
 <div layout:fragment="content" id="cardList">
-    <script>
-        var printerEppn = "[[${printerEppn}]]";
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var printerEppn = /*[[${printerEppn}]]*/ "";
+        var availableColumns = /*[[${availableColumns}]]*/ [];
+        /*]]>*/
     </script>
+
     <h2>
         Gestion des cartes
         <a class="btn btn-warning navbar-btn navbar-right" th:href="@{/manager/stats}" id="btnStats" title="Statistiques">
@@ -20,6 +24,9 @@
         </a>
         <button class="btn btn-primary navbar-btn navbar-right" data-toggle="modal" data-target="#noticeEtats" title="Etats" type="button">
             <span class="glyphicon glyphicon-info-sign"></span>
+        </button>
+        <button class="btn btn-default navbar-btn navbar-right" data-toggle="modal" data-target="#columnsConfig" title="Colonnes" type="button">
+            <span class="glyphicon glyphicon-th-list"></span>
         </button>
         <button class="btn btn-default navbar-btn navbar-right" data-toggle="modal" data-target="#settings" title="Préférences" type="button">
             <span class="glyphicon glyphicon-cog"></span>
@@ -54,87 +61,15 @@
                     <tr>
                         <th data-type="html"><input id="selectall" type="checkbox" th:if="${managePermission}"></th>
                         <th class="hidden">id</th>
-                        <th>
-                            <a class="sorting" sd:pagination-sort="etat">
-                                État
-                            </a>
+
+                        <!-- En-têtes de colonnes génériques -->
+                        <th th:each="col : ${visibleColumns}"
+                            th:class="${col.cellCssClass}"
+                            th:classappend="${col.centerCell ? 'centerCell' : ''}">
+                            <a th:if="${col.sortable}" class="sorting" sd:pagination-sort="${col.sortField}" th:text="${col.label}"></a>
+                            <span th:unless="${col.sortable}" th:text="${col.label}"></span>
                         </th>
-                        <th class="hidden-xs">
-                            <a class="sorting" sd:pagination-sort="eppn">
-                                EPPN
-                            </a>
-                        </th>
-                        <th class="hidden-xs">
-                            <a class="sorting" sd:pagination-sort="displayName">
-                                Nom
-                            </a>
-                        </th>
-                        <th class="type centerCell hidden-xs hidden-sm">Type</th>
-                        <th th:if="${userPrefs.listNoImg != 'true' and userPrefs.listNoImg != 'on'}">Photo</th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md">CROUS</th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md">Dif Photo</th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg">ESC</th>
-                        <th class="centerCell hidden-xs hidden-sm">Editable</th>
-                        <th class="centerCell hidden-xs hidden-sm">
-                            <a class="sorting" sd:pagination-sort="deliveredDate">
-                                Livraison
-                            </a>
-                        </th>
-                        <th class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg">
-                            <a class="sorting" sd:pagination-sort="nbCards">
-                                Nb Cartes
-                            </a>
-                        </th>
-                        <th class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl">
-                            <a class="sorting" sd:pagination-sort="nbRejets">
-                                Nb Rejets
-                            </a>
-                        </th>
-                        <th class="hidden-xs hidden-sm hidden-md">
-                            <a class="sorting" sd:pagination-sort="etatEppn">
-                                Modificateur
-                            </a>
-                        </th>
-                        <th class="hidden-xs hidden-sm hidden-md">
-                            <a class="sorting" sd:pagination-sort="address">
-                                Adresse
-                            </a>
-                        </th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <a class="sorting" sd:pagination-sort="payCmdNum">
-                                Paiement
-                            </a>
-                        </th>
-                        <th class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl">
-                            <a class="sorting" sd:pagination-sort="motifDisable">
-                                Motif
-                            </a>
-                        </th>
-                        <th class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <a class="sorting" sd:pagination-sort="requestDate">
-                                Demande
-                            </a>
-                        </th>
-                        <th class="hidden-xs hidden-sm">
-                            <a class="sorting" sd:pagination-sort="dueDate">
-                                Fin
-                            </a>
-                        </th>
-                        <th class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <a class="sorting" sd:pagination-sort="dateEtat">
-                                Modification
-                            </a>
-                        </th>
-                        <th class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
-                            <a class="sorting" sd:pagination-sort="updateDate">
-                                Resynchro
-                            </a>
-                        </th>
-                        <th class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
-                            <a class="sorting" sd:pagination-sort="nbResyncSuccessives">
-                                Nb Resynchros
-                            </a>
-                        </th>
+
                         <th data-type="html">Voir</th>
                     </tr>
                     </thead>
@@ -142,63 +77,29 @@
                     <tr th:each="card : ${cards}">
                         <td><input th:value="${card.id}" name="case" type="checkbox" class="case" th:if="${managePermission}"/></td>
                         <td class="hidden" th:text="${card.id}"></td>
-                        <td class="etat centerCell">
-                            <span th:text="#{|card.label.${card.etat}|}" class="label" th:classappend="${'label-' + #strings.toLowerCase(card.etat)}"/>
+
+                        <!-- Cellules génériques avec rendu conditionnel -->
+                        <td th:each="col : ${visibleColumns}"
+                            th:class="${col.cellCssClass}"
+                            th:classappend="${col.centerCell ? 'centerCell' : ''}">
+
+                            <!-- Exception pour la photo avec lazy loading -->
+                            <th:block th:if="${col.key == 'photo'}">
+                                <a title="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
+                                    <div class="lazy-photo"
+                                         th:attr="data-src=@{/manager/photo/{id}(id=${card.id})}"
+                                         style="width:40px; height:50px; background:#eee; display:inline-block;">
+                                    </div>
+                                </a>
+                            </th:block>
+
+                            <!-- Rendu générique via utext (HTML pré-calculé) -->
+                            <th:block th:unless="${col.key == 'photo'}">
+                                <span th:utext="${col.getRenderedValue(card)}"></span>
+                            </th:block>
                         </td>
-                        <td class="hidden-xs" th:text="${card.eppn}"></td>
-                        <td class="hidden-xs" th:text="${card.displayName}"></td>
-                        <td class="type centerCell hidden-xs hidden-sm">
-                            <span th:title="${card.userType}" class="badge" th:classappend="${'badge-' + #strings.toLowerCase(card.userType)}" th:text="${card.userType}"></span>
-                        </td>
-                        <td class="photo centerCell" th:if="${userPrefs.listNoImg != 'true' and userPrefs.listNoImg != 'on'}">
-                            <a title="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
-                                <div class="lazy-photo"
-                                     th:attr="data-src=@{/manager/photo/{id}(id=${card.id})}"
-                                     style="width:40px; height:50px; background:#eee; display:inline-block;">
-                                </div>
-                            </a>
-                        </td>
-                        <td class="centerCell hidden-xs hidden-sm hidden-md">
-                            <span th:classappend="${card.crous ? 'glyphicon-ok text-success' : 'glyphicon-remove text-danger'}" class="glyphicon"></span>
-                        </td>
-                        <td class="centerCell hidden-xs hidden-sm hidden-md">
-                            <span th:classappend="${card.difPhoto ? 'glyphicon-ok text-success' : 'glyphicon-remove text-danger'}" class="glyphicon"></span>
-                        </td>
-                        <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg">
-                            <span th:classappend="${card.europeanStudentCard ? 'glyphicon-ok text-success' : 'glyphicon-remove text-danger'}" class="glyphicon"></span>
-                        </td>
-                        <td class="centerCell hidden-xs hidden-sm">
-                            <span th:classappend="${card.userEditable ? 'glyphicon-ok text-success' : 'glyphicon-remove text-danger'}" class="glyphicon"></span>
-                        </td>
-                        <td class="centerCell hidden-xs hidden-sm">
-                            <span th:text="${#temporals.format(card.deliveredDate, 'dd/MM/yy HH:mm')}" th:if="${card.deliveredDate != null}"/>
-                        </td>
-                        <td class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg" th:text="${card.nbCards}"></td>
-                        <td class="centerCell bold hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl" th:text="${card.nbRejets}"></td>
-                        <td class="hidden-xs hidden-sm hidden-md" th:text="${card.etatEppn}"></td>
-                        <td class="hidden-xs hidden-sm hidden-md" th:text="${card.address}"></td>
-                        <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <span th:unless="${#strings.isEmpty(card.payCmdNum)}" class="glyphicon glyphicon-ok text-success"></span>
-                        </td>
-                        <td class="centerCell hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl">
-                            <span th:text="#{|user.motif.short.${card.motifDisable}|}" th:if="${!#strings.isEmpty(card.motifDisable)}"/>
-                        </td>
-                        <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <span th:text="${#temporals.format(card.requestDate, 'dd/MM/yy HH:mm')}" th:if="${card.requestDate != null}"/>
-                        </td>
-                        <td class="hidden-xs hidden-sm">
-                            <span th:text="${#temporals.format(card.dueDate, 'dd/MM/yyyy')}" th:if="${card.dueDate != null}"/>
-                        </td>
-                        <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl">
-                            <span th:text="${#temporals.format(card.dateEtat, 'dd/MM/yy HH:mm')}" th:if="${card.dateEtat != null}"/>
-                        </td>
-                        <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
-                            <span th:text="${#temporals.format(card.user.updateDate, 'dd/MM/yy HH:mm')}" th:if="${card.user.updateDate != null}"/>
-                        </td>
-                        <td class="hidden-xs hidden-sm hidden-md hidden-llg hidden-xl hidden-xxl hidden-xxxl">
-                            <span th:text="${card.user.nbResyncSuccessives}"/>
-                        </td>
-                        <td class="utilbox ">
+
+                        <td class="utilbox">
                             <a class="btn btn-success" title="Show Card" alt="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
                                 <img title="Show Card" th:src="@{/resources/images/show.png}" class="image" alt="Show Card">
                             </a>
@@ -216,6 +117,82 @@
                     <br/>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de configuration des colonnes -->
+    <div class="modal fade" id="columnsConfig" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title">Configuration des colonnes</h4>
+                </div>
+                <form th:action="@{/manager/preferences/columns}" method="POST">
+                    <div class="modal-body">
+                        <p class="text-muted">Cochez les colonnes que vous souhaitez afficher dans le tableau.</p>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input class="form-check-input" type="checkbox" id="selectAllColumns">
+                                <label class="form-check-label fw-bold" for="selectAllColumns">
+                                    Tout sélectionner / Tout désélectionner
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6" th:each="col : ${availableColumns}">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox"
+                                               name="columns"
+                                               class="columns-checkbox"
+                                               th:value="${col.key}"
+                                               th:checked="${col.visible}"/>
+                                        <span th:text="${col.label}"></span>
+                                        <select name="columns_render" class="form-control">
+                                            <option th:value="${col.key + ':S'}" th:selected="${col.renderSize.name()=='S'}">Écran S</option>
+                                            <option th:value="${col.key + ':M'}" th:selected="${col.renderSize.name()=='M'}">Écran M</option>
+                                            <option th:value="${col.key + ':L'}" th:selected="${col.renderSize.name()=='L'}">Écran L</option>
+                                            <option th:value="${col.key + ':XL'}" th:selected="${col.renderSize.name()=='XL'}">Écran XL</option>
+                                            <option th:value="${col.key + ':XXL'}" th:selected="${col.renderSize.name()=='XXL'}">Écran XXL</option>
+                                            <option th:value="${col.key + ':XXXL'}" th:selected="${col.renderSize.name()=='XXXL'}">Écran XXXL</option>
+                                        </select>
+                                        <small class="text-muted" th:if="${col.description}" th:text="' - ' + ${col.description}"></small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const selectAll = document.getElementById("selectAllColumns");
+                                const checkboxes = document.querySelectorAll(".columns-checkbox");
+                                selectAll.addEventListener("change", () => {
+                                    checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                                });
+                                checkboxes.forEach(cb => cb.addEventListener("change", () => {
+                                    const allChecked = [...checkboxes].every(c => c.checked);
+                                    const noneChecked = [...checkboxes].every(c => !c.checked);
+                                    if (allChecked) {
+                                        selectAll.checked = true;
+                                        selectAll.indeterminate = false;
+                                    } else if (noneChecked) {
+                                        selectAll.checked = false;
+                                        selectAll.indeterminate = false;
+                                    } else {
+                                        selectAll.indeterminate = true;
+                                    }
+                                }));
+                            });
+                            /*]]>*/
+                        </script>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -252,7 +229,7 @@
             });
         });
     </script>
-    
+
 </div>
 </body>
 </html>

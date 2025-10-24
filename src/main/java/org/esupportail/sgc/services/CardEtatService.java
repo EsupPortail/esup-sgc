@@ -314,7 +314,7 @@ public class CardEtatService {
 	}
 
 	public List<Card> getAllEncodedCards(List<String> eppns) {
-		return cardDaoService.findCardsByEppnInAndEtatIn(eppns, etatsEncoded, null, null).getResultList();
+		return cardDaoService.findCardsByEppnInAndEtatIn(eppns, etatsEncoded).getResultList();
 	}
 
 	public List<Card> getAllEnableableCardsWithEppnDistinct() {

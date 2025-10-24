@@ -39,10 +39,7 @@ import flexjson.JSONSerializer;
 public class StatsController {
 	
 	private static final Logger log = LoggerFactory.getLogger(StatsController.class);
-	
-	private static final String KEY = "STATS";
-	private static final String KEYRM = "STATSRM";
-	
+
 	@Resource
 	StatsService statsService;	
 	
@@ -104,12 +101,12 @@ public class StatsController {
 		List<String> prefsStats = new ArrayList<>();
 		List<String> prefsStatsRm = new ArrayList<>();
 		try {
-			if(preferencesService.getPrefs(eppn, KEY)!=null){
-				prefsStats = Arrays.asList(preferencesService.getPrefs(eppn, KEY).getValue().split("\\s*,\\s*"));
+			if(preferencesService.getPrefs(eppn, Prefs.PrefKey.STATS)!=null){
+				prefsStats = Arrays.asList(preferencesService.getPrefs(eppn, Prefs.PrefKey.STATS).getValue().split("\\s*,\\s*"));
 			}
 			jsonStats = objectMapper.writeValueAsString(prefsStats);
-			if(preferencesService.getPrefs(eppn, KEYRM)!=null){
-				prefsStatsRm = Arrays.asList(preferencesService.getPrefs(eppn, KEYRM).getValue().split("\\s*,\\s*"));
+			if(preferencesService.getPrefs(eppn, Prefs.PrefKey.STATSRM)!=null){
+				prefsStatsRm = Arrays.asList(preferencesService.getPrefs(eppn, Prefs.PrefKey.STATSRM).getValue().split("\\s*,\\s*"));
 			}
 			jsonStatsRm = objectMapper.writeValueAsString(prefsStatsRm);
 			
@@ -178,14 +175,14 @@ public class StatsController {
 	
 	@RequestMapping(value="/prefs", headers = "Accept=application/json; charset=utf-8")
 	@ResponseBody
-	public void savePrefs(@RequestParam List<String> values, @RequestParam String key) {
+	public void savePrefs(@RequestParam List<String> values, @RequestParam Prefs.PrefKey key) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		
 		try {
 			preferencesService.setPrefs(eppn, key, StringUtils.join(values, ","));
-			if(KEYRM.equals(key)){
-				List <String>  prefsStats = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, KEY).getValue().split("\\s*,\\s*")));
+			if(Prefs.PrefKey.STATSRM.equals(key)){
+				List <String>  prefsStats = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, Prefs.PrefKey.STATS).getValue().split("\\s*,\\s*")));
 				prefsStats.remove(values.get(0));
 			}
 			
@@ -201,16 +198,16 @@ public class StatsController {
 		uiModel.asMap().clear();
 		try {
 			if(prefsRm!=null){
-				List<String> prefsStatsRm = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, KEYRM).getValue().split("\\s*,\\s*")));
-				List<String> prefsStats = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, KEY).getValue().split("\\s*,\\s*")));
+				List<String> prefsStatsRm = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, Prefs.PrefKey.STATSRM).getValue().split("\\s*,\\s*")));
+				List<String> prefsStats = new ArrayList<String>(Arrays.asList(preferencesService.getPrefs(eppn, Prefs.PrefKey.STATS).getValue().split("\\s*,\\s*")));
 				for(String pref :prefsRm){
 					prefsStatsRm.remove(pref);
 					prefsStats.add(pref);
 				}
-				preferencesService.setPrefs(eppn, KEYRM, StringUtils.join(prefsStatsRm.toArray(), ","));
-				preferencesService.setPrefs(eppn, KEY, StringUtils.join(prefsStats.toArray(), ","));
-				if( prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult().getValue().isEmpty()){
-					Prefs pref = prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, KEYRM).getSingleResult();
+				preferencesService.setPrefs(eppn, Prefs.PrefKey.STATSRM, StringUtils.join(prefsStatsRm.toArray(), ","));
+				preferencesService.setPrefs(eppn, Prefs.PrefKey.STATS, StringUtils.join(prefsStats.toArray(), ","));
+				if( prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, Prefs.PrefKey.STATSRM).getSingleResult().getValue().isEmpty()){
+					Prefs pref = prefsDaoService.findPrefsesByEppnEqualsAndKeyEquals(eppn, Prefs.PrefKey.STATSRM).getSingleResult();
                     prefsDaoService.remove(pref);
 				}
 			}

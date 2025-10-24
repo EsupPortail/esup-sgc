@@ -95,7 +95,7 @@ public class WsRestEsupNfcControllerTest {
 	}
 
 	private String getCsn(String eppn) {
-		for(Card card : cardDaoService.findCardsByEppnEquals(eppn, "encodedDate", "DESC").getResultList()) {
+		for(Card card : cardDaoService.findCardsByEppnEquals(eppn).getResultList()) {
 			if(card.getCsn() != null && !card.getCsn().isEmpty()) {
 				return card.getCsn();
 			}

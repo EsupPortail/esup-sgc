@@ -24,9 +24,9 @@ public class PrefsDaoService {
 
     public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("eppn", "dateModification", "value", "key");
 
-    public Long countFindPrefsesByEppnEqualsAndKeyEquals(String eppn, String key) {
+    public Long countFindPrefsesByEppnEqualsAndKeyEquals(String eppn, Prefs.PrefKey key) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
-        if (key == null || key.length() == 0) throw new IllegalArgumentException("The key argument is required");
+        if (key == null) throw new IllegalArgumentException("The key argument is required");
         EntityManager em = entityManager;
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Prefs AS o WHERE o.eppn = :eppn  AND o.key = :key", Long.class);
         q.setParameter("eppn", eppn);
@@ -34,9 +34,9 @@ public class PrefsDaoService {
         return ((Long) q.getSingleResult());
     }
 
-    public TypedQuery<Prefs> findPrefsesByEppnEqualsAndKeyEquals(String eppn, String key) {
+    public TypedQuery<Prefs> findPrefsesByEppnEqualsAndKeyEquals(String eppn, Prefs.PrefKey key) {
         if (eppn == null || eppn.length() == 0) throw new IllegalArgumentException("The eppn argument is required");
-        if (key == null || key.length() == 0) throw new IllegalArgumentException("The key argument is required");
+        if (key == null) throw new IllegalArgumentException("The key argument is required");
         EntityManager em = entityManager;
         TypedQuery<Prefs> q = em.createQuery("SELECT o FROM Prefs AS o WHERE o.eppn = :eppn  AND o.key = :key", Prefs.class);
         q.setParameter("eppn", eppn);
