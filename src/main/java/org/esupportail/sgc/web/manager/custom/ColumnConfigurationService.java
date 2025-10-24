@@ -261,6 +261,23 @@ public class ColumnConfigurationService {
                         .renderSize(RenderSize.S)
                         .renderer(card -> card.getUser() != null ? card.getUser().getSecondaryId() : ""),
 
+                ColumnDefinition.of("csn", "CSN")
+                        .sortable("csn")
+                        .renderSize(RenderSize.XL)
+                        .renderer(Card::getCsn),
+
+                ColumnDefinition.of("reverseCsn", "Reverse CSN")
+                        .renderSize(RenderSize.XL)
+                        .renderer(Card::getReverseCsn),
+
+                ColumnDefinition.of("decimalCsn", "Decimal CSN")
+                        .renderSize(RenderSize.XL)
+                        .renderer(Card::getDecimalCsn),
+
+                ColumnDefinition.of("decimalReverseCsn", "Decimal Reverse CSN")
+                        .renderSize(RenderSize.XL)
+                        .renderer(Card::getDecimalReverseCsn),
+
                 ColumnDefinition.of("recto1", "Recto 1")
                         .sortable("recto1")
                         .renderSize(RenderSize.L)
@@ -379,7 +396,18 @@ public class ColumnConfigurationService {
                 ColumnDefinition.of("freeField7", "Champ libre 7")
                         .sortable("freeField7")
                         .renderSize(RenderSize.XL)
-                        .renderer(card -> card.getUser() != null ? card.getUser().getFreeField7() : "")
+                        .renderer(card -> card.getUser() != null ? card.getUser().getFreeField7() : ""),
+
+
+                ColumnDefinition.of("requestOs", "Request OS")
+                        .sortable("requestOs")
+                        .renderSize(RenderSize.XXXL)
+                        .renderer(Card::getRequestOs),
+
+                ColumnDefinition.of("templateKey", "Template Key")
+                        .sortable("templateKey")
+                        .renderSize(RenderSize.XXXL)
+                        .renderer(card -> card.getUser().getTemplateKey())
 
         );
     }

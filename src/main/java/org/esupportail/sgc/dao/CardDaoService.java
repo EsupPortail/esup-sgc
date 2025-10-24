@@ -26,14 +26,16 @@ import java.util.*;
 public class CardDaoService {
 
     static final List<String> fieldNames4OrderCard = java.util.Arrays.asList("id", "eppn", "crous", "etat", "dateEtat", "commentaire",
-            "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate", "dueDate", "etatEppn", "deliveredDate", "motifDisable", "payCmdNum");
+            "flagAdresse", "adresse", "structure", "requestDate", "nbRejets", "lastEncodedDate", "dueDate", "etatEppn", "deliveredDate",
+            "motifDisable", "payCmdNum", "requestOs", "csn");
 
     static final List<String> fieldNames4OrderUser = java.util.Arrays.asList("displayName", "nbCards", "address", "updateDate", "nbResyncSuccessives",
             "userType", "firstname", "name", "email", "birthday", "institute", "eduPersonPrimaryAffiliation", "rneEtablissement", "idCompagnyRate", "idRate",
             "supannEmpId", "supannEtuId", "supannEntiteAffectationPrincipale", "supannCodeINE", "secondaryId", "externalAddress",
             "recto1", "recto2", "recto3", "recto4", "recto5", "recto6", "recto7",
             "verso1", "verso2", "verso3", "verso4", "verso5", "verso6", "verso7",
-            "freeField1", "freeField2", "freeField3", "freeField4", "freeField5");
+            "freeField1", "freeField2", "freeField3", "freeField4", "freeField5",
+            "templateKey");
 
     private static final Logger log = LoggerFactory.getLogger(CardDaoService.class);
 
