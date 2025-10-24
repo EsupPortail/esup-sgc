@@ -192,13 +192,12 @@ public class CardDaoService {
     private Join<Card, User> addSortOrders(CriteriaBuilder cb, Root<Card> c,
                                            List<Order> orders, SortCriterion criterion,
                                            Join<Card, User> existingJoin) {
+        if(criterion == null || StringUtils.isBlank(criterion.getFieldName())) {
+            return existingJoin;
+        }
         String fieldName = criterion.getFieldName();
         boolean isDesc = criterion.isDesc();
         Join<Card, User> userJoin = existingJoin;
-
-        if(fieldName == null) {
-            return userJoin;
-        }
 
         // Champs directs sur Card
         if (fieldNames4OrderClauseFilter.contains(fieldName)) {
