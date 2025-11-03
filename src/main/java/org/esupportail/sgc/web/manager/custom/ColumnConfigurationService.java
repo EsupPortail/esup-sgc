@@ -24,7 +24,7 @@ public class ColumnConfigurationService {
             "dateEtat"
         ));
 
-    public enum RenderSize {S, M, L, XL, XXL, XXXL}
+    public enum RenderSize {XS, S, M, L, XL, XXL, XXXL}
 
     @Resource
     private PreferencesService  preferencesService;
@@ -56,7 +56,7 @@ public class ColumnConfigurationService {
 
                 ColumnDefinition.of("eppn", "EPPN")
                         .sortable("eppn")
-                        .renderSize(RenderSize.S)
+                        .renderSize(RenderSize.XS)
                         .renderer(CellRenderers.text(Card::getEppn)),
 
 
@@ -82,6 +82,7 @@ public class ColumnConfigurationService {
 
 
                 ColumnDefinition.of("photo", "Photo")
+                        .renderSize(RenderSize.XS)
                         .cellCss("photo")
                         .center()
                         .renderer(card -> ""), // Géré par le lazy loading dans le template
@@ -418,16 +419,20 @@ public class ColumnConfigurationService {
 
     public List<ColumnDefinition> getVisibleColumnsWithRendering(String eppn, List<Card> cards) {
 
-        Set<String> visibleColumnKeys = getVisibleColumnKeys(eppn);
-        Map<String, RenderSize> visibleKeys =  visibleColumnKeys.stream().collect(Collectors.toMap(s -> s.split(":")[0], s -> s.split(":").length>1 ? RenderSize.valueOf(s.split(":")[1]) : RenderSize.L));
+        List<ColumnDefinition> allAvailableColumns = getAllAvailableColumns();
+        Map<String, ColumnDefinition> allAvailableColumnsMap = allAvailableColumns.stream().collect(Collectors.toMap(ColumnDefinition::getKey, c -> c));
+                Set<String> visibleColumnKeys = getVisibleColumnKeys(eppn);
+        Map<String, RenderSize> visibleKeys =  visibleColumnKeys.stream().collect(Collectors.toMap(s -> s.split(":")[0],
+                s -> s.split(":").length>1 ?
+                        RenderSize.valueOf(s.split(":")[1]) :
+                        allAvailableColumnsMap.get(s).getRenderSize()));
 
-        List<ColumnDefinition> columns = getAllAvailableColumns().stream()
-                .filter(col -> visibleKeys.keySet().contains(col.getKey()))
+        List<ColumnDefinition> columns = allAvailableColumns.stream()
+                .filter(col -> visibleKeys.containsKey(col.getKey()))
                 .peek(col -> col.setVisible(true))
                 .peek(col -> col.setRenderSize(visibleKeys.get(col.getKey())))
                 .collect(Collectors.toList());
 
-        // Pré-calculer le rendu pour toutes les cartes
         for (ColumnDefinition col : columns) {
             for (Card card : cards) {
                 col.preRender(card);

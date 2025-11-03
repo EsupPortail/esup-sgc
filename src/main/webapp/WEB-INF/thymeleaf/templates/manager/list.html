@@ -62,7 +62,6 @@
                         <th data-type="html"><input id="selectall" type="checkbox" th:if="${managePermission}"></th>
                         <th class="hidden">id</th>
 
-                        <!-- En-têtes de colonnes génériques -->
                         <th th:each="col : ${visibleColumns}"
                             th:class="${col.cellCssClass}"
                             th:classappend="${col.centerCell ? 'centerCell' : ''}">
@@ -78,12 +77,10 @@
                         <td><input th:value="${card.id}" name="case" type="checkbox" class="case" th:if="${managePermission}"/></td>
                         <td class="hidden" th:text="${card.id}"></td>
 
-                        <!-- Cellules génériques avec rendu conditionnel -->
                         <td th:each="col : ${visibleColumns}"
                             th:class="${col.cellCssClass}"
                             th:classappend="${col.centerCell ? 'centerCell' : ''}">
 
-                            <!-- Exception pour la photo avec lazy loading -->
                             <th:block th:if="${col.key == 'photo'}">
                                 <a title="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
                                     <div class="lazy-photo"
@@ -93,7 +90,6 @@
                                 </a>
                             </th:block>
 
-                            <!-- Rendu générique via utext (HTML pré-calculé) -->
                             <th:block th:unless="${col.key == 'photo'}">
                                 <span th:utext="${col.getRenderedValue(card)}"></span>
                             </th:block>
@@ -150,6 +146,7 @@
                                                th:checked="${col.visible}"/>
                                         <span th:text="${col.label}"></span>
                                         <select name="columns_render" class="form-control">
+                                            <option th:value="${col.key + ':XS'}" th:selected="${col.renderSize.name()=='XS'}">Écran XS</option>
                                             <option th:value="${col.key + ':S'}" th:selected="${col.renderSize.name()=='S'}">Écran S</option>
                                             <option th:value="${col.key + ':M'}" th:selected="${col.renderSize.name()=='M'}">Écran M</option>
                                             <option th:value="${col.key + ':L'}" th:selected="${col.renderSize.name()=='L'}">Écran L</option>

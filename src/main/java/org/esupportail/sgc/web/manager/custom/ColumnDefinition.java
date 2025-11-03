@@ -144,7 +144,8 @@ public class ColumnDefinition implements Serializable {
     }
 
     public String getHeadCssClass() {
-        return renderSize == ColumnConfigurationService.RenderSize.S ? "hidden-xs" :
+        return renderSize == ColumnConfigurationService.RenderSize.XS ? "" :
+                renderSize == ColumnConfigurationService.RenderSize.S ? "hidden-xs" :
                        renderSize == ColumnConfigurationService.RenderSize.M ?  "hidden-xs hidden-sm" :
                                renderSize == ColumnConfigurationService.RenderSize.L ?  "hidden-xs hidden-sm hidden-md" :
                                        renderSize == ColumnConfigurationService.RenderSize.XL ?  "hidden-xs hidden-sm hidden-md hidden-llg" :
