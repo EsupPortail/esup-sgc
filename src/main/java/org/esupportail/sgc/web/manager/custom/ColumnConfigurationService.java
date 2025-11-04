@@ -1,7 +1,6 @@
 package org.esupportail.sgc.web.manager.custom;
 
 
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Prefs;
@@ -417,21 +416,9 @@ public class ColumnConfigurationService {
         return dafaultVisibleColumns;
     }
 
-    public List<ColumnDefinition> getVisibleColumnsWithRendering(String eppn, List<Card> cards) {
+    public List<ColumnDefinition> getRenderingColumns(List<ColumnDefinition> columnsWithVisibility, List<Card> cards) {
 
-        List<ColumnDefinition> allAvailableColumns = getAllAvailableColumns();
-        Map<String, ColumnDefinition> allAvailableColumnsMap = allAvailableColumns.stream().collect(Collectors.toMap(ColumnDefinition::getKey, c -> c));
-                Set<String> visibleColumnKeys = getVisibleColumnKeys(eppn);
-        Map<String, RenderSize> visibleKeys =  visibleColumnKeys.stream().collect(Collectors.toMap(s -> s.split(":")[0],
-                s -> s.split(":").length>1 ?
-                        RenderSize.valueOf(s.split(":")[1]) :
-                        allAvailableColumnsMap.get(s).getRenderSize()));
-
-        List<ColumnDefinition> columns = allAvailableColumns.stream()
-                .filter(col -> visibleKeys.containsKey(col.getKey()))
-                .peek(col -> col.setVisible(true))
-                .peek(col -> col.setRenderSize(visibleKeys.get(col.getKey())))
-                .collect(Collectors.toList());
+        List<ColumnDefinition> columns = columnsWithVisibility.stream().filter(ColumnDefinition::isVisible).collect(Collectors.toList());
 
         for (ColumnDefinition col : columns) {
             for (Card card : cards) {
@@ -447,12 +434,21 @@ public class ColumnConfigurationService {
      */
     public List<ColumnDefinition> getColumnsWithVisibility(String eppn) {
 
+        List<ColumnDefinition> allAvailableColumns = getAllAvailableColumns();
+        Map<String, ColumnDefinition> allAvailableColumnsMap = allAvailableColumns.stream().collect(Collectors.toMap(ColumnDefinition::getKey, c -> c));
         Set<String> visibleColumnKeys = getVisibleColumnKeys(eppn);
-        Map<String, RenderSize> visibleKeys =  visibleColumnKeys.stream().collect(Collectors.toMap(s -> s.split(":")[0], s -> s.split(":").length>1 ? RenderSize.valueOf(s.split(":")[1]) : RenderSize.L));
+        Map<String, RenderSize> visibleKeys =  visibleColumnKeys.stream().collect(Collectors.toMap(s -> s.split(":")[0],
+                s -> s.split(":").length>1 ?
+                        RenderSize.valueOf(s.split(":")[1]) :
+                        allAvailableColumnsMap.get(s).getRenderSize()));
 
-        return getAllAvailableColumns().stream()
-                .peek(col -> col.setVisible(visibleKeys.keySet().contains(col.getKey())))
+        List<ColumnDefinition> columns = allAvailableColumns.stream()
+                .peek(col -> col.setVisible(visibleKeys.containsKey(col.getKey())))
+                .peek(col -> col.setRenderSize(
+                        visibleKeys.get(col.getKey()) != null ? visibleKeys.get(col.getKey()) : allAvailableColumnsMap.get(col.getKey()).getRenderSize()))
                 .collect(Collectors.toList());
+
+        return columns;
     }
 
     private Set<String> getVisibleColumnKeys(String eppn) {

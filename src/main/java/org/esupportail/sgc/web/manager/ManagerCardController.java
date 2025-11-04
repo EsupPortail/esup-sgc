@@ -30,13 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -51,9 +49,6 @@ import org.springframework.web.util.WebUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -596,13 +591,11 @@ public class ManagerCardController {
 			Sort.Order order = sort.iterator().next();
 			uiModel.addAttribute("sortParam", order.getProperty() + "," + order.getDirection().name().toLowerCase());
 		}
-
-
-		List<ColumnDefinition> visibleColumns = columnService.getVisibleColumnsWithRendering(eppn, cards);
+		
 		List<ColumnDefinition> availableColumns = columnService.getColumnsWithVisibility(eppn);
-		uiModel.addAttribute("visibleColumns", visibleColumns);
+		List<ColumnDefinition> visibleColumns = columnService.getRenderingColumns(availableColumns, cards);
 		uiModel.addAttribute("availableColumns", availableColumns);
-
+		uiModel.addAttribute("visibleColumns", visibleColumns);
 
 		return "templates/manager/list";
 	}
