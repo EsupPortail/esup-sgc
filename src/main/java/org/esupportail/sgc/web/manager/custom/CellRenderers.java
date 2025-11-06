@@ -63,9 +63,10 @@ public class CellRenderers {
     /**
      * Booléen avec glyphicon
      */
-    public static CellRenderer booleanIcon(Predicate<Card> extractor) {
+    public static CellRenderer booleanIcon(Function<Card, Boolean> extractor) {
         return card -> {
-            boolean value = extractor.test(card);
+            // préférable à extractor.test(card); si la méthode peut renvoyer null
+            boolean value = Boolean.TRUE.equals(extractor.apply(card));
             String icon = value ? "glyphicon-ok text-success" : "glyphicon-remove text-danger";
             return String.format("<span class=\"glyphicon %s\"></span>", icon);
         };
@@ -118,9 +119,9 @@ public class CellRenderers {
     /**
      * Icône conditionnelle (pour paiement)
      */
-    public static CellRenderer conditionalIcon(Predicate<Card> condition, String iconClass) {
+    public static CellRenderer conditionalIcon(Function<Card, Boolean> condition, String iconClass) {
         return card -> {
-            if (condition.test(card)) {
+            if (Boolean.TRUE.equals(condition.apply(card))) {
                 return String.format("<span class=\"glyphicon %s\"></span>", iconClass);
             }
             return "";
