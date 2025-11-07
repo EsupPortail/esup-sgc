@@ -10,7 +10,7 @@
 <body>
 <div layout:fragment="content">
     <h2>Liste des messages</h2>
-    <form th:action="@{/admin/actionmessages}" th:object="${cardActionMessage}" th:method="${cardActionMessage.id == null} ? POST : PUT" class="form-horizontal well">
+    <form id="cardActionMessage" th:action="@{/admin/actionmessages}" th:object="${cardActionMessage}" th:method="${cardActionMessage.id == null} ? POST : PUT" class="form-horizontal well">
         <input type="hidden" th:field="*{id}" th:if="${cardActionMessage.id != null}"/>
         <div class="form-group">
             <label class="col-lg-4 control-label" for="etatInitial">Etat initial</label>
