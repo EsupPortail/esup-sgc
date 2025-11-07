@@ -1993,21 +1993,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		footer.innerHTML = " - " + (new Date()).getFullYear();
 	}
 
-	//Workaround pour le 1er bouton supprimer d'un tableau Rooo...
-	var deleteClass = document.querySelectorAll('.deleteTableBtn');
-   	Array.from(deleteClass).forEach(function(link) {
-   		if(link.children[0].id!="command"){
-   			var action = link.querySelector('#urlPath').value;
-   			var form = document.createElement('form');
-   			form.setAttribute("id", "command");
-   			form.setAttribute("action", action);
-   			form.setAttribute("method", "post");
-   			form.innerHTML = link.innerHTML;
-   			link.innerHTML = "";
-   			link.appendChild(form);
-   		}
-	});
-
    	//Message d'attente lors de la désactivaction/réactivation de carte
  	var edActionForm = document.querySelectorAll('.edActionForm');
    	Array.from(edActionForm).forEach(function(link) {
