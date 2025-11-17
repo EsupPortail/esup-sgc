@@ -1,24 +1,20 @@
 package org.esupportail.sgc.dao;
 
-import org.esupportail.sgc.domain.AppliConfig;
+import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.*;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CardActionMessage;
 import org.esupportail.sgc.domain.LogMail;
-import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.repositories.CardActionMessageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.Resource;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 

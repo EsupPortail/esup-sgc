@@ -13,11 +13,11 @@ public class LogMail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_seq")
-@SequenceGenerator(
+    @SequenceGenerator(
         name = "my_seq",
         sequenceName = "hibernate_sequence",
         allocationSize = 1
-)
+    )
     @Column(name = "id")
     private Long id;
 
@@ -26,7 +26,7 @@ public class LogMail {
     private Integer version;
 
     @ManyToOne
-    @JoinColumn(name = "card_action_message", nullable = false)
+    @JoinColumn(name = "card_action_message")
     private CardActionMessage cardActionMessage;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy - HH:mm")

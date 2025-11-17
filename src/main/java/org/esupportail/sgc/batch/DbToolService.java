@@ -26,7 +26,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "3.0.x";
+	final static String currentEsupSgcVersion = "3.1.x";
 
 	@Resource
 	DataSource dataSource;
@@ -440,6 +440,11 @@ public class DbToolService {
 				doSqlUpdate(sqlUpdate);
 				esupSgcVersion = "3.0.x";
             }
+			if("3.0.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "ALTER table log_mail ALTER COLUMN card_action_message DROP NOT NULL;";
+				doSqlUpdate(sqlUpdate);
+				esupSgcVersion = "3.1.x";
+			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
             appliVersionDaoService.merge(appliVersion);
 			log.warn("\n\n#####\n\t" +
