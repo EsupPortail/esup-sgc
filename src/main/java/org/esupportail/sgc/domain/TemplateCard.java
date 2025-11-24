@@ -143,7 +143,7 @@ public class TemplateCard {
     }
 
 	public Boolean getCodeBarres() {
-        return this.codeBarres;
+        return this.codeBarres!=null && this.codeBarres;
     }
 
 	public void setCodeBarres(Boolean codeBarres) {
