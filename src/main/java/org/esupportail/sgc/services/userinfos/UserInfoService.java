@@ -111,6 +111,14 @@ public class UserInfoService {
 	 * Return false if synchronize is set to false by userInfoservices computing
 	 */
 	public SynchroCmd setAdditionalsInfo(User user, HttpServletRequest request, List<String> fields2reinitialize) {
+
+		LocalDateTime actualDueDate = null;
+		try {
+			actualDueDate = userDaoService.findUser(user.getEppn()).getDueDate();
+		} catch (Exception e) {
+			log.debug("cannot get actual dueDate for " + user);
+		}
+
 		Map<String, String> userInfos = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER); 
 		userInfos.put("synchronize", "true");
 		/* Initialize fields to null for fields in list
@@ -371,8 +379,9 @@ public class UserInfoService {
 		boolean forceCaduc = false;
 		if(caducIfEmpty != null && !caducIfEmpty.isEmpty()) {
 			String caducIfEmptyValue = userInfos.get(caducIfEmpty);
-			if((caducIfEmptyValue == null || caducIfEmptyValue.isEmpty()) && user.getDueDate().isAfter(LocalDateTime.now())) {
+			if(StringUtils.isEmpty(caducIfEmptyValue) && (user.getDueDate() != null && user.getDueDate().isAfter(LocalDateTime.now()) || actualDueDate != null && actualDueDate.isAfter(LocalDateTime.now())) ) {
 				// si plus d'entrée ldap ou similaire -> user.getMustBeCaduc = true -> caduc
+				log.info("force caduc for " + user.getEppn() + " because " + caducIfEmpty + " is empty and dueDate was " + actualDueDate + " and now " + user.getDueDate());
 				forceDueDateCaduc(user);
 				forceCaduc = true;
 			}
