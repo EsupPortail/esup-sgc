@@ -396,7 +396,7 @@ public class ApiCrousService {
 			user.setIdRate(rightHolder.getIdRate());
 		}
 		// hack crous duedate étudiants
-		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
+		if(oldRightHolder.getDueDate()!=null && Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate())
 				&& Long.valueOf(10).equals(rightHolder.getIdCompanyRate())
 				&& oldRightHolder.getDueDate().isAfter(rightHolder.getDueDate())) {
 			log.warn(String.format("For Crous/Izly, change of date for a student only if we add time - here it's not the case for %s."
