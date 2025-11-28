@@ -10,7 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 public class RestValidateService extends ValidateService {
@@ -64,7 +64,7 @@ public class RestValidateService extends ValidateService {
 			try {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 				log.info("Got from " + url + " : " + response.getBody());
-			} catch(HttpClientErrorException clientEx) {
+			} catch(HttpStatusCodeException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					log.warn(String.format("Response NOT_FOUND on GET %s ", url));
 				} else {

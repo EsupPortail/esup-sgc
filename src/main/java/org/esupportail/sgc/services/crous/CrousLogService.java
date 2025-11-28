@@ -47,23 +47,23 @@ public class CrousLogService {
 	// -> we use @Async here - that's the same but more easy
 	@Async
 	@Transactional
-	public void logErrorCrousAsync(CrousHttpClientErrorException crousHttpClientErrorException) {
-		crousHttpClientErrorException.setBlocking(true);
-		logErrorCrous(crousHttpClientErrorException);
+	public void logErrorCrousAsync(CrousHttpStatusCodeException crousHttpStatusCodeException) {
+		crousHttpStatusCodeException.setBlocking(true);
+		logErrorCrous(crousHttpStatusCodeException);
 	}
 
-	public void logErrorCrous(CrousHttpClientErrorException crousHttpClientErrorException) {	
+	public void logErrorCrous(CrousHttpStatusCodeException crousHttpStatusCodeException) {	
 		try {
 			
-			log.info("Try to Log Error Crous in Database : " + crousHttpClientErrorException);
+			log.info("Try to Log Error Crous in Database : " + crousHttpStatusCodeException);
 			
 			Card card = null;
 			User user = null;
 			
-			String csn = crousHttpClientErrorException.getCsn();
-			String eppn = crousHttpClientErrorException.getEppn();
+			String csn = crousHttpStatusCodeException.getCsn();
+			String eppn = crousHttpStatusCodeException.getEppn();
 					
-			Map<String, List<CrousErrorLog>> errorsMap = crousErrorLogMapper.readValue(crousHttpClientErrorException.getErrorBodyAsJson(), typeCrousErrorLogRef);
+			Map<String, List<CrousErrorLog>> errorsMap = crousErrorLogMapper.readValue(crousHttpStatusCodeException.getErrorBodyAsJson(), typeCrousErrorLogRef);
 			if(errorsMap != null && errorsMap.get("errors") != null && errorsMap.get("errors").get(0) !=null) { 
 				CrousErrorLog crousErrorLog = errorsMap.get("errors").get(0);
 				List<CrousErrorLog> errorLogsInDb = new ArrayList<CrousErrorLog>(); 
@@ -103,18 +103,18 @@ public class CrousLogService {
 					crousErrorLog = crousErrorLogOld;
 				} 
 				crousErrorLog.setDate(LocalDateTime.now());
-				crousErrorLog.setBlocking(crousHttpClientErrorException.getBlocking());
-				crousErrorLog.setCrousOperation(crousHttpClientErrorException.getCrousOperation());
-				crousErrorLog.setEsupSgcOperation(crousHttpClientErrorException.getEsupSgcOperation());
-				crousErrorLog.setCrousUrl(crousHttpClientErrorException.getCrousUrl());
+				crousErrorLog.setBlocking(crousHttpStatusCodeException.getBlocking());
+				crousErrorLog.setCrousOperation(crousHttpStatusCodeException.getCrousOperation());
+				crousErrorLog.setEsupSgcOperation(crousHttpStatusCodeException.getEsupSgcOperation());
+				crousErrorLog.setCrousUrl(crousHttpStatusCodeException.getCrousUrl());
 				if(errorLogsInDb.isEmpty()) {
                     crousErrorLogDaoService.persist(crousErrorLog);
 				}
 			} else {
-				log.error("Failed to Log Error Crous in Database : " + crousHttpClientErrorException);
+				log.error("Failed to Log Error Crous in Database : " + crousHttpStatusCodeException);
 			}
 		} catch (IOException e) {
-			log.error("Error during persist crous Error log : " + crousHttpClientErrorException, e);
+			log.error("Error during persist crous Error log : " + crousHttpStatusCodeException, e);
 		} 
 	}
 

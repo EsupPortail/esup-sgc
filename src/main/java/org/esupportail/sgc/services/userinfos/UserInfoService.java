@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -370,7 +370,7 @@ public class UserInfoService {
 						user.setIdRate(rightHolder.getIdRate());
 						log.debug("7999 idCompagnyRate case : idRate from crous for "  + user.getEppn() + " is " + user.getIdRate());
 					}
-				} catch(HttpClientErrorException ex) {
+				} catch(HttpStatusCodeException ex) {
 					log.debug("Exception getting crous rightHolder for " + user.getEppn(), ex);
 				}
 			}			

@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -118,8 +118,8 @@ public class ApiEscService extends ValidateService {
 				if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
 					postEscCard(card);
 				}
-			} catch(HttpClientErrorException clientEx) {
-				log.error("HttpClientErrorException : " + clientEx.getResponseBodyAsString());
+			} catch(HttpStatusCodeException clientEx) {
+				log.error("HttpStatusCodeException : " + clientEx.getResponseBodyAsString());
                 if(abortActivationIfEscFails) {
 					throw clientEx; 
 				}
@@ -136,8 +136,8 @@ public class ApiEscService extends ValidateService {
 				if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
 					deleteEscCard(card);
 				}
-			} catch(HttpClientErrorException clientEx) {
-				log.error("HttpClientErrorException : " + clientEx.getResponseBodyAsString(), clientEx);
+			} catch(HttpStatusCodeException clientEx) {
+				log.error("HttpStatusCodeException : " + clientEx.getResponseBodyAsString(), clientEx);
 			}
 		}
 	}	
@@ -174,7 +174,7 @@ public class ApiEscService extends ValidateService {
 			ResponseEntity<EscPerson> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscPerson.class);
 			log.info(eppn + " retrieved in Esc as Person -> " + response.getBody());	
 			return response.getBody();
-		} catch(HttpClientErrorException clientEx) {
+		} catch(HttpStatusCodeException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				log.info("No Esc Person found on API for " + eppn);
 				return null;
@@ -209,7 +209,7 @@ public class ApiEscService extends ValidateService {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 			log.info(eppn + " sent in Esc as Person -> " + response.getBody());
-		} catch(HttpClientErrorException clientEx) {
+		} catch(HttpStatusCodeException clientEx) {
 			try {
 				EscError escError =	(EscError) new ObjectMapper().readValue(clientEx.getResponseBodyAsByteArray(), EscError.class);
 				if("ER-0019".equals(escError.getCode())) {
@@ -263,7 +263,7 @@ public class ApiEscService extends ValidateService {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 			log.info(eppn + " deleted in Esc -> " + response.getBody());
-		} catch(HttpClientErrorException clientEx) {
+		} catch(HttpStatusCodeException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				log.warn("No need to delete " + eppn + " in Esc because not found in Esc");
 			} else {
@@ -324,7 +324,7 @@ public class ApiEscService extends ValidateService {
 				ResponseEntity<EscCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscCard.class);
 				log.info(csn + " retrieved in Esc as Card -> " + response.getBody());	
 				return response.getBody();
-			} catch(HttpClientErrorException clientEx) {
+			} catch(HttpStatusCodeException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					log.info(String.format("Card non trouvé sur Esc pour %s - %s : %s  ", eppn, csn, clientEx.getResponseBodyAsString()), clientEx);
 					return null;
@@ -344,7 +344,7 @@ public class ApiEscService extends ValidateService {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 			log.info(card.getCsn() + " sent/post in Esc as Card -> " + response.getBody());
-		} catch(HttpClientErrorException clientEx) {
+		} catch(HttpStatusCodeException clientEx) {
 			try {
 				EscError escError =	(EscError) new ObjectMapper().readValue(clientEx.getResponseBodyAsByteArray(), EscError.class);
 				if("ER-0002".equals(escError.getCode())) {
@@ -377,7 +377,7 @@ public class ApiEscService extends ValidateService {
 			try {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 				log.info(card.getCsn() + " deleted in Esc -> " + response.getBody());
-			} catch(HttpClientErrorException clientEx) {
+			} catch(HttpStatusCodeException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					log.warn("No need to delete " + card.getCsn() + " in Esc because not found in Esc");
 				} else {

@@ -2,16 +2,14 @@ package org.esupportail.sgc.services.crous;
 
 import org.esupportail.sgc.services.crous.CrousErrorLog.CrousOperation;
 import org.esupportail.sgc.services.crous.CrousErrorLog.EsupSgcOperation;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.HttpStatusCodeException;
 
-public class CrousHttpClientErrorException extends Exception {
+public class CrousHttpStatusCodeException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
 
-	HttpClientErrorException httpClientErrorException;
+    HttpStatusCodeException httpStatusCodeException;
 	
 	String eppn;
 	
@@ -25,10 +23,10 @@ public class CrousHttpClientErrorException extends Exception {
 	
 	Boolean blocking = false;
 
-	public CrousHttpClientErrorException(HttpClientErrorException httpClientErrorException, String eppn, String csn,
-										 CrousOperation crousOperation, EsupSgcOperation esupSgcOperation, String crousUrl) {
-		super(httpClientErrorException);
-		this.httpClientErrorException = httpClientErrorException;
+	public CrousHttpStatusCodeException(HttpStatusCodeException httpStatusCodeException, String eppn, String csn,
+                                         CrousOperation crousOperation, EsupSgcOperation esupSgcOperation, String crousUrl) {
+		super(httpStatusCodeException);
+		this.httpStatusCodeException = httpStatusCodeException;
 		this.eppn = eppn;
 		this.csn = csn;
 		this.crousOperation = crousOperation;
@@ -45,7 +43,7 @@ public class CrousHttpClientErrorException extends Exception {
 	}
 
 	public String getErrorBodyAsJson() {
-		return httpClientErrorException.getResponseBodyAsString();
+		return httpStatusCodeException.getResponseBodyAsString();
 	}
 
 	public CrousOperation getCrousOperation() {
@@ -78,15 +76,15 @@ public class CrousHttpClientErrorException extends Exception {
 
 	@Override
 	public String toString() {
-		return "CrousHttpClientErrorException [eppn=" + eppn + ", csn=" + csn + ", errorBodyAsJson=" + httpClientErrorException.getResponseBodyAsString()
+		return "CrousHttpStatusCodeException [eppn=" + eppn + ", csn=" + csn + ", errorBodyAsJson=" + httpStatusCodeException.getResponseBodyAsString()
 				+ "]";
 	}
 
 	public HttpStatusCode getStatusCode() {
-		return httpClientErrorException.getStatusCode();
+		return httpStatusCodeException.getStatusCode();
 	}
 
-	public HttpClientErrorException getHttpClientErrorException() {
-		return httpClientErrorException;
+	public HttpStatusCodeException getHttpStatusCodeException() {
+		return httpStatusCodeException;
 	}
 }

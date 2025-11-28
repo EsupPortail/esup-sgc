@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -192,7 +192,7 @@ public class ApiCrousService {
 	}
 
 	@RequireCrousAuth
-	RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {		
+	RightHolder getRightHolder(String identifier, String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {		
 		if(enable) {
 			String url = webUrl + "/beforeizly/v1/rightholders/" + identifier;
 			HttpHeaders headers = this.getAuthHeaders();	
@@ -200,15 +200,15 @@ public class ApiCrousService {
 			try {
 				ResponseEntity<RightHolder> response = restTemplate.exchange(url, HttpMethod.GET, entity, RightHolder.class);	
 				return response.getBody();
-			} catch(HttpClientErrorException clientEx) {
-				throw new CrousHttpClientErrorException(clientEx, eppn, null, CrousOperation.GET, esupSgcOperation, url);
+			} catch(HttpStatusCodeException clientEx) {
+				throw new CrousHttpStatusCodeException(clientEx, eppn, null, CrousOperation.GET, esupSgcOperation, url);
 			}
 		} 
 		return null;
 	}
 
 	@RequireCrousAuth
-	CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpClientErrorException {
+	CrousSmartCard getCrousSmartCard(String csn) throws CrousHttpStatusCodeException {
 		Card card = cardDaoService.findCardByCsn(csn);
 		CrousSmartCard crousSmartCard = null;
 		if(enable && card!=null) {
@@ -221,8 +221,8 @@ public class ApiCrousService {
 					ResponseEntity<CrousSmartCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, CrousSmartCard.class);
 					crousSmartCard = response.getBody();
 					log.info("GET on " + url + " is OK : " + crousSmartCard);
-				} catch(HttpClientErrorException clientEx) {
-					throw new CrousHttpClientErrorException(clientEx, null, csn, CrousOperation.GET, null, url);
+				} catch(HttpStatusCodeException clientEx) {
+					throw new CrousHttpStatusCodeException(clientEx, null, csn, CrousOperation.GET, null, url);
 				}
 			}	
 		} 
@@ -231,12 +231,12 @@ public class ApiCrousService {
 
 
 	@RequireCrousAuth
-	CrousResponseStatus postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	CrousResponseStatus postOrUpdateRightHolder(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {
 		User user = userDaoService.findUser(eppn);
 		return postOrUpdateRightHolder(user, esupSgcOperation);
 	}
 
-	protected CrousResponseStatus postOrUpdateRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	protected CrousResponseStatus postOrUpdateRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {
 		if(enable) {
 			String eppn = user.getEppn();
 			String crousIdentifier = user.getCrousIdentifier();
@@ -269,7 +269,7 @@ public class ApiCrousService {
 						patchIdentifier.setNewIdentifier(newRightHolder.getIdentifier());		
 						try {
 							this.patchIdentifier(patchIdentifier);
-						} catch(CrousHttpClientErrorException clientEx) {
+						} catch(CrousHttpStatusCodeException clientEx) {
 							clientEx.setEsupSgcOperation(esupSgcOperation);
 							log.warn("patchIdentifier on " + eppn + " failed : " + clientEx.getErrorBodyAsJson());
 							crousLogService.logErrorCrous(clientEx);	
@@ -277,7 +277,7 @@ public class ApiCrousService {
 					}
 					return updateRightHolder(eppn, oldRightHolder, esupSgcOperation);
 				} 
-			} catch(CrousHttpClientErrorException clientEx) {
+			} catch(CrousHttpStatusCodeException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					// HACK : si user.getCrousIdentifier() renseigné mais not found côté API CROUS -> incohérent
 					// on le réinitialise et on relance
@@ -338,7 +338,7 @@ public class ApiCrousService {
 		return true;
 	}
 
-	private CrousResponseStatus postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	private CrousResponseStatus postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {
 		if(user.getDueDate()!=null && user.getDueDate().isBefore(LocalDateTime.now())) {
 			log.info(String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
 			return CrousResponseStatus.KO_BLOCKED;
@@ -351,29 +351,29 @@ public class ApiCrousService {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 			user.setCrousIdentifier(rightHolder.getIdentifier());
-		} catch(HttpClientErrorException clientEx) {
-			CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx, user.getEppn(), null, CrousOperation.POST, esupSgcOperation, url);
+		} catch(HttpStatusCodeException clientEx) {
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(clientEx, user.getEppn(), null, CrousOperation.POST, esupSgcOperation, url);
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 				log.warn(user.getEppn() + " is locked in crous : " + clientEx.getResponseBodyAsString());
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				crousLogService.logErrorCrous(crousHttpStatusCodeException);
 				return CrousResponseStatus.KO;
 			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				if(Arrays.asList(new String[] {"-9", "-8", "-41", "-117", "-42"}).contains(getErrorCode(clientEx.getResponseBodyAsString()))) {
-					crousLogService.logErrorCrous(crousHttpClientErrorException);
+					crousLogService.logErrorCrous(crousHttpStatusCodeException);
 					log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
 					return CrousResponseStatus.KO;
 				} else {
 					log.warn("UNPROCESSABLE_ENTITY when posting RightHolder : " + rightHolder + " -> crous error response : " + clientEx.getResponseBodyAsString());
 				}
 			} 
-			throw crousHttpClientErrorException;
+			throw crousHttpStatusCodeException;
 		}
 		log.info(user.getEppn() + " sent in CROUS as RightHolder");	
 		return CrousResponseStatus.OK;
 	}
 
-	private CrousResponseStatus updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	private CrousResponseStatus updateRightHolder(String eppn, RightHolder oldRightHolder, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {
 		User user = userDaoService.findUser(eppn);
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier();
 		HttpHeaders headers = this.getAuthHeaders();			
@@ -410,18 +410,20 @@ public class ApiCrousService {
 		}
 		HttpEntity entity = new HttpEntity(rightHolder, headers);
 		try {
+            log.debug("Try to put to CROUS RightHolder for " + eppn + " : " + rightHolder);
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
 			log.info(eppn + " sent in CROUS as RightHolder");
-		} catch(HttpClientErrorException clientEx) {
-			CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx, eppn, null, CrousOperation.PUT, esupSgcOperation, url);
+            log.trace("CROUS response : " + response.getBody());
+		} catch(HttpStatusCodeException clientEx) {
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(clientEx, eppn, null, CrousOperation.PUT, esupSgcOperation, url);
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 				log.warn(eppn + " is locked in crous : " + clientEx.getResponseBodyAsString());
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				crousLogService.logErrorCrous(crousHttpStatusCodeException);
 				return CrousResponseStatus.KO;
 			} else if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				if(Arrays.asList(new String[] {"-9", "-8", "-41", "-117", "-42"}).contains(getErrorCode(clientEx.getResponseBodyAsString()))) {
-					crousLogService.logErrorCrous(crousHttpClientErrorException);
+					crousLogService.logErrorCrous(crousHttpStatusCodeException);
 					log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
 					return CrousResponseStatus.KO;
 				} else {
@@ -433,11 +435,11 @@ public class ApiCrousService {
 				// par contre, tous les établissements peuvent ajouter une carte
 				// (Note : s'il y a changement de date de fin de validité (== nouvelle année, nouvelle inscription) alors l'update est ok : reset de ce rne prioritaire)
 				log.info("NOT_ACCEPTABLE : " + clientEx.getResponseBodyAsString());
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				crousLogService.logErrorCrous(crousHttpStatusCodeException);
 				log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
 				return CrousResponseStatus.KO;
 			}
-			throw crousHttpClientErrorException;
+			throw crousHttpStatusCodeException;
 		}
 		return CrousResponseStatus.OK;
 	}
@@ -512,7 +514,7 @@ public class ApiCrousService {
     }
 
 	@RequireCrousAuth
-	boolean validateSmartCard(Card card) throws CrousHttpClientErrorException {
+	boolean validateSmartCard(Card card) throws CrousHttpStatusCodeException {
 		if(enable) {
 			User user = userDaoService.findUser(card.getEppn());
 			String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
@@ -521,13 +523,13 @@ public class ApiCrousService {
 			try {
 				ResponseEntity<CrousSmartCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, CrousSmartCard.class);
 				log.info("GET on " + url + " is OK : " + response.getBody() + " we revalidate this smartCard");
-			} catch(HttpClientErrorException clientEx) {
+			} catch(HttpStatusCodeException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 					log.info("Card not found in crous - we try to send card " + card.getCsn() + " - " + card.getCrousSmartCard().getIdZdc() + " in CROUS");
 					return validateNewSmartCard(card);
 				} else {
-					CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.GET, EsupSgcOperation.ACTIVATE, url);
-					throw crousHttpClientErrorException;
+					CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.GET, EsupSgcOperation.ACTIVATE, url);
+					throw crousHttpStatusCodeException;
 				}
 			}		
 			return revalidateSmartCard(card);
@@ -535,7 +537,7 @@ public class ApiCrousService {
 		return true;
 	}
 	
-	private boolean validateNewSmartCard(Card card) throws CrousHttpClientErrorException {
+	private boolean validateNewSmartCard(Card card) throws CrousHttpStatusCodeException {
 		User user = userDaoService.findUser(card.getEppn());
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard";
 		HttpHeaders headers = this.getAuthHeaders();
@@ -545,33 +547,33 @@ public class ApiCrousService {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 			log.info("Card with csn " + card.getCsn() + " sent in CROUS as CrousSmartCard");
-		} catch(HttpClientErrorException clientEx) {
-			CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.POST, EsupSgcOperation.ACTIVATE, url);
+		} catch(HttpStatusCodeException clientEx) {
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.POST, EsupSgcOperation.ACTIVATE, url);
 			if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				crousLogService.logErrorCrous(crousHttpStatusCodeException);
 				log.info("LOCKED : " + clientEx.getResponseBodyAsString());
 				log.info("Card can't be added : IZLY account is locked");
 				return false;
 			}
 			if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) && "-31".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				crousLogService.logErrorCrous(crousHttpStatusCodeException);
 				log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 				log.info("Card can't be added : IZLY card is known but righHolder was deleted (rgpd)");
 				return false;
 			}
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				crousLogService.logErrorCrous(crousHttpStatusCodeException);
 				log.info("NOT_FOUND : " + clientEx.getResponseBodyAsString());
 				log.info("Card can't be added : IZLY account should be closed (see logs before)");
 				return false;
 			}
-			throw crousHttpClientErrorException;
+			throw crousHttpStatusCodeException;
 		}
 		return true;
 	}
 	
 	
-	private boolean revalidateSmartCard(Card card) throws CrousHttpClientErrorException {
+	private boolean revalidateSmartCard(Card card) throws CrousHttpStatusCodeException {
 		User user = userDaoService.findUser(card.getEppn());
 		String url = webUrl + "/beforeizly/v1/rightholders/" + user.getCrousIdentifier() + "/smartcard/" + card.getCrousSmartCard().getIdZdc();
 		HttpHeaders headers = this.getAuthHeaders();
@@ -585,20 +587,20 @@ public class ApiCrousService {
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
 			log.info("Card with csn " + card.getCsn() + " revalidated in CROUS as CrousSmartCard");
-		} catch(HttpClientErrorException clientEx) {
-			CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.PATCH, EsupSgcOperation.ACTIVATE, url);
+		} catch(HttpStatusCodeException clientEx) {
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.PATCH, EsupSgcOperation.ACTIVATE, url);
 			if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) && "-8".equals(getErrorCode(clientEx.getResponseBodyAsString()))) {
-				crousLogService.logErrorCrous(crousHttpClientErrorException);
+				crousLogService.logErrorCrous(crousHttpStatusCodeException);
 				log.info("Due date past -8 : izly error code ...");
 				return false;
 			} 
-			throw crousHttpClientErrorException;
+			throw crousHttpStatusCodeException;
 		}	
 		return true;
 	}
 
 	@RequireCrousAuth
-	boolean invalidateSmartCard(Card card) throws CrousHttpClientErrorException {
+	boolean invalidateSmartCard(Card card) throws CrousHttpStatusCodeException {
 		if(enable) {
 			User user = userDaoService.findUser(card.getEppn());
 			CrousSmartCard smartCard = card.getCrousSmartCard();
@@ -619,25 +621,25 @@ public class ApiCrousService {
 			try {
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PATCH, entity, String.class);
 				log.info("Card with csn " + card.getCsn() + " invalidated in CROUS as CrousSmartCard");
-			} catch(HttpClientErrorException clientEx) {
-				CrousHttpClientErrorException crousHttpClientErrorException = new CrousHttpClientErrorException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.PATCH, EsupSgcOperation.DESACTIVATE, url);
+			} catch(HttpStatusCodeException clientEx) {
+				CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(clientEx, card.getEppn(), card.getCsn(), CrousOperation.PATCH, EsupSgcOperation.DESACTIVATE, url);
 				if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode())) {
 					log.info("UNPROCESSABLE_ENTITY : " + clientEx.getResponseBodyAsString());
 					if(Arrays.asList(new String[] {"-9", "-8", "-41", "-117", "-42"}).contains(getErrorCode(clientEx.getResponseBodyAsString()))) {
-						crousLogService.logErrorCrous(crousHttpClientErrorException);
+						crousLogService.logErrorCrous(crousHttpStatusCodeException);
 						log.info(getErrorMessage(clientEx.getResponseBodyAsString()));
 						return false;
 					}
 				} else if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
-					crousLogService.logErrorCrous(crousHttpClientErrorException);
+					crousLogService.logErrorCrous(crousHttpStatusCodeException);
 					log.info("Card with csn " + card.getCsn() + " not found in CROUS as CrousSmartCard, no need to invalidate it.");
 					return false;
 				} else if(HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 					log.info(card.getEppn() + " is locked in crous : " + clientEx.getResponseBodyAsString());
-					crousLogService.logErrorCrous(crousHttpClientErrorException);
+					crousLogService.logErrorCrous(crousHttpStatusCodeException);
 					return false;		
 				} 	
-				throw crousHttpClientErrorException;
+				throw crousHttpStatusCodeException;
 			}
 		}
 		return true;
@@ -673,7 +675,7 @@ public class ApiCrousService {
 
 
 	@RequireCrousAuth
-	void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpClientErrorException {
+	void patchIdentifier(PatchIdentifier patchIdentifier) throws CrousHttpStatusCodeException {
 		if(enable) {
 			String url = webUrl + "/beforeizly/v1/rightholders/" + patchIdentifier.getCurrentIdentifier();
 			HttpHeaders headers = this.getAuthHeaders();
@@ -694,8 +696,8 @@ public class ApiCrousService {
 					userDaoService.merge(user);
 				}
 				log.info("patchIdentifier : " + patchIdentifier + " OK : " + response.getBody());
-			} catch(HttpClientErrorException clientEx) {
-				throw new CrousHttpClientErrorException(clientEx, user!=null ? user.getEppn() : null, null, CrousOperation.PATCH, null, url);
+			} catch(HttpStatusCodeException clientEx) {
+				throw new CrousHttpStatusCodeException(clientEx, user!=null ? user.getEppn() : null, null, CrousOperation.PATCH, null, url);
 			}
 		}
 	}
@@ -719,7 +721,7 @@ public class ApiCrousService {
 	}
 
 	@RequireCrousAuth
-	void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpClientErrorException {
+	void unclose(String eppn, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {
 		if(enable) {
 			User user = userDaoService.findUser(eppn);
 			String crousIdentifier = user.getCrousIdentifier();
@@ -734,8 +736,8 @@ public class ApiCrousService {
 				HttpEntity entity = new HttpEntity(headers);
 				ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 				log.info("Unclose RightHolder " + eppn + " with identifier " + crousIdentifier + " OK");
-			} catch (HttpClientErrorException clientEx) {
-				throw new CrousHttpClientErrorException(clientEx, eppn, null, CrousOperation.DELETE, EsupSgcOperation.UNCLOSE, url);
+			} catch (HttpStatusCodeException clientEx) {
+				throw new CrousHttpStatusCodeException(clientEx, eppn, null, CrousOperation.DELETE, EsupSgcOperation.UNCLOSE, url);
 			}
 		}
 	}

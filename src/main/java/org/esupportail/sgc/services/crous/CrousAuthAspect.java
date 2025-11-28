@@ -7,7 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 /*
  * Aspect to handle CROUS API authentication.
@@ -30,12 +31,12 @@ public class CrousAuthAspect {
     public Object handleAuth(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
-        } catch (HttpClientErrorException|CrousHttpClientErrorException e) {
-            HttpClientErrorException he = null;
-            if(e instanceof CrousHttpClientErrorException) {
-                he = ((CrousHttpClientErrorException) e).getHttpClientErrorException();
-            } else if(e instanceof HttpClientErrorException) {
-                he = (HttpClientErrorException) e;
+        } catch (HttpStatusCodeException|CrousHttpStatusCodeException e) {
+            HttpStatusCodeException he = null;
+            if(e instanceof CrousHttpStatusCodeException) {
+                he = ((CrousHttpStatusCodeException) e).getHttpStatusCodeException();
+            } else if(e instanceof HttpStatusCodeException) {
+                he = (HttpStatusCodeException) e;
             }
             if (he.getStatusCode() == HttpStatus.UNAUTHORIZED || he.getStatusCode() == HttpStatus.FORBIDDEN) {
                 log.info("Auth Token of Crous API should be renew, we call an authentication");

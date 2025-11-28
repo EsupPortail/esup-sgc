@@ -55,7 +55,7 @@ public class CrousService extends ValidateService {
 						if(apiCrousService.validateSmartCard(card)) {
 							card.setCrousError("");
 						}
-					} catch(CrousHttpClientErrorException clientEx) {
+					} catch(CrousHttpStatusCodeException clientEx) {
 						crousLogService.logErrorCrousAsync(clientEx);
 						log.warn("Exception calling api crous - crousService.validate " + clientEx, clientEx);
 						throw new SgcRuntimeException("Exception calling api crous - crousService.validate " + clientEx, clientEx);
@@ -72,7 +72,7 @@ public class CrousService extends ValidateService {
 			ApiCrousService.CrousResponseStatus postOrUpdateRightHolderOk4invalication = ApiCrousService.CrousResponseStatus.KO;
 			try {
 				postOrUpdateRightHolderOk4invalication = apiCrousService.postOrUpdateRightHolder(card.getEppn(), EsupSgcOperation.DESACTIVATE);
-			} catch(CrousHttpClientErrorException clientEx) {
+			} catch(CrousHttpStatusCodeException clientEx) {
 				if(HttpStatus.UNPROCESSABLE_ENTITY.equals(clientEx.getStatusCode()) || HttpStatus.LOCKED.equals(clientEx.getStatusCode())) {
 					// si compte non updatable car non créé, locké, ... on considère que c'est ok pour l'invalidation : pas besoin de la faire.
 					log.info("Exception calling api crous - crousService.invalidate " + clientEx);
@@ -89,7 +89,7 @@ public class CrousService extends ValidateService {
 						if(apiCrousService.invalidateSmartCard(card)) {
 							card.setCrousError("");
 						}
-					} catch(CrousHttpClientErrorException clientEx) {
+					} catch(CrousHttpStatusCodeException clientEx) {
 						crousLogService.logErrorCrousAsync(clientEx);
 						log.warn("Exception calling api crous - crousService.invalidate " + clientEx, clientEx);
 						throw new SgcRuntimeException("Exception calling api crous - crousService.invalidate " + clientEx, clientEx);
@@ -116,7 +116,7 @@ public class CrousService extends ValidateService {
 	public RightHolder getRightHolder(String identifier, String eppn) {
 		try {
 			return apiCrousService.getRightHolder(identifier, eppn, EsupSgcOperation.GET);
-		} catch(CrousHttpClientErrorException clientEx) {
+		} catch(CrousHttpStatusCodeException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				log.debug(String.format("RightHolder %s not found IN API CROUS", identifier, clientEx.getErrorBodyAsJson()));
 				return null;
@@ -136,7 +136,7 @@ public class CrousService extends ValidateService {
 	public CrousSmartCard getCrousSmartCard(String csn) {
 		try {
 			return apiCrousService.getCrousSmartCard(csn);
-		} catch(CrousHttpClientErrorException clientEx) {
+		} catch(CrousHttpStatusCodeException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				return null;
 			}
@@ -160,7 +160,7 @@ public class CrousService extends ValidateService {
 			} else {
 				return false;
 			}
-		} catch(CrousHttpClientErrorException clientEx) {
+		} catch(CrousHttpStatusCodeException clientEx) {
 			crousLogService.logErrorCrousAsync(clientEx);
 			log.warn("Exception calling api crous - crousService.postOrUpdateRightHolder " + clientEx, clientEx);	
 			throw new SgcRuntimeException("Exception calling api crous - crousService.postOrUpdateRightHolder " + clientEx, clientEx);
@@ -170,7 +170,7 @@ public class CrousService extends ValidateService {
 	public void patchIdentifier(PatchIdentifier patchIdentifier, EsupSgcOperation esupSgcOperation) {
 		try {
 			apiCrousService.patchIdentifier(patchIdentifier);
-		} catch(CrousHttpClientErrorException clientEx) {
+		} catch(CrousHttpStatusCodeException clientEx) {
 			List<User> users = userDaoService.findUsersByCrousIdentifier(patchIdentifier.getCurrentIdentifier()).getResultList();
 			if(!users.isEmpty()) {
 				clientEx.setEppn(users.get(0).getEppn());
@@ -202,7 +202,7 @@ public class CrousService extends ValidateService {
 		try {
 			apiCrousService.unclose(eppn, esupSgcOperation);
 			user.setCrousError("");
-		} catch(CrousHttpClientErrorException clientEx) {
+		} catch(CrousHttpStatusCodeException clientEx) {
 			crousLogService.logErrorCrousAsync(clientEx);
 			log.warn("Exception calling api crous - crousService.unclose " + clientEx, clientEx);
 			throw new SgcRuntimeException("Exception calling api crous - crousService.unclose " + clientEx, clientEx);
