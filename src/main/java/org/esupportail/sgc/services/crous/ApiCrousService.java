@@ -485,7 +485,7 @@ public class ApiCrousService {
             LocalDateTime realDueDate = user.getDueDate();
 			if(StringUtils.isNotEmpty(oldRightHolder.getIne())) {
 				// ETUDIANT : pas de màj si dudate après duedate local (étudiant autre établissement par ex.)
-				if (oldRightHolder.getDueDate() != null && oldRightHolder.getDueDate().isAfter(realDueDate)) {
+				if (duedateCrous != null && duedateCrous.isAfter(realDueDate)) {
 					return false;
 				}
 			}
@@ -502,6 +502,12 @@ public class ApiCrousService {
 	 * True si les dates sont égales à 5 minutes près.
 	 */
 	private boolean equalsWithInterval(LocalDateTime realDueDate, LocalDateTime duedateCrous) {
+        if(duedateCrous == null && realDueDate == null) {
+            return true;
+        }
+        if(duedateCrous == null || realDueDate == null) {
+            return false;
+        }
         return Math.abs(Duration.between(realDueDate, duedateCrous).toMillis()) < 1000 * 60 * 5;
     }
 
