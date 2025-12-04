@@ -1,7 +1,6 @@
 package org.esupportail.sgc.web.admin;
 
 import jakarta.annotation.Resource;
-import net.sf.cglib.core.Local;
 import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
@@ -21,7 +20,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/admin/purge")
