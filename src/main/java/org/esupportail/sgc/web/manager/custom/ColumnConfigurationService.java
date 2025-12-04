@@ -20,7 +20,7 @@ public class ColumnConfigurationService {
             "etat", "eppn", "displayName", "userType", "photo", "crous", "difPhoto",
             "europeanStudentCard", "userEditable", "deliveredDate", "nbCards", "nbRejets",
             "etatEppn", "address", "payCmdNum", "motifDisable", "requestDate", "dueDate",
-            "dateEtat"
+            "dateEtat", "freeField1"
         ));
 
     public enum RenderSize {XS, S, M, L, XL, XXL, XXXL}
@@ -363,10 +363,10 @@ public class ColumnConfigurationService {
                         .renderSize(RenderSize.L)
                         .renderer(card -> card.getUser() != null ? card.getUser().getExternalAddress() : ""),
 
-                ColumnDefinition.of("freeField1", "Champ libre 1")
+                ColumnDefinition.of("freeField1", "CVEC")
                         .sortable("freeField1")
                         .renderSize(RenderSize.XL)
-                        .renderer(card -> card.getUser() != null ? card.getUser().getFreeField1() : ""),
+                        .renderer(CellRenderers.booleanIcon(card -> card.getUser() != null ? Boolean.TRUE.equals(card.getUser().getFreeField1()) : false)),
 
                 ColumnDefinition.of("freeField2", "Champ libre 2")
                         .sortable("freeField2")
