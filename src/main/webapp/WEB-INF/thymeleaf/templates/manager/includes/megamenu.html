@@ -107,6 +107,97 @@
                         </div>
                     </div>
                 </form>
+
+                <!-- Modal CSV fields selection -->
+                <div class="modal fade" tabindex="-1" role="dialog" id="modalFields">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title">Champs à exporter</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/manager/csvSearch}" id="searchCsvForm" th:object="${searchBean}">
+                                    <label>
+                                        <input type="checkbox" id="selectAllFields" checked="checked" />
+                                        <strong>Tout (dé)sélectionner</strong>
+                                    </label>
+                                    <div th:each="field : ${csvFields}">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"
+                                                       th:id="'fields_' + ${field}"
+                                                       class="caseField"
+                                                       name="fields"
+                                                       th:value="${field}"
+                                                       checked="checked" />
+                                                <strong th:text="#{|card.csv.${field}|}">Libellé</strong>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="address" name="address"
+                                           th:value="${searchBean.address != null ? searchBean.address : ''}" />
+                                    <input type="hidden" id="type" name="type"
+                                           th:value="${searchBean.type != null ? searchBean.type : ''}" />
+                                    <input type="hidden" id="etat" name="etat"
+                                           th:value="${searchBean.etat != null ? searchBean.etat : ''}" />
+                                    <input type="hidden" id="editable" name="editable"
+                                           th:value="${searchBean.editable != null ? searchBean.editable : ''}" />
+                                    <input type="hidden" id="ownOrFreeCard" name="ownOrFreeCard"
+                                           th:value="${searchBean.ownOrFreeCard != null ? searchBean.ownOrFreeCard : ''}" />
+                                    <input type="hidden" id="nbCards" name="nbCards"
+                                           th:value="${searchBean.nbCards != null ? searchBean.nbCards : ''}" />
+                                    <input type="hidden" id="nbRejets" name="nbRejets"
+                                           th:value="${searchBean.nbRejets != null ? searchBean.nbRejets : ''}" />
+                                    <input type="hidden" id="flagAdresse" name="flagAdresse"
+                                           th:value="${searchBean.flagAdresse != null ? searchBean.flagAdresse : ''}" />
+                                    <input type="hidden" id="searchText" name="searchText"
+                                           th:value="${searchBean.searchText != null ? searchBean.searchText : ''}" />
+                                    <hr />
+                                    <div th:each="filtre, status : ${csvFiltres}">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"
+                                                       th:id="'fields_' + ${filtre}"
+                                                       class="caseField"
+                                                       name="fields"
+                                                       th:value="${filtre}"
+                                                       checked="checked" />
+                                                <strong th:text="${filtre}">Filtre</strong>
+                                            </label>
+                                        </div>
+                                        <input type="hidden"
+                                               th:if="${searchBean.freeField != null}"
+                                               th:id="'freeField' + ${status.index}"
+                                               th:name="'freeField[' + ${status.index} + ']'"
+                                               th:value="${searchBean.freeField[status.index]}" />
+
+                                        <div th:if="${fieldsValueEncoded != null}">
+                                            <div th:each="entry : ${fieldsValueEncoded}">
+                                                <div th:if="${entry.key == status.index}">
+                                                    <div th:each="entry2 : ${entry.value}">
+                                                        <input type="hidden"
+                                                               th:id="'freeFieldValue' + ${entry.key}"
+                                                               th:name="'freeFieldValue[' + ${entry.key} + ']'"
+                                                               th:value="${entry2}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <hr />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                <button type="button" id="downloadOk" class="btn btn-primary">Télécharger</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <hr />
             </div>
         </div>
