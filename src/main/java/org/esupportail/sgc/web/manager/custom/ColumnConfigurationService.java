@@ -2,6 +2,7 @@ package org.esupportail.sgc.web.manager.custom;
 
 
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.BooleanUtils;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Prefs;
 import org.esupportail.sgc.services.PreferencesService;
@@ -366,7 +367,7 @@ public class ColumnConfigurationService {
                 ColumnDefinition.of("freeField1", "CVEC")
                         .sortable("freeField1")
                         .renderSize(RenderSize.XL)
-                        .renderer(CellRenderers.booleanIcon(card -> card.getUser() != null ? Boolean.TRUE.equals(card.getUser().getFreeField1()) : false)),
+                        .renderer(CellRenderers.booleanIcon(card -> card.getUser() != null ? BooleanUtils.toBoolean(card.getUser().getFreeField1()) : false)),
 
                 ColumnDefinition.of("freeField2", "Champ libre 2")
                         .sortable("freeField2")
