@@ -115,12 +115,10 @@ public class CrousErrorLogDaoService {
     }
 
     public List<String> getCrousErrorLogMessages() {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<String> cq = cb.createQuery(String.class);
-        Root<CrousErrorLog> root = cq.from(CrousErrorLog.class);
-        cq.select(root.get("message")).distinct(true);
-        cq.orderBy(cb.asc(root.get("message")));
-        TypedQuery<String> query = entityManager.createQuery(cq);
-        return query.getResultList();
+        return crousErrorLogRepository.findDistinctMessages();
+    }
+
+    public List<String> getCrousErrorLogCodes() {
+        return crousErrorLogRepository.findDistinctCodes();
     }
 }

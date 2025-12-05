@@ -18,10 +18,10 @@
         <a target="_blank" href="https://www.esup-portail.org/wiki/display/SGC/Erreurs+CROUS">https://www.esup-portail.org/wiki/display/SGC/Erreurs+CROUS</a>
     </div>
     <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-10">
             <form th:action="@{/admin/crouserrorlogs}" role="search" method="get" class="well" th:object="${searchCrousErrorLog}">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>Bloquant</label>
                         <select class="form-control" th:field="*{blocking}">
                             <option value=""></option>
@@ -29,34 +29,45 @@
                             <option value="false">false</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>ESUP-SGC Operation</label>
                         <select class="form-control" th:field="*{esupSgcOperation}">
                             <option value=""></option>
                             <option th:each="op : ${esupSgcOperations}" th:value="${op}" th:text="${op}"></option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
+                        <label>Code</label>
+                        <select class="form-control" th:field="*{code}">
+                            <option value=""></option>
+                            <option th:each="c : ${codes}" th:value="${c}" th:text="${c}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
                         <label>Message d'erreur</label>
                         <select class="form-control" th:field="*{message}">
                             <option value=""></option>
                             <option th:each="msg : ${crousMessages}" th:value="${msg}" th:text="${msg}"></option>
                         </select>
                     </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-success">Filtrer</button>
+                    <div class="col-md-3">
+                        <br/>
+                        <button type="submit" class="btn btn-success"  >Filtrer</button>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="col-md-1">
-            <a th:href="@{/admin/crouserrorlogs(csv='')}" class="btn btn-primary">Export CSV</a>
-        </div>
-        <div class="col-md-1">
-            <form th:action="@{/admin/crouserrorlogs}" method="post">
-                <input type="hidden" name="_method" value="delete"/>
-                <button class="btn btn-danger" type="submit">Purger les logs</button>
-            </form>
+        <div class="col-md-2">
+            <div>
+                <a th:href="@{/admin/crouserrorlogs(csv='')}" class="btn btn-primary">Export CSV</a>
+            </div>
+            <br/>
+            <div>
+                <form th:action="@{/admin/crouserrorlogs}" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button class="btn btn-danger" type="submit">Purger les logs</button>
+                </form>
+            </div>
         </div>
     </div>
     <div>
