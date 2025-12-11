@@ -5,13 +5,13 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Outils d'administration</title>
+    <title th:text="#{tools.title}">Outils d'administration</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Resynchronisation/validation en masse ...</h2>
+    <h2 th:text="#{tools.resync.title}">Resynchronisation/validation en masse ...</h2>
     <div class="row">
-        <div class="col-lg-1">&nbsp;</div>
+        <div class="col-lg-1" th:utext="#{common.nbsp}">&nbsp;</div>
         <div class="col-lg-10">
             <form th:action="@{/admin/tools/replayAllActivationDesactivation}" class="form-horizontal" method="post">
                 <div class="well">
@@ -28,13 +28,13 @@
                 <div class="checkbox">
                     <label class="bg-danger">
                         <input name="resynchro" type="checkbox" value="true" checked="checked"/>
-                        Resynchronisation préalable
+                        <span th:text="#{tools.resync.prerequisite}">Resynchronisation préalable</span>
                     </label>
                 </div>
                 <br/>
                 <div class="form-group">
                     <button class="btn btn-danger" type="submit" name="action" value="desactivation"
-                            onclick="return confirm('Attention rejouer l\'activation / désactivation pour chaque carte déjà activée / désactivée est une procédure lourde à ne lancer qu\'en connaissance de cause.');">
+                            th:onclick="|return confirm('#{tools.replay.confirm}')|" th:text="#{tools.replay.title}">
                         Rejouer l'activation / désactivation des cartes activées/désactivées/caduques
                     </button>
                 </div>
@@ -42,19 +42,19 @@
         </div>
     </div>
 
-    <h2>Modification d'EPPN</h2>
+    <h2 th:text="#{tools.eppn.title}">Modification d'EPPN</h2>
     <div class="row">
-        <div class="col-lg-1">&nbsp;</div>
+        <div class="col-lg-1" th:utext="#{common.nbsp}">&nbsp;</div>
         <div class="col-lg-10">
-            <div class="well">
+            <div class="well" th:text="#{tools.eppn.description}">
                 Si un de vos utilisateurs a changé d'eduPersonPrincipalName, vous pouvez répercuter cette modification dans esup-sgc ici. Cette modification sera également envoyée dans l'API CROUS au besoin.
             </div>
             <form th:action="@{/admin/tools/patchEsupSgcEppn}" class="form-horizontal" method="post" id="searchEppnForm">
                 <div class="form-group">
-                    <label>Ancien eppn : <input name="oldEppn" id="searchEppn"/></label>
-                    <label>Nouvel eppn : <input name="newEppn"/></label>
+                    <label><span th:text="#{tools.eppn.old}">Ancien eppn :</span> <input name="oldEppn" id="searchEppn"/></label>
+                    <label><span th:text="#{tools.eppn.new}">Nouvel eppn :</span> <input name="newEppn"/></label>
                     <button class="btn btn-danger" type="submit" name="action"
-                            onclick="return confirm('Vous confirmez vouloir opérérer cette modification d\'eppn ?.');">
+                            th:onclick="|return confirm('#{tools.eppn.confirm}')|" th:text="#{tools.eppn.update}">
                         Modifier l'EPPN
                     </button>
                 </div>
@@ -62,18 +62,18 @@
         </div>
     </div>
 
-    <h2>CROUS</h2>
+    <h2 th:text="#{common.crous}">CROUS</h2>
     <div class="row">
-        <div class="col-lg-1">&nbsp;</div>
+        <div class="col-lg-1" th:utext="#{common.nbsp}">&nbsp;</div>
         <div class="col-lg-10">
             <form th:action="@{/admin/tools/forcePostOrUpdateRightHolderCrous}" class="form-horizontal" method="post">
                 <div class="form-group well">
                     <p>
-                        Forcer la vérification et envoi / mise à jour des comptes CROUS référencés dans le SGC comme ayant le crous d'activé et possédant au moins une carte active :
-                        <span th:text="${usersWithCrousCount}"></span> compte(s) répond(ent) à ce critère.
+                        <span th:text="#{tools.crous.verify}">Forcer la vérification et envoi / mise à jour des comptes CROUS référencés dans le SGC comme ayant le crous d'activé et possédant au moins une carte active :</span>
+                        <span th:text="${usersWithCrousCount}"></span> <span th:text="#{tools.crous.count}">compte(s) répond(ent) à ce critère.</span>
                     </p>
                     <button class="btn btn-danger" type="submit" name="action" value="forcePostOrUpdateRightHolderCrousUrl"
-                            th:onclick="'return confirm(\'Attention, cette action va engender un nombre d\\\'appels au CROUS non négligeable : ' + ${usersWithCrousCount} + ' GET voir PUT et POST au besoin sur l\\\'API CROUS ici.\');'">
+                            th:onclick="'return confirm(\'' + #{tools.crous.force.update.confirm(${usersWithCrousCount})} + '\');'" th:text="#{tools.crous.force.update}">
                         Forcer la mise à jour (update/put) des comptes CROUS (RightHolder) dans l'API CROUS.
                     </button>
                 </div>
@@ -81,13 +81,13 @@
             <form th:action="@{/admin/tools/checkCrousDisabledExistingInApiCrous}" class="form-horizontal" method="post">
                 <div class="form-group">
                     <button class="btn btn-danger" type="submit" name="action" value="checkCrousDisabledExistingInApiCrousUrl"
-                            th:onclick="'return confirm(\'Attention, cette vérification va engender un nombre d\\\'appels au CROUS non négligeable : ' + ${usersWithCrousDisabledInDbCount} + ' GET sur l\\\'API CROUS ici.\');'">
+                            th:onclick="'return confirm(\'' + #{tools.crous.verify.coherence.confirm(${usersWithCrousDisabledInDbCount})} + '\');'" th:text="#{tools.crous.verify.coherence}">
                         Lancer la vérification de la cohérence crous désactivé -> aucun compte dans l'api crous
                     </button>
                 </div>
             </form>
             <div th:if="${usersCrousDisabledExistingInApiCrous != null and #lists.isNotEmpty(usersCrousDisabledExistingInApiCrous)}">
-                Utilisateurs ayant la tranmission au crous désactivé alors qu'un compte crous a été retrouvé sur l'api crous
+                <span th:text="#{tools.crous.disabled.but.exists}">Utilisateurs ayant la tranmission au crous désactivé alors qu'un compte crous a été retrouvé sur l'api crous</span>
                 <ul>
                     <li th:each="eppn : ${usersCrousDisabledExistingInApiCrous}">
                         <a th:href="@{/manager(eppn=${eppn})}" th:text="${eppn}"></a>
@@ -99,12 +99,12 @@
 
     <h2>ESCR</h2>
     <div class="row">
-        <div class="col-lg-1">&nbsp;</div>
+        <div class="col-lg-1" th:utext="#{common.nbsp}">&nbsp;</div>
         <div class="col-lg-10">
             <form th:action="@{/admin/tools/forceSendEscrApiCrous}" class="form-horizontal" method="post">
                 <div class="form-group">
                     <button class="btn btn-danger" type="submit" name="action" value="forceSendEscrApiCrousUrl"
-                            onclick="return confirm('Cette action va tenter de valider au niveau de l\'ESCR les cartes actives des utilisateurs ayant demandés cette option mais qui n\'ont pas été notés par esup-sgc comme étant valides côté ESCR.');">
+                            th:onclick="|return confirm('#{tools.escr.confirm}')|" th:text="#{tools.escr.resend}">
                         Lancer le renvoi dans l'API ESCR des comptes/cartes activées avec l'option ESCR de demandée
                     </button>
                 </div>

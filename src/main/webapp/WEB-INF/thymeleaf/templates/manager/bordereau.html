@@ -4,7 +4,7 @@
      layout:decorate="~{layouts/user.html}"
      layout:fragment="content"
      id="tableBordereau">
-    <h2>Bordereau
+    <h2><span th:text="#{header.bordereau.title}">Bordereau</span>
         <a class="btn btn-primary pull-right hidden-print" th:href="@{/manager(index='first')}" type="button">
             <span class="glyphicon glyphicon-home"></span>
         </a>
@@ -13,18 +13,18 @@
         </a>
     </h2>
 
-    <div th:if="${msgbordereau}" class="alert alert-danger" th:text="#{manager.msg.bordereau}"></div>
+    <div th:if="${msgbordereau}" class="alert alert-danger" th:text="#{manager.msg.bordereau.limit}"></div>
 
     <div th:unless="${msgbordereau}">
         <table class="table table-bordered">
             <thead>
             <tr>
                 <th>#</th>
-                <th th:if="${displayPhoto}">Photo</th>
-                <th>N° Etu/Pers</th>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>INE / --</th>
+                <th th:if="${displayPhoto}" th:text="#{common.photo}">Photo</th>
+                <th th:text="#{bordereau.student.number}">N° Etu/Pers</th>
+                <th th:text="#{common.name}">Nom</th>
+                <th th:text="#{common.firstname}">Prénom</th>
+                <th th:text="#{bordereau.ine}">INE / --</th>
             </tr>
             </thead>
             <tbody>

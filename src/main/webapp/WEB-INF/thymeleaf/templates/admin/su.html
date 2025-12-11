@@ -5,25 +5,25 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Supervision - Switch User</title>
+    <title th:text="#{su.title}">Supervision - Switch User</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Supervision - Switch User</h2>
+    <h2 th:text="#{su.title}">Supervision - Switch User</h2>
     <div class="jumbotron well">
-        <p>Cette page vous permet de vous connecter au nom d'un autre utilisateur.</p>
-        <p>Pour cela, rentrez son nom d'utilisateur (eppn) dans le formulaire et cliquez sur SU ("Switch User").</p>
-        <p>Cette fonctionnalité n'est disponible que pour les admins, elle permet de "voir" précisément l'interface de l'utilisateur, "ce que voit" l'utilisateur.</p>
-        <p>Les actions effectuées seront journalisées dans la base en votre nom (avec le nom de l'utilisateur cible mentionné également).</p>
+        <p th:text="#{su.description}">Cette page vous permet de vous connecter au nom d'un autre utilisateur.</p>
+        <p th:text="#{su.how.to}">Pour cela, rentrez son nom d'utilisateur (eppn) dans le formulaire et cliquez sur SU ("Switch User").</p>
+        <p th:text="#{su.admin.only}">Cette fonctionnalité n'est disponible que pour les admins, elle permet de "voir" précisément l'interface de l'utilisateur, "ce que voit" l'utilisateur.</p>
+        <p th:text="#{su.logged}">Les actions effectuées seront journalisées dans la base en votre nom (avec le nom de l'utilisateur cible mentionné également).</p>
     </div>
     <form th:action="@{/j_spring_security_switch_user}" method="post" class="form-horizontal" id="searchEppnForm">
         <div class="jumbotron">
             <div class="form-group">
-                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible :</label>
+                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6" th:text="#{common.eppn.target}">Entrez l'EPPN de l'utilisateur cible :</label>
                 <div class="col-lg-2 col-md-2 col-xs-4">
-                    <input type="text" class="form-control" placeholder="eppn" id="searchEppn" name="j_username" maxlength="100"/>
+                    <input type="text" class="form-control" th:placeholder="#{common.eppn}" id="searchEppn" name="j_username" maxlength="100"/>
                 </div>
-                <button type="submit" class="btn btn-success col-lg-1 col-md-1">SU</button>
+                <button type="submit" class="btn btn-success col-lg-1 col-md-1" th:text="#{su.button}">SU</button>
             </div>
         </div>
     </form>

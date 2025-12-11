@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Impression verso carte</title>
+    <title th:text="#{print.card.back}">Impression verso carte</title>
     <script>
         // Recharge la fenêtre parente pour rafraîchir l'état des actions
         window.opener && window.opener.location.reload();

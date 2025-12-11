@@ -1,40 +1,40 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/reglement.html -->
 <div th:fragment="reglement">
-    <h2>Conditions générales d’utilisation de la carte à puce étudiante Léocarte</h2>
-    <p>La Léocarte qui vous a été remise vous donne accès aux services décrits à l’article 3 des présentes conditions.</p>
-    <h3>1. Définition</h3>
-    <p>Carte désigne le dispositif qui vous est fourni pour bénéficier de l’ensemble des services mentionnés à l’article 3.</p>
-    <p>Emetteur désigne l’Université de Rouen Normandie. L’Université de Rouen Normandie est également gestionnaire et est chargée d’assurer le déploiement de la Carte et d’y adjoindre ses propres services.</p>
-    <p>Fournisseur de service désigne les partenaires tel le CROUS qui acceptent l’usage de la carte pour faire bénéficier le Porteur des services désignés à l’article 3.</p>
-    <p>Porteur désigne la personne qui reçoit la carte et peut bénéficier des services offerts.</p>
-    <p>Gestionnaire désigne la personne en charge de l’édition ou bien du cycle de vie de la carte.</p>
-    <h3>2. Propriété de la carte</h3>
-    <p>La carte reste la propriété de l’Emetteur. Elle est remise au Porteur par le Gestionnaire à titre personnel et ne doit en aucun cas être utilisée par un tiers.</p>
-    <p>Elle devra être restituée à la première demande de l’Emetteur ou du Gestionnaire.</p>
-    <p>Toute tentative d’intrusion ou de modification sur les logiciels ou le matériel présent sur la carte sera une cause de restitution immédiate de la carte et passible de poursuites.</p>
-    <h3>3. Services</h3>
-    <p>Le Porteur est informé que la Carte qui lui sera remise sera en état de sortie d’usine.</p>
-    <p>Toutefois, lors de la remise de la Carte au Porteur, les services suivants seront immédiatement accessibles dans les conditions suivantes :</p>
+    <h2 th:text="#{rules.title}">Conditions générales d’utilisation de la carte à puce étudiante carte multi-services</h2>
+    <p th:text="#{rules.card.access}">La carte multi-services qui vous a été remise vous donne accès aux services décrits à l’article 3 des présentes conditions.</p>
+    <h3 th:text="#{rules.1.definition}">1. Définition</h3>
+    <p th:text="#{rules.card.definition}">Carte désigne le dispositif qui vous est fourni pour bénéficier de l’ensemble des services mentionnés à l’article 3.</p>
+    <p th:text="#{rules.issuer.definition}">Emetteur désigne l’Université de Rouen Normandie. L’Université de Rouen Normandie est également gestionnaire et est chargée d’assurer le déploiement de la Carte et d’y adjoindre ses propres services.</p>
+    <p th:text="#{rules.provider.definition}">Fournisseur de service désigne les partenaires tel le CROUS qui acceptent l’usage de la carte pour faire bénéficier le Porteur des services désignés à l’article 3.</p>
+    <p th:text="#{rules.holder.definition}">Porteur désigne la personne qui reçoit la carte et peut bénéficier des services offerts.</p>
+    <p th:text="#{rules.manager.definition}">Gestionnaire désigne la personne en charge de l’édition ou bien du cycle de vie de la carte.</p>
+    <h3 th:text="#{rules.2.ownership}">2. Propriété de la carte</h3>
+    <p th:text="#{rules.card.property}">La carte reste la propriété de l’Emetteur. Elle est remise au Porteur par le Gestionnaire à titre personnel et ne doit en aucun cas être utilisée par un tiers.</p>
+    <p th:text="#{rules.card.return}">Elle devra être restituée à la première demande de l’Emetteur ou du Gestionnaire.</p>
+    <p th:text="#{rules.intrusion}">Toute tentative d’intrusion ou de modification sur les logiciels ou le matériel présent sur la carte sera une cause de restitution immédiate de la carte et passible de poursuites.</p>
+    <h3 th:text="#{rules.3.services}">3. Services</h3>
+    <p th:text="#{rules.card.factory}">Le Porteur est informé que la Carte qui lui sera remise sera en état de sortie d’usine.</p>
+    <p th:text="#{rules.services.available}">Toutefois, lors de la remise de la Carte au Porteur, les services suivants seront immédiatement accessibles dans les conditions suivantes :</p>
     <ul>
-        <li>Identification en bibliothèque universitaire</li>
-        <li>Contrôle d’accès aux locaux</li>
-        <li>Restauration CROUS izly</li>
-        <li>Impression/numérisation/photocopies</li>
-        <li>Carte culture</li>
+        <li th:text="#{rules.services.library}">Identification en bibliothèque universitaire</li>
+        <li th:text="#{rules.services.access}">Contrôle d’accès aux locaux</li>
+        <li th:text="#{rules.services.crous}">Restauration CROUS izly</li>
+        <li th:text="#{rules.services.print}">Impression/numérisation/photocopies</li>
+        <li th:text="#{rules.services.culture}">Carte culture</li>
     </ul>
-    <p>Le Porteur est explicitement informé que de nouvelles applications seront développées, dont il pourra bénéficier dans le respect de leurs conditions d’utilisation. Il sera informé de celles-ci par voie électronique et par voie d’affichage.</p>
-    <h3>4. Modification des services</h3>
-    <p>Les services offerts ou les modalités de ceux-ci pourront être modifiés par l’Emetteur ou le Gestionnaire sans préavis. Le Porteur en sera tenu informé par voie d’affichage et par voie électronique ainsi que par la modification de la présente convention sur internet.</p>
-    <h3>5. Perte ou Vol</h3>
-    <p>En cas de perte ou de vol de la carte, il appartient au Porteur de faire opposition au plus vite auprès de la scolarité ou du service d’assistance. Un formulaire en ligne via la plateforme helpdesk sera mis à disposition. Cette opposition entraînera le blocage de la Carte, interdisant sa lecture et son utilisation pour bénéficier des services prévus à l’article 3.  L’attention du Porteur est attirée sur le fait que l’opposition ne sera possible qu’aux horaires d’ouverture de bureau.</p>
-    <p>Toute utilisation de la carte antérieurement à la réception de l’opposition par le Gestionnaire est de la seule responsabilité du Porteur. Tout usage postérieur à la réception de l’opposition par le Gestionnaire est de la seule responsabilité du Gestionnaire.</p>
-    <p>Une nouvelle Carte sera ensuite remise au Porteur. Cette dernière annulera et remplacera la Carte précédente. Le prix de renouvellement de la carte est à la charge du porteur. Il est fixé par le Conseil d’Administration de l’établissement émetteur : Soit 10€</p>
-    <h3>6. Modification des services</h3>
-    <p>En cas de défaut de la carte nuisant à son fonctionnement, il vous sera remis gracieusement une nouvelle carte par le Gestionnaire et cela en reprenant les caractéristiques de l’ancienne.</p>
-    <h3>7. Vie privée</h3>
-    <p>Conformément à la loi 78-17 dite « informatique et liberté », le Gestionnaire déclare au Porteur collecter et traiter des données à caractère personnel dans le but de renforcer l’efficacité du service et pour assurer l’exécution correcte des services mentionnés à l’article 3. Le Porteur peut à tout moment exercer son droit d’accès et de rectification en écrivant à la scolarité ou au service d’édition de la carte spécifique à l’Université de Rouen Normandie.</p>
-    <h3>8. Droit applicable</h3>
-    <p>Les présentes conditions sont régies par le droit français.</p>
-    <h3>9. Acceptation</h3>
-    <p>En acceptant le règlement dans le cadre prévu à cet effet  le Porteur accepte sans réserve l’ensemble des clauses des présentes conditions d’utilisation.</p>
+    <p th:text="#{rules.new.apps}">Le Porteur est explicitement informé que de nouvelles applications seront développées, dont il pourra bénéficier dans le respect de leurs conditions d’utilisation. Il sera informé de celles-ci par voie électronique et par voie d’affichage.</p>
+    <h3 th:text="#{rules.4.services.modification}">4. Modification des services</h3>
+    <p th:text="#{rules.services.modification}">Les services offerts ou les modalités de ceux-ci pourront être modifiés par l’Emetteur ou le Gestionnaire sans préavis. Le Porteur en sera tenu informé par voie d’affichage et par voie électronique ainsi que par la modification de la présente convention sur internet.</p>
+    <h3 th:text="#{rules.5.loss.theft}">5. Perte ou Vol</h3>
+    <p th:text="#{rules.loss.theft}">En cas de perte ou de vol de la carte, il appartient au Porteur de faire opposition au plus vite auprès de la scolarité ou du service d’assistance. Un formulaire en ligne via la plateforme helpdesk sera mis à disposition. Cette opposition entraînera le blocage de la Carte, interdisant sa lecture et son utilisation pour bénéficier des services prévus à l’article 3.  L’attention du Porteur est attirée sur le fait que l’opposition ne sera possible qu’aux horaires d’ouverture de bureau.</p>
+    <p th:text="#{rules.usage.before.opposition}">Toute utilisation de la carte antérieurement à la réception de l’opposition par le Gestionnaire est de la seule responsabilité du Porteur. Tout usage postérieur à la réception de l’opposition par le Gestionnaire est de la seule responsabilité du Gestionnaire.</p>
+    <p th:text="#{rules.new.card}">Une nouvelle Carte sera ensuite remise au Porteur. Cette dernière annulera et remplacera la Carte précédente. Le prix de renouvellement de la carte est à la charge du porteur. Il est fixé par le Conseil d’Administration de l’établissement émetteur : Soit 10€</p>
+    <h3 th:text="#{rules.6.services.modification2}">6. Modification des services</h3>
+    <p th:text="#{rules.card.defect}">En cas de défaut de la carte nuisant à son fonctionnement, il vous sera remis gracieusement une nouvelle carte par le Gestionnaire et cela en reprenant les caractéristiques de l’ancienne.</p>
+    <h3 th:text="#{rules.7.privacy}">7. Vie privée</h3>
+    <p th:text="#{rules.privacy}">Conformément à la loi 78-17 dite « informatique et liberté », le Gestionnaire déclare au Porteur collecter et traiter des données à caractère personnel dans le but de renforcer l’efficacité du service et pour assurer l’exécution correcte des services mentionnés à l’article 3. Le Porteur peut à tout moment exercer son droit d’accès et de rectification en écrivant à la scolarité ou au service d’édition de la carte spécifique à l’Université de Rouen Normandie.</p>
+    <h3 th:text="#{rules.8.applicable.law}">8. Droit applicable</h3>
+    <p th:text="#{rules.french.law}">Les présentes conditions sont régies par le droit français.</p>
+    <h3 th:text="#{rules.9.acceptance}">9. Acceptation</h3>
+    <p th:text="#{rules.acceptance}">En acceptant le règlement dans le cadre prévu à cet effet  le Porteur accepte sans réserve l’ensemble des clauses des présentes conditions d’utilisation.</p>
 </div>

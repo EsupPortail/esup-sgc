@@ -1,22 +1,22 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/crousSmartCard?.html -->
 <dl class="dl-horizontal col-lg-5">
-    <h4>Données côté CROUS</h4>
-    <dt>idTransmitter</dt>
+    <h4 th:text="#{crous.smartcard.data}">Données côté CROUS</h4>
+    <dt th:text="#{crous.smartcard.idtransmitter}">idTransmitter</dt>
     <dd th:text="${crousSmartCard?.idTransmitter}"></dd>
-    <dt>idMapping</dt>
+    <dt th:text="#{crous.smartcard.idmapping}">idMapping</dt>
     <dd th:text="${crousSmartCard?.idMapping}"></dd>
-    <dt>idZdc</dt>
+    <dt th:text="#{crous.smartcard.idzdc}">idZdc</dt>
     <dd th:text="${crousSmartCard?.idZdc}"></dd>
-    <dt>zdcCreationDate</dt>
+    <dt th:text="#{crous.smartcard.zdccreationdate}">zdcCreationDate</dt>
     <dd th:text="${crousSmartCard?.zdcCreationDate}"></dd>
-    <dt>pixSs</dt>
+    <dt th:text="#{crous.smartcard.pixss}">pixSs</dt>
     <dd th:text="${crousSmartCard?.pixSs}"></dd>
-    <dt>pixNn</dt>
+    <dt th:text="#{crous.smartcard.pixnn}">pixNn</dt>
     <dd th:text="${crousSmartCard?.pixNn}"></dd>
-    <dt>appl</dt>
+    <dt th:text="#{crous.smartcard.appl}">appl</dt>
     <dd th:text="${crousSmartCard?.appl}"></dd>
-    <dt>uid</dt>
+    <dt th:text="#{crous.smartcard.uid}">uid</dt>
     <dd th:text="${crousSmartCard?.uid}"></dd>
-    <dt>rid</dt>
+    <dt th:text="#{crous.smartcard.rid}">rid</dt>
     <dd th:text="${crousSmartCard?.rid}"></dd>
 </dl>

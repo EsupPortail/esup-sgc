@@ -5,27 +5,27 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Détail carte CROUS</title>
+    <title th:text="#{common.crous}">Détail carte CROUS</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Détail carte CROUS</h2>
+    <h2 th:text="#{common.crous}">Détail carte CROUS</h2>
     <dl class="dl-horizontal">
-        <dt>Date création</dt>
+        <dt th:text="#{common.creation.date}">Date création</dt>
         <dd th:text="${#temporals.format(croussmartcard.zdcCreationDate, 'dd/MM/yyyy')}"></dd>
-        <dt>Id Transmitter</dt>
+        <dt th:text="#{common.transmitter}">Id Transmitter</dt>
         <dd th:text="${croussmartcard.idTransmitter}"></dd>
-        <dt>Id Mapping</dt>
+        <dt th:text="#{common.mapping}">Id Mapping</dt>
         <dd th:text="${croussmartcard.idMapping}"></dd>
-        <dt>Id Zdc</dt>
+        <dt th:text="#{common.zdc}">Id Zdc</dt>
         <dd th:text="${croussmartcard.idZdc}"></dd>
-        <dt>Pix SS</dt>
+        <dt th:text="#{common.ss}">Pix SS</dt>
         <dd th:text="${croussmartcard.pixSs}"></dd>
-        <dt>Pix NN</dt>
+        <dt th:text="#{common.nn}">Pix NN</dt>
         <dd th:text="${croussmartcard.pixNn}"></dd>
-        <dt>Appl</dt>
+        <dt th:text="#{show.appl}">Appl</dt>
         <dd th:text="${croussmartcard.appl}"></dd>
-        <dt>CSN (uid)</dt>
+        <dt th:text="#{show.csn.uid}">CSN (uid)</dt>
         <dd th:text="${croussmartcard.uid}"></dd>
         <dt>RID</dt>
         <dd th:text="${croussmartcard.rid}"></dd>

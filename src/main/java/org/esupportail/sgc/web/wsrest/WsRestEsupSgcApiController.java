@@ -274,7 +274,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 			externalCard.setCrous(crous);
 			externalCard.setDifPhoto(difPhoto);
             cardDaoService.merge(externalCard);
-			cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
+			cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une carte multi-services extérieure", "Importation d'une carte multi-services extérieure", false, false);
 		} catch (Exception e) {
 			String errorMessage = "problème lors de l'importation de la carte extérieure de " + eppn + " : " + e.getMessage();
 			log.error(errorMessage, e);

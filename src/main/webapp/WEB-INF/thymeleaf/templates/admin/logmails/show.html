@@ -5,40 +5,40 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Détail LogMail</title>
+    <title th:text="#{show.logmail.detail}">Détail LogMail</title>
 </head>
 <body>
 <div layout:fragment="content" th:if="${logmail != null}">
-    <h2>Détail du LogMail</h2>
+    <h2 th:text="#{show.logmail.detail}">Détail du LogMail</h2>
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
-                <th>Action message</th>
+                <th th:text="#{common.message}">Action message</th>
                 <td>
                     <a th:href="@{/admin/actionmessages/{id}(id=${logmail.cardActionMessage?.id})}"
                        th:text="${logmail.cardActionMessage?.id}"></a>
                 </td>
             </tr>
             <tr>
-                <th>Date</th>
+                <th th:text="#{common.date}">Date</th>
                 <td th:text="${#temporals.format(logmail.logDate, 'dd/MM/yyyy HH:mm:ss')}"></td>
             </tr>
             <tr>
-                <th>Eppn</th>
+                <th th:text="#{common.eppn}">Eppn</th>
                 <td>
                     <a th:href="@{/manager(eppn=${logmail.eppn})}" th:text="${logmail.eppn}"></a>
                 </td>
             </tr>
             <tr>
-                <th>Sujet</th>
+                <th th:text="#{common.subject}">Sujet</th>
                 <td th:text="${logmail.subject}"></td>
             </tr>
             <tr>
-                <th>Mail To</th>
+                <th th:text="#{common.to}">Mail To</th>
                 <td th:text="${logmail.mailTo}"></td>
             </tr>
             <tr>
-                <th>Message</th>
+                <th th:text="#{common.message}">Message</th>
                 <td th:text="${logmail.message}"></td>
             </tr>
         </tbody>

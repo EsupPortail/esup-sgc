@@ -11,7 +11,7 @@
                     <button type="button" class="navbar-toggle collapsed"
                             data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
                             aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span> <span
+                        <span class="sr-only" th:text="#{menu.toggle.navigation}">Toggle navigation</span> <span
                             class="icon-bar"></span> <span class="icon-bar"></span> <span
                             class="icon-bar"></span>
                     </button>
@@ -21,70 +21,70 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav" id="_menu">
                         <li th:classappend="${active} == 'sessions' ? 'active'">
-                            <a th:href="@{/admin/currentsessions}">Sessions</a>
+                            <a th:href="@{/admin/currentsessions}" th:text="#{menu.sessions}">Sessions</a>
                         </li>
                         <li th:classappend="${active} == 'configs' ? 'active'">
-                            <a th:href="@{/admin/config}">Configurations</a>
+                            <a th:href="@{/admin/config}" th:text="#{menu.configurations}">Configurations</a>
                         </li>
                         <li th:classappend="${active} == 'navbar' ? 'active'">
-                            <a th:href="@{/admin/navbars}">NavBarApp</a>
+                            <a th:href="@{/admin/navbars}" th:text="#{menu.navbarapp}">NavBarApp</a>
                         </li>
                         <li th:classappend="${active} == 'nfc' ? 'active'">
-                            <a th:href="@{/admin/jwsdevices}">Esup-nfc</a>
+                            <a th:href="@{/admin/jwsdevices}" th:text="#{menu.esupnfc}">Esup-nfc</a>
                         </li>
                         <li th:classappend="${active} == 'logs' ? 'active'">
-                            <a th:href="@{/admin/logs}">Logs</a>
+                            <a th:href="@{/admin/logs}" th:text="#{menu.logs}">Logs</a>
                         </li>
                         <li th:classappend="${active} == 'logmails' ? 'active'">
-                            <a th:href="@{/admin/logmails}">Logs Mails</a>
+                            <a th:href="@{/admin/logmails}" th:text="#{menu.logs.mails}">Logs Mails</a>
                         </li>
                         <li th:classappend="${active} == 'paybox' ? 'active'">
-                            <a th:href="@{/admin/payboxtransactions}">Transactions Paybox</a>
+                            <a th:href="@{/admin/payboxtransactions}" th:text="#{menu.paybox.transactions}">Transactions Paybox</a>
                         </li>
                         <li th:classappend="${active} == 'import' ? 'active'">
-                            <a th:href="@{/admin/import}">Import</a>
+                            <a th:href="@{/admin/import}" th:text="#{menu.import}">Import</a>
                         </li>
                         <li th:classappend="${active} == 'tools' ? 'active'">
-                            <a th:href="@{/admin/tools}">Tools</a>
+                            <a th:href="@{/admin/tools}" th:text="#{menu.tools}">Tools</a>
                         </li>
                         <li th:classappend="${active} == 'actionmsgs' ? 'active'">
-                            <a th:href="@{/admin/actionmessages}">Messages</a>
+                            <a th:href="@{/admin/actionmessages}" th:text="#{menu.messages}">Messages</a>
                         </li>
                         <li th:classappend="${active} == 'prefs' ? 'active'">
-                            <a th:href="@{/admin/prefses}">Préférences</a>
+                            <a th:href="@{/admin/prefses}" th:text="#{menu.preferences}">Préférences</a>
                         </li>
                         <li th:classappend="${active} == 'template' ? 'active'">
-                            <a th:href="@{/admin/templatecards}">Thèmes cartes</a>
+                            <a th:href="@{/admin/templatecards}" th:text="#{menu.card.themes}">Thèmes cartes</a>
                         </li>
                         <li th:classappend="${active} == 'crousrules' ? 'active'">
-                            <a th:href="@{/admin/crousrules}">Tarifs Crous</a>
+                            <a th:href="@{/admin/crousrules}" th:text="#{menu.crous.rates}">Tarifs Crous</a>
                         </li>
                         <li th:classappend="${active} == 'crous' ? 'active'">
-                            <a th:href="@{/admin/crouscards}">Cartes Crous</a>
+                            <a th:href="@{/admin/crouscards}" th:text="#{menu.crous.cards}">Cartes Crous</a>
                         </li>
                         <li th:classappend="${active} == 'crouspatchids' ? 'active'">
-                            <a th:href="@{/admin/crouspatchids}">Crous patch identifiants</a>
+                            <a th:href="@{/admin/crouspatchids}" th:text="#{menu.crous.patch.ids}">Crous patch identifiants</a>
                         </li>
                         <li th:classappend="${active} == 'crousError' ? 'active'">
-                            <a th:href="@{/admin/crouserrorlogs}">Erreurs CROUS</a>
+                            <a th:href="@{/admin/crouserrorlogs}" th:text="#{menu.crous.errors}">Erreurs CROUS</a>
                         </li>
                         <li th:classappend="${active} == 'purge' ? 'active'">
-                            <a th:href="@{/admin/purge}">Purge</a>
+                            <a th:href="@{/admin/purge}" th:text="#{menu.purge}">Purge</a>
                         </li>
                         <li th:classappend="${active} == 'printers' ? 'active'">
-                            <a th:href="@{/admin/printers}">Imprimantes</a>
+                            <a th:href="@{/admin/printers}" th:text="#{menu.printers}">Imprimantes</a>
                         </li>
                         <li th:classappend="${active} == 'userinfos' ? 'active'">
-                            <a th:href="@{/admin/userinfos}">UserInfos</a>
+                            <a th:href="@{/admin/userinfos}" th:text="#{menu.userinfos}">UserInfos</a>
                         </li>
                         <li th:classappend="${active} == 'groupsroles' ? 'active'">
-                            <a th:href="@{/admin/groupsroles}">GroupsRoles</a>
+                            <a th:href="@{/admin/groupsroles}" th:text="#{menu.groupsroles}">GroupsRoles</a>
                         </li>
                         <li th:classappend="${active} == 'locations' ? 'active'">
-                            <a th:href="@{/admin/locations}">NfcLocations</a>
+                            <a th:href="@{/admin/locations}" th:text="#{menu.nfclocations}">NfcLocations</a>
                         </li>
                         <li th:classappend="${active} == 'javaperf' ? 'active'">
-                            <a th:href="@{/admin/javaperf}">JavaPerf</a>
+                            <a th:href="@{/admin/javaperf}" th:text="#{menu.javaperf}">JavaPerf</a>
                         </li>
                     </ul>
                 </div>

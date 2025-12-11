@@ -1,18 +1,18 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/form_rules.html -->
 <div th:fragment="form_rules" th:if="${displayFormParts['displayRules']}">
     <div class="well">
-        <h4>Règlement :</h4>
+        <h4 th:text="#{form.rules.label}">Règlement :</h4>
         <button type="button" class="btn btn-info"
-                data-toggle="modal" data-target="#reglementCarte">
+                data-toggle="modal" data-target="#reglementCarte" th:text="#{form.rules.view}">
             Consulter le règlement
         </button>
         <div class="checkbox alert alert-warning">
             <label>
                 <input type="checkbox" name="reglement" id="reglement"/>
-                <strong> J'ai lu le règlement</strong>
+                <strong th:text="#{form.rules.read}"> J'ai lu le règlement</strong>
             </label>
         </div>
-        <h4>Remise de la carte :</h4>
+        <h4 th:text="#{form.rules.delivery}">Remise de la carte :</h4>
         <span th:utext="${configUserMsgs['userFormRules']}"></span>
     </div>
 </div>

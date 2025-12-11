@@ -36,10 +36,10 @@
                         </th:block>
                     </th:block>
                 </th:block>
-                <button type="button" title="Export CSV" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields">
+                <button type="button" th:title="#{header.export.csv}" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modalFields">
                     <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
                 </button>&nbsp;
-                <button type="submit" title="bordereau envoi" class="btn btn-xs btn-danger">
+                <button type="submit" th:title="#{header.bordereau.title}" class="btn btn-xs btn-danger">
                     <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
                 </button>
             </p>

@@ -5,11 +5,11 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Sessions</title>
+    <title th:text="#{common.sessions}">Sessions</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Sessions</h2>
+    <h2 th:text="#{common.sessions}">Sessions</h2>
 
     <div class="jumbotron" id="sessionsUsers">
         <ul>
@@ -21,9 +21,9 @@
     </div>
 
     <div class="alert alert-info" id="sessionsdiv">
-        <h3>Utilisateurs connectés (sessions spring).</h3>
+        <h3 th:text="#{sessions.spring.users}">Utilisateurs connectés (sessions spring).</h3>
         <p>
-            <strong th:text="${#lists.size(allUsers)} + ' session(s) active(s)'"></strong>
+            <strong><span th:text="${#lists.size(allUsers)}"></span> <span th:text="#{sessions.active.count}">session(s) active(s)</span></strong>
         </p>
         <br/>
         <div class="well">
@@ -38,12 +38,12 @@
     </div>
 
     <div class="alert alert-info">
-        <h3>Ensemble des Sessions HTTP</h3>
+        <h3 th:text="#{sessions.http.title}">Ensemble des Sessions HTTP</h3>
         <p>
-            <strong th:text="${#lists.size(allSessions)} + ' session(s) active(s)'"></strong>
+            <strong><span th:text="${#lists.size(allSessions)}"></span> <span th:text="#{sessions.active.count}">session(s) active(s)</span></strong>
         </p>
         <br/>
-        <p><strong>sessionId - createdDate - remoteIp - originRequestUri - eppn</strong></p>
+        <p><strong th:text="#{sessions.format}">sessionId - createdDate - remoteIp - originRequestUri - eppn</strong></p>
         <div class="well">
             <ul class="list">
                 <li th:each="userSession : ${allSessions}"

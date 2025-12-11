@@ -5,40 +5,40 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Modification configuration</title>
+    <title th:text="#{config.update}">Modification configuration</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Configurations</h2>
+    <h2 th:text="#{common.configurations}">Configurations</h2>
     <form th:action="@{/admin/config}" th:object="${appliConfig}" th:method="put" class="form-horizontal" id="appliConfig">
         <input type="hidden" th:field="*{id}" />
         <!-- Clé (lecture seule) -->
         <div class="form-group">
-            <label class="col-md-3 control-label"><strong>Clé</strong></label>
+            <label class="col-md-3 control-label"><strong th:text="#{common.key}">Clé</strong></label>
             <div class="col-md-3">
                 <p class="form-control-static" th:text="*{key}"></p>
             </div>
         </div>
         <!-- Type (select) -->
         <div class="form-group">
-            <label class="col-md-3 control-label"><strong>Type</strong></label>
+            <label class="col-md-3 control-label"><strong th:text="#{common.type}">Type</strong></label>
             <div class="col-md-3">
                 <select class="form-control" th:field="*{type}" id="type" name="type">
-                    <option value="TEXT" th:selected="*{type} == 'TEXT'">Texte</option>
-                    <option value="HTML" th:selected="*{type} == 'HTML'">Html</option>
-                    <option value="BOOLEAN" th:selected="*{type} == 'BOOLEAN'">Booléen</option>
+                    <option value="TEXT" th:selected="*{type} == 'TEXT'" th:text="#{common.text}">Texte</option>
+                    <option value="HTML" th:selected="*{type} == 'HTML'" th:text="#{common.html}">Html</option>
+                    <option value="BOOLEAN" th:selected="*{type} == 'BOOLEAN'" th:text="#{config.type.boolean}">Booléen</option>
                 </select>
             </div>
         </div>
         <!-- Valeur -->
         <div class="form-group">
             <div>
-                <label class="col-md-3 control-label" for="valeur" id="areaEditor">Valeur</label>
+                <label class="col-md-3 control-label" for="valeur" id="areaEditor" th:text="#{common.value}">Valeur</label>
             </div>
         </div>
         <!-- Description (lecture seule) -->
         <div class="form-group">
-            <label class="col-md-3 control-label"><strong>Description</strong></label>
+            <label class="col-md-3 control-label"><strong th:text="#{common.description}">Description</strong></label>
             <div class="col-md-3">
                 <div class="alert alert-info">
                     <p class="form-control-static" th:text="*{description}"><!-- --></p>
@@ -53,7 +53,7 @@
         <!-- Bouton de validation -->
         <div class="form-group">
             <div class="col-md-offset-3 col-md-3">
-                <button type="submit" class="btn btn-success">Valider</button>
+                <button type="submit" class="btn btn-success" th:text="#{common.validate}">Valider</button>
             </div>
         </div>
     </form>

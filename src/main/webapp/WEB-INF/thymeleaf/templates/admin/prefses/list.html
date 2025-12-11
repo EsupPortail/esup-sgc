@@ -6,22 +6,22 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Liste des préférences</title>
+    <title th:text="#{prefses.title}">Liste des préférences</title>
 </head>
 <body>
 <div id="prefsesList" layout:fragment="content"
      th:with="prefs_url=@{/admin/prefses}">
-    <h2>Préférences</h2>
+    <h2 th:text="#{common.preferences}">Préférences</h2>
     <div>
         <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_Prefs">
             <thead>
                 <tr>
-                    <th><a class="sorting" sd:pagination-sort="eppn">Eppn</a></th>
-                    <th><a class="sorting" sd:pagination-sort="dateModification">Date modification</a></th>
-                    <th><a class="sorting" sd:pagination-sort="value">Valeur</a></th>
-                    <th><a class="sorting" sd:pagination-sort="key">Clé</a></th>
-                    <th data-type="html" class="">Modifier</th>
-                    <th data-type="html" class="">Supprimer</th>
+                    <th><a class="sorting" sd:pagination-sort="eppn" th:text="#{common.eppn}">Eppn</a></th>
+                    <th><a class="sorting" sd:pagination-sort="dateModification" th:text="#{common.modification.date}">Date modification</a></th>
+                    <th><a class="sorting" sd:pagination-sort="value" th:text="#{common.value}">Valeur</a></th>
+                    <th><a class="sorting" sd:pagination-sort="key" th:text="#{common.key}">Clé</a></th>
+                    <th data-type="html" class="" th:text="#{common.edit}">Modifier</th>
+                    <th data-type="html" class="" th:text="#{common.delete}">Supprimer</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,7 +37,7 @@
                     </td>
                     <td>
                         <form th:action="@{/admin/prefses/{id}(id=${prefs.id}}" th:method="DELETE" class="form-inline">
-                            <button class="btn btn-danger" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ces préférences ?');">
+                            <button class="btn btn-danger" type="submit" th:onclick="|return confirm('#{prefses.confirm.delete}')|">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                         </form>

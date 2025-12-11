@@ -5,33 +5,33 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Salles de badgeage NFC</title>
+    <title th:text="#{locations.nfc.rooms}">Salles de badgeage NFC</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Salles de badgeage potentiellement accessibles depuis esup-nfc pour un utilisateur</h2>
+    <h2 th:text="#{locations.user.rooms}">Salles de badgeage potentiellement accessibles depuis esup-nfc pour un utilisateur</h2>
     <div class="row">
         <div class="well">
-            Esup-SGC propose des salles de badgeage NFC à déclarer dans esup-nfc-tag-server.
-            Ces salles permettent via des périphériques NFC et en passant par ESUP-SGC divers usages :
+            <span th:text="#{locations.description}">Esup-SGC propose des salles de badgeage NFC à déclarer dans esup-nfc-tag-server.</span>
+            <span th:text="#{locations.usages}">Ces salles permettent via des périphériques NFC et en passant par ESUP-SGC divers usages :</span>
             <ul>
-                <li>Encodage de la carte</li>
-                <li>Mise à jour de la carte</li>
-                <li>Recherche d'une carte</li>
-                <li>Affichage du verso</li>
+                <li th:text="#{locations.card.encoding}">Encodage de la carte</li>
+                <li th:text="#{locations.card.update}">Mise à jour de la carte</li>
+                <li th:text="#{locations.card.search}">Recherche d'une carte</li>
+                <li th:text="#{locations.verso.display}">Affichage du verso</li>
                 <li>...</li>
             </ul>
-            <p>
+            <p th:text="#{locations.declare.rooms}">
                 Pour pouvoir en bénéficier, il faut déclarer les salles dans esup-nfc-tag-server.
             </p>
-            <p>
+            <p th:text="#{locations.user.must.have.access}">
                 Il faut aussi que l'utilisateur ait les droits d'accès à ces salles dans esup-sgc.
             </p>
-            <p>
+            <p th:text="#{locations.verify.access}">
                 Cette page permet de vérifier si un utilisateur a les droits d'accès à ces salles portées par esup-sgc.
             </p>
             <p>
-                Merci de consulter la documentation d'esup-sgc et esup-nfc-tag-server à ce propos :
+                <span th:text="#{locations.doc.link}">Merci de consulter la documentation d'esup-sgc et esup-nfc-tag-server à ce propos :</span>
                 <a target="_blank" href="https://esup-portail.org/wiki/pages/viewpage.action?pageId=613384423#ApplicationsESUPSGC/ESUPNFCTAGoptionnelles-LivraisonSGC">Documentation ESUP-SGC/ESUP-NFC</a>
             </p>
         </div>
@@ -39,11 +39,11 @@
     <form th:action="@{/admin/locations}" method="get">
         <div class="jumbotron">
             <div class="form-group">
-                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6">Entrez l'EPPN de l'utilisateur cible :</label>
+                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6" th:text="#{common.eppn.target}">Entrez l'EPPN de l'utilisateur cible :</label>
                 <div class="col-lg-2 col-md-2 col-xs-4">
-                    <input type="text" class="form-control" placeholder="eppn" id="searchEppn" name="eppn" maxlength="100" th:value="${eppn}"/>
+                    <input type="text" class="form-control" th:placeholder="#{common.eppn}" id="searchEppn" name="eppn" maxlength="100" th:value="${eppn}"/>
                 </div>
-                <button type="submit" class="btn btn-success col-lg-1 col-md-1">Test des Locations</button>
+                <button type="submit" class="btn btn-success col-lg-1 col-md-1" th:text="#{locations.title}">Test des Locations</button>
             </div>
         </div>
     </form>

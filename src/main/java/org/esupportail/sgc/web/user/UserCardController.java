@@ -181,7 +181,7 @@ public class UserCardController {
 		String eppn = auth.getName();
 		try {
 			Card externalCard = externalCardService.importExternalCard(eppn, request);
-			cardEtatService.setCardEtat(externalCard, Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
+			cardEtatService.setCardEtat(externalCard, Etat.ENABLED, "Importation d'une carte multi-services extérieure", "Importation d'une carte multi-services extérieure", false, false);
 			redirectAttributes.addFlashAttribute("messageInfo", SUCCESS_MSG + "enable");
 		} catch (Exception e) {
 			log.error("problème lors de l'importation de la carte extérieure de " + eppn, e);
@@ -409,9 +409,9 @@ public class UserCardController {
 					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, requestUserIsManager);
 					
 					if(emptyPhoto) {
-						redirectAttributes.addFlashAttribute("messageInfo", WARNING_MSG + "leocarte_emptyfile");
+						redirectAttributes.addFlashAttribute("messageInfo", "user.msg.warning.carte_emptyfile");
 					} else {
-						redirectAttributes.addFlashAttribute("messageSuccess", "success_leocarte_upload");
+						redirectAttributes.addFlashAttribute("messageSuccess", "user.msg.success.carte_upload");
 					}
 				} else {
 					log.warn(eppn + " tried to request card but he has already new card." );

@@ -5,20 +5,20 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Modifier la préférence</title>
+    <title th:text="#{common.preference}">Modifier la préférence</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Modifier la préférence</h2>
+    <h2 th:text="#{common.preference}">Modifier la préférence</h2>
     <form th:action="@{/admin/prefses/{id}(id=${prefs.id})}" th:object="${prefs}" method="post" class="form-horizontal well">
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="eppn">Eppn</label>
+            <label class="col-lg-4 control-label" for="eppn" th:text="#{common.eppn}">Eppn</label>
             <div class="col-lg-6">
                 <input class="form-control" th:field="*{eppn}" id="eppn" required="required"/>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="dateModification">Date modification</label>
+            <label class="col-lg-4 control-label" for="dateModification" th:text="#{common.modification.date}">Date modification</label>
             <div class="col-lg-6">
                 <input class="form-control" th:field="*{dateModification}" id="dateModification"
                        th:value="${#temporals.format(prefs.dateModification, prefs_datemodification_date_format)}"
@@ -26,13 +26,13 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="value">Valeur</label>
+            <label class="col-lg-4 control-label" for="value" th:text="#{common.value}">Valeur</label>
             <div class="col-lg-6">
                 <input class="form-control" th:field="*{value}" id="value" required="required"/>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="key">Clé</label>
+            <label class="col-lg-4 control-label" for="key" th:text="#{common.key}">Clé</label>
             <div class="col-lg-6">
                 <input class="form-control" th:field="*{key}" id="key" required="required"/>
             </div>
@@ -40,7 +40,7 @@
         <input type="hidden" th:field="*{version}"/>
         <div class="form-group">
             <div class="col-lg-offset-4 col-lg-8">
-                <button type="submit" class="btn btn-success">Valider</button>
+                <button type="submit" class="btn btn-success" th:text="#{common.validate}">Valider</button>
             </div>
         </div>
     </form>

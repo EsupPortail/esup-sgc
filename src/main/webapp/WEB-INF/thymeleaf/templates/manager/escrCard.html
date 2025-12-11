@@ -1,12 +1,12 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/manager/escrCard.html -->
 <dl class="dl-horizontal col-lg-5" th:fragment="escrCard">
-    <h4>Données côté ESC</h4>
-    <dt>europeanCardNumber</dt>
+    <h4 th:text="#{common.esc.data}">Données côté ESC</h4>
+    <dt th:text="#{esc.card.number}">europeanCardNumber</dt>
     <dd th:text="${escCard.cardNumber}"></dd>
-    <dt>expiresAt</dt>
+    <dt th:text="#{esc.card.expires}">expiresAt</dt>
     <dd th:text="${#temporals.format(escCard.expiresAt, 'dd/MM/yyyy')}"></dd>
-    <dt>issuedAt</dt>
+    <dt th:text="#{esc.card.issued}">issuedAt</dt>
     <dd th:text="${#temporals.format(escCard.issuedAt, 'dd/MM/yyyy')}"></dd>
-    <dt>issuerIdentifier</dt>
+    <dt th:text="#{esc.card.issuer}">issuerIdentifier</dt>
     <dd th:text="${escCard.issuerIdentifier}"></dd>
 </dl>

@@ -6,7 +6,7 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Statistiques</title>
+    <title th:text="#{common.statistics}">Statistiques</title>
 </head>
 <body>
 <div id="statsManager" layout:fragment="content">
@@ -29,17 +29,17 @@
             <a class="btn btn-warning pull-right" th:href="@{/manager/stats/table}" type="button">
                 <span class="glyphicon glyphicon-list-alt"></span>
             </a>
-            <a class="btn btn-default pull-right" data-target="#settings" data-toggle="modal" title="Préférences" href="#">
+            <a class="btn btn-default pull-right" data-target="#settings" data-toggle="modal" th:title="#{common.preferences}" href="#">
                 <span class="glyphicon glyphicon-cog"></span>
             </a>
         </h2>
 
         <div class="well">
             <ul>
-                <li>
+                <li th:text="#{stats.academic.years.info}">
                     Les années universitaire utilisées dans les statistiques vont de debut juillet à fin juin de l'année suivante.
                 </li>
-                <li>
+                <li th:text="#{stats.browser.info}">
                     Les statistiques "Navigateurs", "Appareils" et "Systèmes d'exploitation" concernent les navigateurs et appareils utilisés lors d'une demande de carte.
                 </li>
             </ul>
@@ -47,7 +47,7 @@
 
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" th:classappend="${#strings.isEmpty(selectedType)} ? 'active' : 'sleep'">
-                <a href="#0" role="tab" data-toggle="tab" th:utext="#{manager.type.All}"></a>
+                <a href="#0" role="tab" data-toggle="tab" th:utext="#{common.all}"></a>
             </li>
             <li th:if="${types != null}" th:each="type : ${types}" role="presentation"
                 th:classappend="${selectedType} == ${type} ? 'active' : 'sleep'">
@@ -56,18 +56,18 @@
         </ul>
 
         <div id="statsPanels">
-            <!-- Bloc principal : Cartes éditées -->
-            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesEditesAnneeUniv">
+<!-- Bloc principal : Cartes éditées -->
+            <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesEditees">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Cartes éditées
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.cards.edited}">Cartes éditées</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="cardsEdited" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="cardsEdited" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -76,14 +76,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cardsOldStats">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Années d'édition des cartes encodées/activées
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.years.edition.cards}">Années d'édition des cartes encodées/activées</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="cardsOld" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="cardsOld" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -95,14 +95,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDemandeEtEtat">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Cartes par date de demande et état
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.cards.by.request.date.state}">Cartes par date de demande et état</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="cardsByYearEtat" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="cardsByYearEtat" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -111,14 +111,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesParEtat">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Cartes par état
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.cards.by.state}">Cartes par état</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="cardsByEtat" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="cardsByEtat" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -130,14 +130,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="dernieresCartesEncodees">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Dernières cartes encodées
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.cards.last.encoded}">Dernières cartes encodées</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="encodedCardsByday" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="encodedCardsByday" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -146,14 +146,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="dernieresDemandes">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Demandes des 30 derniers jours
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.requests.last.30.days}">Demandes des 30 derniers jours</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="cardsByDay" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="cardsByDay" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -163,13 +163,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Demandes et encodage de carte par mois
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="cardsByMonth" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="cardsByMonth" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -179,13 +179,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Date limite des demandes nouvelles ou rejetées
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="dueDate" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="dueDate" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -195,13 +195,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Carte européenne étudiante
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="europeanCardChart" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="europeanCardChart" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -214,14 +214,14 @@
                 <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="datesDeLivraison">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <h5>Cartes par date de livraison
-                                <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <h5><span th:text="#{stats.cards.by.delivery.date}">Cartes par date de livraison</span>
+                                <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                     <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                                 </button>
                             </h5>
                         </div>
                         <div class="panel-body ">
-                            <canvas id="deliveredCardsByDay" width="400" height="400">&nbsp;</canvas>
+                            <canvas id="deliveredCardsByDay" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         </div>
                     </div>
                 </div>
@@ -229,21 +229,21 @@
                     <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="livréesParUtilisateur">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h5>Livrées par l'utilisateur
-                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <h5><span th:text="#{stats.delivered.by.user}">Livrées par l'utilisateur</span>
+                                    <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                         <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
                                 </h5>
                             </div>
                             <div class="panel-body ">
-                                <canvas id="userDeliveries" width="400" height="400">&amp;nbsp;</canvas>
+                                <canvas id="userDeliveries" width="400" height="400" th:text="#{common.ampnbsp}">&amp;nbsp;</canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nonLivreesParAdresse">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h5>Non livrées par adresse
-                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <h5><span th:text="#{stats.not.delivered.by.address}">Non livrées par adresse</span>
+                                    <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                         <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
                                     <sec:authorize access="hasRole('ROLE_ADMIN')">
                                         <a href="${downloadUrl}/deliveryByAdress" title="${downloadUrl}/deliveryByAdress" class="btn btn-sm btn-info downloadBtn" id="statsEdit">
@@ -252,7 +252,7 @@
                                 </h5>
                             </div>
                             <div class="panel-body ">
-                                <canvas id="deliveryByAdress" width="400" height="400">&amp;nbsp;</canvas>
+                                <canvas id="deliveryByAdress" width="400" height="400" th:text="#{common.ampnbsp}">&amp;nbsp;</canvas>
                                 <div class="chartjs-tooltip">
                                     <table>
                                         <!--  -->
@@ -264,13 +264,13 @@
                     <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="nonEditablesParAdresse">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h5>Demandes non éditables par adresse
-                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <h5><span th:text="#{stats.not.editable.by.address}">Demandes non éditables par adresse</span>
+                                    <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                         <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
                                 </h5>
                             </div>
                             <div class="panel-body ">
-                                <canvas id="noneditableByAdress" width="400" height="400">&amp;nbsp;</canvas>
+                                <canvas id="noneditableByAdress" width="400" height="400" th:text="#{common.ampnbsp}">&amp;nbsp;</canvas>
                                 <div class="chartjs-tooltip">
                                     <table>
                                         <!--  -->
@@ -282,13 +282,13 @@
                     <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editeesNonLivrees">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
-                                <h5>Editées, non livrées
-                                    <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                                <h5><span th:text="#{stats.edited.not.delivered}">Éditées, non livrées</span>
+                                    <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                         <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
                                 </h5>
                             </div>
                             <div class="panel-body ">
-                                <canvas id="notDelivered" width="400" height="400">&amp;nbsp;</canvas>
+                                <canvas id="notDelivered" width="400" height="400" th:text="#{common.ampnbsp}">&amp;nbsp;</canvas>
                             </div>
                         </div>
                     </div>
@@ -299,8 +299,8 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editables" th:if="${#strings.isEmpty(selectedType)}">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Cartes editables pour les nouvelles demandes
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.editable.cards.new.requests}">Cartes éditables pour les nouvelles demandes</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                             <th:block sec:authorize="hasRole('ROLE_ADMIN')">
@@ -313,7 +313,7 @@
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="editable" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="editable" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -322,14 +322,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="periodesDemandeDeCarte">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Périodes de demande de cartes
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.request.periods}">Périodes de demande de cartes</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="dates" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="dates" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -338,14 +338,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="periodesEncodageCarte">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Périodes d'édition des cartes
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.edition.periods}">Périodes d'édition des cartes</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="encodagedates" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="encodagedates" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -354,14 +354,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesEnAttente">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Demandes en cours
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.requests.pending}">Demandes en cours</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="pendingCards" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="pendingCards" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -373,14 +373,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="rejetsEnAttente">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Demandes rejetées en attente
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.requests.rejected.pending}">Demandes rejetées en attente</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="nbRejetsByMonth" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="nbRejetsByMonth" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -389,14 +389,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="rejets">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Nb de rejets par utilisateur
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.rejects.by.user}">Nb de rejets par utilisateur</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="nbRejets" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="nbRejets" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -408,14 +408,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="roles" th:if="${#strings.isEmpty(selectedType)}">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Distribution des rôles
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.roles.distribution}">Distribution des rôles</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="nbRoles" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="nbRoles" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -427,14 +427,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="cartesParPersonne">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Cartes par personne
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.cards.by.person}">Cartes par personne</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="nbCards" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="nbCards" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -446,14 +446,14 @@
             <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="autorisationCrous">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h5>Autorisations Crous
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                        <h5><span th:text="#{stats.crous.authorizations}">Autorisations Crous</span>
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="crous" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="crous" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -466,13 +466,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Tarifs Crous (comptes actifs, échelle logarithmique)
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="tarifsCrousBars" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="tarifsCrousBars" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -482,13 +482,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Diffusion photo
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="difPhoto" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="difPhoto" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -501,13 +501,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Appareils
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="os" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="os" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -520,13 +520,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Systèmes d'exploitation
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="realos" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="realos" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -539,13 +539,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Navigateurs
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="browsers" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="browsers" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -558,13 +558,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Flag 'demande nouvelle carte gratuite'
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="requestFree" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="requestFree" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -574,13 +574,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Thèmes cartes activées (Enabled)
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="templateCards" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="templateCards" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                         <div class="chartjs-tooltip">
                             <table></table>
                         </div>
@@ -593,13 +593,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Prochains comptes 'caducs' (d'ici 1 an)
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="nextDueDatesOneYearByType" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="nextDueDatesOneYearByType" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -609,13 +609,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Prochains comptes 'caducs' (d'ici 1 mois)
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="nextDueDatesOneMonthByType" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="nextDueDatesOneMonthByType" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -625,13 +625,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Transactions Paybox
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="paybox" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="paybox" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>
@@ -641,13 +641,13 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h5>Motifs de désactivation
-                            <button class="btn btn-xs btn-primary pull-right remove" title="supprimer">
+                            <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
                                 <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
                             </button>
                         </h5>
                     </div>
                     <div class="panel-body ">
-                        <canvas id="motifs" width="400" height="400">&nbsp;</canvas>
+                        <canvas id="motifs" width="400" height="400" th:utext="#{common.nbsp}">&nbsp;</canvas>
                     </div>
                 </div>
             </div>

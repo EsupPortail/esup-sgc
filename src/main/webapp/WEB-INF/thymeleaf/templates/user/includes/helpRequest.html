@@ -1,14 +1,14 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/user/includes/helpRequest.html -->
 <div th:fragment="helpRequest" class="well">
-    <h3>Le formulaire en ligne</h3>
-    <p>Vous devez&nbsp;:</p>
+    <h3 th:text="#{help.request.form}">Le formulaire en ligne</h3>
+    <p th:text="#{help.request.intro}">Vous devez&nbsp;:</p>
     <ul>
-        <li>Déposer une photo au format identité en cliquant sur le bouton « parcourir »</li>
-        <li>Cadrer votre photo</li>
-        <li>Pré-visualiser le rendu de votre photo sur la maquette de votre carte</li>
-        <li>Répondre à la question cnil&nbsp;: « j’autorise ou non la diffusion de la photo pour un usage interne »</li>
-        <li>Consulter le règlement interne de la Léocarte</li>
-        <li>Lire les indications des modalités de remise de la Léocarte</li>
-        <li>Cliquer sur enregistrer pour valider la demande</li>
+        <li th:text="#{help.request.photo}">Déposer une photo au format identité en cliquant sur le bouton « parcourir »</li>
+        <li th:text="#{help.request.frame}">Cadrer votre photo</li>
+        <li th:text="#{help.request.preview}">Pré-visualiser le rendu de votre photo sur la maquette de votre carte</li>
+        <li th:text="#{help.request.cnil}">Répondre à la question cnil&nbsp;: « j’autorise ou non la diffusion de la photo pour un usage interne »</li>
+        <li th:text="#{help.request.rules}">Consulter le règlement interne de la carte multi-services</li>
+        <li th:text="#{help.request.delivery}">Lire les indications des modalités de remise de la carte multi-services</li>
+        <li th:text="#{help.request.save}">Cliquer sur enregistrer pour valider la demande</li>
     </ul>
 </div>

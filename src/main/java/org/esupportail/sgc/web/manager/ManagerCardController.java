@@ -705,7 +705,7 @@ public class ManagerCardController {
 
 		if (imageData.isEmpty()) {
 			log.info("Aucune image disponible");
-			redirectAttributes.addFlashAttribute("messageInfo", "error_leocarte_emptyfile");
+			redirectAttributes.addFlashAttribute("messageInfo", "user.msg.warning.carte_emptyfile");
 		} else {
 			if (id != null) {
 				Card card = cardDaoService.findCard(id);
@@ -747,7 +747,7 @@ public class ManagerCardController {
 		String eppn = auth.getName();
 		if (imageData.isEmpty()) {
 			log.info("Aucune image disponible");
-			redirectAttributes.addFlashAttribute("messageInfo", "error_leocarte_emptyfile");
+			redirectAttributes.addFlashAttribute("messageInfo", "user.msg.warning.carte_emptyfile");
 		} else {
 			if (id != null) {
 				Card card = cardDaoService.findCard(id);

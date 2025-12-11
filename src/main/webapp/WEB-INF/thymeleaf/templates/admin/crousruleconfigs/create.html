@@ -5,18 +5,18 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Création configuration règle CROUS</title>
+    <title th:text="#{crous.ruleconfig.create}">Création configuration règle CROUS</title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="well">
-        Les numéros CROUS peuvent être trouvés ici :
+        <span th:text="#{crous.ruleconfig.numbers}">Les numéros CROUS peuvent être trouvés ici :</span>
         <a href="https://api.lescrous.fr/w3/v1/crous-lite">https://api.lescrous.fr/w3/v1/crous-lite</a>
         <br/>
-        Les codes RNE doivent correspondre aux codes RNE de vos utilisateurs.
+        <span th:text="#{crous.ruleconfig.rne.codes}">Les codes RNE doivent correspondre aux codes RNE de vos utilisateurs.</span>
         <div th:unless="${#lists.isEmpty(rneCodes)}">
             <br/>
-            Actuellement en base on trouve :
+            <span th:text="#{crous.ruleconfig.currently.in.db}">Actuellement en base on trouve :</span>
             <ul>
                 <li th:each="rneCode : ${rneCodes}" th:text="${rneCode}"></li>
             </ul>
@@ -24,7 +24,7 @@
     </div>
     <form th:action="@{/admin/crousruleconfigs}" th:object="${crousRuleConfig}" method="post" class="form-horizontal well">
         <div class="form-group">
-            <label class="col-md-3 control-label" for="numeroCrous">Numéro CROUS</label>
+            <label class="col-md-3 control-label" for="numeroCrous" th:text="#{common.crous}">Numéro CROUS</label>
             <div class="col-md-6">
                 <input class="form-control" th:field="*{numeroCrous}" id="numeroCrous" required="required"/>
             </div>
@@ -36,14 +36,14 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-md-3 control-label" for="priority">Priorité</label>
+            <label class="col-md-3 control-label" for="priority" th:text="#{common.priority}">Priorité</label>
             <div class="col-md-6">
                 <input class="form-control" th:field="*{priority}" id="priority" type="number" required="required"/>
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-offset-3 col-md-6">
-                <button type="submit" class="btn btn-success">Valider</button>
+                <button type="submit" class="btn btn-success" th:text="#{common.validate}">Valider</button>
             </div>
         </div>
     </form>

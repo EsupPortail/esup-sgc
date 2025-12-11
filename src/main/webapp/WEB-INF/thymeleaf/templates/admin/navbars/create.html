@@ -5,14 +5,14 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Créer un lien NavBar</title>
+    <title th:text="#{navbars.create}">Créer un lien NavBar</title>
 </head>
 <body>
 <div layout:fragment="content">
     <form th:action="@{/admin/navbars}" th:object="${navBarApp}" method="post" class="form-horizontal well" id="fc_org_esupportail_sgc_domain_NavBarApp">
         <!-- Titre -->
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="title">Titre</label>
+            <label class="col-lg-4 control-label" for="title" th:text="#{common.title}">Titre</label>
             <div class="col-lg-8">
                 <input type="text" th:field="*{title}" class="form-control" id="title"/>
             </div>
@@ -26,21 +26,21 @@
         </div>
         <!-- Icône -->
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="icon">Icône</label>
+            <label class="col-lg-4 control-label" for="icon" th:text="#{common.icon}">Icône</label>
             <div class="col-lg-8">
                 <input type="text" th:field="*{icon}" class="form-control" id="icon"/>
             </div>
         </div>
         <!-- Index -->
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="index">Index</label>
+            <label class="col-lg-4 control-label" for="index" th:text="#{common.index}">Index</label>
             <div class="col-lg-8">
                 <input type="number" th:field="*{index}" class="form-control" id="index"/>
             </div>
         </div>
         <!-- Visible pour rôle -->
         <div class="form-group">
-            <label class="col-lg-4 control-label" for="visible4role">Visible pour rôle</label>
+            <label class="col-lg-4 control-label" for="visible4role" th:text="#{common.role}">Visible pour rôle</label>
             <div class="col-lg-8">
                 <select th:field="*{visible4role}" class="form-control" id="visible4role" multiple>
                     <option th:each="role : ${visibleRoles}" th:value="${role}" th:text="${role}"></option>
@@ -50,7 +50,7 @@
         <!-- Bouton de validation -->
         <div class="form-group">
             <div class="col-lg-offset-4 col-lg-8">
-                <button type="submit" class="btn btn-success">Valider</button>
+                <button type="submit" class="btn btn-success" th:text="#{common.validate}">Valider</button>
             </div>
         </div>
     </form>

@@ -5,7 +5,7 @@
 <div id="cardShow">
     <div class="item" style="width: 100%; background-color: #ede6b4; padding:20px; font-size: 15px; text-align: left;">
         <h1 th:text="${card.displayName}"></h1>
-        Carte à jour depuis le :<br/><br/>
+        <span th:text="#{updatecheck.card.updated.since}">Carte à jour depuis le :</span><br/><br/>
         <b>
             <span th:text="${#temporals.format(card.lastEncodedDate, 'dd/MM/yyyy')}"></span>
         </b>

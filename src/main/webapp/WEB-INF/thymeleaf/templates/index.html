@@ -6,7 +6,7 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Accueil - Esup SGC</title>
+    <title th:text="#{index.title}">Accueil - Esup SGC</title>
 </head>
 <body>
 <div layout:fragment="content" class="col-lg-12">
@@ -14,10 +14,10 @@
     <div id="debug"><!--  --></div>
     <br/>
     <div sec:authorize="!isAuthenticated()">
-        <h1>Bienvenue sur l'application Esup SGC, merci de vous authentifier</h1>
+        <h1 th:text="#{index.welcome}">Bienvenue sur l'application Esup SGC, merci de vous authentifier</h1>
         <a class="nounderline" th:href="@{/login}">
             <div id="div-co-myfederation" class="well">
-                <h3>Authentification<span class="glyphicon glyphicon-arrow-right pull-right"></span></h3>
+                <h3><span th:text="#{index.authentication}">Authentification</span><span class="glyphicon glyphicon-arrow-right pull-right"></span></h3>
             </div>
         </a>
     </div>

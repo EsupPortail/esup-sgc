@@ -5,26 +5,26 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Liens Apps - NavBar</title>
+    <title th:text="#{navbars.title}">Liens Apps - NavBar</title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="well">
-        Cette page vous permet de modifier les liens rendus disponibles via le menu déroulant 'Apps' proposé dans la barre de navigation du haut.
+        <span th:text="#{navbars.description}">Cette page vous permet de modifier les liens rendus disponibles via le menu déroulant 'Apps' proposé dans la barre de navigation du haut.</span>
         <br/>
-        Suivant votre organisation, vous pouvez par exemple ne proposer que l'installateur windows des clients esup-sgc/esup-nfc-tag et l'application Android officielle proposée sur le play-store.
+        <span th:text="#{navbars.organization}">Suivant votre organisation, vous pouvez par exemple ne proposer que l'installateur windows des clients esup-sgc/esup-nfc-tag et l'application Android officielle proposée sur le play-store.</span>
         <br/>
-        Pour rappel,
+        <span th:text="#{navbars.reminder}">Pour rappel,</span>
         <ul>
             <li>
-                vous pouvez récupérer les clients, et notamment l'insallateur windows au travers de
+                <span th:text="#{navbars.get.clients}">vous pouvez récupérer les clients, et notamment l'insallateur windows au travers de</span>
                 <a href="https://esup-sgc-client-web-installer.univ-rouen.fr">https://esup-sgc-client-web-installer.univ-rouen.fr</a>
             </li>
             <li>
-                vous pouvez utiliser directement l'
-                <a href="https://play.google.com/store/apps/details?id=org.esupportail.esupnfctagdroid">APK officielle et générique diffusée depuis Google Play par ESUP</a>
+                <span th:text="#{navbars.use.apk}">vous pouvez utiliser directement l'</span>
+                <a href="https://play.google.com/store/apps/details?id=org.esupportail.esupnfctagdroid" th:text="#{navbars.apk.official}">APK officielle et générique diffusée depuis Google Play par ESUP</a>
                 <br/>
-                Pour voir apparaître votre serveur esup-nfc-tag dans la liste des serveurs disponibles depuis cette version esup-nfc-tag-droid fournie sur le google play, vous pouvez en faire la demande au travers d'un Pull Request proposant la modification du listing des urls disponibles :
+                <span th:text="#{navbars.pull.request}">Pour voir apparaître votre serveur esup-nfc-tag dans la liste des serveurs disponibles depuis cette version esup-nfc-tag-droid fournie sur le google play, vous pouvez en faire la demande au travers d'un Pull Request proposant la modification du listing des urls disponibles :</span>
                 <a href="https://github.com/EsupPortail/esup-nfc-tag-droid/blob/master/src/main/assets/urls">https://github.com/EsupPortail/esup-nfc-tag-droid/blob/master/src/main/assets/urls</a>
             </li>
         </ul>
@@ -34,13 +34,13 @@
         <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_NavBarApp">
             <thead>
             <tr>
-                <th>Titre</th>
+                <th th:text="#{common.title}">Titre</th>
                 <th>URL</th>
-                <th>Icône</th>
-                <th>Index</th>
-                <th>Visible pour rôle</th>
-                <th>Modifier</th>
-                <th>Supprimer</th>
+                <th th:text="#{common.icon}">Icône</th>
+                <th th:text="#{common.index}">Index</th>
+                <th th:text="#{common.role}">Visible pour rôle</th>
+                <th th:text="#{common.edit}">Modifier</th>
+                <th th:text="#{common.delete}">Supprimer</th>
             </tr>
             </thead>
             <tbody>
@@ -54,13 +54,13 @@
                 <td th:text="${app.visible4role}"></td>
                 <td>
                     <a th:href="@{/admin/navbars/{id}(id=${app.id})}" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-edit"></span>Modifier
+                        <span class="glyphicon glyphicon-edit"></span><span th:text="#{common.edit}">Modifier</span>
                     </a>
                 </td>
                 <td>
                     <form th:action="@{/admin/navbars/{id}(id=${app.id})}" th:method="delete" class="form-inline">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce lien ?');">
-                            <span class="glyphicon glyphicon-trash"></span> Supprimer
+                        <button type="submit" class="btn btn-danger" th:onclick="|return confirm('#{navbars.confirm.delete}')|">
+                            <span class="glyphicon glyphicon-trash"></span> <span th:text="#{common.delete}">Supprimer</span>
                         </button>
                     </form>
                 </td>
@@ -70,7 +70,7 @@
     </div>
     <!-- Ajout d'un bouton pour créer une nouvelle entrée si besoin -->
     <a class="btn btn-primary" th:href="@{/admin/navbars?form}">
-        <span class="glyphicon glyphicon-plus"></span> Ajouter un lien
+        <span class="glyphicon glyphicon-plus"></span> <span th:text="#{navbars.add.link}">Ajouter un lien</span>
     </a>
 </div>
 </body>

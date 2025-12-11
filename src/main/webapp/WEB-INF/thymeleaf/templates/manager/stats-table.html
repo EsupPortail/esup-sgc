@@ -5,7 +5,7 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Statistiques - tableaux</title>
+    <title th:text="#{stats.tables.title}">Statistiques - tableaux</title>
 </head>
 <body>
 <div id="tableStats" layout:fragment="content">
@@ -20,16 +20,16 @@
             <a class="btn btn-primary pull-right" th:href="${listeUrl}" type="button">
                 <span class="glyphicon glyphicon-home"></span>
             </a>
-            <a class="btn btn-warning pull-right" th:href="${statsPage}" id="btnStats" title="Statistiques">
+            <a class="btn btn-warning pull-right" th:href="${statsPage}" id="btnStats" th:title="#{common.statistics}">
                 <span class="glyphicon glyphicon-stats"></span>
             </a>
-            <a th:href="${downloadUrl}" class="btn btn-primary pull-right" id="statsEdit" title="Télécharger csv">
+            <a th:href="${downloadUrl}" class="btn btn-primary pull-right" id="statsEdit" th:title="#{stats.download.csv}">
                 <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
             </a>
         </h2>
 
         <div class="well">
-            <h3>Statistiques cartes éditées</h3>
+            <h3 th:text="#{stats.cards.edited.title}">Statistiques cartes éditées</h3>
             <h4>Année universitaire débutant au <span th:text="${dates['formatYear']}"></span></h4>
             <table class="table table-bordered">
                 <thead>
@@ -42,7 +42,7 @@
                 <!-- Hier -->
                 <tr>
                     <th th:colspan="${colspanVal}" class="titleStats editedStats">
-                        <span th:text="#{stats.table.edited.yesterday}"></span>
+                        <span th:text="#{stats.cards.edited.yesterday}"></span>
                         <span th:text="${dates['yesterday']}"></span>
                     </th>
                 </tr>
@@ -53,7 +53,7 @@
                 <!-- Mois -->
                 <tr>
                     <th th:colspan="${colspanVal}" class="titleStats editedStats">
-                        <span th:text="#{stats.table.edited.month}"></span>
+                        <span th:text="#{stats.cards.edited.month}"></span>
                         <span th:text="${dates['month']}"></span>
                     </th>
                 </tr>
@@ -64,7 +64,7 @@
                 <!-- Année -->
                 <tr>
                     <th th:colspan="${colspanVal}" class="titleStats editedStats">
-                        <span th:text="#{stats.table.edited.year}"></span>
+                        <span th:text="#{stats.cards.edited.year}"></span>
                         <span th:text="${dates['formatYear']}"></span>
                     </th>
                 </tr>
@@ -77,7 +77,7 @@
         </div>
 
         <div class="well">
-            <h4>Années universitaires précédentes</h4>
+            <h4 th:text="#{stats.previous.years}">Années universitaires précédentes</h4>
             <table class="table table-bordered">
                 <thead>
                 <tr>
@@ -88,7 +88,7 @@
                 <tbody>
                     <th:block th:each="yearMap, iStat : ${allYearCards}">
                         <th th:colspan="${colspanVal}" class="titleStats editedStats">
-                            <span th:text="#{stats.table.edited.all}"></span>
+                            <span th:text="#{stats.cards.edited.all}"></span>
                             <span th:text="${yearMap.key}"></span>
                         </th>
                         <tr>

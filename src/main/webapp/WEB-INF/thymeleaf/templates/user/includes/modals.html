@@ -5,8 +5,8 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3 class="modal-title">Règlement</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" th:utext="#{common.times}">&times;</button>
+                    <h3 class="modal-title" th:text="#{modals.rules}">Règlement</h3>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-info">
@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Fermer</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" th:text="#{common.close}">Fermer</button>
                 </div>
             </div>
         </div>
@@ -24,8 +24,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3 class="modal-title">Prévisualisation de votre carte</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" th:utext="#{common.times}">&times;</button>
+                    <h3 class="modal-title" th:text="#{modals.preview.card}">Prévisualisation de votre carte</h3>
                 </div>
                 <div class="modal-body">
                     <div id="create-preview">
@@ -59,7 +59,7 @@
                                 <p id="recto5" th:utext="${user.recto5}"></p>
                                 <p id="recto6" th:utext="${user.recto6}"></p>
                                 <p id="recto7" th:utext="${user.recto7}"></p>
-                                <img alt="qrcode" id="qrcode" th:src="@{/user/templatePhoto/qrCode/{id}(id=${templateCard.id})}"/>
+                                <img th:alt="#{common.qrcode}" id="qrcode" th:src="@{/user/templatePhoto/qrCode/{id}(id=${templateCard.id})}"/>
                             </div>
                             <div id="right">
                                 <img id="photo" th:src="@{/user/photo}"/>
@@ -70,10 +70,10 @@
                     <br />
                     <div class="alert alert-warning">
                         <p class="text-center">
-                            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true">&nbsp;</span>
-                            Vous devez changer ou recadrer votre photo si votre visage n'est pas assez visible sur la carte.
+                            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true" th:utext="#{common.nbsp}">&nbsp;</span>
+                            <span th:text="#{modals.photo.change.warning}">Vous devez changer ou recadrer votre photo si votre visage n'est pas assez visible sur la carte.</span>
                         </p>
-                        <button id="confirmPhoto" class="btn btn-danger btn-block"><strong>Confirmer ma photo</strong></button>
+                        <button id="confirmPhoto" class="btn btn-danger btn-block"><strong th:text="#{modals.confirm.photo}">Confirmer ma photo</strong></button>
                     </div>
                 </div>
             </div>

@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Impression carte</title>
+    <title th:text="#{common.card}">Impression carte</title>
     <script>
         // Recharge la fenêtre parente pour rafraîchir l'état des actions
         window.opener && window.opener.location.reload();
@@ -65,7 +65,7 @@
             <p id="recto5" th:utext="${card.user.recto5}"></p>
             <p id="recto6" th:utext="${card.user.recto6}"></p>
             <p id="recto7" th:utext="${card.user.recto7}"></p>
-            <img alt="qrcode" th:src="'data:image/png;base64, ' + ${qrcodeBase64}" id="qrcode"/>
+            <img th:alt="#{common.qrcode}" th:src="'data:image/png;base64, ' + ${qrcodeBase64}" id="qrcode"/>
         </div>
         <div id="right">
             <img th:src="'data:' + ${templateCard.photoFileLogo.contentType} + ';base64, ' + ${photoBase64}" id="photo"/>

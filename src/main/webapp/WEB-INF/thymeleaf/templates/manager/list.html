@@ -6,7 +6,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/user.html}">
 <head>
-    <title>Gestion des cartes</title>
+    <title th:text="#{manager.cards.management}">Gestion des cartes</title>
 </head>
 <body>
 <div layout:fragment="content" id="cardList">
@@ -18,24 +18,24 @@
     </script>
 
     <h2>
-        Gestion des cartes
-        <a class="btn btn-warning navbar-btn navbar-right" th:href="@{/manager/stats}" id="btnStats" title="Statistiques">
+        <span th:text="#{manager.cards.management}">Gestion des cartes</span>
+        <a class="btn btn-warning navbar-btn navbar-right" th:href="@{/manager/stats}" id="btnStats" th:title="#{common.statistics}">
             <span class="glyphicon glyphicon-stats"></span>
         </a>
-        <button class="btn btn-primary navbar-btn navbar-right" data-toggle="modal" data-target="#noticeEtats" title="Etats" type="button">
+        <button class="btn btn-primary navbar-btn navbar-right" data-toggle="modal" data-target="#noticeEtats" th:title="#{common.states}" type="button">
             <span class="glyphicon glyphicon-info-sign"></span>
         </button>
-        <button class="btn btn-default navbar-btn navbar-right" data-toggle="modal" data-target="#columnsConfig" title="Colonnes" type="button">
+        <button class="btn btn-default navbar-btn navbar-right" data-toggle="modal" data-target="#columnsConfig" th:title="#{list.columns.config}" type="button">
             <span class="glyphicon glyphicon-th-list"></span>
         </button>
-        <button class="btn btn-default navbar-btn navbar-right" data-toggle="modal" data-target="#settings" title="Préférences" type="button">
+        <button class="btn btn-default navbar-btn navbar-right" data-toggle="modal" data-target="#settings" th:title="#{common.preferences}" type="button">
             <span class="glyphicon glyphicon-cog"></span>
         </button>
         <button class="btn btn-info navbar-btn navbar-right hidden-llg hidden-lg hidden-md" data-toggle="collapse" data-target="#searchCollapse" type="button">
             <span class="glyphicon glyphicon-search"></span>
         </button>
         <th:block sec:authorize="hasRole('ROLE_MANAGER')">
-            <a class="btn btn-info navbar-btn navbar-right" th:href="@{/manager/ldapSearch}" id="btnLdap" title="Recherche Ldap">
+            <a class="btn btn-info navbar-btn navbar-right" th:href="@{/manager/ldapSearch}" id="btnLdap" th:title="#{ldap.search.title}">
                 <span class="glyphicon glyphicon-search"></span>
             </a>
         </th:block>
@@ -43,9 +43,8 @@
 
     <div th:if="${cardsInprintCount > 0}">
         <div class="alert alert-danger">
-            Attention, vous avez
-            <a th:href="@{/manager(etat='IN_PRINT', ownOrFreeCard=true)}" th:text="${cardsInprintCount} + ' cartes en cours d\'impression'"></a>,
-            ne les oubliez pas !
+            <span th:text="#{list.cards.in.print.warning}">Attention, vous avez</span>
+            <a th:href="@{/manager(etat='IN_PRINT', ownOrFreeCard=true)}"><span th:text="${cardsInprintCount}"></span> <span th:text="#{list.cards.in.print}">cartes en cours d'impression</span></a><span th:text="#{list.cards.in.print.reminder}">, ne les oubliez pas !</span>
         </div>
     </div>
 
@@ -60,7 +59,7 @@
                     <thead>
                     <tr>
                         <th data-type="html"><input id="selectall" type="checkbox" th:if="${managePermission}"></th>
-                        <th class="hidden">id</th>
+                        <th class="hidden" th:text="#{list.id}">id</th>
 
                         <th th:each="col : ${visibleColumns}"
                             th:class="${col.cellCssClass}"
@@ -69,7 +68,7 @@
                             <span th:unless="${col.sortable}" th:text="${col.label}"></span>
                         </th>
 
-                        <th data-type="html">Voir</th>
+                        <th data-type="html" th:text="#{common.view}">Voir</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -82,7 +81,7 @@
                             th:classappend="${col.centerCell ? 'centerCell' : ''}">
 
                             <th:block th:if="${col.key == 'photo'}">
-                                <a title="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
+                                <a th:title="#{common.card}" th:href="@{/manager/{id}(id=${card.id})}">
                                     <div class="lazy-photo"
                                          th:attr="data-src=@{/manager/photo/{id}(id=${card.id})}"
                                          style="width:40px; height:50px; background:#eee; display:inline-block;">
@@ -96,8 +95,8 @@
                         </td>
 
                         <td class="utilbox">
-                            <a class="btn btn-success" title="Show Card" alt="Show Card" th:href="@{/manager/{id}(id=${card.id})}">
-                                <img title="Show Card" th:src="@{/resources/images/show.png}" class="image" alt="Show Card">
+                            <a class="btn btn-success" th:title="#{common.card}" th:alt="#{common.card}" th:href="@{/manager/{id}(id=${card.id})}">
+                                <img th:title="#{common.card}" th:src="@{/resources/images/show.png}" class="image" th:alt="#{common.card}">
                             </a>
                         </td>
                     </tr>
@@ -121,16 +120,16 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                    <h4 class="modal-title">Configuration des colonnes</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span th:utext="#{common.times}">&times;</span></button>
+                    <h4 class="modal-title" th:text="#{list.columns.config}">Configuration des colonnes</h4>
                 </div>
                 <form th:action="@{/manager/preferences/columns}" method="POST">
                     <div class="modal-body">
-                        <p class="text-muted">Cochez les colonnes que vous souhaitez afficher dans le tableau.</p>
+                        <p class="text-muted" th:text="#{list.columns.select}">Cochez les colonnes que vous souhaitez afficher dans le tableau.</p>
                         <div class="row">
                             <div class="col-md-12">
                                 <input class="form-check-input" type="checkbox" id="selectAllColumns">
-                                <label class="form-check-label fw-bold" for="selectAllColumns">
+                                <label class="form-check-label fw-bold" for="selectAllColumns" th:text="#{list.select.all}">
                                     Tout sélectionner / Tout désélectionner
                                 </label>
                             </div>
@@ -146,13 +145,13 @@
                                                th:checked="${col.visible}"/>
                                         <span th:text="${col.label}"></span>
                                         <select name="columns_render" class="form-control">
-                                            <option th:value="${col.key + ':XS'}" th:selected="${col.renderSize.name()=='XS'}">Écran XS</option>
-                                            <option th:value="${col.key + ':S'}" th:selected="${col.renderSize.name()=='S'}">Écran S</option>
-                                            <option th:value="${col.key + ':M'}" th:selected="${col.renderSize.name()=='M'}">Écran M</option>
-                                            <option th:value="${col.key + ':L'}" th:selected="${col.renderSize.name()=='L'}">Écran L</option>
-                                            <option th:value="${col.key + ':XL'}" th:selected="${col.renderSize.name()=='XL'}">Écran XL</option>
-                                            <option th:value="${col.key + ':XXL'}" th:selected="${col.renderSize.name()=='XXL'}">Écran XXL</option>
-                                            <option th:value="${col.key + ':XXXL'}" th:selected="${col.renderSize.name()=='XXXL'}">Écran XXXL</option>
+                                            <option th:value="${col.key + ':XS'}" th:selected="${col.renderSize.name()=='XS'}" th:text="#{list.screen.xs}">Écran XS</option>
+                                            <option th:value="${col.key + ':S'}" th:selected="${col.renderSize.name()=='S'}" th:text="#{list.screen.s}">Écran S</option>
+                                            <option th:value="${col.key + ':M'}" th:selected="${col.renderSize.name()=='M'}" th:text="#{list.screen.m}">Écran M</option>
+                                            <option th:value="${col.key + ':L'}" th:selected="${col.renderSize.name()=='L'}" th:text="#{list.screen.l}">Écran L</option>
+                                            <option th:value="${col.key + ':XL'}" th:selected="${col.renderSize.name()=='XL'}" th:text="#{list.screen.xl}">Écran XL</option>
+                                            <option th:value="${col.key + ':XXL'}" th:selected="${col.renderSize.name()=='XXL'}" th:text="#{list.screen.xxl}">Écran XXL</option>
+                                            <option th:value="${col.key + ':XXXL'}" th:selected="${col.renderSize.name()=='XXXL'}" th:text="#{list.screen.xxxl}">Écran XXXL</option>
                                         </select>
                                         <small class="text-muted" th:if="${col.description}" th:text="' - ' + ${col.description}"></small>
                                     </label>
@@ -185,8 +184,8 @@
                         </script>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{common.cancel}">Annuler</button>
+                        <button type="submit" class="btn btn-primary" th:text="#{common.save}">Enregistrer</button>
                     </div>
                 </form>
             </div>

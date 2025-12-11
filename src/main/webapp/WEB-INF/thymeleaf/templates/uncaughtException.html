@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="panel panel-default">
-                    <div class="panel-heading">Stacktrace</div>
+                    <div class="panel-heading" th:text="#{uncaughtException.stacktrace}">Stacktrace</div>
                     <div class="panel-body">
                         <pre th:utext="${exception_stacktrace}">
                         </pre>

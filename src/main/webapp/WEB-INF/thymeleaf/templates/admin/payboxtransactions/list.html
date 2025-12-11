@@ -6,17 +6,17 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Transactions Paybox</title>
+    <title th:text="#{common.paybox}">Transactions Paybox</title>
 </head>
 <body>
 <div id="payboxtransactionsList" layout:fragment="content"
      th:with="paybox_url=@{/admin/payboxtransactions}">
-    <h2>Transactions Paybox</h2>
+    <h2 th:text="#{common.paybox}">Transactions Paybox</h2>
     <div class="alert alert-info" id="searchBar">
         <div class="row">
             <div class="col-lg-2">
                 <form th:action="${paybox_url}" method="get">
-                    <label for="eppn">Eppn</label>
+                    <label for="eppn" th:text="#{common.eppn}">Eppn</label>
                     <div class="input-group">
                         <input type="text" name="eppn" class="form-control" th:value="${param.eppn}"/>
                         <span class="input-group-btn">
@@ -31,13 +31,13 @@
         <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_PayboxTransactionLog">
             <thead>
                 <tr>
-                    <th><a class="sorting" sd:pagination-sort="transactionDate">Date</a></th>
-                    <th><a class="sorting" sd:pagination-sort="eppn">Eppn</a></th>
-                    <th><a class="sorting" sd:pagination-sort="reference">Référence</a></th>
-                    <th><a class="sorting" sd:pagination-sort="montant">Montant</a></th>
-                    <th><a class="sorting" sd:pagination-sort="auto">Auto</a></th>
-                    <th><a class="sorting" sd:pagination-sort="erreur">Erreur</a></th>
-                    <th>Voir</th>
+                    <th><a class="sorting" sd:pagination-sort="transactionDate" th:text="#{common.date}">Date</a></th>
+                    <th><a class="sorting" sd:pagination-sort="eppn" th:text="#{common.eppn}">Eppn</a></th>
+                    <th><a class="sorting" sd:pagination-sort="reference" th:text="#{common.reference}">Référence</a></th>
+                    <th><a class="sorting" sd:pagination-sort="montant" th:text="#{common.amount}">Montant</a></th>
+                    <th><a class="sorting" sd:pagination-sort="auto" th:text="#{common.auto}">Auto</a></th>
+                    <th><a class="sorting" sd:pagination-sort="erreur" th:text="#{common.error}">Erreur</a></th>
+                    <th th:text="#{common.view}">Voir</th>
                 </tr>
             </thead>
             <tbody>

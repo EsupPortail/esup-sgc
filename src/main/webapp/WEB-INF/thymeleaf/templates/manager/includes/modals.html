@@ -5,49 +5,49 @@
             <div class="modal-dialog modal-dialog-large">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h3 class="modal-title">Etats d'une carte</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" th:utext="#{common.times}">&times;</button>
+                        <h3 class="modal-title" th:text="#{modals.card.states}">Etats d'une carte</h3>
                     </div>
                     <div class="modal-body">
                         <div class="row ">
                             <div class="col-lg-6">
                                 <dl>
                                     <dt th:text="#{card.step.NEW}"></dt>
-                                    <dd>Demande de leocarte initiale encore non traitée ou demande rejetée "rebasculée".</dd>
+                                    <dd th:text="#{modals.state.new.desc}">Demande de carte multi-services initiale encore non traitée ou demande rejetée "rebasculée".</dd>
                                     <dt th:text="#{card.step.REQUEST_CHECKED}"></dt>
-                                    <dd>L'administrateur indique cet état pour valider le fait que la demande est recevable.</dd>
+                                    <dd th:text="#{modals.state.checked.desc}">L'administrateur indique cet état pour valider le fait que la demande est recevable.</dd>
                                     <dt th:text="#{card.step.IN_PRINT}"></dt>
-                                    <dd>La carte est en cours d'impression et associée à un administrateur.</dd>
+                                    <dd th:text="#{modals.state.in.print.desc}">La carte est en cours d'impression et associée à un administrateur.</dd>
                                     <dt th:text="#{card.step.PRINTED}"></dt>
-                                    <dd>La carte est imprimée et non encodée.</dd>
+                                    <dd th:text="#{modals.state.printed.desc}">La carte est imprimée et non encodée.</dd>
                                     <dt th:text="#{card.step.IN_ENCODE}"></dt>
-                                    <dd>La carte est en cours d'encodage et associée à un administrateur.</dd>
+                                    <dd th:text="#{modals.state.in.encode.desc}">La carte est en cours d'encodage et associée à un administrateur.</dd>
                                     <dt th:text="#{card.step.ENCODED}"></dt>
-                                    <dd>La carte est encodée et prête à être activée.</dd>
+                                    <dd th:text="#{modals.state.encoded.desc}">La carte est encodée et prête à être activée.</dd>
                                     <dt th:text="#{card.step.ENABLED}"></dt>
-                                    <dd>La carte a été activée/validée/renseignée dans les différentes briques liées au Système d'Information de l'individu (Crous, contrôle d'accès, annuaires, ...) et peut être utilisée.</dd>
+                                    <dd th:text="#{modals.state.enabled.desc}">La carte a été activée/validée/renseignée dans les différentes briques liées au Système d'Information de l'individu (Crous, contrôle d'accès, annuaires, ...) et peut être utilisée.</dd>
                                     <dt th:text="#{card.step.REJECTED}"></dt>
-                                    <dd>Lors d'une demande, l'administrateur estime que celle-ci n'est pas valide (souvent pour une photo de mauvaise qualité) et l'indique alors avec un commentaire associé. L'utilisateur peut de nouveau faire une demande.</dd>
+                                    <dd th:text="#{modals.state.rejected.desc}">Lors d'une demande, l'administrateur estime que celle-ci n'est pas valide (souvent pour une photo de mauvaise qualité) et l'indique alors avec un commentaire associé. L'utilisateur peut de nouveau faire une demande.</dd>
                                     <dt th:text="#{card.step.DISABLED}"></dt>
-                                    <dd>L'individu, un manager ou le SGC a déclaré que la carte était invalide pour une raison précise. Elle peut être réactivée par l'utilisateur lui-même.</dd>
+                                    <dd th:text="#{modals.state.disabled.desc}">L'individu, un manager ou le SGC a déclaré que la carte était invalide pour une raison précise. Elle peut être réactivée par l'utilisateur lui-même.</dd>
                                     <dt th:text="#{card.step.CADUC}"></dt>
-                                    <dd>La date de fin de droits de l'individu a été dépassée, cette carte est donc désactivée et ne peut pas être réactivée directement par l'utilisateur. Si la date de fin de droits change pour une date future, elle changera d'état pour être dans l'état <span th:text="#{card.step.DISABLED}"></span> et elle pourra alors être réactivée à la demande de l'utilisateur.</dd>
+                                    <dd th:utext="#{modals.state.caduc.desc}">La date de fin de droits de l'individu a été dépassée...</dd>
                                     <dt th:text="#{card.step.DESTROYED}"></dt>
-                                    <dd>La carte désactivée ou caduque a été déclarée comme détruite. Elle ne peut plus changer d'état.</dd>
+                                    <dd th:text="#{modals.state.destroyed.desc}">La carte désactivée ou caduque a été déclarée comme détruite. Elle ne peut plus changer d'état.</dd>
                                     <dt th:text="#{card.step.CANCELED}"></dt>
-                                    <dd>Si la date de fin de droits de l'individu a été dépassée, alors que la demande de carte n'avait pas été traitée (elle était dans l'état <span th:text="#{card.step.NEW}"></span>), la demande est annulée automatiquement. L'utilisateur pourra refaire une nouvelle demande si sa date de fin de droits redevient postérieure à la date du jour.<br/>La demande de carte peut aussi être annulée manuellement par le gestionnaire.</dd>
+                                    <dd th:utext="#{modals.state.canceled.desc}">Si la date de fin de droits de l'individu a été dépassée...</dd>
                                     <dt th:text="#{card.step.RENEWED}"></dt>
-                                    <dd>Correspond à une demande de carte renouvelée à partir d'une carte activée. Elle correspond à l'état 'Demande effectuée' dans le workflow mais on précise que c'est un renouvellement.</dd>
+                                    <dd th:text="#{modals.state.renewed.desc}">Correspond à une demande de carte renouvelée à partir d'une carte activée. Elle correspond à l'état 'Demande effectuée' dans le workflow mais on précise que c'est un renouvellement.</dd>
                                 </dl>
                             </div>
                             <div class="col-lg-6">
-                                <h4 class="bg-info">Workflow</h4>
+                                <h4 class="bg-info" th:text="#{modals.workflow}">Workflow</h4>
                                 <img th:src="@{/images/sgc-workflow.svg}" class="img-responsive"/>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Fermer</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" th:text="#{common.close}">Fermer</button>
                     </div>
                 </div>
             </div>
@@ -56,27 +56,27 @@
             <div class="modal-dialog ">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h3 class="modal-title">Préférences</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" th:utext="#{common.times}">&times;</button>
+                        <h3 class="modal-title" th:text="#{common.preferences}">Préférences</h3>
                     </div>
                     <div class="modal-body">
-                        <h4>Recherche</h4>
+                        <h4 th:text="#{modals.search}">Recherche</h4>
                         <form th:action="@{/manager/savePrefs}" method="post">
                             <div class="alert alert-warning">
-                                Critères personnalisés pour l'affichage des recherches par défaut de <strong th:text="${eppn}"></strong>
+                                <span th:text="#{modals.prefs.criteria.personal}">Critères personnalisés pour l'affichage des recherches par défaut de</span> <strong th:text="${eppn}"></strong>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="editable" th:checked="${userPrefs.editable == 'true' or userPrefs.editable == 'on'}"/>Editable
+                                    <input type="checkbox" name="editable" th:checked="${userPrefs.editable == 'true' or userPrefs.editable == 'on'}"/><span th:text="#{modals.prefs.editable}">Editable</span>
                                 </label>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="ownOrFreeCard" id="ownOrFreeCard" th:checked="${userPrefs.ownOrFreeCard == 'true' or userPrefs.ownOrFreeCard == 'on'}"/>Libres ou gérées par moi
+                                    <input type="checkbox" name="ownOrFreeCard" id="ownOrFreeCard" th:checked="${userPrefs.ownOrFreeCard == 'true' or userPrefs.ownOrFreeCard == 'on'}"/><span th:text="#{modals.prefs.free.or.mine}">Libres ou gérées par moi</span>
                                 </label>
                             </div>
                             <div>
-                                <label>Onglet par défaut</label>
+                                <label th:text="#{modals.default.tab}">Onglet par défaut</label>
                                 <div class="form-group">
                                     <select name="userType">
                                         <option value=""></option>
@@ -87,23 +87,23 @@
                                     </select>
                                 </div>
                             </div>
-                            <input type="submit" class="btn btn-sm btn-success" value="Valider" />
+                            <input type="submit" class="btn btn-sm btn-success" th:value="#{common.validate}" />
                         </form>
                         <div th:if="${prefsRmList != null and !#lists.isEmpty(prefsRmList)}">
                             <form th:action="@{/manager/stats/savePrefs}" method="post">
-                                <h4>Statistiques</h4>
-                                <div class="alert alert-warning">Onglets statistiques non visibles -- cocher pour les voir de nouveau</div>
+                                <h4 th:text="#{common.statistics}">Statistiques</h4>
+                                <div class="alert alert-warning" th:text="#{modals.hidden.stats}">Onglets statistiques non visibles -- cocher pour les voir de nouveau</div>
                                 <div class="checkbox" th:each="pref : ${prefsRmList}">
                                     <label>
                                         <input type="checkbox" name="prefsRm" id="prefsRm" th:value="${pref}"/><span class="prefCaps" th:text="${pref}"></span>
                                     </label>
                                 </div>
-                                <input type="submit" class="btn btn-sm btn-success" value="Valider" />
+                                <input type="submit" class="btn btn-sm btn-success" th:value="#{common.validate}" />
                             </form>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Fermer</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" th:text="#{common.close}">Fermer</button>
                     </div>
                 </div>
             </div>

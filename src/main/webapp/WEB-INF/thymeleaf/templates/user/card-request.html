@@ -13,7 +13,7 @@
         var photoSizeMax = "[[${photoSizeMax}]]";
     </script>
 
-    <h2>Demande de carte</h2>
+    <h2 th:text="#{card.request.title}">Demande de carte</h2>
 
     <div th:if="${!#strings.isEmpty(user.blockUserMsg)}">
         <div th:utext="${user.blockUserMsg}"></div>
@@ -47,8 +47,8 @@
     </div>
     <div th:if="${!(displayFormParts['displayForm'] or (isRejected ?: false))}">
         <div class="alert alert-danger">
-            <p>Vous ne pouvez pas demander actuellement de Léocarte.</p>
-            <p>Réessayez ultérieurement ou rapprochez-vous de votre correspondant informatique local.</p>
+            <p th:text="#{card.request.not.allowed}">Vous ne pouvez pas demander actuellement de carte multi-services.</p>
+            <p th:text="#{card.request.retry}">Réessayez ultérieurement ou rapprochez-vous de votre correspondant informatique local.</p>
         </div>
     </div>
     <div th:replace="~{templates/user/includes/modals :: modals}"></div>

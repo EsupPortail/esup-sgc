@@ -6,24 +6,24 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Liste des cartes CROUS</title>
+    <title th:text="#{crous.cards.list}">Liste des cartes CROUS</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Crous</h2>
-    <div th:if="${isInWorking}">
+    <h2 th:text="#{common.crous}">Crous</h2>
+    <div th:if="${isInWorking}" th:text="#{common.importing}">
         Importation en cours ...
     </div>
     <div th:unless="${isInWorking}">
         <form th:action="@{/admin/crouscards/addCrousCsvFile}" method="post" enctype="multipart/form-data" class="well form-horizontal">
             <fieldset>
-                <legend>Ajout d'un CSV CROUS/IZLY</legend>
-                <label for="crous_csv_out_file">Ajout d'un CSV CROUS/IZLY</label>
+                <legend th:text="#{common.crousizly}">Ajout d'un CSV CROUS/IZLY</legend>
+                <label for="crous_csv_out_file" th:text="#{common.crousizly}">Ajout d'un CSV CROUS/IZLY</label>
                 <input id="crous_csv_out_file" name="file" required="required" type="file"/>
                 <label>
                     <input name="inverseCsn" type="checkbox" value="true"/> Inverser les CSN
                 </label>
-                <button type="submit" class="btn btn-success">Valider</button>
+                <button type="submit" class="btn btn-success" th:text="#{common.validate}">Valider</button>
             </fieldset>
         </form>
     </div>
@@ -35,16 +35,16 @@
                         <a class="sorting" sd:pagination-sort="uid">CSN</a>
                     </th>
                     <th>
-                        <a class="sorting" sd:pagination-sort="zdcCreationDate">Date création</a>
+                        <a class="sorting" sd:pagination-sort="zdcCreationDate" th:text="#{common.creation.date}">Date création</a>
                     </th>
                     <th>
-                        <a class="sorting" sd:pagination-sort="idTransmitter">Id Transmitter</a>
+                        <a class="sorting" sd:pagination-sort="idTransmitter" th:text="#{common.transmitter}">Id Transmitter</a>
                     </th>
-                    <th>Id Mapping</th>
-                    <th>Id Zdc</th>
-                    <th>Pix SS</th>
-                    <th>Pix NN</th>
-                    <th>Voir</th>
+                    <th th:text="#{common.mapping}">Id Mapping</th>
+                    <th th:text="#{common.zdc}">Id Zdc</th>
+                    <th th:text="#{common.ss}">Pix SS</th>
+                    <th th:text="#{common.nn}">Pix NN</th>
+                    <th th:text="#{common.view}">Voir</th>
                 </tr>
             </thead>
             <tbody>

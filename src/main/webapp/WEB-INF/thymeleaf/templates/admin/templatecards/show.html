@@ -5,7 +5,7 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Détail du thème carte</title>
+    <title th:text="#{show.templatecard.detail}">Détail du thème carte</title>
 </head>
 <body>
 <div id="showTemplate" layout:fragment="content"
@@ -14,53 +14,53 @@
         var searchEppnUrl =  "[[@{/manager/searchEppn}]]";
         var submitUrl =  "[[@{/admin/templatecards/fillTemplate}]]";
     </script>
-    <h2>Template</h2>
+    <h2 th:text="#{show.template}">Template</h2>
     <div class="row">
         <div class="col-lg-6">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h5>Éléments</h5>
+                    <h5 th:text="#{show.elements}">Éléments</h5>
                 </div>
                 <div class="panel-body">
                     <dl class="dl-horizontal">
-                        <dt>Clé</dt>
+                        <dt th:text="#{common.key}">Clé</dt>
                         <dd th:text="${templatecard.key}"></dd>
-                        <dt>Nom</dt>
+                        <dt th:text="#{common.name}">Nom</dt>
                         <dd th:text="${templatecard.name}"></dd>
-                        <dt>Version</dt>
+                        <dt th:text="#{common.version}">Version</dt>
                         <dd th:text="${templatecard.numVersion}"></dd>
-                        <dt>Description</dt>
+                        <dt th:text="#{common.description}">Description</dt>
                         <dd th:text="${templatecard.description}"></dd>
-                        <dt>Style css</dt>
+                        <dt th:text="#{show.css.style}">Style css</dt>
                         <pre th:text="${templatecard.cssStyle}"></pre>
-                        <dt>Style mobile css</dt>
+                        <dt th:text="#{show.css.mobile}">Style mobile css</dt>
                         <pre th:text="${templatecard.cssMobileStyle}"></pre>
                         <div th:if="${templatecard.backSupported}">
-                            <dt>Style verso css</dt>
+                            <dt th:text="#{show.css.verso}">Style verso css</dt>
                             <pre th:text="${templatecard.cssBackStyle}"></pre>
                         </div>
-                        <dt>Masque</dt>
+                        <dt th:text="#{common.mask}">Masque</dt>
                         <dd>
-                            <img class="thumb-image" th:src="${photoLocalPrefix + 'masque/' + templatecard.id}" alt="masque"/>
+                            <img class="thumb-image" th:src="${photoLocalPrefix + 'masque/' + templatecard.id}" th:alt="#{common.mask}"/>
                         </dd>
-                        <dt>Logo</dt>
+                        <dt th:text="#{common.logo}">Logo</dt>
                         <dd>
-                            <img class="thumb-image" th:src="${photoLocalPrefix + 'logo/' + templatecard.id}" alt="logo"/>
+                            <img class="thumb-image" th:src="${photoLocalPrefix + 'logo/' + templatecard.id}" th:alt="#{common.logo}"/>
                         </dd>
-                        <dt>Qr Code</dt>
+                        <dt th:text="#{common.code}">Qr Code</dt>
                         <dd>
-                            <img class="thumb-image" th:src="${photoLocalPrefix + 'qrCode/' + templatecard.id}" alt="qrCode"/>
+                            <img class="thumb-image" th:src="${photoLocalPrefix + 'qrCode/' + templatecard.id}" th:alt="#{common.qrcode}"/>
                         </dd>
-                        <dt>Code barres</dt>
+                        <dt th:text="#{common.barcode}">Code barres</dt>
                         <dd>
                             <span th:if="${templatecard.codeBarres}" class="glyphicon glyphicon-ok"></span>
                             <span th:if="${!templatecard.codeBarres}" class="glyphicon glyphicon-remove"></span>
                         </dd>
-                        <dt>Modificateur</dt>
+                        <dt th:text="#{common.modifier}">Modificateur</dt>
                         <dd th:text="${templatecard.modificateur}"></dd>
-                        <dt>Date modification</dt>
+                        <dt th:text="#{common.modification.date}">Date modification</dt>
                         <dd th:text="${#temporals.format(templatecard.dateModification, templateCard_datemodification_date_format)}"></dd>
-                        <dt>Verso supporté</dt>
+                        <dt th:text="#{show.verso.supported}">Verso supporté</dt>
                         <dd>
                             <span th:if="${templatecard.backSupported}" class="glyphicon glyphicon-ok"></span>
                             <span th:if="${!templatecard.backSupported}" class="glyphicon glyphicon-remove"></span>
@@ -72,7 +72,7 @@
         <div class="col-lg-6">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h5>Prévisualisation</h5>
+                    <h5 th:text="#{common.preview}">Prévisualisation</h5>
                 </div>
                 <div class="panel-body">
                     <div class="col-lg-6">
@@ -97,14 +97,14 @@
                             </style>
                             <div id="specimenCarte">
                                 <div id="left">
-                                    <p id="recto1">recto1</p>
-                                    <p id="recto2">recto2</p>
-                                    <p id="recto3">recto3</p>
-                                    <p id="recto4">recto4</p>
-                                    <p id="recto5">recto5</p>
-                                    <p id="recto6">recto6</p>
-                                    <p id="recto7">recto7</p>
-                                    <img alt="qrcode" id="qrcode" th:src="${photoLocalPrefix + 'qrCode/' + templatecard.id}"/>
+                                    <p id="recto1" th:text="#{common.recto1}">recto1</p>
+                                    <p id="recto2" th:text="#{common.recto2}">recto2</p>
+                                    <p id="recto3" th:text="#{common.recto3}">recto3</p>
+                                    <p id="recto4" th:text="#{common.recto4}">recto4</p>
+                                    <p id="recto5" th:text="#{common.recto5}">recto5</p>
+                                    <p id="recto6" th:text="#{common.recto6}">recto6</p>
+                                    <p id="recto7" th:text="#{common.recto7}">recto7</p>
+                                    <img th:alt="#{common.qrcode}" id="qrcode" th:src="${photoLocalPrefix + 'qrCode/' + templatecard.id}"/>
                                 </div>
                                 <div id="right">
                                     <img id="photo" th:src="@{/images/NoPhoto.jpg}"/>
@@ -135,26 +135,26 @@
                                     }
                                 </style>
                                 <div id="backCarte">
-                                    <p id="verso1">verso1</p>
-                                    <p id="verso2">verso2</p>
-                                    <p id="verso3">verso3</p>
-                                    <p id="verso4">verso4</p>
-                                    <p id="verso5">verso5</p>
-                                    <p id="verso6">verso6</p>
-                                    <p id="verso7">verso7</p>
+                                    <p id="verso1" th:text="#{common.verso1}">verso1</p>
+                                    <p id="verso2" th:text="#{common.verso2}">verso2</p>
+                                    <p id="verso3" th:text="#{common.verso3}">verso3</p>
+                                    <p id="verso4" th:text="#{common.verso4}">verso4</p>
+                                    <p id="verso5" th:text="#{common.verso5}">verso5</p>
+                                    <p id="verso6" th:text="#{common.verso6}">verso6</p>
+                                    <p id="verso7" th:text="#{common.verso7}">verso7</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <div class="alert alert-info">
+                        <div class="alert alert-info" th:text="#{show.recto.replaced}">
                             Les champs "recto" seront bien sûr remplacés par les infos de l'utilisateur.
                         </div>
                         <div class="alert alert-info">
                             <form th:action="@{/admin/templatecards/fillTemplate}" id="searchEppnForm" role="search">
                                 <div class="form-group">
-                                    <label>Utilisateur test</label>
-                                    <input class="form-control" id="searchEppnTemp" name="searchText" placeholder="Login" type="text" th:value="${searchBean?.searchText}"/>
+                                    <label th:text="#{common.test.user}">Utilisateur test</label>
+                                    <input class="form-control" id="searchEppnTemp" name="searchText" th:placeholder="#{common.login.date}" type="text" th:value="${searchBean?.searchText}"/>
                                 </div>
                             </form>
                         </div>
@@ -163,7 +163,7 @@
             </div>
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h5>Prévisualisation BMP - édition en 1 temps</h5>
+                    <h5 th:text="#{show.preview.bmp}">Prévisualisation BMP - édition en 1 temps</h5>
                 </div>
                 <div class="panel-body">
                     <div class="col-lg-6">

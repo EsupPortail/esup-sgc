@@ -5,34 +5,34 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Règles tarifaires CROUS</title>
+    <title th:text="#{crous.rules.title}">Règles tarifaires CROUS</title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="well">
-        Cette page vous permet de resynchroniser et consulter les règles issues du CROUS pour le calcul des tarifs CROUS.<br/>
-        En toute connaissance de cause, vous pouvez également ici ajouter des règles spécifiques pour traiter des cas particuliers comme le calcul des tarifs CNRS.
+        <span th:text="#{crous.rules.description}">Cette page vous permet de resynchroniser et consulter les règles issues du CROUS pour le calcul des tarifs CROUS.</span><br/>
+        <span th:text="#{crous.rules.can.add}">En toute connaissance de cause, vous pouvez également ici ajouter des règles spécifiques pour traiter des cas particuliers comme le calcul des tarifs CNRS.</span>
         <br/>
-        <a href="https://www.esup-portail.org/wiki/display/SGC/Tarifs+CROUS">Voir la page dédiée sur le wiki ESUP pour plus d'informations.</a>
+        <a href="https://www.esup-portail.org/wiki/display/SGC/Tarifs+CROUS" th:text="#{crous.rules.wiki.link}">Voir la page dédiée sur le wiki ESUP pour plus d'informations.</a>
     </div>
-    <h2>Configuration des règles tarifaires à récupérer depuis l'API CROUS</h2>
+    <h2 th:text="#{crous.rules.config.title}">Configuration des règles tarifaires à récupérer depuis l'API CROUS</h2>
     <div>
-        Les configurations de règles permettent d'indiquer quelles règles CROUS vous voulez récupérer dans votre SGC depuis l'API CROUS.
-        Usuellement vous configurerez la récupération des règles de tous les établissements des tous les utilisateurs gérés par votre SGC.
-        Si tous vos utilisateurs sont issus d'un seul établissement (cas commun d'un SGC dédié à un seul établissement), vous n'aurez à paramétrer ici qu'une seule configuration de règles.
-        <p class="alert-danger">
+        <span th:text="#{crous.rules.config.description}">Les configurations de règles permettent d'indiquer quelles règles CROUS vous voulez récupérer dans votre SGC depuis l'API CROUS.</span>
+        <span th:text="#{crous.rules.config.usually}">Usuellement vous configurerez la récupération des règles de tous les établissements des tous les utilisateurs gérés par votre SGC.</span>
+        <span th:text="#{crous.rules.config.single}">Si tous vos utilisateurs sont issus d'un seul établissement (cas commun d'un SGC dédié à un seul établissement), vous n'aurez à paramétrer ici qu'une seule configuration de règles.</span>
+        <p class="alert-danger" th:text="#{crous.rules.config.warning}">
             Attention, si vous supprimez une configuration de règles, cela supprime également les règles liées.
         </p>
     </div>
-    <a class="btn btn-primary" th:href="@{/admin/crousruleconfigs?form}">Ajouter un(e) Configuration de règles tarifaires CROUS </a>
+    <a class="btn btn-primary" th:href="@{/admin/crousruleconfigs?form}" th:text="#{crous.rules.config.add}">Ajouter un(e) Configuration de règles tarifaires CROUS </a>
     <div>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>RNE</th>
-                    <th>Numéro CROUS</th>
-                    <th>Priorité</th>
-                    <th>Supprimer</th>
+                    <th th:text="#{common.crous}">Numéro CROUS</th>
+                    <th th:text="#{common.priority}">Priorité</th>
+                    <th th:text="#{common.delete}">Supprimer</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,8 +42,8 @@
                     <td th:text="${config.priority}"></td>
                     <td>
                         <form th:action="@{/admin/crousruleconfigs/{id}(id=${config.id})}" th:method="delete" class="form-inline">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Supprimer cette configuration de règles ?');">
-                                <span class="glyphicon glyphicon-trash"></span> Supprimer
+                            <button type="submit" class="btn btn-danger" th:onclick="|return confirm('#{crous.rules.config.confirm.delete}')|">
+                                <span class="glyphicon glyphicon-trash"></span> <span th:text="#{common.delete}">Supprimer</span>
                             </button>
                         </form>
                     </td>
@@ -51,24 +51,24 @@
             </tbody>
         </table>
     </div>
-    <h2>Règles tarifaires</h2>
+    <h2 th:text="#{crous.rules.title}">Règles tarifaires</h2>
     <div th:unless="${#lists.isEmpty(crousruleconfigs)}">
-        <h3>Règles issues de l'API CROUS</h3>
+        <h3 th:text="#{crous.rules.from.api}">Règles issues de l'API CROUS</h3>
         <form th:action="@{/admin/crousrules/updateCrousRules}" method="post">
-            <button class="btn btn-primary">Mettre à jour les règles depuis l'API CROUS/IZLY</button>
+            <button class="btn btn-primary" th:text="#{crous.rules.update}">Mettre à jour les règles depuis l'API CROUS/IZLY</button>
         </form>
         <div>
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>RNE</th>
-                        <th>Status</th>
-                        <th>Indice min</th>
-                        <th>Indice max</th>
-                        <th>Code société</th>
-                        <th>Code tarif</th>
-                        <th>Priorité</th>
-                        <th>Date maj</th>
+                        <th th:text="#{common.status}">Status</th>
+                        <th th:text="#{common.min.index}">Indice min</th>
+                        <th th:text="#{common.max.index}">Indice max</th>
+                        <th th:text="#{common.company.code}">Code société</th>
+                        <th th:text="#{common.rate.code}">Code tarif</th>
+                        <th th:text="#{common.priority}">Priorité</th>
+                        <th th:text="#{common.update.date}">Date maj</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,21 +86,21 @@
             </table>
         </div>
     </div>
-    <h3>Règles personnalisées</h3>
-    <a class="btn btn-primary" th:href="@{/admin/crousrules?form}">Ajouter un(e) Règle tarifaire CROUS </a>
+    <h3 th:text="#{crous.rules.custom}">Règles personnalisées</h3>
+    <a class="btn btn-primary" th:href="@{/admin/crousrules?form}" th:text="#{crous.rules.add}">Ajouter un(e) Règle tarifaire CROUS </a>
     <div>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>RNE</th>
-                    <th>Status</th>
-                    <th>Indice min</th>
-                    <th>Indice max</th>
-                    <th>Code société</th>
-                    <th>Code tarif</th>
-                    <th>Priorité</th>
-                    <th>Date maj</th>
-                    <th>Actions</th>
+                    <th th:text="#{common.status}">Status</th>
+                    <th th:text="#{common.min.index}">Indice min</th>
+                    <th th:text="#{common.max.index}">Indice max</th>
+                    <th th:text="#{common.company.code}">Code société</th>
+                    <th th:text="#{common.rate.code}">Code tarif</th>
+                    <th th:text="#{common.priority}">Priorité</th>
+                    <th th:text="#{common.update.date}">Date maj</th>
+                    <th th:text="#{common.actions}">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -114,18 +114,17 @@
                     <td th:text="${rule.priority}"></td>
                     <td th:text="${#temporals.format(rule.updateDate, 'dd/MM/yyyy HH:mm')}"></td>
                     <td>
-                        <a th:href="@{/admin/crousrules/{id}(id=${rule.id},form='')}" class="btn btn-xs btn-warning">Modifier</a>
+                        <a th:href="@{/admin/crousrules/{id}(id=${rule.id},form='')}" class="btn btn-xs btn-warning" th:text="#{common.edit}">Modifier</a>
                         <form th:action="@{/admin/crousrules/{id}(id=${rule.id})}" th:method="delete" style="display:inline;">
-                            <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Supprimer cette règle ?');">Supprimer</button>
+                            <button type="submit" class="btn btn-xs btn-danger" th:onclick="|return confirm('#{crous.rules.confirm.delete}')|" th:text="#{common.delete}">Supprimer</button>
                         </form>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <h3>Règles par défaut</h3>
-    A l'ensemble de ces règles qui permettent de calculer le tarif d'un utilisateur (les règles sont analysées les unes à la suite des autres en considérant celles avec la priorité la plus haute en premier),
-    s'ajoute une dernière règle par défaut qui permet de donner un tarif si aucune des règles précédentes ne correspond à l'utilisateur.
+    <h3 th:text="#{crous.rules.default}">Règles par défaut</h3>
+    <span th:text="#{crous.rules.default.text}">A l'ensemble de ces règles qui permettent de calculer le tarif d'un utilisateur (les règles sont analysées les unes à la suite des autres en considérant celles avec la priorité la plus haute en premier), s'ajoute une dernière règle par défaut qui permet de donner un tarif si aucune des règles précédentes ne correspond à l'utilisateur.</span>
     <dl>
         <dt>DEFAULT_CNOUS_ID_COMPAGNY_RATE</dt>
         <dd th:text="${defaultCnousIdCompagnyRate}"></dd>

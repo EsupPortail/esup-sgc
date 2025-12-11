@@ -32,8 +32,8 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <button aria-hidden="true" class="close"
-                                                            data-dismiss="modal" type="button">&times;</button>
-                                                        <h3 class="modal-title">Commentaire</h3>
+                                                            data-dismiss="modal" type="button" th:utext="#{common.times}">&times;</button>
+                                                        <h3 class="modal-title" th:text="#{common.comment}">Commentaire</h3>
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="form-group">
@@ -45,13 +45,13 @@
                                                             th:id="${etatAvailable}">
                                                             <span th:text="#{|manager.action.${etatInit}-${etatAvailable}|}"></span>
                                                         </button>
-                                                        <h4>Messages prédéfinis</h4>
+                                                        <h4 th:text="#{common.predefined.messages}">Messages prédéfinis</h4>
                                                         <div class="panel-default">
                                                             <div class="panel-heading">
                                                                 <a class="accordion-toggle"
                                                                     data-parent="#accordionfilter" data-toggle="collapse"
                                                                     th:href="'#msgChoice_' + ${j.index}">
-                                                                    <span class="glyphicon glyphicon-plus">Choisir</span>
+                                                                    <span class="glyphicon glyphicon-plus" th:text="#{common.choose}">Choisir</span>
                                                                 </a>
                                                             </div>
                                                             <div class="panel-collapse well collapse" th:id="'msgChoice_' + ${j.index}">
@@ -69,7 +69,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button aria-hidden="true" class="btn btn-default"
-                                                            data-dismiss="modal">Fermer</button>
+                                                            data-dismiss="modal" th:text="#{common.close}">Fermer</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -87,7 +87,7 @@
                                     <th:block th:each="cardId : ${cardIds}">
                                         <input type="hidden" name="listeIds" th:value="${cardId}" />
                                     </th:block>
-                                    <input type="submit" value="Retoucher" />
+                                    <input type="submit" th:value="#{common.retouch}" />
                                 </form>
                             </th:block>
                             <th:block th:if="${#authorization.expression('hasRole(''ROLE_MANAGER'')') and livraison}">
@@ -97,7 +97,7 @@
                                             <input type="hidden" name="listeIds" th:value="${cardId}" />
                                         </th:block>
                                         <button class="btn btn-primary btn-block" type="submit"
-                                            onclick="return confirm('Confirmez la livraison');">
+                                            th:onclick="'return confirm(\'' + #{card.info.confirm.delivery} + '\');'" th:text="#{common.mark.delivered}">
                                             Noter comme livrée
                                         </button>
                                     </form>
@@ -105,17 +105,17 @@
                             </th:block>
                             <th:block th:if="${validatedFlag}">
                                 &nbsp;
-                                <button id="validationBtn" class="btn btn-danger" data-toggle="modal" data-target="#modalValidation">
+                                <button id="validationBtn" class="btn btn-danger" data-toggle="modal" data-target="#modalValidation" th:text="#{common.validation}">
                                     Rejouer la procédure de validation / invalidation
                                 </button>
                                 <div class="modal fade" tabindex="-1" role="dialog" id="modalValidation">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
+                                                <button type="button" class="close" data-dismiss="modal" th:label="#{common.close}">
+                                                    <span aria-hidden="true" th:utext="#{common.times}">&times;</span>
                                                 </button>
-                                                <h4 class="modal-title">Rejouer la procédure de validation / invalidation</h4>
+                                                <h4 class="modal-title" th:text="#{common.validation}">Rejouer la procédure de validation / invalidation</h4>
                                             </div>
                                             <div class="modal-body">
                                                 <form th:action="@{/manager/multiReplayValidationOrInvalidation}" method="post" id="replayValidation"
@@ -129,11 +129,11 @@
                                                     <th:block th:each="cardId : ${cardIds}">
                                                         <input type="hidden" name="listeIds" th:value="${cardId}" />
                                                     </th:block>
-                                                    <button class="btn btn-success" type="submit">Confirmer</button>
+                                                    <button class="btn btn-success" type="submit" th:text="#{common.confirm}">Confirmer</button>
                                                 </form>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
                                             </div>
                                         </div>
                                     </div>
@@ -147,29 +147,29 @@
         </th:block>
         <th:block th:if="${#lists.isEmpty(etatsAvailable)}">
             <div class="editForbidden col-lg-6">
-                <p>Vous ne pouvez faire aucune action par lot :</p>
+                <p th:text="#{multiupdate.no.batch.action}">Vous ne pouvez faire aucune action par lot :</p>
                 <ul>
-                    <li>Soit vous avez des demandes avec des états différents</li>
-                    <li>Aucune action pour les états <em>DÉTRUIT</em> ou <em>REJETÉ</em> ou <em>ANNULÉ</em></li>
-                    <li>Soit vous avez des demandes en état <em>EN_IMPRESSION</em> ou <em>EN_ENCODAGE</em>
-                        dont vous n'avez pas les droits de modification
+                    <li th:text="#{multiupdate.different.states}">Soit vous avez des demandes avec des états différents</li>
+                    <li><span th:text="#{multiupdate.no.action.for.states}">Aucune action pour les états</span> <em th:text="#{multiupdate.state.destroyed}">DÉTRUIT</em> <span th:text="#{multiupdate.or}">ou</span> <em th:text="#{multiupdate.state.rejected}">REJETÉ</em> <span th:text="#{multiupdate.or}">ou</span> <em th:text="#{multiupdate.state.canceled}">ANNULÉ</em></li>
+                    <li><span th:text="#{multiupdate.requests.in.state}">Soit vous avez des demandes en état</span> <em>EN_IMPRESSION</em> <span th:text="#{multiupdate.or}">ou</span> <em>EN_ENCODAGE</em>
+                        <span th:text="#{multiupdate.no.modification.rights}">dont vous n'avez pas les droits de modification</span>
                     </li>
                 </ul>
             </div>
             <div class="col-lg-6">
                 <th:block th:if="${validatedFlag}">
                     &nbsp;
-                    <button id="validationBtn" class="btn btn-danger" data-toggle="modal" data-target="#modalValidation">
+                    <button id="validationBtn" class="btn btn-danger" data-toggle="modal" data-target="#modalValidation" th:text="#{common.validation}">
                         Rejouer la procédure de validation / invalidation
                     </button>
                     <div class="modal fade" tabindex="-1" role="dialog" id="modalValidation">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                                    <button type="button" class="close" data-dismiss="modal" th:label="#{common.close}">
+                                        <span aria-hidden="true" th:utext="#{common.times}">&times;</span>
                                     </button>
-                                    <h4 class="modal-title">Rejouer la procédure de validation / invalidation</h4>
+                                    <h4 class="modal-title" th:text="#{common.validation}">Rejouer la procédure de validation / invalidation</h4>
                                 </div>
                                 <div class="modal-body">
                                     <form th:action="@{/manager/multiReplayValidationOrInvalidation}" method="post" id="replayValidation"
@@ -183,11 +183,11 @@
                                         <th:block th:each="cardId : ${cardIds}">
                                             <input type="hidden" name="listeIds" th:value="${cardId}" />
                                         </th:block>
-                                        <button class="btn btn-success" type="submit">Confirmer</button>
+                                        <button class="btn btn-success" type="submit" th:text="#{common.confirm}">Confirmer</button>
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
                                 </div>
                             </div>
                         </div>
@@ -204,7 +204,7 @@
                                 <input type="checkbox" id="checkAdmin" name="updateEtatAdmin" />
                             </span>
                             <select id="forcedEtatFinal" name="forcedEtatFinal" class="form-control">
-                                <option value="">Aucune action</option>
+                                <option value="" th:text="#{multiupdate.no.action}">Aucune action</option>
                                 <option th:each="etat : ${allEtats}" th:value="${etat}" class="etat"
                                     th:text="#{|card.step.${etat}|}"></option>
                             </select>

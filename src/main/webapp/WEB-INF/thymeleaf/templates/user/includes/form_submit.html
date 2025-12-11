@@ -1,11 +1,11 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/form_submit.html -->
 <div th:fragment="form_submit">
     <fieldset class="scheduler-border">
-        <legend class="scheduler-border">Enregistrer la demande</legend>
+        <legend class="scheduler-border" th:text="#{form.submit}">Enregistrer la demande</legend>
         <div class="form-group">
-            <button class="send-leo btn btn-success" type="submit">Enregistrer</button>
+            <button class="send-leo btn btn-success" type="submit" th:text="#{common.save}">Enregistrer</button>
             &nbsp;
-            <a th:href="@{/user}" class="btn btn-primary">Annuler</a>
+            <a th:href="@{/user}" class="btn btn-primary" th:text="#{common.cancel}">Annuler</a>
         </div>
     </fieldset>
 </div>

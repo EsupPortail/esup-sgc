@@ -5,77 +5,77 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Performance / Java</title>
+    <title th:text="#{common.java.perf}">Performance / Java</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Performance / Java</h2>
+    <h2 th:text="#{common.java.perf}">Performance / Java</h2>
 
     <div>
-        <h3>Memory</h3>
+        <h3 th:text="#{javaperf.memory}">Memory</h3>
         <ul class="list">
-            <li th:text="'max Memory : ' + ${maxMemoryInMB} + ' MB'"></li>
-            <li th:text="'total Memory : ' + ${totalMemoryInMB} + ' MB'"></li>
-            <li th:text="'free Memory : ' + ${freeMemoryInMB} + ' MB'"></li>
-            <li th:text="'used Memory : ' + ${usedMemoryInMB} + ' MB'"></li>
+            <li><span th:text="#{javaperf.max.memory}">max Memory :</span> <span th:text="${maxMemoryInMB}"></span> MB</li>
+            <li><span th:text="#{javaperf.total.memory}">total Memory :</span> <span th:text="${totalMemoryInMB}"></span> MB</li>
+            <li><span th:text="#{javaperf.free.memory}">free Memory :</span> <span th:text="${freeMemoryInMB}"></span> MB</li>
+            <li><span th:text="#{javaperf.used.memory}">used Memory :</span> <span th:text="${usedMemoryInMB}"></span> MB</li>
         </ul>
     </div>
 
     <div>
-        <h3>Databases - pools de connexions</h3>
+        <h3 th:text="#{javaperf.db.pools}">Databases - pools de connexions</h3>
         <ul class="list">
             <li th:each="basicDataSource : ${basicDataSources}">
                 <span th:text="${basicDataSource.url}"></span> :
                 <ul>
-                    <li th:text="'active : ' + ${basicDataSource.numActive}"></li>
-                    <li th:text="'idle : ' + ${basicDataSource.numIdle}"></li>
-                    <li th:text="'max idle : ' + ${basicDataSource.maxIdle}"></li>
+                    <li><span th:text="#{javaperf.active}">active :</span> <span th:text="${basicDataSource.numActive}"></span></li>
+                    <li><span th:text="#{javaperf.idle}">idle :</span> <span th:text="${basicDataSource.numIdle}"></span></li>
+                    <li><span th:text="#{javaperf.max.idle}">max idle :</span> <span th:text="${basicDataSource.maxIdle}"></span></li>
                 </ul>
             </li>
         </ul>
     </div>
 
     <div>
-        <h3>Ldap - pools de connexions</h3>
+        <h3 th:text="#{javaperf.ldap.pools}">Ldap - pools de connexions</h3>
         <ul class="list">
             <li th:each="ldapContextSource : ${ldapContextSources}">
                 <span th:text="${ldapContextSource.value}"></span> /
                 <span th:text="${ldapContextSource.key.baseLdapPathAsString}"></span> :
                 <ul>
-                    <li th:text="'active : ' + ${ldapContextSource.key.numActive}"></li>
-                    <li th:text="'idle : ' + ${ldapContextSource.key.numIdle}"></li>
-                    <li th:text="'max active : ' + ${ldapContextSource.key.maxActive}"></li>
-                    <li th:text="'max idle : ' + ${ldapContextSource.key.maxIdle}"></li>
+                    <li><span th:text="#{javaperf.active}">active :</span> <span th:text="${ldapContextSource.key.numActive}"></span></li>
+                    <li><span th:text="#{javaperf.idle}">idle :</span> <span th:text="${ldapContextSource.key.numIdle}"></span></li>
+                    <li><span th:text="#{javaperf.max.active}">max active :</span> <span th:text="${ldapContextSource.key.maxActive}"></span></li>
+                    <li><span th:text="#{javaperf.max.idle}">max idle :</span> <span th:text="${ldapContextSource.key.maxIdle}"></span></li>
                 </ul>
             </li>
         </ul>
     </div>
 
     <div>
-        <h3>Threads</h3>
+        <h3 th:text="#{javaperf.threads}">Threads</h3>
         <ul class="list">
             <li>
-                <span th:text="${javaPerfWrapper.threadCount}"></span> threads en cours
+                <span th:text="${javaPerfWrapper.threadCount}"></span> <span th:text="#{javaperf.threads.current}">threads en cours</span>
                 <ul>
                     <li th:each="threadState : ${threadStateCount}"
                         th:classappend="${threadState.key == 'RUNNABLE'} ? 'alert-warning' : (${threadState.key == 'BLOCKED'} ? 'alert-danger' : '')"
                         th:text="${threadState.key} + ' : ' + ${threadState.value}"></li>
                 </ul>
             </li>
-            <li th:text="'avec un pic de ' + ${javaPerfWrapper.peakThreadCount} + ' threads'"></li>
-            <li th:text="'(num. thread courant : ' + ${currentThreadId} + ')'"></li>
+            <li><span th:text="#{javaperf.threads.peak}">avec un pic de</span> <span th:text="${javaPerfWrapper.peakThreadCount}"></span> <span th:text="#{javaperf.threads.label}">threads</span></li>
+            <li><span th:text="#{javaperf.threads.current.num}">(num. thread courant :</span> <span th:text="${currentThreadId}"></span>)</li>
         </ul>
 
         <table class="table table-striped">
             <tr>
-                <th>Thread Id</th>
-                <th>Thread Name</th>
-                <th>Thread State</th>
-                <th>Blocked Count</th>
-                <th>Blocked Time</th>
-                <th>Waited Count</th>
-                <th>Waited Time</th>
-                <th>Stack Trace</th>
+                <th th:text="#{javaperf.thread.id}">Thread Id</th>
+                <th th:text="#{javaperf.thread.name}">Thread Name</th>
+                <th th:text="#{javaperf.thread.state}">Thread State</th>
+                <th th:text="#{javaperf.blocked.count}">Blocked Count</th>
+                <th th:text="#{javaperf.blocked.time}">Blocked Time</th>
+                <th th:text="#{javaperf.waited.count}">Waited Count</th>
+                <th th:text="#{javaperf.waited.time}">Waited Time</th>
+                <th th:text="#{javaperf.stack.trace}">Stack Trace</th>
             </tr>
 
             <tr th:each="threadInfo : ${javaPerfWrapper.threadInfoWrappers}"

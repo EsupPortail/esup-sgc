@@ -10,21 +10,21 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" th:href="@{/}" th:text="#{application_name}"></a>
+        <a class="navbar-brand" th:href="@{/}" th:text="#{application.name}"></a>
 
         <div id="bs-navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
             <th:block sec:authorize="hasRole('ROLE_MANAGER') or hasRole('ROLE_CONSULT') or hasRole('ROLE_CONSULT_') or hasRole('ROLE_LIVREUR')">
                 <li th:classappend="${role} == 'user' ? 'active'">
-                    <a th:href="@{/user}">Vue Utilisateur</a>
+                    <a th:href="@{/user}" th:text="#{navbar.user.view}">Vue Utilisateur</a>
                 </li>
                 <li th:classappend="${role} == 'manager' ? 'active'">
-                    <a th:href="@{/manager(index='first')}">Vue Manager</a>
+                    <a th:href="@{/manager(index='first')}" th:text="#{navbar.manager.view}">Vue Manager</a>
                 </li>
             </th:block>
             <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                 <li th:classappend="${role} == 'admin' ? 'active'">
-                    <a th:href="@{/admin/currentsessions}">Admin</a>
+                    <a th:href="@{/admin/currentsessions}" th:text="#{navbar.admin}">Admin</a>
                 </li>
             </th:block>
             <th:block sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_SWITCH_USER')">
@@ -33,7 +33,7 @@
                 </li>
             </th:block>
             <li th:if="${navBarApps != null}" class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apps<span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span th:text="#{navbar.apps}">Apps</span><span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li th:each="navBarApp : ${navBarApps}" class="menuTools">
                         <a th:href="${navBarApp.url}">
@@ -45,7 +45,7 @@
             </li>
             <li>
                 <a href="#collapseHelp" data-toggle="collapse">
-                    <span class="glyphicon glyphicon-question-sign"></span> Aide
+                    <span class="glyphicon glyphicon-question-sign"></span> <span th:text="#{navbar.help}">Aide</span>
                 </a>
             </li>
         </ul>
@@ -65,7 +65,7 @@
         <th:block sec:authorize="hasRole('ROLE_PREVIOUS_ADMINISTRATOR')">
             <ul class="nav navbar-nav navbar-right esupsgc-supervisor-nav">
                 <li>
-                    <a th:href="@{/logout}" class="btn btn-warning">SORTIR DU SU !</a>
+                    <a th:href="@{/logout}" class="btn btn-warning" th:text="#{navbar.exit.su}">SORTIR DU SU !</a>
                 </li>
             </ul>
         </th:block>

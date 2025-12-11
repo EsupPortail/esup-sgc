@@ -6,19 +6,19 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Esup Nfc - Appareils JWS</title>
+    <title th:text="#{jwsdevices.title}">Esup Nfc - Appareils JWS</title>
 </head>
 <body>
 <div layout:fragment="content">
-    <h2>Esup Nfc</h2>
+    <h2 th:text="#{menu.esupnfc}">Esup Nfc</h2>
     <div>
         <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_EsupNfcSgcJwsDevice">
             <thead>
                 <tr>
-                    <th><a class="sorting" sd:pagination-sort="eppnInit">Eppn Init</a></th>
-                    <th><a class="sorting" sd:pagination-sort="numeroId">Numéro Id</a></th>
-                    <th>Modifier</a></th>
-                    <th>Supprimer</th>
+                    <th><a class="sorting" sd:pagination-sort="eppnInit" th:text="#{common.eppn.init}">Eppn Init</a></th>
+                    <th><a class="sorting" sd:pagination-sort="numeroId" th:text="#{common.id}">Numéro Id</a></th>
+                    <th th:text="#{common.edit}">Modifier</a></th>
+                    <th th:text="#{common.delete}">Supprimer</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,13 +27,13 @@
                     <td th:text="${device.numeroId}"></td>
                     <td>
                         <a th:href="@{/admin/jwsdevices/{id}(id=${device.id},form=true)}" class="btn btn-primary">
-                            <span class="glyphicon glyphicon-edit"></span> Modifier
+                            <span class="glyphicon glyphicon-edit"></span> <span th:text="#{common.edit}">Modifier</span>
                         </a>
                     </td>
                     <td>
                         <form th:action="@{/admin/jwsdevices/{id}(id=${device.id})}" th:method="delete" class="form-inline">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet appareil ?');">
-                                <span class="glyphicon glyphicon-trash"></span> Supprimer
+                            <button type="submit" class="btn btn-danger" th:onclick="|return confirm('#{jwsdevices.confirm.delete}')|">
+                                <span class="glyphicon glyphicon-trash"></span> <span th:text="#{common.delete}">Supprimer</span>
                             </button>
                         </form>
                     </td>

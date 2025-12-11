@@ -110,7 +110,7 @@ public class ToolsController {
 		for(Long cardId : cardDaoService.findAllCardIds()) {
 			cardEtatService.replayValidationOrInvalidation(cardId, validateServicesNames, resynchro);
 		}
-		redirectAttrs.addFlashAttribute("messageSuccess", "success_replayAllActivationDesactivation");
+		redirectAttrs.addFlashAttribute("messageSuccess", "admin.msg.succes.replayAllActivationDesactivation");
 		return "redirect:/admin/tools";
 	}
 
@@ -140,7 +140,7 @@ public class ToolsController {
 			for(Log log : logDaoService.findLogsByEppnCibleEquals(oldEppn).getResultList()) {
 				log.setEppnCible(newEppn);
 			}
-			redirectAttrs.addFlashAttribute("messageSuccess", "success_patchEsupSgcEppn");
+			redirectAttrs.addFlashAttribute("messageSuccess", "admin.msg.succes.patchEsupSgcEppn");
 		}
 		return "redirect:/admin/tools";
 	}

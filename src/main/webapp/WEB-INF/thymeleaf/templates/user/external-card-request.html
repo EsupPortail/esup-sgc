@@ -4,22 +4,22 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{./layouts/user.html}">
 <head>
-    <title>Léocarte extérieure détectée</title>
+    <title th:text="#{common.external.card.detected}">carte multi-services extérieure détectée</title>
 </head>
 <body>
 <div layout:fragment="content" class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
             <div class="panel-heading">
-                <h5>Léocarte extérieure détectée</h5>
+                <h5 th:text="#{common.external.card.detected}">carte multi-services extérieure détectée</h5>
             </div>
             <div class="panel-body">
-                <p>
-                    Vous avez une Léocarte non connue de notre Système de Gestion de Carte.
+                <p th:text="#{external.card.request.detected}">
+                    Vous avez une carte multi-services non connue de notre Système de Gestion de Carte.
                     Vous pouvez si vous le souhaitez accepter que nous l'importions dans notre système d'information.
                     Elle pourra ainsi être utilisée dans nos services de contrôle d'accès.
                 </p>
-                <div id="specimenleocarte">
+                <div id="specimencarte">
                     <div id="left">
                         <p id="recto1" th:text="${externalCard.recto1Printed}"></p>
                         <p id="recto2" th:text="${externalCard.recto2Printed}"></p>
@@ -39,8 +39,8 @@
             <form th:action="@{/user/externalCardEnable}" method="post">
                 <div class="form-group">
                     <button class="btn btn-success" type="submit"
-                            onclick="return confirm('Vous confirmez ?');">
-                        Je souhaite pouvoir utiliser ma Leocarte dans votre établissement
+                            th:onclick="'return confirm(\'' + #{common.confirm} + '\');'" th:text="#{external.card.request.wish}">
+                        Je souhaite pouvoir utiliser ma carte multi-services dans votre établissement
                     </button>
                 </div>
             </form>

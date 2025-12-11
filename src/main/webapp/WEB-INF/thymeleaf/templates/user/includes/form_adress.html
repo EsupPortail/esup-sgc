@@ -1,31 +1,31 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/form_adress.html -->
 <div th:fragment="form_adress" th:if="${displayFormParts['displayAdresse']}">
     <fieldset class="scheduler-border">
-        <legend class="scheduler-border">Adresse</legend>
-        <p>Adresse à laquelle la carte doit être retournée :</p>
+        <legend class="scheduler-border" th:text="#{common.address}">Adresse</legend>
+        <p th:text="#{form.address.return}">Adresse à laquelle la carte doit être retournée :</p>
         <div th:if="${user.userType != 'I' and user.userType != 'E'}">
             <div class="col-lg-7 col-xs-12">
                 <div class="radio">
                     <label for="radio3">
                         <input type="radio" name="flagAdresse" id="radio3" value="INT" checked="checked"/>
-                        Courrier Interne
+                        <span th:text="#{form.address.internal}">Courrier Interne</span>
                     </label>
                 </div>
-                <p class="text-primary">Merci de vérifier/modifier/compléter l'adresse de retour de la léocarte :</p>
+                <p class="text-primary" th:text="#{form.address.verify}">Merci de vérifier/modifier/compléter l'adresse de retour de la carte multi-services :</p>
                 <textarea rows="4" name="addressRequested" id="address" th:text="${user.address}"></textarea>
             </div>
             <div class="col-lg-5 col-xs-12">
                 <div class="radio">
                     <label for="radio4">
                         <input value="EXT" type="radio" name="flagAdresse" id="radio4"/>
-                        Domicile
+                        <span th:text="#{form.address.external}">Domicile</span>
                     </label>
                 </div>
                 <pre th:text="${user.externalAddress}"></pre>
             </div>
         </div>
         <div th:if="${user.userType == 'I' or user.userType == 'E'}">
-            <textarea rows="3" cols="25" name="addressRequested" id="address">&nbsp;</textarea>
+            <textarea rows="3" cols="25" name="addressRequested" id="address" th:utext="#{common.nbsp}">&nbsp;</textarea>
             <input type="hidden" value="EXT" name="flagAdresse"/>
         </div>
     </fieldset>

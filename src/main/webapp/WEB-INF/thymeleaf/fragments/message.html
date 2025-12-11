@@ -7,11 +7,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Message</h3>
+                <h3 th:text="#{common.message}">Message</h3>
             </div>
             <div class="modal-body">
                 <div th:if="${messageSuccess != null or param.messageSuccess != null}">
-                    <div id="dialog" title="Information" class="text-danger">
+                    <div id="dialog" th:title="#{common.info}" class="text-danger">
                         <div class="alert alert-success">
                             <span th:text="#{${messageSuccess != null ? messageSuccess : param.messageSuccess}}"></span>
                             <span th:text="${messageAddon != null ? messageAddon : param.messageAddon}"></span>
@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div th:if="${messageWarning != null or param.messageWarning != null}">
-                    <div id="dialog" title="Information" class="text-danger">
+                    <div id="dialog" th:title="#{common.info}" class="text-danger">
                         <div class="alert alert-warning">
                             <span th:text="#{${messageWarning != null ? messageWarning : param.messageWarning}}"></span>
                             <span th:text="${messageAddon != null ? messageAddon : param.messageAddon}"></span>
@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div th:if="${messageError != null or param.messageError != null}">
-                    <div id="dialog" title="Information" class="text-danger">
+                    <div id="dialog" th:title="#{common.info}" class="text-danger">
                         <div class="alert alert-danger">
                             <span th:text="#{${messageError != null ? messageError : param.messageError}}"></span>
                             <span th:text="${messageAddon != null ? messageAddon : param.messageAddon}"></span>
@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div th:if="${messageInfo != null or param.messageInfo != null}">
-                    <div id="dialog" title="Information" class="text-danger">
+                    <div id="dialog" th:title="#{common.info}" class="text-danger">
                         <div class="alert alert-info">
                             <span th:text="#{${messageInfo != null ? messageInfo : param.messageInfo}}"></span>
                             <span th:text="${messageAddon != null ? messageAddon : param.messageAddon}"></span>
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
             </div>
         </div>
     </div>

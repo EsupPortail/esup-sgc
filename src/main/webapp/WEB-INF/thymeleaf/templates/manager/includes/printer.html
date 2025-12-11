@@ -4,7 +4,7 @@
         <form id="printerEppnForm" th:action="@{/manager/setPrinterEppn}" method="post">
             <span th:classappend="${currentPrinter!=null and printers.get(currentPrinter) != null and printers.get(currentPrinter)} ? 'text-success glyphicon glyphicon-ok-sign' : 'text-danger glyphicon glyphicon-minus-sign'"></span>
             <select name="printerEppn" class="btn" th:classappend="${currentPrinter!=null and printers.get(currentPrinter) != null and printers.get(currentPrinter)} ? 'text-success' : 'text-danger'">
-                <option value="">Aucune imprimante sélectionnée</option>
+                <option value="" th:text="#{printers.none.selected}">Aucune imprimante sélectionnée</option>
                 <option th:each="printer : ${printers}"
                         th:value="${printer.key.eppn}"
                         th:selected="${printerEppn == printer.key.eppn}"

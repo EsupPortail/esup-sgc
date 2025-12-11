@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Impression carte</title>
+    <title th:text="#{common.card}">Impression carte</title>
     <style>
         @page { margin: 0; }
         body { padding: 0cm; margin: 0cm; }
@@ -41,7 +41,7 @@
                     <p id="recto5" th:utext="${card.user.recto5}"></p>
                     <p id="recto6" th:utext="${card.user.recto6}"></p>
                     <p id="recto7" th:utext="${card.user.recto7}"></p>
-                    <img alt="qrcode" th:src="${qrCodeUrl}" id="qrcode"/>
+                    <img th:alt="#{common.qrcode}" th:src="${qrCodeUrl}" id="qrcode"/>
                 </div>
                 <div id="right">
                     <img th:src="${photoUrl}" id="photo"/>
@@ -56,13 +56,13 @@
                         [[${cssBack}]]
                     </style>
                     <div th:id="${cssBackId}">
-                        <p id="verso1">verso1</p>
-                        <p id="verso2">verso2</p>
-                        <p id="verso3">verso3</p>
-                        <p id="verso4">verso4</p>
-                        <p id="verso5">verso5</p>
-                        <p id="verso6">verso6</p>
-                        <p id="verso7">verso7</p>
+                        <p id="verso1" th:text="#{common.verso1}">verso1</p>
+                        <p id="verso2" th:text="#{common.verso2}">verso2</p>
+                        <p id="verso3" th:text="#{common.verso3}">verso3</p>
+                        <p id="verso4" th:text="#{common.verso4}">verso4</p>
+                        <p id="verso5" th:text="#{common.verso5}">verso5</p>
+                        <p id="verso6" th:text="#{common.verso6}">verso6</p>
+                        <p id="verso7" th:text="#{common.verso7}">verso7</p>
                     </div>
                 </th:block>
             </th:block>

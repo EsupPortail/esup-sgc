@@ -6,12 +6,12 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Liste des messages d'action</title>
+    <title th:text="#{action.messages.list}">Liste des messages d'action</title>
 </head>
 <body>
 <div layout:fragment="content">
     <h2>
-        Liste des messages
+        <span th:text="#{action.messages.list}">Liste des messages</span>
         <a class="btn btn-primary" th:href="@{/admin/actionmessages?form}">
             <span class="glyphicon glyphicon-plus"></span>
         </a>
@@ -22,7 +22,7 @@
 
     <p>
         <h4>
-            <a class="glyphicon glyphicon-plus" data-toggle="collapse" href="#actionMessagesHelp">
+            <a class="glyphicon glyphicon-plus" data-toggle="collapse" href="#actionMessagesHelp" th:text="#{common.help}">
                 Aide / Descriptif
             </a>
             <hr/>
@@ -30,10 +30,10 @@
     </p>
 
     <div th:unless="${#maps.isEmpty(cardActionsMessagesConflictsList)}" class="alert alert-danger">
-        <b>Problème détecté sur les messages automatiques :</b>
+        <b th:text="#{action.messages.problem.detected}">Problème détecté sur les messages automatiques :</b>
         <ul>
             <li th:each="conflict : ${cardActionsMessagesConflictsList}">
-                conflits sur <span th:text="${conflict.key}"></span> :
+                <span th:text="#{list.conflicts.on}">conflits sur</span> <span th:text="${conflict.key}"></span> :
                 <span th:each="msg : ${conflict.value}">
                     <a th:href="@{/admin/actionmessages/{id}(id=${msg.id})}" th:text="${msg.id}"></a>
                     <span th:if="${!${#lists.isLast(conflict.value, msg)}}">, </span>
@@ -43,10 +43,10 @@
     </div>
 
     <div th:unless="${#maps.isEmpty(cardActionsMessagesUnreachableList)}" class="alert alert-warning">
-        <b>Problème détecté sur les messages suivants - ces messages ne sont pas cohérents avec le cycle de vie de la carte et ne seront jamais proposés / utilisés :</b>
+        <b th:text="#{action.messages.problem.list}">Problème détecté sur les messages suivants - ces messages ne sont pas cohérents avec le cycle de vie de la carte et ne seront jamais proposés / utilisés :</b>
         <ul>
             <li th:each="unreachable : ${cardActionsMessagesUnreachableList}">
-                Transition impossible - <span th:text="${unreachable.key}"></span> :
+                <span th:text="#{list.transition.impossible}">Transition impossible -</span> <span th:text="${unreachable.key}"></span> :
                 <span th:each="msg, stat : ${unreachable.value}">
                     <a th:href="@{/admin/actionmessages/{id}(id=${msg.id})}" th:text="${msg.id}"></a>
                      <span th:if="${!stat.last}">, </span>
@@ -57,42 +57,42 @@
 
     <div class="panel-collapse collapse well" id="actionMessagesHelp">
         <!-- Bloc d'aide, contenu repris du JSP -->
-        <p>Vous pouvez ici paramétrer des messages mails qui seront envoyés à l'utilisateur lors des changements d'état de la carte.</p>
+        <p th:text="#{action.messages.description}">Vous pouvez ici paramétrer des messages mails qui seront envoyés à l'utilisateur lors des changements d'état de la carte.</p>
         <p>
-            Lors du passage d'une carte d'un état à un autre - voir le descriptif du workflow ici :
-            <button class="btn btn-primary navbar-btn" data-target="#noticeEtats" data-toggle="modal" title="Etats" type="button">
+            <span th:text="#{action.messages.workflow.link}">Lors du passage d'une carte d'un état à un autre - voir le descriptif du workflow ici :</span>
+            <button class="btn btn-primary navbar-btn" data-target="#noticeEtats" data-toggle="modal" th:title="#{common.states}" type="button">
                 <span class="glyphicon glyphicon-info-sign"></span>
             </button>
         </p>
         <ul>
-            <li>l'état final est obligatoire, mais l'état initial non : en ne définissant pas l'état initial cela permet de proposer un même message pour toutes les transitions dont l'état final est celui sélectionné</li>
-            <li>le message correspond au mail qui sera envoyé à l'utilisateur final, ce même message sera affiché également dans sa vue utilisateur</li>
-            <li>Auto permet de préciser un message/mail à envoyer de manière automatique</li>
-            <li>mailTo permet d'envoyer le mail à cette adresse plutôt qu'à l'utilisateur</li>
-            <li>Defaut permet de préselectionner ce message/mail pour le gestionnaire</li>
+            <li th:text="#{action.messages.final.required}">l'état final est obligatoire, mais l'état initial non : en ne définissant pas l'état initial cela permet de proposer un même message pour toutes les transitions dont l'état final est celui sélectionné</li>
+            <li th:text="#{action.messages.email.info}">le message correspond au mail qui sera envoyé à l'utilisateur final, ce même message sera affiché également dans sa vue utilisateur</li>
+            <li th:text="#{action.messages.auto.info}">Auto permet de préciser un message/mail à envoyer de manière automatique</li>
+            <li th:text="#{action.messages.mailto.info}">mailTo permet d'envoyer le mail à cette adresse plutôt qu'à l'utilisateur</li>
+            <li th:text="#{action.messages.default.info}">Defaut permet de préselectionner ce message/mail pour le gestionnaire</li>
         </ul>
-        <h5>Exemples :</h5>
+        <h5 th:text="#{list.examples}">Exemples :</h5>
         <ul>
-            <li>Si on souhaite envoyer un message de confirmation de réactivation de cartes, on pourra proposer un message avec
+            <li><span th:text="#{action.messages.reactivation}">Si on souhaite envoyer un message de confirmation de réactivation de cartes, on pourra proposer un message avec</span>
                 <ul>
-                    <li>Etat Initial à <span class="label label-disabled" title="DISABLED">DÉSACTIVÉ</span></li>
-                    <li>Etat Final à <span class="label label-enabled" title="ENABLED">ACTIVÉ</span></li>
-                    <li>Auto à true</li>
-                    <li>Defaut à false</li>
+                    <li><span th:text="#{action.messages.initial.state}">Etat Initial à</span> <span class="label label-disabled" title="DISABLED" th:text="#{list.inactive}">DÉSACTIVÉ</span></li>
+                    <li><span th:text="#{action.messages.final.state}">Etat Final à</span> <span class="label label-enabled" title="ENABLED" th:text="#{list.active}">ACTIVÉ</span></li>
+                    <li th:text="#{action.messages.auto.true}">Auto à true</li>
+                    <li th:text="#{action.messages.default.false}">Defaut à false</li>
                 </ul>
             </li>
         </ul>
-        <h5>Nombre de jours avant la date de fin utilisateur</h5>
+        <h5 th:text="#{action.messages.caduc.days}">Nombre de jours avant la date de fin utilisateur</h5>
         <ul>
-            <li>Cette option permet de prévenir un utilisateur que sa carte deviendra caduque dans un nombre de jours donné.</li>
-            <li>Fonctionne uniquement sur un message avec état initial 'ACTIVÉ' et état final 'CADUC'</li>
-            <li>ESUP-SGC envoie ces mails via la tâche sendMails2PreventCaduc</li>
+            <li th:text="#{action.messages.caduc.option}">Cette option permet de prévenir un utilisateur que sa carte deviendra caduque dans un nombre de jours donné.</li>
+            <li th:text="#{action.messages.caduc.only}">Fonctionne uniquement sur un message avec état initial 'ACTIVÉ' et état final 'CADUC'</li>
+            <li th:text="#{action.messages.caduc.sent.via}">ESUP-SGC envoie ces mails via la tâche sendMails2PreventCaduc</li>
             <li>
-                <a th:href="@{/admin/logmails}">mails logués en base</a>
+                <a th:href="@{/admin/logmails}" th:text="#{action.messages.logged.emails}">mails logués en base</a>
             </li>
         </ul>
         <h5>MAIL_LISTE_PRINCIPALE</h5>
-        <p>Les mails sont envoyés à l'utilisateur (ou à mailTo), et en copie à la liste MAIL_LISTE_PRINCIPALE.</p>
+        <p th:text="#{action.messages.email.sent.to}">Les mails sont envoyés à l'utilisateur (ou à mailTo), et en copie à la liste MAIL_LISTE_PRINCIPALE.</p>
     </div>
 
     <div>
@@ -100,31 +100,31 @@
             <thead>
                 <tr>
                     <th>
-                        <a class="sorting" sd:pagination-sort="etatInitial">
+                        <a class="sorting" sd:pagination-sort="etatInitial" th:text="#{common.initial.state}">
                             Etat initial
                         </a>
                     </th>
                     <th>
-                        <a class="sorting" sd:pagination-sort="etatFinal">
+                        <a class="sorting" sd:pagination-sort="etatFinal" th:text="#{common.final.state}">
                             Etat final
                         </a>
                     </th>
-                    <th>Message</th>
+                    <th th:text="#{common.message}">Message</th>
                     <th>
-                        <a class="sorting" sd:pagination-sort="auto">
+                        <a class="sorting" sd:pagination-sort="auto" th:text="#{common.auto}">
                             Auto
                         </a>
                     </th>
                     <th>
-                        <a class="sorting" sd:pagination-sort="defaut">
+                        <a class="sorting" sd:pagination-sort="defaut" th:text="#{common.default}">
                             Defaut
                         </a>
                     </th>
-                    <th>MailTo</th>
-                    <th>Types utilisateur</th>
-                    <th>Logs</th>
-                    <th data-type="html" class="">Modifier</th>
-                    <th data-type="html" class="">Supprimer</th>
+                    <th th:text="#{common.mailto}">MailTo</th>
+                    <th th:text="#{common.user}">Types utilisateur</th>
+                    <th th:text="#{common.logs}">Logs</th>
+                    <th data-type="html" class="" th:text="#{common.edit}">Modifier</th>
+                    <th data-type="html" class="" th:text="#{common.delete}">Supprimer</th>
                 </tr>
             </thead>
             <tbody>
@@ -154,7 +154,7 @@
                     </td>
                     <td>
                         <form th:action="@{/admin/actionmessages/{id}(id=${msg.id}}" th:method="DELETE" class="form-inline">
-                            <button class="btn btn-danger" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?');">
+                            <button class="btn btn-danger" type="submit" th:onclick="|return confirm('#{action.messages.confirm.delete}')|">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                         </form>

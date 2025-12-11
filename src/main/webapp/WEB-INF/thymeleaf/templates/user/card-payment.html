@@ -5,14 +5,14 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Paiement</title>
+    <title th:text="#{common.payment}">Paiement</title>
 </head>
 <body>
 <div id="paymentDiv" layout:fragment="content">
     <script>
         var displayPayboxForm = [[${displayPayboxForm}]];
     </script>
-    <h2>Paiement</h2>
+    <h2 th:text="#{common.payment}">Paiement</h2>
     <div class="col-lg-2" th:if="${payBoxForm != null}">
         <form method="POST" th:action="${payBoxForm.actionUrl}" id="payboxForm">
             <input type="hidden" th:each="payBoxParam : ${payBoxForm.orderedParams}"
@@ -22,7 +22,7 @@
     </div>
     <div class="jumbotron">
         <strong>
-            Vous allez être redirigé vers la page de paiement! <br />
+            <span th:text="#{card.payment.redirect}">Vous allez être redirigé vers la page de paiement!</span> <br />
             <img th:src="@{/images/loader2.gif}" />
         </strong>
     </div>

@@ -160,7 +160,7 @@ public class ManagerLdapSearchController {
 	public String ldapUserExtForm(@RequestParam(value="eppn") String eppn, Model uiModel) {
 
 		Card externalCard = externalCardService.importExternalCard(eppn, null);
-		cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une Léocarte extérieure", "Importation d'une Léocarte extérieure", false, false);
+		cardEtatService.setCardEtatAsync(externalCard.getId(), Etat.ENABLED, "Importation d'une carte multi-services extérieure", "Importation d'une carte multi-services extérieure", false, false);
 		
 		uiModel.asMap().clear();
 		return "redirect:/manager/" + externalCard.getId();

@@ -1,18 +1,18 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/form_europeanCard.html -->
 <div th:fragment="form_europeanCard" th:if="${displayFormParts['displayEuropeanCard']}" >
     <fieldset class="scheduler-border">
-        <legend class="scheduler-border">Carte européenne</legend>
+        <legend class="scheduler-border" th:text="#{form.european.card.title}">Carte européenne</legend>
         <div class="alert alert-info">
-            <p>Souhaitez-vous adhérer au projet de carte étudiante européenne&nbsp;?</p>
+            <p th:text="#{form.european.card.question}">Souhaitez-vous adhérer au projet de carte étudiante européenne&nbsp;?</p>
         </div>
         <div class="radio">
             <label for="radioEurope1">
-                <input type="radio" name="europeanTransient" id="radioEurope1" value="true" /> Oui
+                <input type="radio" name="europeanTransient" id="radioEurope1" value="true" /> <span th:text="#{common.yes}">Oui</span>
             </label>
         </div>
         <div class="radio">
             <label for="radioEurope2">
-                <input type="radio" name="europeanTransient" id="radioEurope2" value="false" /> Non
+                <input type="radio" name="europeanTransient" id="radioEurope2" value="false" /> <span th:text="#{common.no}">Non</span>
             </label>
         </div>
         <div th:utext="${europeanCardInfo}"></div>

@@ -5,7 +5,7 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Utilisateur</title>
+    <title th:text="#{common.user}">Utilisateur</title>
 </head>
 <body>
 <div id="cardShow" layout:fragment="content" th:if="${user != null}">
@@ -16,7 +16,7 @@
         var printerEppn = "[[${printerEppn}]]";
     </script>
     <h2>
-        Utilisateur
+        <span th:text="#{common.user}">Utilisateur</span>
         <a class="btn btn-primary pull-right" th:href="@{/manager(index='first')}" type="button">
             <span class="glyphicon glyphicon-home"></span>
         </a>
@@ -36,12 +36,12 @@
                                th:href="@{/admin/logs(eppnCible=${user.eppn})}">
                                 <span class="glyphicon glyphicon-time"></span>
                             </a>
-                            <span class="pull-right">&nbsp;</span>
+                            <span class="pull-right" th:utext="#{common.nbsp}">&nbsp;</span>
                             <a class="btn btn-info pull-right"
                                th:href="@{/admin/logmails(eppn=${user.eppn})}">
                                 <span class="glyphicon glyphicon-envelope"></span>
                             </a>
-                            <span class="pull-right">&nbsp;</span>
+                            <span class="pull-right" th:utext="#{common.nbsp}">&nbsp;</span>
                             <a class="btn btn-info pull-right"
                                th:href="@{/admin/payboxtransactions(eppn=${user.eppn})}">
                                 <span class="glyphicon glyphicon-euro"></span>
@@ -53,150 +53,151 @@
                     <div class="col-lg-4">
                         <div class="well">
                             <h3>
-                                Infos Perso
+                                <span th:text="#{manager.info.personal}">Infos Perso</span>
                                 <span th:if="${user.defaultPhoto != null and user.defaultPhoto.bigFile != null and user.defaultPhoto.bigFile.md5 != null}">
                                     <img class="col-lg-2 col-md-2 col-xs-3 pull-right img-thumbnail center"
                                          th:src="@{/manager/{id}/photo(id=${user.id})}"/>
                                 </span>
                             </h3>
                             <dl class="dl-horizontal displayWs">
-                                <dt>Prénom :</dt>
+                                <dt th:text="#{common.firstname}">Prénom :</dt>
                                 <dd th:utext="${user.firstname}"></dd>
-                                <dt>Nom :</dt>
+                                <dt th:text="#{common.name}">Nom :</dt>
                                 <dd th:utext="${user.name}"></dd>
-                                <dt>Date de naissance :</dt>
+                                <dt th:text="#{common.birthday}">Date de naissance :</dt>
                                 <dd th:utext="${#temporals.format(user.birthday, 'dd/MM/yyyy')}"></dd>
-                                <dt>Type :</dt>
+                                <dt th:text="#{show.type}">Type :</dt>
                                 <dd th:utext="${user.userType}"></dd>
-                                <dt>Email :</dt>
+                                <dt th:text="#{common.email}">Email :</dt>
                                 <dd th:utext="${user.email}"></dd>
-                                <dt>Adresse :</dt>
+                                <dt th:text="#{show.address}">Adresse :</dt>
                                 <dd th:utext="${user.address}"></dd>
-                                <dt>Adresse Externe :</dt>
+                                <dt th:text="#{show.address.external}">Adresse Externe :</dt>
                                 <dd th:utext="${user.externalAddress}"></dd>
-                                <dt>Demande de nouvelle carte gratuite :</dt>
-                                <dd th:utext="${user.requestFree ? 'oui' : 'non'}"></dd>
-                                <dt>Editable :</dt>
-                                <dd th:utext="${user.editable ? 'oui' : 'non'}"></dd>
-                                <dt class="fieldWs">Crous :</dt>
-                                <dd class="fieldWs" th:text="${user.crous ? 'oui' : 'non'}"></dd>
-                                <dt class="fieldWs">Identifiant Crous :</dt>
+                                <dt th:text="#{show.free.renewal}">Demande de nouvelle carte gratuite :</dt>
+                                <dd th:utext="${user.requestFree} ? #{megamenu.yes} : #{megamenu.no}"></dd>
+                                <dt th:text="#{show.editable}">Editable :</dt>
+                                <dd th:utext="${user.editable} ? #{megamenu.yes} : #{megamenu.no}"></dd>
+                                <dt class="fieldWs" th:text="#{show.crous}">Crous :</dt>
+                                <dd class="fieldWs" th:text="${user.crous} ? #{megamenu.yes} : #{megamenu.no}"></dd>
+                                <dt class="fieldWs" th:text="#{show.crous.identifier}">Identifiant Crous :</dt>
                                 <dd class="fieldWs" th:text="${user.crousIdentifier}"></dd>
                                 <span th:unless="${#strings.isEmpty(user.crousError)}">
-                                    <dt class="fieldWs"><span class="badge alert-danger">!</span> Erreur Crous :</dt>
+                                    <dt class="fieldWs"><span class="badge alert-danger">!</span> <span th:text="#{show.crous.error}">Erreur Crous :</span></dt>
                                     <dd class="fieldWs" th:text="${user.crousError}"></dd>
                                 </span>
                                 <span th:if="${user.crous}">
-                                    <button id="getCrousRighHolder" type="button">Visualiser les données côté CROUS</button>
+                                    <button id="getCrousRighHolder" type="button" th:text="#{show.view.crous.data}">Visualiser les données côté CROUS</button>
                                     <div id="getCrousRighHolderDiv"></div>
                                 </span>
-                                <dt class="fieldWs">European Student Card :</dt>
-                                <dd class="fieldWs" th:text="${user.europeanStudentCard ? 'oui' : 'non'}"></dd>
+                                <dt class="fieldWs" th:text="#{show.european.student.card}">European Student Card :</dt>
+                                <dd class="fieldWs" th:text="${user.europeanStudentCard} ? #{megamenu.yes} : #{megamenu.no}"></dd>
                                 <span th:if="${user.europeanStudentCard}">
-                                    <button id="getEscrStudent" type="button">Visualiser les données côté ESCR</button>
+                                    <button id="getEscrStudent" type="button" th:text="#{show.view.escr.data}">Visualiser les données côté ESCR</button>
                                     <div id="getEscrStudentDiv"></div>
                                 </span>
-                                <dt class="fieldWs">Diffusion Photo :</dt>
-                                <dd class="fieldWs" th:text="${user.difPhoto ? 'oui' : 'non'}"></dd>
-                                <dt>Institut :</dt>
+                                <dt class="fieldWs" th:text="#{show.photo.sharing}">Diffusion Photo :</dt>
+                                <dd class="fieldWs" th:text="${user.difPhoto} ? #{megamenu.yes} : #{megamenu.no}"></dd>
+                                <dt th:text="#{show.institute}">Institut :</dt>
                                 <dd th:utext="${user.institute}"></dd>
-                                <dt>Etablissement Rne :</dt>
+                                <dt th:text="#{show.rne.establishment}">Etablissement Rne :</dt>
                                 <dd th:utext="${user.rneEtablissement}"></dd>
-                                <dt class="fieldWs">Statut Cnous :</dt>
+                                <dt class="fieldWs" th:text="#{show.cnous.status}">Statut Cnous :</dt>
                                 <dd class="fieldWs" th:text="${user.cnousReferenceStatut}"></dd>
-                                <dt>Date limite :</dt>
+                                <dt th:text="#{common.limit.date}">Date limite :</dt>
                                 <dd th:utext="${#temporals.format(user.dueDate, 'dd/MM/yyyy')}"></dd>
-                                <dt class="fieldWs">Société crous :</dt>
+                                <dt class="fieldWs" th:text="#{show.crous.company}">Société crous :</dt>
                                 <dd class="fieldWs" th:text="${user.idCompagnyRate}"></dd>
-                                <dt class="fieldWs">Tarif crous :</dt>
+                                <dt class="fieldWs" th:text="#{show.crous.rate}">Tarif crous :</dt>
                                 <dd class="fieldWs" th:text="${user.idRate}"></dd>
-                                <dt>eduPersonPrimaryAffiliation</dt>
+                                <dt th:text="#{show.edupersonprimaryaffiliation}">eduPersonPrimaryAffiliation</dt>
                                 <dd th:utext="${user.eduPersonPrimaryAffiliation}"></dd>
-                                <dt>supannEmpId</dt>
+                                <dt th:text="#{common.supannempid}">supannEmpId</dt>
                                 <dd th:utext="${user.supannEmpId}"></dd>
-                                <dt>supannEtuId</dt>
+                                <dt th:text="#{common.supannetuid}">supannEtuId</dt>
                                 <dd th:utext="${user.supannEtuId}"></dd>
-                                <dt>supannCodeINE</dt>
+                                <dt th:text="#{common.supanncodeine}">supannCodeINE</dt>
                                 <dd th:utext="${user.supannCodeINE}"></dd>
-                                <dt>academicLevel</dt>
+                                <dt th:text="#{show.academic.level}">academicLevel</dt>
                                 <dd th:utext="${user.academicLevel}"></dd>
-                                <dt>supannEntiteAffectationPrincipale</dt>
+                                <dt th:text="#{show.supannentiteaffectationprincipale}">supannEntiteAffectationPrincipale</dt>
                                 <dd th:utext="${user.supannEntiteAffectationPrincipale}"></dd>
-                                <dt>secondaryId</dt>
+                                <dt th:text="#{show.secondary.id}">secondaryId</dt>
                                 <dd th:utext="${user.secondaryId}"></dd>
-                                <dt>template</dt>
+                                <dt th:text="#{show.template}">template</dt>
                                 <dd th:utext="${user.templateKey}"></dd>
-                                <dt>template de la dernière carte</dt>
+                                <dt th:text="#{show.last.card.template}">template de la dernière carte</dt>
                                 <dd th:utext="${user.lastCardTemplatePrinted}"></dd>
-                                <dt>recto1</dt>
+                                <dt th:text="#{common.recto1}">recto1</dt>
                                 <dd th:utext="${user.recto1}"></dd>
-                                <dt>recto2</dt>
+                                <dt th:text="#{common.recto2}">recto2</dt>
                                 <dd th:utext="${user.recto2}"></dd>
-                                <dt>recto3</dt>
+                                <dt th:text="#{common.recto3}">recto3</dt>
                                 <dd th:utext="${user.recto3}"></dd>
-                                <dt>recto4</dt>
+                                <dt th:text="#{common.recto4}">recto4</dt>
                                 <dd th:utext="${user.recto4}"></dd>
-                                <dt>recto5</dt>
+                                <dt th:text="#{common.recto5}">recto5</dt>
                                 <dd th:utext="${user.recto5}"></dd>
-                                <dt>recto6</dt>
+                                <dt th:text="#{common.recto6}">recto6</dt>
                                 <dd th:utext="${user.recto6}"></dd>
-                                <dt>recto7</dt>
+                                <dt th:text="#{common.recto7}">recto7</dt>
                                 <dd th:utext="${user.recto7}"></dd>
-                                <dt>verso1</dt>
+                                <dt th:text="#{common.verso1}">verso1</dt>
                                 <dd th:utext="${user.verso1}"></dd>
-                                <dt>verso2</dt>
+                                <dt th:text="#{common.verso2}">verso2</dt>
                                 <dd th:utext="${user.verso2}"></dd>
-                                <dt>verso3</dt>
+                                <dt th:text="#{common.verso3}">verso3</dt>
                                 <dd th:utext="${user.verso3}"></dd>
-                                <dt>verso4</dt>
+                                <dt th:text="#{common.verso4}">verso4</dt>
                                 <dd th:utext="${user.verso4}"></dd>
-                                <dt>verso5</dt>
+                                <dt th:text="#{common.verso5}">verso5</dt>
                                 <dd th:utext="${user.verso5}"></dd>
-                                <dt>verso6</dt>
+                                <dt th:text="#{common.verso6}">verso6</dt>
                                 <dd th:utext="${user.verso6}"></dd>
-                                <dt>verso7</dt>
+                                <dt th:text="#{common.verso7}">verso7</dt>
                                 <dd th:utext="${user.verso7}"></dd>
-                                <dt>freeField1</dt>
+                                <dt th:text="#{show.freefield1}">freeField1</dt>
                                 <dd th:utext="${user.freeField1}"></dd>
-                                <dt>freeField2</dt>
+                                <dt th:text="#{show.freefield2}">freeField2</dt>
                                 <dd th:utext="${user.freeField2}"></dd>
-                                <dt>freeField3</dt>
+                                <dt th:text="#{show.freefield3}">freeField3</dt>
                                 <dd th:utext="${user.freeField3}"></dd>
-                                <dt>freeField4</dt>
+                                <dt th:text="#{show.freefield4}">freeField4</dt>
                                 <dd th:utext="${user.freeField4}"></dd>
-                                <dt>freeField5</dt>
+                                <dt th:text="#{show.freefield5}">freeField5</dt>
                                 <dd th:utext="${user.freeField5}"></dd>
-                                <dt>freeField6</dt>
+                                <dt th:text="#{show.freefield6}">freeField6</dt>
                                 <dd th:utext="${user.freeField6}"></dd>
-                                <dt>freeField7</dt>
+                                <dt th:text="#{show.freefield7}">freeField7</dt>
                                 <dd th:utext="${user.freeField7}"></dd>
                             </dl>
-                            <h3>
+                            <h3 th:text="#{show.update}">
                                 Mise à jour
                             </h3>
                             <dl class="dl-horizontal displayWs">
-                                <dt>date de mise à jour</dt>
+                                <dt th:text="#{show.update.date}">date de mise à jour</dt>
                                 <dd th:utext="${#temporals.format(user.updateDate, 'dd/MM/yyyy HH:mm')}"></dd>
-                                <dt>raison</dt>
+                                <dt th:text="#{show.reason.label}">raison</dt>
                                 <dd th:utext="${user.updateComment}"></dd>
-                                <dt>nbre synchros successives</dt>
+                                <dt th:text="#{show.sync.count}">nbre synchros successives</dt>
                                 <dd th:utext="${user.nbResyncSuccessives}"></dd>
                             </dl>
                             <th:block th:if="${managePermission}">
                                 <a class="btn btn-danger"
-                                   th:href="@{/manager/{id}/resync-user/{eppn}(id=${currentCard.id}, eppn=${user.eppn})}">
+                                   th:href="@{/manager/{id}/resync-user/{eppn}(id=${currentCard.id}, eppn=${user.eppn})}"
+                                   th:text="#{show.resync}">
                                     Resynchronisation
                                 </a>
                                 <div th:if="${!hasRequestCard}">
                                     <hr/>
-                                    <div th:if="${!user.requestFree}" class="alert alert-warning">
+                                    <div th:if="${!user.requestFree}" class="alert alert-warning" th:text="#{show.payment.required}">
                                         La demande d'une nouvelle carte requiert normalement ici un paiement !
                                     </div>
                                     <form class="form-horizontal" th:action="@{/manager/ldapUserForm}" method="POST" id="ldapUserFormUrl">
                                         <input type="hidden" th:value="${user.eppn}" name="eppn"/>
                                         <button type="submit" class="btn"
                                                 th:classappend="${user.requestFree} ? 'btn-primary' : 'btn-warning'">
-                                            Faire une demande
+                                            <span th:text="#{show.make.request}">Faire une demande</span>
                                         </button>
                                     </form>
                                 </div>
@@ -206,8 +207,8 @@
                     <div class="col-lg-8">
                         <div th:replace="~{templates/manager/includes/printer :: printer}"></div>
                         <div class="well" id="allCards">
-                            <h3>Cartes</h3>
-                            <p th:if="${user.cards == null}">Aucune carte à afficher.</p>
+                            <h3 th:text="#{common.cards}">Cartes</h3>
+                            <p th:if="${user.cards == null}" th:text="#{show.no.cards}">Aucune carte à afficher.</p>
                             <div th:each="card, iStat : ${user.cards}">
                                 <div aria-multiselectable="true" class="panel-group" id="accordion" role="tablist">
                                     <div class="panel panel-primary">
@@ -221,7 +222,7 @@
                                                         <span th:text="#{|card.step.${card.etat}|}"></span> -
                                                         <span th:text="${#temporals.format(card.dateEtat, 'dd/MM/yyyy')}"></span>
                                                     </span>
-                                                    <span th:if="${card.external}">- Carte extérieure !</span>
+                                                    <span th:if="${card.external}" th:text="#{show.external.card}">- Carte extérieure !</span>
                                                 </a>
                                             </h5>
                                         </div>
@@ -236,7 +237,7 @@
                                                         <th:block th:if="${card.isPhotoEditable}">
                                                             <button class="btn btn-default btn-block"
                                                                     data-target="#retouche" data-toggle="modal"
-                                                                    id="btnRetouche" type="button">
+                                                                    id="btnRetouche" type="button" th:text="#{show.retouch}">
                                                                 Retoucher
                                                             </button>
                                                             <!-- Bloc modal retouche en Thymeleaf -->
@@ -244,23 +245,23 @@
                                                                 <div class="modal-dialog">
                                                                     <div class="modal-content">
                                                                         <div class="modal-header">
-                                                                            <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
-                                                                            <h3 class="modal-title">Modification Photo</h3>
+                                                                            <button aria-hidden="true" class="close" data-dismiss="modal" type="button" th:utext="#{common.times}">&times;</button>
+                                                                            <h3 class="modal-title" th:text="#{show.photo.modification}">Modification Photo</h3>
                                                                         </div>
                                                                         <div class="modal-body">
                                                                             <form th:action="@{/manager/updatePhoto}" enctype="multipart/form-data" id="updatePhoto" method="post">
                                                                                 <div id="image-cropper">
                                                                                     <div class="col-lg-4">
-                                                                                        <div class="ezcrop-preview col-lg-4" id="ezcrop-preview">&nbsp;</div>
+                                                                                        <div class="ezcrop-preview col-lg-4" id="ezcrop-preview" th:utext="#{common.nbsp}">&nbsp;</div>
                                                                                         <div id="container">
                                                                                             <!--  -->
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-lg-8">
                                                                                         <div class="well" id="ezcrop-info">
-                                                                                            <label>Zoom</label>
+                                                                                            <label th:text="#{common.zoom}">Zoom</label>
                                                                                             <input class="ezcrop-image-zoom-input" type="range"/>
-                                                                                            <label>Rotation</label>
+                                                                                            <label th:text="#{common.rotation}">Rotation</label>
                                                                                             <br/>
                                                                                             <button class="rotate-ccw" id="rotate-ccw" type="button">
                                                                                                 <span aria-hidden="true" class="glyphicon glyphicon-repeat icon-flipped"></span>
@@ -272,20 +273,20 @@
                                                                                             <br/>
                                                                                         </div>
                                                                                         <div class="well" id="filterSliders">
-                                                                                            <label for="brighten">Luminosité</label>
+                                                                                            <label for="brighten" th:text="#{common.luminosity}">Luminosité</label>
                                                                                             <input id="brighten" max="1" min="-1" step="0.05" type="range" value="0"/>
-                                                                                            <label for="contrast">Contraste</label>
+                                                                                            <label for="contrast" th:text="#{common.contrast}">Contraste</label>
                                                                                             <input id="contrast" max="100" min="-100" step="1" type="range" value="0"/>
-                                                                                            <label for="enhance">Amélioration</label>
+                                                                                            <label for="enhance" th:text="#{common.enhancement}">Amélioration</label>
                                                                                             <input id="enhance" max="1" min="-1" step="0.05" type="range" value="0"/>
-                                                                                            <label for="rotate">Rotation libre</label>
+                                                                                            <label for="rotate" th:text="#{common.free.rotation}">Rotation libre</label>
                                                                                             <input id="rotate" max="360" min="0" step="1" type="range" value="0"/>
                                                                                         </div>
                                                                                         <div class="form-group">
-                                                                                            <button class="btn btn-primary" id="btnColors" type="button">Filtres</button>&nbsp;
-                                                                                            <button class="btn btn-warning" id="scaleBtn" type="button">Echelle</button>&nbsp;
-                                                                                            <button class="btn btn-default" id="resetBtn" type="button">Effacer</button>&nbsp;
-                                                                                            <button class="btn btn-success" id="exportAdmin" onclick="return confirm('Confirmez la modification');" type="submit">Valider</button>
+                                                                                            <button class="btn btn-primary" id="btnColors" type="button" th:text="#{common.filters}">Filtres</button>&nbsp;
+                                                                                            <button class="btn btn-warning" id="scaleBtn" type="button" th:text="#{common.scale}">Echelle</button>&nbsp;
+                                                                                            <button class="btn btn-default" id="resetBtn" type="button" th:text="#{common.erase}">Effacer</button>&nbsp;
+                                                                                            <button class="btn btn-success" id="exportAdmin" th:onclick="'return confirm(\'' + #{show.confirm.modification} + '\');'" type="submit" th:text="#{common.validate}">Valider</button>
                                                                                         </div>
                                                                                         <input id="cardId" name="cardId" type="hidden" th:value="${card.id}"/>
                                                                                         <input class="ezcrop-image-data" name="imageData" type="hidden"/>
@@ -295,7 +296,7 @@
                                                                             <hr/>
                                                                         </div>
                                                                         <div class="modal-footer">
-                                                                            <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                            <button aria-hidden="true" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -307,15 +308,15 @@
                                                     <button class="preview btn btn-warning btn-block"
                                                             th:attr="data-target='#previewCarte' + ${iStat.index}"
                                                             data-toggle="modal"
-                                                            type="button">
+                                                            type="button" th:text="#{common.preview.action}">
                                                         Prévisualiser
                                                     </button>
                                                     <div class="modal fade" th:id="'previewCarte' + ${iStat.index}">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
-                                                                    <h3 class="modal-title">Prévisualisation de la carte</h3>
+                                                                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button" th:utext="#{common.times}">&times;</button>
+                                                                    <h3 class="modal-title" th:text="#{common.card}">Prévisualisation de la carte</h3>
                                                                 </div>
                                                                 <div class="modal-body"
                                                                      th:with="
@@ -359,7 +360,7 @@
                                                                             <p id="recto5" th:utext="${card.printed} ? ${card.recto5Printed} : ${card.user.recto5}"></p>
                                                                             <p id="recto6" th:utext="${card.printed} ? ${card.recto6Printed} : ${card.user.recto6}"></p>
                                                                             <p id="recto7" th:utext="${card.printed} ? ${card.recto7Printed} : ${card.user.recto7}"></p>
-                                                                            <img alt="qrcode" id="qrcode" th:src="${QRCodeUrl}"/>
+                                                                            <img th:alt="#{common.qrcode}" id="qrcode" th:src="${QRCodeUrl}"/>
                                                                         </div>
                                                                         <div id="right">
                                                                             <img id="photo" th:src="${photoUrl}"/>
@@ -368,7 +369,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -377,7 +378,7 @@
                                                     <th:block sec:authorize="hasRole('ROLE_LIVREUR') or hasRole('ROLE_MANAGER')">
                                                         <div th:if="${livraison and (card.etat.name() == 'ENABLED' or card.etat.name() == 'ENCODED' or card.etat.name() == 'DISABLED' or card.etat.name() == 'CADUC' or card.etat.name() == 'DESTROYED') and #strings.isEmpty(card.deliveredDate)}">
                                                             <form th:action="@{/manager/deliver/{id}(id=${card.id})}" method="post">
-                                                                <button class="btn btn-primary btn-block" type="submit">
+                                                                <button class="btn btn-primary btn-block" type="submit" th:text="#{common.mark.delivered}">
                                                                     Noter comme livrée
                                                                 </button>
                                                             </form>
@@ -398,8 +399,8 @@
                                                                             <div class="modal-dialog">
                                                                                 <div class="modal-content">
                                                                                     <div class="modal-header">
-                                                                                        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
-                                                                                        <h3 class="modal-title">Commentaire</h3>
+                                                                                        <button aria-hidden="true" class="close" data-dismiss="modal" type="button" th:utext="#{common.times}">&times;</button>
+                                                                                        <h3 class="modal-title" th:text="#{common.comment}">Commentaire</h3>
                                                                                     </div>
                                                                                     <div class="modal-body">
                                                                                         <div class="form-group" th:if="${etatAvailable.name() == 'DISABLED'}">
@@ -426,12 +427,12 @@
                                                                                         <button class="btn btn-success btn-block" th:id="${etatAvailable}">
                                                                                             <span th:text="#{|manager.action.${card.etat}-${etatAvailable}|}"></span>
                                                                                         </button>
-                                                                                        <h4>Messages prédéfinis</h4>
+                                                                                        <h4 th:text="#{common.predefined.messages}">Messages prédéfinis</h4>
                                                                                         <div class="panel-default">
                                                                                             <div class="panel-heading">
                                                                                                 <a class="accordion-toggle" data-parent="#accordionfilter" data-toggle="collapse"
                                                                                                    th:href="'#msgChoice_' + ${iStat.index} + '_' + ${jStat.index}">
-                                                                                                    <span class="glyphicon glyphicon-plus">Choisir</span>
+                                                                                                    <span class="glyphicon glyphicon-plus" th:text="#{common.choose}">Choisir</span>
                                                                                                 </a>
                                                                                             </div>
                                                                                             <div class="panel-collapse collapse well"
@@ -450,7 +451,7 @@
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="modal-footer">
-                                                                                        <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                                                                        <button aria-hidden="true" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -461,7 +462,7 @@
                                                                       th:action="${etatActionUrl + '?etatFinal=' + etatAvailable}"
                                                                       th:id="${etatAvailable + 'Form'}" method="post">
                                                                     <button class="btn btn-danger btn-block"
-                                                                            onclick="return confirm('Confirmez la destruction de la carte');"
+                                                                            th:onclick="'return confirm(\'' + #{show.confirm.destroy} + '\');'"
                                                                             type="submit">
                                                                         <span th:text="#{${'manager.action.' + card.etat + '-' + etatAvailable}}"></span>
                                                                     </button>
@@ -480,103 +481,104 @@
                                                 </div>
                                                 <!-- Détails des cartes -->
                                                 <dl class="dl-horizontal col-lg-5">
-                                                    <h4>Recto/verso</h4>
-                                                    <dt>recto1</dt>
+                                                    <h4 th:text="#{show.recto.verso}">Recto/verso</h4>
+                                                    <dt th:text="#{common.recto1}">recto1</dt>
                                                     <dd th:utext="${card.recto1Printed}"></dd>
-                                                    <dt>recto2</dt>
+                                                    <dt th:text="#{common.recto2}">recto2</dt>
                                                     <dd th:utext="${card.recto2Printed}"></dd>
-                                                    <dt>recto3</dt>
+                                                    <dt th:text="#{common.recto3}">recto3</dt>
                                                     <dd th:utext="${card.recto3Printed}"></dd>
-                                                    <dt>recto4</dt>
+                                                    <dt th:text="#{common.recto4}">recto4</dt>
                                                     <dd th:utext="${card.recto4Printed}"></dd>
-                                                    <dt>recto5</dt>
+                                                    <dt th:text="#{common.recto5}">recto5</dt>
                                                     <dd th:utext="${card.recto5Printed}"></dd>
-                                                    <dt>recto6</dt>
+                                                    <dt th:text="#{common.recto6}">recto6</dt>
                                                     <dd th:utext="${card.recto6Printed}"></dd>
-                                                    <dt>recto7</dt>
+                                                    <dt th:text="#{common.recto7}">recto7</dt>
                                                     <dd th:utext="${card.recto7Printed}"></dd>
-                                                    <dt>QRCode :</dt>
+                                                    <dt th:text="#{show.qrcode}">QRCode :</dt>
                                                     <dd th:utext="${card.qrcode}"></dd>
-                                                    <dt>Verso Texte :</dt>
+                                                    <dt th:text="#{show.verso.text}">Verso Texte :</dt>
                                                     <dd>
                                                         <pre th:utext="${card.versoTextPrinted}"></pre>
                                                     </dd>
-                                                    <dt>Thème :</dt>
+                                                    <dt th:text="#{show.theme}">Thème :</dt>
                                                     <dd>
-                                                        <span th:if="${card.templateCard == null}"><i>Aucun thème défini</i></span>
+                                                        <span th:if="${card.templateCard == null}"><i th:text="#{show.no.theme}">Aucun thème défini</i></span>
                                                         <span th:if="${card.templateCard != null}" th:text="${card.templateCard}"></span>
                                                     </dd>
-                                                    <h4>Dates</h4>
-                                                    <dt>Date de demande :</dt>
+                                                    <h4 th:text="#{show.dates}">Dates</h4>
+                                                    <dt th:text="#{common.request}">Date de demande :</dt>
                                                     <dd th:utext="${#temporals.format(card.requestDate, 'dd/MM/yyyy')}"></dd>
-                                                    <dt>Date d'encodage :</dt>
+                                                    <dt th:text="#{show.encoding.date}">Date d'encodage :</dt>
                                                     <dd th:utext="${#temporals.format(card.encodedDate, 'dd/MM/yyyy')}"></dd>
-                                                    <dt>Date du dernier réencodage (maj) :</dt>
+                                                    <dt th:text="#{show.reencoding.date}">Date du dernier réencodage (maj) :</dt>
                                                     <dd th:utext="${#temporals.format(card.lastEncodedDate, 'dd/MM/yyyy')}"></dd>
-                                                    <dt>Date du dernier changement d'état :</dt>
+                                                    <dt th:text="#{show.state.change.date}">Date du dernier changement d'état :</dt>
                                                     <dd th:utext="${#temporals.format(card.dateEtat, 'dd/MM/yyyy')}"></dd>
-                                                    <dt th:if="${livraison}">Date de livraison :</dt>
+                                                    <dt th:if="${livraison}" th:text="#{common.delivery.date}">Date de livraison :</dt>
                                                     <dd th:if="${livraison}" th:text="${#temporals.format(card.deliveredDate, 'dd/MM/yyyy')}"></dd>
-                                                    <dt>Date d'activation :</dt>
+                                                    <dt th:text="#{show.activation.date}">Date d'activation :</dt>
                                                     <dd th:utext="${#temporals.format(card.ennabledDate, 'dd/MM/yyyy')}"></dd>
-                                                    <dt>Date limite / de fin :</dt>
+                                                    <dt th:text="#{show.due.date}">Date limite / de fin :</dt>
                                                     <dd th:utext="${#temporals.format(card.dueDate, 'dd/MM/yyyy')}"></dd>
-                                                    <h4>Numéros</h4>
-                                                    <dt>Csn :</dt>
+                                                    <h4 th:text="#{show.numbers}">Numéros</h4>
+                                                    <dt th:text="#{common.csn}">Csn :</dt>
                                                     <dd th:utext="${card.csn}"></dd>
-                                                    <dt>Reversed Csn :</dt>
+                                                    <dt th:text="#{show.reversed.csn}">Reversed Csn :</dt>
                                                     <dd th:utext="${card.reverseCsn}"></dd>
-                                                    <dt>Decimal Csn :</dt>
+                                                    <dt th:text="#{show.decimal.csn}">Decimal Csn :</dt>
                                                     <dd th:utext="${card.decimalCsn}"></dd>
-                                                    <dt>Decimal Reversed Csn :</dt>
+                                                    <dt th:text="#{show.decimal.reversed.csn}">Decimal Reversed Csn :</dt>
                                                     <dd th:utext="${card.decimalReverseCsn}"></dd>
-                                                    <dt>Desfire Ids (générés):</dt>
+                                                    <dt th:text="#{show.desfire.ids}">Desfire Ids (générés):</dt>
                                                     <dd>
                                                         <span th:each="desfireId : ${card.desfireIds}">
                                                             <b th:text="${desfireId.key}"></b> : <span th:text="${desfireId.value}"></span><br/>
                                                         </span>
                                                     </dd>
-                                                    <dt>Paybox :</dt>
+                                                    <dt th:text="#{show.paybox}">Paybox :</dt>
                                                     <dd th:utext="${card.payCmdNum}"></dd>
-                                                    <dt>Motif :</dt>
+                                                    <dt th:text="#{show.reason}">Motif :</dt>
                                                     <dd>
                                                         <span th:if="${card.motifDisable != null}" th:text="#{|user.motif.${card.motifDisable}|}"></span>
                                                     </dd>
-                                                    <h4>Modification</h4>
-                                                    <dt>Etat Eppn :</dt>
+                                                    <h4 th:text="#{show.modification}">Modification</h4>
+                                                    <dt th:text="#{show.eppn.state}">Etat Eppn :</dt>
                                                     <dd th:utext="${card.etatEppn}"></dd>
-                                                    <dt>Commentaire :</dt>
+                                                    <dt th:text="#{show.comment}">Commentaire :</dt>
                                                     <dd th:utext="${card.commentaire}"></dd>
                                                 </dl>
                                                 <dl class="dl-horizontal col-lg-5">
-                                                    <h4>Demande</h4>
-                                                    <dt>Structure :</dt>
+                                                    <h4 th:text="#{show.request}">Demande</h4>
+                                                    <dt th:text="#{show.structure}">Structure :</dt>
                                                     <dd th:utext="${card.structure}"></dd>
-                                                    <dt>Adresse de livraison demandée :</dt>
+                                                    <dt th:text="#{show.address.delivery}">Adresse de livraison demandée :</dt>
                                                     <dd th:utext="${(card.flagAdresse != null ? card.flagAdresse : '') + ', ' + (card.addressRequested != null ? card.addressRequested : '')}"></dd>
-                                                    <dt>Nombre de rejets :</dt>
+                                                    <dt th:text="#{show.reject.count}">Nombre de rejets :</dt>
                                                     <dd th:utext="${card.nbRejets == null ? 0 : card.nbRejets}"></dd>
-                                                    <dt>Navigateur:</dt>
+                                                    <dt th:text="#{show.browser}">Navigateur:</dt>
                                                     <dd th:utext="${card.requestBrowser}"></dd>
-                                                    <dt>OS:</dt>
+                                                    <dt th:text="#{show.os}">OS:</dt>
                                                     <dd th:utext="${card.requestOs}"></dd>
                                                 </dl>
                                                 <div th:unless="${card.crousSmartCard == null}">
                                                     <dl class="dl-horizontal col-lg-5">
-                                                        <h4>Restauration CROUS</h4>
-                                                        <dt th:unless="${#strings.isEmpty(card.crousError)}" class="dl-horizontal col-lg-5"><span class="badge alert-danger">!</span> Erreur Crous :</dt>
+                                                        <h4 th:text="#{show.crous.restaurant}">Restauration CROUS</h4>
+                                                        <dt th:unless="${#strings.isEmpty(card.crousError)}" class="dl-horizontal col-lg-5"><span class="badge alert-danger">!</span> <span th:text="#{show.crous.error}">Erreur Crous :</span></dt>
                                                         <dd th:unless="${#strings.isEmpty(card.crousError)}" th:text="${card.crousError}"></dd>
-                                                        <dt>Numéro Crous :</dt>
+                                                        <dt th:text="#{show.crous.number}">Numéro Crous :</dt>
                                                         <dd th:utext="${card.crousSmartCard.idZdc}"></dd>
-                                                        <dt>Date de création :</dt>
+                                                        <dt th:text="#{show.creation.date}">Date de création :</dt>
                                                         <dd th:utext="${#temporals.format(card.crousSmartCard.zdcCreationDate, 'dd/MM/yyyy')}"></dd>
-                                                        <dt>Emetteur :</dt>
+                                                        <dt th:text="#{show.issuer}">Emetteur :</dt>
                                                         <dd th:utext="${card.crousSmartCard.idTransmitter}"></dd>
                                                     </dl>
                                                     <div th:if="${card.csn != null}">
                                                         <h5>
                                                             <a class="getCrousSmartCard btn btn-default"
-                                                               th:href="@{/manager/getCrousSmartCardUrlHtmlPart(csn=${card.csn})}">
+                                                               th:href="@{/manager/getCrousSmartCardUrlHtmlPart(csn=${card.csn})}"
+                                                               th:text="#{show.click.view.crous.data}">
                                                                 Cliquer pour visualiser les données côté CROUS :
                                                             </a>
                                                         </h5>
@@ -585,13 +587,14 @@
                                                 </div>
                                                 <div th:if="${user.europeanStudentCard}">
                                                     <dl class="dl-horizontal col-lg-5">
-                                                        <h4>Carte d'étudiant européenne</h4>
-                                                        <dt>Numéro de carte d'étudiant européenne :</dt>
+                                                        <h4 th:text="#{show.european.card}">Carte d'étudiant européenne</h4>
+                                                        <dt th:text="#{show.european.card.number}">Numéro de carte d'étudiant européenne :</dt>
                                                         <dd th:utext="${card.escnUid}"></dd>
                                                         <div th:if="${card.csn != null and card.escnUid != null}">
                                                             <h5>
                                                                 <a class="getEscrCard btn btn-default"
-                                                                   th:href="@{/manager/getEscrCardHtmlPart(eppn=${card.eppn}, csn=${card.csn})}">
+                                                                   th:href="@{/manager/getEscrCardHtmlPart(eppn=${card.eppn}, csn=${card.csn})}"
+                                                                   th:text="#{show.click.view.escr.data}">
                                                                     Cliquer pour visualiser les données côté ESCR :
                                                                 </a>
                                                             </h5>
@@ -601,15 +604,16 @@
                                                 </div>
                                                 <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                                                     <div class="col-lg-5">
-                                                        <h4>Historique</h4>
+                                                        <h4 th:text="#{show.history}">Historique</h4>
                                                         <a class="btn btn-info btn-block"
-                                                           th:href="@{/admin/logs(cardId=${card.id})}">
+                                                           th:href="@{/admin/logs(cardId=${card.id})}"
+                                                           th:text="#{show.view.logs}">
                                                             Voir logs
                                                         </a>
                                                     </div>
                                                     <div class="col-lg-5" th:if="${card.etat.name() == 'ENABLED' or card.etat.name() == 'CADUC' or card.etat.name() == 'DISABLED'}">
                                                         <form th:action="@{/manager/replayValidationOrInvalidation/{id}(id=${card.id})}" method="POST"
-                                                              onsubmit="return confirm('Attention, avec cette action, pour la partie CROUS, Izly pourra renvoyer un mail à l\'utilisateur');">
+                                                              th:data-confirm="#{show.replay.confirm}" onsubmit="return confirm(this.dataset.confirm);">
                                                             <div th:each="validateServicesName : ${validateServicesNames}">
                                                                 <div class="checkbox">
                                                                     <label>
@@ -620,10 +624,10 @@
                                                             </div>
                                                             <div class="checkbox">
                                                                 <label>
-                                                                    <input checked="checked" name="resynchro" type="checkbox" value="true"/>Resynchronisation préalable
+                                                                    <input checked="checked" name="resynchro" type="checkbox" value="true"/><span th:text="#{tools.resync.prerequisite}">Resynchronisation préalable</span>
                                                                 </label>
                                                             </div>
-                                                            <button class="btn btn-danger" type="submit">
+                                                            <button class="btn btn-danger" type="submit" th:text="#{show.replay.validation}">
                                                                 Rejouer la procédure de validation / invalidation
                                                             </button>
                                                         </form>

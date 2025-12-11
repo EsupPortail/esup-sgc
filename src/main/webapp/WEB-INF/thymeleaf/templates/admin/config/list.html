@@ -6,7 +6,7 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Configurations</title>
+    <title th:text="#{common.configurations}">Configurations</title>
 </head>
 <body>
 <div id="configList" layout:fragment="content"
@@ -19,7 +19,7 @@
         var configUrl = "[[${create_url}]]";
     </script>
     <h2>
-        Configurations
+        <span th:text="#{common.configurations}">Configurations</span>
         <button class="btn btn-primary" data-target="#appliConfig" data-toggle="modal">
             <span class="glyphicon glyphicon-plus"></span>
         </button>
@@ -33,7 +33,7 @@
     </form>
     <ul class="nav nav-tabs" role="tablist" id="tabTypes">
         <li role="presentation" th:classappend="${selectedType} == null ? 'active' : 'sleep'">
-            <a href="#0" role="tab" data-toggle="tab" th:utext="#{manager.type.All}"></a>
+            <a href="#0" role="tab" data-toggle="tab" th:utext="#{common.all}"></a>
         </li>
         <li th:if="${listTypes != null}" th:each="type : ${listTypes}" role="presentation"
             th:classappend="${selectedType} == ${type} ? 'active' : 'sleep'">
@@ -46,16 +46,16 @@
         <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_AppliConfig">
             <thead>
             <tr>
-                <th>Clé</th>
-                <th>Valeur</th>
-                <th>Description</th>
+                <th th:text="#{common.key}">Clé</th>
+                <th th:text="#{common.value}">Valeur</th>
+                <th th:text="#{common.description}">Description</th>
                 <th>
-                    <a class="sorting" sd:pagination-sort="type">
+                    <a class="sorting" sd:pagination-sort="type" th:text="#{common.type}">
                         Type
                     </a>
                 </th>
-                <th data-type="html" class="">Modifier</th>
-                <th data-type="html" class="">Supprimer</th>
+                <th data-type="html" class="" th:text="#{common.edit}">Modifier</th>
+                <th data-type="html" class="" th:text="#{common.delete}">Supprimer</th>
             </tr>
             </thead>
             <tbody>
@@ -71,7 +71,7 @@
                 </td>
                 <td>
                     <form th:action="@{/admin/config/{id}(id=${config.id})}" th:method="DELETE" class="form-inline">
-                        <button class="btn btn-danger" type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette configuration ?');">
+                        <button class="btn btn-danger" type="submit" th:onclick="|return confirm('#{config.confirm.delete}')|">
                             <span class="glyphicon glyphicon-trash"></span>
                         </button>
                     </form>
@@ -94,45 +94,45 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
-                    <h4 class="modal-title">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button" th:utext="#{common.times}">&times;</button>
+                    <h4 class="modal-title" th:text="#{list.add.config}">
                         Ajouter une configuration
                     </h4>
                 </div>
                 <div class="modal-body">
                     <form th:action="${create_url}" id="createConfigForm" method="post">
                         <div class="form-group">
-                            <label class="control-label" for="cle">Clé</label>
+                            <label class="control-label" for="cle" th:text="#{common.key}">Clé</label>
                             <input class="form-control" id="cle" name="key" type="text"/>
                         </div>
                         <div class="form-group">
-                            <h5><strong>Type</strong></h5>
+                            <h5><strong th:text="#{common.type}">Type</strong></h5>
                             <label class="radio-inline">
-                                <input type="radio" name="type" id="typeText" value="TEXT" checked="checked"/> Texte
+                                <input type="radio" name="type" id="typeText" value="TEXT" checked="checked"/> <span th:text="#{config.type.text}">Texte</span>
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="type" id="typeHtml" value="HTML"/> Html
+                                <input type="radio" name="type" id="typeHtml" value="HTML"/> <span th:text="#{config.type.html}">Html</span>
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="type" id="typeBoolean" value="BOOLEAN"/> Booléen
+                                <input type="radio" name="type" id="typeBoolean" value="BOOLEAN"/> <span th:text="#{config.type.boolean}">Booléen</span>
                             </label>
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="valeur" id="areaEditor">Valeur</label>
-                            <textarea class="form-control simple-editor" id="valeur" name="value">&nbsp;</textarea>
+                            <label class="control-label" for="valeur" id="areaEditor" th:text="#{common.value}">Valeur</label>
+                            <textarea class="form-control simple-editor" id="valeur" name="value" th:utext="#{common.nbsp}">&nbsp;</textarea>
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="desc">Description</label>
-                            <textarea class="form-control" id="desc" name="description">&nbsp;</textarea>
+                            <label class="control-label" for="desc" th:text="#{common.description}">Description</label>
+                            <textarea class="form-control" id="desc" name="description" th:utext="#{common.nbsp}">&nbsp;</textarea>
                         </div>
                         <div class="form-group">
-                            <input class="btn btn-success" type="submit" value="Valider"/>
+                            <input class="btn btn-success" type="submit" th:value="#{common.validate}"/>
                         </div>
                         <input type="hidden" id="hiddenValeur" value=""/>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                    <button aria-hidden="true" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
                 </div>
             </div>
         </div>

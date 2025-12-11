@@ -6,14 +6,14 @@
             <div class="alert alert-info" id="searchBar">
                 <form th:action="@{/manager}" method="get" class="navbar-form navbar-left form-inline" role="search" id="searchEppnForm" th:object="${searchBean}">
                     <div class="form-group">
-                        <label style="display:none">-- Etat --</label>
+                        <label style="display:none" th:text="#{megamenu.state}">-- Etat --</label>
                         <select th:field="*{etat}" id="searchBeanEtat" class="megamenu">
                             <option value="" data-placeholder="true"></option>
                             <option th:each="etat : ${etats}" th:value="${etat}" th:text="#{|card.step.${etat}|}"></option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Adresse --</label>
+                        <label style="display:none" th:text="#{megamenu.address}">-- Adresse --</label>
                         <select th:field="*{address}" id="searchBeanAdress" class="megamenu">
                             <option value="" data-placeholder="true"></option>
                             <option th:each="address : ${addresses}" th:value="${address.key}" th:text="${address.value}"></option>
@@ -21,81 +21,81 @@
                     </div>
                     <div class="" style="display:none">
                         <select th:field="*{type}" id="searchBeanType" class="megamenu">
-                            <option value="">-- Population --</option>
+                            <option value="" th:text="#{megamenu.population}">-- Population --</option>
                             <option th:each="type : ${types}" th:value="${type}" th:text="#{|manager.type.${type}|}"></option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Dernier thème --</label>
+                        <label style="display:none" th:text="#{megamenu.last.theme}">-- Dernier thème --</label>
                         <select th:field="*{lastTemplateCardPrinted.id}" id="searchBeanLastTemplateCardPrinted" class="megamenu">
                             <option value="" data-placeholder="true"></option>
                             <option th:each="tpl : ${lastTemplateCardsPrinted}" th:value="${tpl.id}" th:text="${tpl}"></option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Statut --</label>
+                        <label style="display:none" th:text="#{megamenu.status}">-- Statut --</label>
                         <select th:field="*{editable}" id="searchBeanEditable" class="megamenu">
                             <option value="" data-placeholder="true"></option>
-                            <option value="true">Editable</option>
-                            <option value="false">Non editable</option>
+                            <option value="true" th:text="#{common.editable}">Editable</option>
+                            <option value="false" th:text="#{megamenu.not.editable}">Non editable</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Gestion --</label>
+                        <label style="display:none" th:text="#{megamenu.management}">-- Gestion --</label>
                         <select th:field="*{ownOrFreeCard}" id="searchBeanOwnOrFreeCard" class="megamenu">
                             <option value="" data-placeholder="true"></option>
-                            <option value="true">Libres ou gérées par moi</option>
+                            <option value="true" th:text="#{megamenu.free.or.mine}">Libres ou gérées par moi</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Nb Cartes --</label>
+                        <label style="display:none" th:text="#{megamenu.card.count}">-- Nb Cartes --</label>
                         <select th:field="*{nbCards}" id="searchBeanNbCards" class="megamenu">
                             <option value="" data-placeholder="true"></option>
-                            <option th:each="nbCard : ${nbCards}" th:value="${nbCard}" th:text="${nbCard} + ' carte(s)'"></option>
+                            <option th:each="nbCard : ${nbCards}" th:value="${nbCard}" th:text="${nbCard} + ' ' + #{common.cards.suffix}"></option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Nb Rejets --</label>
+                        <label style="display:none" th:text="#{megamenu.reject.count}">-- Nb Rejets --</label>
                         <select th:field="*{nbRejets}" id="searchBeanNbRejets" class="megamenu">
                             <option value="" data-placeholder="true"></option>
-                            <option th:each="nbRejet : ${nbRejets}" th:value="${nbRejet}" th:text="${nbRejet} + ' rejet(s)'"></option>
+                            <option th:each="nbRejet : ${nbRejets}" th:value="${nbRejet}" th:text="${nbRejet} + ' ' + #{common.rejects.suffix}"></option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Type adresse --</label>
+                        <label style="display:none" th:text="#{megamenu.address.type}">-- Type adresse --</label>
                         <select th:field="*{flagAdresse}" id="searchBeanFlagAdresse" class="megamenu">
                             <option value="" data-placeholder="true"></option>
-                            <option value="INT">Adresse interne</option>
-                            <option value="EXT">Adresse externe</option>
+                            <option value="INT" th:text="#{megamenu.address.internal}">Adresse interne</option>
+                            <option value="EXT" th:text="#{megamenu.address.external}">Adresse externe</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label style="display:none">-- Demande en cours --</label>
+                        <label style="display:none" th:text="#{megamenu.current.request}">-- Demande en cours --</label>
                         <select th:field="*{hasRequestCard}" id="searchBeanHasRequestCard" class="megamenu">
                             <option value="" data-placeholder="true"></option>
-                            <option value="true">oui</option>
-                            <option value="false">non</option>
+                            <option value="true" th:text="#{megamenu.yes}">oui</option>
+                            <option value="false" th:text="#{megamenu.no}">non</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control megamenu" placeholder="nom, prénom, email, n°" id="searchEppn" th:field="*{searchText}"/>
+                        <input type="text" class="form-control megamenu" th:placeholder="#{megamenu.search.placeholder}" id="searchEppn" th:field="*{searchText}"/>
                     </div>
                     <button type="submit" class="btn btn-success">OK</button>
-                    <button type="button" class="btn btn-danger" id="nofilter" title="Enlever tous les filtres">
+                    <button type="button" class="btn btn-danger" id="nofilter" th:title="#{megamenu.remove.filters}">
                         <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
                     </button>
-                    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#advancedSearch">+ de filtres</button>
+                    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#advancedSearch" th:text="#{megamenu.more.filters}">+ de filtres</button>
                     <div class="col-lg-12" id="advancedSearch" th:classappend="${#maps.isEmpty(searchBean.freeField) ? 'collapse' : ''}">
                         <div th:each="item, status : ${nbFields}">
                             <div class="col-lg-2">
-                                <label style="display:none">-- Champ libre --</label>
+                                <label style="display:none" th:text="#{megamenu.free.field}">-- Champ libre --</label>
                                 <select th:field="*{freeField[__${status.index}__]}" class="freeSelect" data-width="fit" data-dropup-auto="false" data-live-search="true" th:id="'fields' + ${status.index}">
                                     <option value="" data-placeholder="true"></option>
                                     <option th:each="field : ${freeFields}" th:value="${field.key}" th:text="${field.value}"></option>
                                 </select>
                             </div>
                             <div class="col-lg-2">
-                                <label style="display:none">-- Champ libre : résultats -</label>
+                                <label style="display:none" th:text="#{megamenu.free.field.results}">-- Champ libre : résultats -</label>
                                 <select multiple="multiple" data-dropup-auto="false" data-live-search="true" th:name="'freeFieldValue[' + ${status.index} + ']'" th:id="'freeFieldValue' + ${status.index}" data-size="15" class="megamenu">
                                     <option value="" data-placeholder="true"></option>
                                 </select>
@@ -103,7 +103,7 @@
                         </div>
                         <div sec:authorize="hasRole('ROLE_ADMIN')">
                             <input type="checkbox" name="zipExport" id="zipExport" />
-                            <label for="zipExport">Export ZIP</label>
+                            <label for="zipExport" th:text="#{megamenu.export.zip}">Export ZIP</label>
                         </div>
                     </div>
                 </form>
@@ -113,16 +113,16 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+                                <button type="button" class="close" data-dismiss="modal" th:label="#{common.close}">
+                                    <span aria-hidden="true" th:utext="#{common.times}">&times;</span>
                                 </button>
-                                <h4 class="modal-title">Champs à exporter</h4>
+                                <h4 class="modal-title" th:text="#{megamenu.export.fields}">Champs à exporter</h4>
                             </div>
                             <div class="modal-body">
                                 <form th:action="@{/manager/csvSearch}" id="searchCsvForm" th:object="${searchBean}">
                                     <label>
                                         <input type="checkbox" id="selectAllFields" checked="checked" />
-                                        <strong>Tout (dé)sélectionner</strong>
+                                        <strong th:text="#{megamenu.select.all}">Tout (dé)sélectionner</strong>
                                     </label>
                                     <div th:each="field : ${csvFields}">
                                         <div class="checkbox">
@@ -191,8 +191,8 @@
                                 <hr />
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                                <button type="button" id="downloadOk" class="btn btn-primary">Télécharger</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{common.close}">Fermer</button>
+                                <button type="button" id="downloadOk" class="btn btn-primary" th:text="#{megamenu.download}">Télécharger</button>
                             </div>
                         </div>
                     </div>

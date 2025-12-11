@@ -6,11 +6,11 @@
       layout:decorate="~{layouts/user.html}">
 <head>
     <meta charset="UTF-8"/>
-    <title>Logs</title>
+    <title th:text="#{common.logs}">Logs</title>
 </head>
 <body>
 <div id="logsList" layout:fragment="content">
-    <h2>Logs</h2>
+    <h2 th:text="#{common.logs}">Logs</h2>
     <div class="col-12">
         <div>
             <form th:action="@{/admin/logs}" method="get" class="navbar-form navbar-left form-inline well" th:object="${searchLog}">
@@ -18,22 +18,22 @@
                 <input name="sortOrder" value="desc" type="hidden"/>
                 <input name="size" value="10" type="hidden"/>
                 <div class="form-group">
-                    <label for="eppnCible">Eppn cible</label>
+                    <label for="eppnCible" th:text="#{list.target.eppn}">Eppn cible</label>
                     <div class="input-group">
                         <input type="text" th:field="*{eppnCible}" class="form-control"/>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="eppn">Modificateur</label>
+                    <label for="eppn" th:text="#{common.modifier}">Modificateur</label>
                     <div class="input-group">
                         <input type="text" th:field="*{eppn}" class="form-control"/>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="typeLogs">Type d'utilisateur</label>
+                    <label for="typeLogs" th:text="#{list.user.type}">Type d'utilisateur</label>
                     <div class="input-group">
                         <select id="typeLogs" th:field="*{type}" class="form-control">
-                            <option value="">--Choisir--</option>
+                            <option value="" th:text="#{common.choose}">--Choisir--</option>
                             <option th:each="type : ${enumTypes}"
                                     th:value="${type}"
                                     th:text="${type}"
@@ -42,10 +42,10 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="actionLogs">Action</label>
+                    <label for="actionLogs" th:text="#{common.action}">Action</label>
                     <div class="input-group">
                         <select id="actionLogs" th:field="*{action}" class="form-control">
-                            <option value="">--Choisir--</option>
+                            <option value="" th:text="#{common.choose}">--Choisir--</option>
                             <option th:each="action : ${enumActions}"
                                     th:value="${action}"
                                     th:text="${action}"
@@ -54,10 +54,10 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="retCodeLogs">Ret Code</label>
+                    <label for="retCodeLogs" th:text="#{common.code}">Ret Code</label>
                     <div class="input-group">
                         <select id="retCodeLogs" th:field="*{retCode}" class="form-control">
-                            <option value="">--Choisir--</option>
+                            <option value="" th:text="#{common.choose}">--Choisir--</option>
                             <option th:each="retCode : ${enumRetCodes}"
                                     th:value="${retCode}"
                                     th:text="${retCode}"
@@ -75,14 +75,14 @@
         <table class="table table-bordered table-striped" id="l_org_esupportail_sgc_domain_Log">
             <thead>
             <tr>
-                <th><a class="sorting" sd:pagination-sort="logDate">Log Date</a></th>
-                <th><a class="sorting" sd:pagination-sort="eppnCible">Cible</a></th>
-                <th><a class="sorting" sd:pagination-sort="eppn">Modificateur</a></th>
-                <th><a class="sorting" sd:pagination-sort="type">Type</a></th>
-                <th><a class="sorting" sd:pagination-sort="cardId">Card Id</a></th>
-                <th><a class="sorting" sd:pagination-sort="action">Action</a></th>
-                <th><a class="sorting" sd:pagination-sort="retCode">Ret Code</a></th>
-                <th><a class="sorting" sd:pagination-sort="comment">Commentaire</a></th>
+                <th><a class="sorting" sd:pagination-sort="logDate" th:text="#{list.log.date}">Log Date</a></th>
+                <th><a class="sorting" sd:pagination-sort="eppnCible" th:text="#{list.target}">Cible</a></th>
+                <th><a class="sorting" sd:pagination-sort="eppn" th:text="#{common.modifier}">Modificateur</a></th>
+                <th><a class="sorting" sd:pagination-sort="type" th:text="#{common.type}">Type</a></th>
+                <th><a class="sorting" sd:pagination-sort="cardId" th:text="#{list.card.id}">Card Id</a></th>
+                <th><a class="sorting" sd:pagination-sort="action" th:text="#{common.action}">Action</a></th>
+                <th><a class="sorting" sd:pagination-sort="retCode" th:text="#{common.code}">Ret Code</a></th>
+                <th><a class="sorting" sd:pagination-sort="comment" th:text="#{common.comment}">Commentaire</a></th>
                 <th><a class="sorting" sd:pagination-sort="remoteAddress">IP</a></th>
             </tr>
             </thead>
