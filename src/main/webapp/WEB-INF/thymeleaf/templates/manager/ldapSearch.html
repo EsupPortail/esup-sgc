@@ -29,10 +29,10 @@
             </label>
             <div class="form-group">
                 <select th:if="${ldapTemplatesNames != null}" name="ldapTemplateName" id="ldapTemplateName" class="form-control">
-                    <option th:each="ldapTemplateName : ${ldapTemplatesNames}"
-                            th:value="${ldapTemplateName}"
-                            th:text="${ldapTemplateName}"
-                            th:selected="${param.ldapTemplateName == ldapTemplateName}">
+                    <option th:each="ldapName : ${ldapTemplatesNames}"
+                            th:value="${ldapName}"
+                            th:text="${ldapName}"
+                            th:selected="${ldapName == ldapTemplateName}">
                     </option>
                 </select>
             </div>

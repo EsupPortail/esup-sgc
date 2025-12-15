@@ -108,6 +108,7 @@ public class ManagerLdapSearchController {
 		}
 		uiModel.addAttribute("ldapList", users);
 		uiModel.addAttribute("searchItem", searchString);
+		uiModel.addAttribute("ldapTemplateName", ldapTemplateName);
 		
 		//loo from manager
 		//modificateur
