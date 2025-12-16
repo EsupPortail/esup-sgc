@@ -139,6 +139,29 @@
 	</bean>
         -->
 
+	<!-- Pegase REST API user info service
+		<bean id="pegaseAuthProvider" class="org.esupportail.sgc.services.rest.BearerTokenAuthProvider">
+			<property name="tokenEndpoint" value="https://authn-app.rdd-example.pc-scol.fr/cas/v1/tickets"/>
+			<property name="bodyCredentials">
+				<map>
+					<entry key="username" value="usernamePegaseApi"/>
+					<entry key="password" value="passwordPegaseApi]"/>
+					<entry key="token" value="true"/>
+				</map>
+			</property>
+		</bean>
+
+		<bean id="pegaseUserInfoService" class="org.esupportail.sgc.services.userinfos.RestUserInfoService" p:order="3">
+			<property name="authProvider" ref="pegaseAuthProvider"/>
+			<property name="url" value="https://ins.rdd-example.pc-scol.fr/api/ins/ext/v2/gestion/inscription/ETAB00/{supannEtuId}/"/>
+			<property name="sgcParam2jsonPath">
+				<map>
+					<entry key="name" value="$.apprenant.etatCivil.nomDeNaissance"/>
+				</map>
+			</property>
+		</bean>
+	-->
+
 	<!-- 
 	On s'assure que eduPersonPrimaryAffiliation est conservé
 	On fait également en sorte de toujours conserver une email, même si celui-ci n'est plus valide : le crous exige qu'un compte ait toujours un email de présent
