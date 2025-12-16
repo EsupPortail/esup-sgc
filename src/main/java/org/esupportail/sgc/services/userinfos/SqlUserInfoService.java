@@ -15,13 +15,17 @@ import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 
 public class SqlUserInfoService implements ExtUserInfoService {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(SqlUserInfoService.class);
+
 	private String sqlQuery;
 	
 	private JdbcTemplate jdbcTemplate;
@@ -68,7 +72,15 @@ public class SqlUserInfoService implements ExtUserInfoService {
 	@Override
 	public Map<String, String> getUserInfos(User user, HttpServletRequest request, final Map<String, String> userInfosInComputing) {
 
-		Map<String, String> userInfos = (Map<String, String>) jdbcTemplate.query(sqlQuery, new Object[] {user.getEppn()}, new ResultSetExtractor() {
+		String sqlQueryWithParams = sqlQuery.replace("?", "'" + user.getEppn() + "'");
+		for(String key : userInfosInComputing.keySet()) {
+			if(sqlQueryWithParams.contains("{" + key + "}")) {
+				sqlQueryWithParams = sqlQueryWithParams.replace("{" + key + "}", "'" + userInfosInComputing.get(key) + "'");
+			}
+		}
+		log.debug("SQL query for user {}: {}", user.getEppn(), sqlQueryWithParams);
+
+		Map<String, String> userInfos = (Map<String, String>) jdbcTemplate.query(sqlQueryWithParams, new ResultSetExtractor() {
 	        @Override
 	        public Map<String, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
 	        	Map<String, String> userInfos = new HashMap<String, String>();

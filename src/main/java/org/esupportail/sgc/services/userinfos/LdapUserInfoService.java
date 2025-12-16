@@ -17,11 +17,15 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 
 public class LdapUserInfoService implements ExtUserInfoService {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(LdapUserInfoService.class);
+
 	private Map<String, String> sgcParam2ldapAttr = new HashMap<String, String>();
 	
 	private LdapTemplate ldapTemplate;
@@ -31,6 +35,8 @@ public class LdapUserInfoService implements ExtUserInfoService {
 	private String eppnFilter = ".*";
 
 	String beanName;
+
+	String searchFilter = "(eduPersonPrincipalName={eppn})";
 
 	@Override
 	public String getBeanName() {
@@ -57,6 +63,10 @@ public class LdapUserInfoService implements ExtUserInfoService {
 		this.eppnFilter = eppnFilter;
 	}
 
+	public void setSearchFilter(String searchFilter) {
+		this.searchFilter = searchFilter;
+	}
+
 	public void setSgcParam2ldapAttr(Map<String, String> sgcParam2ldapAttr) {
 		this.sgcParam2ldapAttr = sgcParam2ldapAttr;
 	}
@@ -69,8 +79,15 @@ public class LdapUserInfoService implements ExtUserInfoService {
 	public Map<String,String> getUserInfos(User user, HttpServletRequest request, final Map<String, String> userInfosInComputing) {	
 		Map<String, String> userInfos = new HashMap<String, String>();
 		String[] attributesToReturn = sgcParam2ldapAttr.values().toArray(new String[sgcParam2ldapAttr.values().size()]);
-		
-		List<Map<String, String>>  userInfosList = ldapTemplate.search(query().attributes(attributesToReturn).where("eduPersonPrincipalName").is(user.getEppn()),
+
+		String ldapSearchFilterWithParams = searchFilter.replace("{eppn}", user.getEppn());
+		for(String key : userInfosInComputing.keySet()) {
+			if(ldapSearchFilterWithParams.contains("{" + key + "}")) {
+				ldapSearchFilterWithParams = ldapSearchFilterWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
+			}
+		}
+		log.debug("LDAP search filter for eppn {}: {}", user.getEppn(), ldapSearchFilterWithParams);
+		List<Map<String, String>>  userInfosList = ldapTemplate.search(query().attributes(attributesToReturn).filter(ldapSearchFilterWithParams),
 				new AttributesMapper<Map<String, String>>() {
 
 			@Override
