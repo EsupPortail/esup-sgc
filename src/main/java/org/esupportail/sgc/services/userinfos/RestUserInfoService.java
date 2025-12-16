@@ -83,23 +83,28 @@ public class RestUserInfoService implements ExtUserInfoService {
         Map<String, String> userInfos = new HashMap<>();
 
         String urlWithParams = buildUrl(user, request, userInfosInComputing);
+        log.trace("RestUserInfoService URL for user {}: {}", user.getEppn(), urlWithParams);
 
-        HttpHeaders headers = new HttpHeaders();
-        authProvider.configureHeaders(headers);
-        HttpEntity entity = new HttpEntity<>(headers);
+        if(urlWithParams != null) {
+            HttpHeaders headers = new HttpHeaders();
+            authProvider.configureHeaders(headers);
+            HttpEntity entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(urlWithParams, org.springframework.http.HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(urlWithParams, org.springframework.http.HttpMethod.GET, entity, String.class);
+            log.trace("RestUserInfoService response for user {}: {}", user.getEppn(), response.getBody());
 
-        DocumentContext jsonContext = JsonPath.parse(response.getBody());
+            DocumentContext jsonContext = JsonPath.parse(response.getBody());
 
-        for (Map.Entry<String, String> mapping : sgcParam2jsonPath.entrySet()) {
-            try {
-                Object value = jsonContext.read(mapping.getValue());
-                userInfos.put(mapping.getKey(), String.valueOf(value));
-            } catch (PathNotFoundException e) {
-                log.trace("JSON path not found for user {}: {}", user.getEppn(), mapping.getValue());
+            for (Map.Entry<String, String> mapping : sgcParam2jsonPath.entrySet()) {
+                try {
+                    Object value = jsonContext.read(mapping.getValue());
+                    userInfos.put(mapping.getKey(), String.valueOf(value));
+                } catch (PathNotFoundException e) {
+                    log.trace("JSON path not found for user {}: {}", user.getEppn(), mapping.getValue());
+                }
             }
         }
+        log.trace("RestUserInfoService found for user {}: {}", user.getEppn(), userInfos);
         return userInfos;
     }
 
@@ -107,6 +112,10 @@ public class RestUserInfoService implements ExtUserInfoService {
         String urlWithParams = url.replace("{eppn}", user.getEppn());
         for (String key : userInfosInComputing.keySet()) {
             if (urlWithParams.contains("{" + key + "}")) {
+                if(userInfosInComputing.get(key) == null) {
+                    log.info("User info {} is null for user {} - abort", key, user.getEppn());
+                    return null;
+                }
                 urlWithParams = urlWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
             }
         }
