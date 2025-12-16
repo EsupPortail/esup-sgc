@@ -90,6 +90,7 @@ public class LdapValidateService extends ValidateService {
 
 	@Override
 	public void validateInternal(Card card) {
+		log.info("Ldap Validate Service for " + card.getEppn() + " on ldap " + this.getBeanName());
 		try {
 			Name dn = getDn(card.getEppn());
 			if(dn != null) {
@@ -130,6 +131,7 @@ public class LdapValidateService extends ValidateService {
 
 	@Override
 	public void invalidateInternal(Card card) {
+		log.info("Ldap Invalidate Service for " + card.getEppn() + " on ldap " + this.getBeanName());
 		try {
 			Name dn = getDn(card.getEppn());
 			
