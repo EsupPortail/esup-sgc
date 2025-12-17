@@ -110,13 +110,15 @@ public class RestUserInfoService implements ExtUserInfoService {
 
     String buildUrl(User user, HttpServletRequest request, Map<String, String> userInfosInComputing) {
         String urlWithParams = url.replace("{eppn}", user.getEppn());
-        for (String key : userInfosInComputing.keySet()) {
-            if (urlWithParams.contains("{" + key + "}")) {
-                if(userInfosInComputing.get(key) == null) {
-                    log.info("User info {} is null for user {} - abort", key, user.getEppn());
-                    return null;
+        if(userInfosInComputing != null) {
+            for (String key : userInfosInComputing.keySet()) {
+                if (urlWithParams.contains("{" + key + "}")) {
+                    if (userInfosInComputing.get(key) == null) {
+                        log.info("User info {} is null for user {} - abort", key, user.getEppn());
+                        return null;
+                    }
+                    urlWithParams = urlWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
                 }
-                urlWithParams = urlWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
             }
         }
         return urlWithParams;

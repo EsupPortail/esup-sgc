@@ -81,9 +81,11 @@ public class LdapUserInfoService implements ExtUserInfoService {
 		String[] attributesToReturn = sgcParam2ldapAttr.values().toArray(new String[sgcParam2ldapAttr.values().size()]);
 
 		String ldapSearchFilterWithParams = searchFilter.replace("{eppn}", user.getEppn());
-		for(String key : userInfosInComputing.keySet()) {
-			if(ldapSearchFilterWithParams.contains("{" + key + "}")) {
-				ldapSearchFilterWithParams = ldapSearchFilterWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
+		if(userInfosInComputing != null) {
+			for (String key : userInfosInComputing.keySet()) {
+				if (ldapSearchFilterWithParams.contains("{" + key + "}")) {
+					ldapSearchFilterWithParams = ldapSearchFilterWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
+				}
 			}
 		}
 		log.debug("LDAP search filter for eppn {}: {}", user.getEppn(), ldapSearchFilterWithParams);

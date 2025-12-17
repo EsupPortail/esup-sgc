@@ -73,9 +73,11 @@ public class SqlUserInfoService implements ExtUserInfoService {
 	public Map<String, String> getUserInfos(User user, HttpServletRequest request, final Map<String, String> userInfosInComputing) {
 
 		String sqlQueryWithParams = sqlQuery.replace("?", "'" + user.getEppn() + "'");
-		for(String key : userInfosInComputing.keySet()) {
-			if(sqlQueryWithParams.contains("{" + key + "}")) {
-				sqlQueryWithParams = sqlQueryWithParams.replace("{" + key + "}", "'" + userInfosInComputing.get(key) + "'");
+		if(userInfosInComputing != null) {
+			for (String key : userInfosInComputing.keySet()) {
+				if (sqlQueryWithParams.contains("{" + key + "}")) {
+					sqlQueryWithParams = sqlQueryWithParams.replace("{" + key + "}", "'" + userInfosInComputing.get(key) + "'");
+				}
 			}
 		}
 		log.debug("SQL query for user {}: {}", user.getEppn(), sqlQueryWithParams);
