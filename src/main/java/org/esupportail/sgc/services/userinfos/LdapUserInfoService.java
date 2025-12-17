@@ -88,7 +88,7 @@ public class LdapUserInfoService implements ExtUserInfoService {
 				}
 			}
 		}
-		log.debug("LDAP search filter for eppn {}: {}", user.getEppn(), ldapSearchFilterWithParams);
+		log.trace("LDAP search filter for eppn {}: {}", user.getEppn(), ldapSearchFilterWithParams);
 		List<Map<String, String>>  userInfosList = ldapTemplate.search(query().attributes(attributesToReturn).filter(ldapSearchFilterWithParams),
 				new AttributesMapper<Map<String, String>>() {
 

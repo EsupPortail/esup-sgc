@@ -80,7 +80,7 @@ public class SqlUserInfoService implements ExtUserInfoService {
 				}
 			}
 		}
-		log.debug("SQL query for user {}: {}", user.getEppn(), sqlQueryWithParams);
+		log.trace("SQL query for user {}: {}", user.getEppn(), sqlQueryWithParams);
 
 		Map<String, String> userInfos = (Map<String, String>) jdbcTemplate.query(sqlQueryWithParams, new ResultSetExtractor() {
 	        @Override
