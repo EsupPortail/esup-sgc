@@ -40,8 +40,17 @@ public class EsupSgcControllerAdvice implements Serializable {
     public String handleException(Exception ex, Model model, HttpServletResponse response) {
         log.error("Erreur non gérée", ex);
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        HttpServletRequest request = ((org.springframework.web.context.request.ServletRequestAttributes)
+                org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes())
+                .getRequest();
+        if(request != null) {
+            String requestUri = request.getRequestURI();
+            String statusCode = Integer.toString(response.getStatus());
+            model.addAttribute("requestUri", requestUri);
+            model.addAttribute("statusCode", statusCode);
+        }
         model.addAttribute("exception", ex);
-        model.addAttribute("stacktrace", getStackTrace(ex));
+        model.addAttribute("exception_stacktrace", getStackTrace(ex));
         return "templates/uncaughtException";
     }
 

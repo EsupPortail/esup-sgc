@@ -25,6 +25,8 @@
                         <span th:text="${exception_message}"></span>
                         <br/>
                         (<i th:text="${exception.class.name}"></i>)
+                        <br/>
+                        <span th:text="${statusCode}"/> - <span th:text="${requestUri}"/>
                     </div>
                 </div>
                 <div class="panel panel-default">
