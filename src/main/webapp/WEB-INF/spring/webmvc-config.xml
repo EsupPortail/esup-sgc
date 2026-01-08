@@ -11,7 +11,7 @@
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
 <!-- The controllers are autodetected POJOs labeled with the @Controller annotation. -->
-    <context:component-scan base-package="org.esupportail.sgc">
+    <context:component-scan base-package="org.esupportail.sgc" use-default-filters="false">
         <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
         <context:include-filter expression="org.springframework.web.bind.annotation.ControllerAdvice" type="annotation"/>
     </context:component-scan>
