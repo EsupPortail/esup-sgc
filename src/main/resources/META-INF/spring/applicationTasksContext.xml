@@ -24,7 +24,7 @@
 	    <!-- <task:scheduled ref="caducMailService" method="sendMails2PreventCaduc" cron="01 10 * * * *"/>  -->
 	</task:scheduled-tasks>
 
-	<task:annotation-driven executor="exceptionHandlingTaskExecutor" mode="aspectj"/>
+	<task:annotation-driven executor="exceptionHandlingTaskExecutor"/>
 
     <bean id="exceptionHandlingTaskExecutor" class="org.esupportail.sgc.tools.ExceptionHandlingAsyncTaskExecutor">
         <constructor-arg ref="defaultExecutor" />

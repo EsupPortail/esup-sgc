@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:p="http://www.springframework.org/schema/p"
@@ -8,7 +9,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
 <!-- The controllers are autodetected POJOs labeled with the @Controller annotation. -->
     <context:component-scan base-package="org.esupportail.sgc">
@@ -25,6 +27,10 @@
             </bean>
         </mvc:argument-resolvers>
     </mvc:annotation-driven>
+
+    <tx:annotation-driven />
+
+    <task:annotation-driven executor="exceptionHandlingTaskExecutor"/>
     
     <mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/**" order="1">
         <mvc:cache-control cache-public="true" max-age="86400"/>
@@ -65,9 +71,6 @@
     <mvc:interceptors>
         <bean class="org.esupportail.sgc.web.ConfigInterceptor" />
     </mvc:interceptors>
-
-    <tx:annotation-driven />
-
 
     <!-- Template Resolver -->
     <bean id="templateResolver" class="org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver">
