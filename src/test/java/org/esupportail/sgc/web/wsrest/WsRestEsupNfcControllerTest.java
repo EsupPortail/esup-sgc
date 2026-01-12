@@ -2,6 +2,7 @@ package org.esupportail.sgc.web.wsrest;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.annotation.Resource;
@@ -102,5 +103,27 @@ public class WsRestEsupNfcControllerTest {
 		}
 		return null;
 	}
-	
+
+	private String getEnableCsn(String eppn) {
+		for(Card card : cardDaoService.findCardsByEppnInAndEtatIn(List.of(eppn), List.of(Card.Etat.ENABLED)).getResultList()) {
+			if(card.getCsn() != null && !card.getCsn().isEmpty()) {
+				return card.getCsn();
+			}
+		}
+		return null;
+	}
+
+	@Test
+	public void secondaryIdTest() throws IOException, ParseException {
+		String eppn = esupSgcTestUtilsService.getEppnFromConfig();
+		assumeTrue(eppn != null);
+		String csn = getEnableCsn(eppn);
+		assumeTrue(csn != null);
+		EsupNfcTagLog esupNfcTagLog = new EsupNfcTagLog();
+		esupNfcTagLog.setCsn(csn);
+		String eppnFromWs = wsRestEsupNfcControllerTest.secondaryId(esupNfcTagLog, "eppn");
+		assert (eppn.equals(eppnFromWs));
+		String supannEmpId = wsRestEsupNfcControllerTest.secondaryId(esupNfcTagLog, "supannEmpId");
+		log.info(String.format("supannEmpId for %s (card %s) : %s", eppn, csn, supannEmpId));
+	}
 }

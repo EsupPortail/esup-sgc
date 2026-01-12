@@ -254,7 +254,7 @@ public class WsRestEsupNfcController {
 	
 	@RequestMapping(value="/secondaryId",  method=RequestMethod.POST)
 	@ResponseBody
-	public String secondaryId(@RequestBody EsupNfcTagLog taglog, @RequestParam String idName, Model uiModel) {
+	public String secondaryId(@RequestBody EsupNfcTagLog taglog, @RequestParam String idName) {
 		log.trace("idName : " + idName);
 		log.trace("taglog : " + taglog);
 		String secondaryId = null;
@@ -284,7 +284,16 @@ public class WsRestEsupNfcController {
 					secondaryId = user.getEmail();
 					break;
 				default:
+					// try to get field from user, by default eppn
 					secondaryId = user.getEppn();
+					try {
+						Field field = user.getClass().getDeclaredField(idName);
+						field.setAccessible(true);
+						Object value = field.get(user);
+						secondaryId = value.toString();
+					} catch (NoSuchFieldException|SecurityException|IllegalAccessException e) {
+						log.warn("Get " + idName + " on user " + user.getEppn() + " failed, return eppn instead");
+					}
 					break;
 			}
 		}
