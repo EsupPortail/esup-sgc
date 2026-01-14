@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import jakarta.annotation.Resource;
+import org.esupportail.sgc.EsupSgcTestUtilsService;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.domain.EscCard;
 import org.esupportail.sgc.domain.User;
@@ -14,14 +15,17 @@ import org.esupportail.sgc.services.crous.RightHolder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations={"classpath*:META-INF/spring/applicationContext*.xml", "file:src/main/webapp/WEB-INF/spring/webmvc-config.xml"})
@@ -30,6 +34,9 @@ public class JsonObjectMapperTest {
 
     @Resource
     ObjectMapper objectMapper;
+
+    @Resource
+    EsupSgcTestUtilsService esupSgcTestUtilsService;
 
     @Test
     void shouldSerializeLocalDateTimeWithOffsetPattern() throws Exception {
@@ -82,4 +89,35 @@ public class JsonObjectMapperTest {
         assertEquals(LocalDate.of(2025, 6, 19).atStartOfDay(), escCard2.getExpiresAt());
     }
 
+    @Test
+    public void testRightHolderDueDateWithSecondsJsonFormat() throws JsonProcessingException {
+        RightHolder rightHolder = new RightHolder();
+        LocalDateTime dateWithSeconds = LocalDateTime.of(2024, 6, 15, 10, 30, 45);
+        rightHolder.setDueDate(dateWithSeconds);
+        String expectedDateString = "2024-06-15T10:30:45.000Z";
+        String json = objectMapper.writeValueAsString(rightHolder);
+        assertTrue(json.contains("\"dueDate\":\"" + expectedDateString));
+    }
+
+    @Test
+    public void testRightHolderDueDateWithoutSecondsJsonFormat() throws JsonProcessingException {
+        RightHolder rightHolder = new RightHolder();
+        LocalDateTime dateWithSeconds = LocalDateTime.of(2024, 6, 15, 10, 30);
+        rightHolder.setDueDate(dateWithSeconds);
+        String expectedDateString = "2024-06-15T10:30:00.000Z";
+        String json = objectMapper.writeValueAsString(rightHolder);
+        assertTrue(json.contains("\"dueDate\":\"" + expectedDateString));
+    }
+
+    @Test
+    public void testRightHolderDueDateJsonFormatFromDatabase() throws JsonProcessingException {
+        User user = esupSgcTestUtilsService.getUserFromDb();
+        assumeTrue(user != null && user.getDueDate() != null);
+        RightHolder rightHolder = new RightHolder();
+        rightHolder.setDueDate(user.getDueDate());
+        String json = objectMapper.writeValueAsString(rightHolder);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String expectedDateString =  formatter.format(user.getDueDate());
+        assertTrue(json.contains("\"dueDate\":\"" + expectedDateString));
+    }
 }
