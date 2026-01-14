@@ -48,7 +48,9 @@ public class RightHolder {
 	
 	BlockingStatus blockingStatus;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX", timezone="CET")
+	// Format attendu par beforeizly avec un 'Z' (temps UTC) à la fin
+	// -> mis en dur dans le pattern même si pas de gestion des fuseaux
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 	public LocalDateTime getDueDate() {
 		return dueDate;
 	}
