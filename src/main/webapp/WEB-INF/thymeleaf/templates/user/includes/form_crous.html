@@ -1,10 +1,11 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/form_crous.html -->
-<div th:fragment="form_crous" th:if="${displayFormParts['displayCrous']}" >
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="form_crous" th:if="${displayFormParts['displayCrous']}" >
     <fieldset class="scheduler-border">
         <legend class="scheduler-border" th:text="#{common.crous}">Crous</legend>
         <div class="radio">
             <label for="radio1">
-                <input type="radio" name="crousTransient" id="radio1" value="false" />
+                <input type="radio" name="crousTransient" id="radio1" value="false" th:disabled="${user.crous}"/>
                 <span th:text="#{form.crous.refuse}">Je ne souhaite pas bénéficier des services CROUS</span>
                 <a href="#" data-toggle="tooltip" title="" th:title="#{common.cafe}">*</a>
                 <span th:text="#{form.crous.on.card}">sur ma carte multi-services</span>
@@ -12,7 +13,7 @@
         </div>
         <div class="radio">
             <label for="radio2">
-                <input value="true" type="radio" name="crousTransient" id="radio2" />
+                <input value="true" type="radio" name="crousTransient" id="radio2"  th:checked="${user.crous}" th:disabled="${user.crous}"/>
                 <span th:text="#{form.crous.accept.short}">Je souhaite bénéficier des services CROUS</span>
                 <a href="#" data-toggle="tooltip" title="" th:title="#{common.cafe}">*</a>
                 <span th:text="#{form.crous.on.card}">sur ma carte multi-services</span>
