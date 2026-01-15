@@ -170,7 +170,7 @@ public class ToolsController {
 		for(User user : userDaoService.findUsersByEuropeanStudentCard(true).getResultList()) {
 			try {
 				for (ApiEscService apiEscService : apiEscServices) {
-					if (apiEscService.validateESCenableCard(user.getEppn())) {
+					if (apiEscService.isEscEnabled() && apiEscService.validateESCenableCard(user.getEppn())) {
 						nbCardSendedInEscr++;
 					}
 				}
@@ -183,19 +183,37 @@ public class ToolsController {
 		log.info(infoMsg);
 		return "redirect:/admin/tools";
 	}
-	
+
+	@RequestMapping(value = "/purgeOldEscPersonsEscr", method = RequestMethod.POST, produces = "text/html")
+	public String purgeOldEscPersonsEscr(Model uiModel) {
+		log.info("purgeOldEscPersonsEscr called");
+		int nbPurgeUsers = 0;
+		for (ApiEscService apiEscService : apiEscServices) {
+			if(apiEscService.isEscEnabled()) {
+				nbPurgeUsers += apiEscService.purgeOldEscPersonsEscr();
+			}
+		}
+		String infoMsg = String.format("%s utilisateurs purgés dans ESCR", nbPurgeUsers);
+		uiModel.addAttribute("escrPurgeResult", infoMsg);
+		log.info(infoMsg);
+		return "redirect:/admin/tools";
+	}
+
+
 	@RequestMapping(value = "/forcePostOrUpdateRightHolderCrous", method = RequestMethod.POST, produces = "text/html")
 	public String forcePostOrUpdateRightHolderCrous(Model uiModel) {
 		log.info("forcePostOrUpdateRightHolderCrous called");
 		int nbRightHolderPutinCrous = 0;
-		for(User user : userDaoService.findUsersWithCrousAndWithCardEnabled()) {
-			try {
-				if(crousService.postOrUpdateRightHolder(user.getEppn(), EsupSgcOperation.SYNC)) {
-					nbRightHolderPutinCrous++;
-				}		
-			} catch(Exception e) {
-				log.warn(String.format("Exception on forcePostOrUpdateRightHolderCrous for %s", user.getEppn()), e);
-			}	
+		if(crousService.isEnabled()) {
+			for(User user : userDaoService.findUsersWithCrousAndWithCardEnabled()) {
+				try {
+					if(crousService.postOrUpdateRightHolder(user.getEppn(), EsupSgcOperation.SYNC)) {
+						nbRightHolderPutinCrous++;
+					}
+				} catch(Exception e) {
+					log.warn(String.format("Exception on forcePostOrUpdateRightHolderCrous for %s", user.getEppn()), e);
+				}
+			}
 		}
 		String infoMsg = String.format("%s rightHolder vérifiés et envoyés / mis à jour dans l'API CROUS", nbRightHolderPutinCrous);
 		log.info(infoMsg);

@@ -86,7 +86,7 @@
                     </button>
                 </div>
             </form>
-            <div th:if="${usersCrousDisabledExistingInApiCrous != null and #lists.isNotEmpty(usersCrousDisabledExistingInApiCrous)}">
+            <div th:if="${usersCrousDisabledExistingInApiCrous != null and not #lists.isEmpty(usersCrousDisabledExistingInApiCrous)}">
                 <span th:text="#{tools.crous.disabled.but.exists}">Utilisateurs ayant la tranmission au crous désactivé alors qu'un compte crous a été retrouvé sur l'api crous</span>
                 <ul>
                     <li th:each="eppn : ${usersCrousDisabledExistingInApiCrous}">
@@ -104,13 +104,29 @@
             <form th:action="@{/admin/tools/forceSendEscrApiCrous}" class="form-horizontal" method="post">
                 <div class="form-group">
                     <button class="btn btn-danger" type="submit" name="action" value="forceSendEscrApiCrousUrl"
-                            th:onclick="|return confirm('#{tools.escr.confirm}')|" th:text="#{tools.escr.resend}">
+                            th:onclick="|return confirm(&quot;#{tools.escr.confirm}&quot;)|" th:text="#{tools.escr.resend}">
                         Lancer le renvoi dans l'API ESCR des comptes/cartes activées avec l'option ESCR de demandée
                     </button>
                 </div>
             </form>
             <div th:if="${forceSendEscrApiCrousResult != null}">
                 <div class="well alert alert-danger" th:text="${forceSendEscrApiCrousResult}"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-1" th:utext="#{common.nbsp}">&nbsp;</div>
+        <div class="col-lg-10">
+            <form th:action="@{/admin/tools/purgeOldEscPersonsEscr}" class="form-horizontal" method="post">
+                <div class="form-group">
+                    <button class="btn btn-danger" type="submit"
+                            th:onclick="|return confirm(&quot;#{tools.escr.purge.confirm}&quot;)|" th:text="#{tools.escr.purge}">
+                        Purge
+                    </button>
+                </div>
+            </form>
+            <div th:if="${escrPurgeResult != null}">
+                <div class="well alert alert-danger" th:text="${escrPurgeResult}"></div>
             </div>
         </div>
     </div>

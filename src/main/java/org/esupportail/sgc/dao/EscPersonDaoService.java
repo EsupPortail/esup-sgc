@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -17,6 +19,11 @@ public class EscPersonDaoService {
     public TypedQuery<EscPerson> findEscPersonsByEppnEquals(String eppn) {
         return entityManager.createQuery("SELECT o FROM EscPerson o WHERE o.eppn = :eppn", EscPerson.class)
                 .setParameter("eppn", eppn);
+    }
+
+    public TypedQuery<EscPerson> findEscPersonsByIdenfifierEquals(String identifier) {
+        return entityManager.createQuery("SELECT o FROM EscPerson o WHERE o.identifier = :identifier", EscPerson.class)
+                .setParameter("identifier", identifier);
     }
 
     public void persist(EscPerson escPerson) {
@@ -32,6 +39,7 @@ public class EscPersonDaoService {
         }
     }
 
+    @Transactional
     public void remove(EscPerson singleResult) {
         entityManager.remove(singleResult);
     }

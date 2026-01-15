@@ -12,6 +12,7 @@ import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.*;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.ValidateService;
+import org.esupportail.sgc.services.esc.model.EscPagedResourcesPersonLiteView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -32,7 +33,7 @@ public class ApiEscService extends ValidateService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	@Resource
 	AppliConfigService appliConfigService;
@@ -43,11 +44,11 @@ public class ApiEscService extends ValidateService {
 	@Resource
 	EscCardDaoService escCardDaoService;
 
-    @Resource
-    CardDaoService cardDaoService;
+	@Resource
+	CardDaoService cardDaoService;
 
-    @Resource
-    UserDaoService userDaoService;
+	@Resource
+	UserDaoService userDaoService;
 
 	RestTemplate restTemplate;
 
@@ -66,7 +67,7 @@ public class ApiEscService extends ValidateService {
 	String cardType;
 
 	Map<LocalDateTime, String> cardTypes = new HashMap<>();
-	
+
 	boolean abortActivationIfEscFails = false;
 
 	public void setRestTemplate(RestTemplate restTemplate) {
@@ -94,8 +95,8 @@ public class ApiEscService extends ValidateService {
 	}
 
 	public void setVatProcessorInstitution(String vatProcessorInstitution) {
-    		this.vatProcessorInstitution = vatProcessorInstitution;
-    	}
+		this.vatProcessorInstitution = vatProcessorInstitution;
+	}
 
 	public void setCardType(String cardType) {
 		this.cardType = cardType;
@@ -104,7 +105,7 @@ public class ApiEscService extends ValidateService {
 	public void setCardTypes(Map<String, String> cardTypesDateAsString) throws ParseException {
 		cardTypes = new HashMap<LocalDateTime, String>();
 		for(String dateAsString : cardTypesDateAsString.keySet()) {
-            LocalDateTime date = LocalDateTime.parse(dateAsString, dateFormat);
+			LocalDateTime date = LocalDateTime.parse(dateAsString, dateFormat);
 			cardTypes.put(date, cardTypesDateAsString.get(dateAsString));
 		}
 	}
@@ -120,8 +121,8 @@ public class ApiEscService extends ValidateService {
 				}
 			} catch(HttpStatusCodeException clientEx) {
 				log.error("HttpStatusCodeException : " + clientEx.getResponseBodyAsString());
-                if(abortActivationIfEscFails) {
-					throw clientEx; 
+				if(abortActivationIfEscFails) {
+					throw clientEx;
 				}
 			}
 		}
@@ -139,8 +140,11 @@ public class ApiEscService extends ValidateService {
 			} catch(HttpStatusCodeException clientEx) {
 				log.error("HttpStatusCodeException : " + clientEx.getResponseBodyAsString(), clientEx);
 			}
+			if(Card.Etat.CADUC.equals(card.getEtat())) {
+				deleteEscPerson(card.getEppn());
+			}
 		}
-	}	
+	}
 
 	public void postOrUpdateEscPerson(String eppn) {
 		if(eppn.matches(this.getEppnFilter())) {
@@ -168,11 +172,11 @@ public class ApiEscService extends ValidateService {
 		}
 		try {
 			String url = webUrl + "/persons/" + europeanPersonIdentifier;
-			HttpHeaders headers = this.getJsonHeaders();			
+			HttpHeaders headers = this.getJsonHeaders();
 			HttpEntity entity = new HttpEntity(headers);
-			log.debug("Try to get Esc Person : " + europeanPersonIdentifier); 
+			log.debug("Try to get Esc Person : " + europeanPersonIdentifier);
 			ResponseEntity<EscPerson> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscPerson.class);
-			log.info(eppn + " retrieved in Esc as Person -> " + response.getBody());	
+			log.info(eppn + " retrieved in Esc as Person -> " + response.getBody());
 			return response.getBody();
 		} catch(HttpStatusCodeException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
@@ -198,7 +202,7 @@ public class ApiEscService extends ValidateService {
 
 	protected void postEscPerson(String eppn) {
 		String url = webUrl + "/persons";
-		HttpHeaders headers = this.getJsonHeaders();			
+		HttpHeaders headers = this.getJsonHeaders();
 		EscPerson escPerson = this.computeEscPerson(eppn);
 		if(escPerson == null) {
 			log.error(String.format("Can't compute EscPerson for %s, because EuropeanPersonIdentifier can't be generated ?", eppn));
@@ -246,36 +250,44 @@ public class ApiEscService extends ValidateService {
 			HttpEntity entity = new HttpEntity(escPersonInEscr, headers);
 			log.debug("Try to put/update Esc Person : " + escPersonInEscr);
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-			log.info(eppn + " updated in Esc as Person -> " + response.getBody());	
-		} 
+			log.info(eppn + " updated in Esc as Person -> " + response.getBody());
+		}
 	}
 
 
-	public void deleteEscPerson(String eppn) {		
+	public void deleteEscPerson(String eppn) {
 		String europeanPersonIdentifier = getEuropeanPersonIdentifier(eppn);
 		if(europeanPersonIdentifier == null || !enable) {
 			return;
 		}
+		deleteEscPersonOnlyOnEscr(europeanPersonIdentifier);
+		// local delete if exists
+		List<EscPerson> escPersons = escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList();
+		if(!escPersons.isEmpty()) {
+			log.debug("Local delete of EscPerson for " + eppn);
+			escPersonDaoService.remove(escPersons.get(0));
+		}
+	}
+
+
+	void deleteEscPersonOnlyOnEscr(String europeanPersonIdentifier) {
+		if(europeanPersonIdentifier == null || !enable) {
+			return;
+		}
 		String url = webUrl + "/persons/" + europeanPersonIdentifier;
-		HttpHeaders headers = this.getJsonHeaders();			
+		HttpHeaders headers = this.getJsonHeaders();
 		HttpEntity entity = new HttpEntity(null, headers);
-		log.debug("Try to delete Person : " + europeanPersonIdentifier); 
+		log.debug("Try to delete Person : " + europeanPersonIdentifier);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
-			log.info(eppn + " deleted in Esc -> " + response.getBody());
+			log.info(europeanPersonIdentifier + " deleted in Esc -> " + response.getBody());
 		} catch(HttpStatusCodeException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
-				log.warn("No need to delete " + eppn + " in Esc because not found in Esc");
+				log.warn("No need to delete " + europeanPersonIdentifier + " in Esc because not found in Esc");
 			} else {
 				throw clientEx;
 			}
 		}
-        // local delete if exists
-        List<EscPerson> escPersons = escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList();
-        if(!escPersons.isEmpty()) {
-            log.debug("Local delete of EscPerson for " + eppn);
-            escPersonDaoService.remove(escPersons.get(0));
-        } 
 	}
 
 
@@ -317,12 +329,12 @@ public class ApiEscService extends ValidateService {
 			return null;
 		} else {
 			String url = webUrl + "/cards/" + card.getEscnUid() + "/status";
-			HttpHeaders headers = this.getJsonHeaders();			
+			HttpHeaders headers = this.getJsonHeaders();
 			HttpEntity entity = new HttpEntity(headers);
-			log.debug(String.format("Try to get Esc Card : %s - %s - %s - %s" , eppn, getEuropeanPersonIdentifier(eppn), csn, card.getEscnUid())); 
+			log.debug(String.format("Try to get Esc Card : %s - %s - %s - %s" , eppn, getEuropeanPersonIdentifier(eppn), csn, card.getEscnUid()));
 			try {
 				ResponseEntity<EscCard> response = restTemplate.exchange(url, HttpMethod.GET, entity, EscCard.class);
-				log.info(csn + " retrieved in Esc as Card -> " + response.getBody());	
+				log.info(csn + " retrieved in Esc as Card -> " + response.getBody());
 				return response.getBody();
 			} catch(HttpStatusCodeException clientEx) {
 				if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
@@ -331,13 +343,13 @@ public class ApiEscService extends ValidateService {
 				} else {
 					throw clientEx;
 				}
-			}	
+			}
 		}
 	}
 
 	protected void postEscCard(Card card) {
 		String url = webUrl + "/cards";
-		HttpHeaders headers = this.getJsonHeaders();			
+		HttpHeaders headers = this.getJsonHeaders();
 		EscCard escCard = this.computeEscCard(card);
 		HttpEntity entity = new HttpEntity(escCard, headers);
 		log.debug("Try to post to Esc Card : " + escCard);
@@ -371,7 +383,7 @@ public class ApiEscService extends ValidateService {
 			EscCard escCard = EscCards.get(0);
 			String europeanCardIdentifier = escCard.getCardNumber();
 			String url = webUrl + "/cards/" + europeanCardIdentifier;
-			HttpHeaders headers = this.getJsonHeaders();			
+			HttpHeaders headers = this.getJsonHeaders();
 			HttpEntity entity = new HttpEntity(null, headers);
 			log.debug("Try to delete card : " + escCard);
 			try {
@@ -453,7 +465,7 @@ public class ApiEscService extends ValidateService {
 	@Transactional
 	public boolean validateESCenableCard(String eppn) {
 		User user = userDaoService.findUser(eppn);
-		Card enabledCard = user.getEnabledCard();			
+		Card enabledCard = user.getEnabledCard();
 		if(enabledCard != null && enabledCard.getEscnUid() != null && !enabledCard.getEscnUid().isEmpty()) {
 			if(escPersonDaoService.findEscPersonsByEppnEquals(user.getEppn()).getResultList().isEmpty() || escCardDaoService.findEscCardsByCardNumberEquals(enabledCard.getEscnUid()).getResultList().isEmpty()) {
 				this.validate(enabledCard);
@@ -467,9 +479,9 @@ public class ApiEscService extends ValidateService {
 	public String getCaChainCertAsHexa(String picInstitutionCode) {
 		String urlTemplate = webUrl.replaceFirst("/v1", "/v1/certs/files/%s/ca-chain.cert.pem");
 		String url = String.format(urlTemplate, picInstitutionCode);
-		HttpHeaders headers = this.getJsonHeaders();			
+		HttpHeaders headers = this.getJsonHeaders();
 		HttpEntity entity = new HttpEntity(headers);
-		log.info("Try to get CA Chain Cert on " + url); 
+		log.info("Try to get CA Chain Cert on " + url);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 		log.info("CA Chain Cert for " + picInstitutionCode + " -> \n" + response.getBody());
 		byte[] certAsBytesArray = response.getBody().getBytes();
@@ -482,6 +494,68 @@ public class ApiEscService extends ValidateService {
 
 	public boolean isEppnMatches(String eppn) {
 		return eppn.matches(this.getEppnFilter());
+	}
+
+	public List<EscPerson> getEscPersons() {
+		String url = webUrl + "/persons";
+		HttpHeaders headers = this.getJsonHeaders();
+		HttpEntity entity = new HttpEntity(null, headers);
+		log.debug("Get persons from ESCR ");
+		int page = 0;
+		int size = 200;
+		List<EscPerson> escPersons = new java.util.ArrayList<>();
+		while(true) {
+			log.debug("Get persons from ESCR - page " + page);
+			String pagedUrl = url + "?page=" + page + "&size=" + size;
+			ResponseEntity<EscPagedResourcesPersonLiteView> personsPage = restTemplate.exchange(pagedUrl, HttpMethod.GET, entity, EscPagedResourcesPersonLiteView.class);
+			List persons = personsPage.getBody().getContent();
+			escPersons.addAll(personsPage.getBody().getContent());
+			if (persons.size() < size) {
+				break;
+			} else {
+				page++;
+			}
+		}
+		log.info("Total EscPersons retrieved from ESCR : " + escPersons.size());
+		return escPersons;
+	}
+
+
+	public int purgeOldEscPersonsEscr() {
+		int nbDeleted = 0;
+		List<EscPerson> escPersons = getEscPersons();
+		for(EscPerson escPerson : escPersons) {
+			List<EscPerson> escPersonInDatabases = escPersonDaoService.findEscPersonsByIdenfifierEquals(escPerson.getIdentifier()).getResultList();
+			if(escPersonInDatabases.isEmpty()) {
+				log.info("Purge of EscPerson " + escPerson.getIdentifier() + " because not found in local database");
+				deleteEscPersonOnlyOnEscr(escPerson.getIdentifier());
+				nbDeleted++;
+			} else {
+				for (EscPerson escPersonInDatabase : escPersonInDatabases) {
+					User user = userDaoService.findUser(escPersonInDatabase.getEppn());
+					if (user == null) {
+						log.info("Purge of EscPerson " + escPerson.getIdentifier() + " because user not found in local database");
+						deleteEscPersonOnlyOnEscr(escPerson.getIdentifier());
+						nbDeleted++;
+					} else if(user.getEuropeanStudentCard()) {
+						boolean hasCard = false;
+						for (Card card : user.getCards()) {
+							if (!Card.Etat.CADUC.equals(card.getEtat()) && !Card.Etat.DESTROYED.equals(card.getEtat())) {
+								hasCard = true;
+								break;
+							}
+						}
+						if (!hasCard) {
+							log.info("Purge of EscPerson " + escPerson.getIdentifier() + " because user not found or europeanStudentCard disabled or no activated/activable card");
+							deleteEscPerson(user.getEppn());
+							nbDeleted++;
+						}
+					}
+				}
+			}
+		}
+		log.warn("Total EscPersons purged from ESCR : " + nbDeleted);
+		return nbDeleted;
 	}
 }
 
