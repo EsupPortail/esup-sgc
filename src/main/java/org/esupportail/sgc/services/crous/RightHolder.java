@@ -2,6 +2,7 @@ package org.esupportail.sgc.services.crous;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -48,8 +49,10 @@ public class RightHolder {
 	
 	BlockingStatus blockingStatus;
 
-	// Format attendu par beforeizly avec un 'Z' (temps UTC) à la fin
-	// -> mis en dur dans le pattern même si pas de gestion des fuseaux
+	/* Format souple pour  beforeizly en temps utc, avec ou sans fuseau horaire...
+	* -> @see FlexibleLocalDateTimeDeserializer
+	 */
+	@JsonDeserialize(using = FlexibleLocalDateTimeDeserializer.class)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
 	public LocalDateTime getDueDate() {
 		return dueDate;

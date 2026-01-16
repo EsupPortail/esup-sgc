@@ -120,4 +120,29 @@ public class JsonObjectMapperTest {
         String expectedDateString =  formatter.format(user.getDueDate());
         assertTrue(json.contains("\"dueDate\":\"" + expectedDateString));
     }
+
+    @Test
+    public void testRightHolderDueDateJsonFormatWithZ() throws JsonProcessingException {
+        String json = "{\"dueDate\":\"2024-06-15T10:30:30.000Z\"}";
+        RightHolder rightHolder = objectMapper.readValue(json, RightHolder.class);
+        LocalDateTime expectedDate = LocalDateTime.of(2024, 6, 15, 10, 30, 30, 0);
+        assertEquals(expectedDate, rightHolder.getDueDate());
+    }
+
+    @Test
+    public void testRightHolderDueDateJsonFormatWithoutZ() throws JsonProcessingException {
+        String json = "{\"dueDate\":\"2024-06-15T10:30:00.000\"}";
+        RightHolder rightHolder = objectMapper.readValue(json, RightHolder.class);
+        LocalDateTime expectedDate = LocalDateTime.of(2024, 6, 15, 10, 30, 0, 0);
+        assertEquals(expectedDate, rightHolder.getDueDate());
+    }
+
+    @Test
+    public void testRightHolderDueDateJsonFormatWithTimezone() throws JsonProcessingException {
+        String json = "{\"dueDate\":\"2031-04-16T01:59:59.000+02\"}";
+        RightHolder rightHolder = objectMapper.readValue(json, RightHolder.class);
+        LocalDateTime expectedDate = LocalDateTime.of(2031, 4, 16, 1, 59, 59, 0);
+        assertEquals(expectedDate, rightHolder.getDueDate());
+    }
+
 }
