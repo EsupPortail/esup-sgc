@@ -365,7 +365,7 @@ public class Card {
     }
 
     public String getReverseCsn() {
-    	if(csn==null) {
+    	if(StringUtils.isEmpty(csn)) {
     		return null;
     	} else {
 	        String csnReverse = new String();
@@ -377,7 +377,7 @@ public class Card {
     }
 
     public String getDecimalCsn() {
-        if(csn==null) {
+        if(StringUtils.isEmpty(csn)) {
             return null;
         } else {
             return new BigInteger(csn, 16).toString();
@@ -385,7 +385,7 @@ public class Card {
     }
 
     public String getDecimalReverseCsn() {
-        if(csn==null) {
+        if(StringUtils.isEmpty(csn)) {
             return null;
         } else {
             return new BigInteger(this.getReverseCsn(), 16).toString();
