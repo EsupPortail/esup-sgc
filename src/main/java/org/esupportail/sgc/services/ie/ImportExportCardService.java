@@ -66,7 +66,7 @@ public class ImportExportCardService {
     /*
         * Import une ligne CSV
         * Format attendu :
-        * date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn;diffusion photo (Oui/Non);id;etat de la carte;generatedIds
+        * date d'impression/encodage;date de dernière modification;CSN;Autorisation données crous (Autorisée/Interdite);Identifiant Access-Control;eppn;diffusion photo (Oui/Non);id;etat de la carte;generatedIds;qrcode
         * Soit :
         * encodedDate;lastEncodedDate;csn;crous;desfireId;eppn;difPhoto;etat
         * Exemple :
@@ -129,6 +129,10 @@ public class ImportExportCardService {
                 }
             }
         }
+        String qrcode = null;
+        if(fields.length>10) {
+            qrcode = fields[10];
+        }
 
 		if(eppn != null) {
 			User user = userDaoService.findUser(eppn);
@@ -154,6 +158,7 @@ public class ImportExportCardService {
 			card.setEncodedDate(printedDate);
 			card.setLastEncodedDate(printedDate);
 			card.setDateEtat(lastModificationDate);
+            card.setQrcode(qrcode);
 			userInfoService.setAdditionalsInfo(user, null);
 			String photoFileNameFound = "";
 			byte[] bytes = null;
@@ -242,7 +247,7 @@ public class ImportExportCardService {
         * Retourne l'entrée CSV d'une carte
         * Correspond aux chanps permettant un import
         * Cf la méthode importCsvLine
-        * encodedDate;lastEncodedDate;csn;crous;card.getDesfireIds().get(AccessControlService.AC_APP_NAME);eppn;difPhoto;id;etat;generatedIds
+        * encodedDate;lastEncodedDate;csn;crous;card.getDesfireIds().get(AccessControlService.AC_APP_NAME);eppn;difPhoto;id;etat;generatedIds;qrcode
         *
      */
     public String exportCsvLine(Card card) {
@@ -291,6 +296,10 @@ public class ImportExportCardService {
             generatedIds += appName + "=" + card.getDesfireIds().get(appName);
         }
         sb.append(generatedIds);
+        sb.append(";");
+        if(!StringUtils.isEmpty(card.getQrcode())) {
+            sb.append(card.getQrcode());
+        }
         return sb.toString();
     }
 

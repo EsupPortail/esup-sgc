@@ -185,7 +185,7 @@ public class ImportExportService {
     public void addCsvCardsToZip(TypedQuery<Card> cardsTypedQuery, ZipOutputStream zos) throws IOException {
         ZipEntry fileEntry = new ZipEntry("cards.csv");
         zos.putNextEntry(fileEntry);
-        String header =  "encodedDate;lastEncodedDate;csn;crous;access-control-id;eppn;difPhoto;id;etat;generatedIds";
+        String header =  "encodedDate;lastEncodedDate;csn;crous;access-control-id;eppn;difPhoto;id;etat;generatedIds;qrcode";
         zos.write(header.getBytes());
         zos.write(System.lineSeparator().getBytes());
         for(Card card : cardsTypedQuery.getResultList()) {

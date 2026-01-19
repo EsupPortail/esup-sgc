@@ -136,10 +136,10 @@
                                     box-sizing: content-box;
                                 }
                                 @media screen and (min-width: 451px) {
-                                    [[${templateCard.cssStyle}]]
+                                    [(${templateCard.cssStyle})]
                                 }
                                 @media screen and (max-width: 450px) {
-                                    [[${templateCard.cssMobileStyle}]]
+                                    [(${templateCard.cssMobileStyle})]
                                 }
                             </style>
                             <div id="specimenCarte">
@@ -178,7 +178,7 @@
                                 </style>
                                 <style th:inline="text" id="backStyle">
                                     @media screen {
-                                        [[${templateCard.cssBackStyle}]]
+                                        [(${templateCard.cssBackStyle})]
                                     }
                                 </style>
                                 <div id="backCarte">
@@ -212,7 +212,7 @@
                             <form th:action="@{/admin/templatecards/fillTemplate}" class="form-inline" id="searchEppnForm" role="search">
                                 <div class="form-group">
                                     <label th:text="#{common.test.user}">Utilisateur test</label>
-                                    <input class="form-control" id="searchEppnTemp" name="searchText" th:placeholder="#{common.login.date}" type="text" th:value="${searchBean?.searchText}"/>
+                                    <input class="form-control" id="searchEppnTemp" name="searchText" th:placeholder="#{common.test.eppn}" type="text" th:value="${searchBean?.searchText}"/>
                                 </div>
                             </form>
                         </div>

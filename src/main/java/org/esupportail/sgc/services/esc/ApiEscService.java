@@ -129,11 +129,14 @@ public class ApiEscService extends ValidateService {
 	}
 
 	@Override
+	@Transactional
 	public void invalidateInternal(Card card) {
 		User user = userDaoService.findUser(card.getEppn());
 		if(user.getEuropeanStudentCard() && enable) {
 			try {
-				postOrUpdateEscPerson(card.getEppn());
+				if(!Card.Etat.CADUC.equals(card.getEtat())) {
+					postOrUpdateEscPerson(card.getEppn());
+				}
 				if(card.getEscnUid() != null && !card.getEscnUid().isEmpty()) {
 					deleteEscCard(card);
 				}
@@ -227,6 +230,11 @@ public class ApiEscService extends ValidateService {
 				throw clientEx;
 			}
 		}
+		List<EscPerson> escPersonInDatabases = escPersonDaoService.findEscPersonsByEppnEquals(eppn).getResultList();
+		if(!escPersonInDatabases.isEmpty()) {
+			log.warn("Duplicate EscPerson for eppn " + eppn + " in local database, we remove all and persist a new one");
+			escPersonDaoService.remove(escPersonInDatabases.get(0));
+		}
 		escPersonDaoService.persist(escPerson);
 	}
 
@@ -284,6 +292,8 @@ public class ApiEscService extends ValidateService {
 		} catch(HttpStatusCodeException clientEx) {
 			if(HttpStatus.NOT_FOUND.equals(clientEx.getStatusCode())) {
 				log.warn("No need to delete " + europeanPersonIdentifier + " in Esc because not found in Esc");
+			} else if(HttpStatus.FORBIDDEN.equals(clientEx.getStatusCode())) {
+				log.warn("No need to delete " + europeanPersonIdentifier + " in Esc because access forbidden on Esc for this operation");
 			} else {
 				throw clientEx;
 			}
