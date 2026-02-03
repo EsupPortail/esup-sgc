@@ -30,7 +30,7 @@ public class InfoHeadersShibController {
 			httpHeaders.put(headerName, request.getHeader(headerName));
 		}
 		uiModel.addAttribute("httpHeader", httpHeaders);
-		return "user/shib";
+		return "templates/user/shib";
 	}
 }
 

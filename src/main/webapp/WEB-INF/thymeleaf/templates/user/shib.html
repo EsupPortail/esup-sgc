@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Shibboleth / HTTP Headers</title>
+    <style>
+        .shib-headers { margin-top: 1rem; }
+        .header-key { font-weight: 600; color: #333; }
+        .header-value { color: #555; word-break: break-word; }
+        .shib-controls { margin-bottom: 0.75rem; }
+        .no-headers { color: #888; font-style: italic; }
+        .copy-btn { margin-left: 0.5rem; }
+        .table-fixed { table-layout: fixed; width: 100%; }
+        .col-value { width: 70%; }
+    </style>
+</head>
+<body>
+<div class="container-fluid shib-headers">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel-heading">
+                <h5>Shibboleth / HTTP Headers</h5>
+            </div>
+            <div class="panel-body">
+                <div class="shib-controls">
+                    <input id="shib-filter" class="form-control" type="search" placeholder="Filtrer par nom ou valeur d'en-tête..." aria-label="Filtrer" oninput="filterHeaders()" />
+                    <button class="btn btn-default copy-btn" onclick="copyHeaders()" title="Copier tous les en-têtes dans le presse-papier">Copier tout</button>
+                </div>
+
+                <div th:if="${httpHeader == null or #maps.isEmpty(httpHeader)}">
+                    <p class="no-headers">Aucun en-tête HTTP trouvé.</p>
+                </div>
+
+                <div th:unless="${httpHeader == null or #maps.isEmpty(httpHeader)}">
+                    <table class="table table-striped table-bordered table-fixed">
+                        <thead>
+                        <tr>
+                            <th style="width:30%">Nom</th>
+                            <th>Valeur</th>
+                        </tr>
+                        </thead>
+                        <tbody id="shib-headers-tbody">
+                        <!-- itère sur la map d'en-têtes fournie par le contrôleur -->
+                        <tr th:each="entry : ${httpHeader.entrySet()}">
+                            <td class="header-key" th:text="${entry.key}">Header-Name</td>
+                            <td class="header-value col-value" th:text="${entry.value}">Header-Value</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Filtre simple côté client : recherche dans le nom et la valeur
+    function filterHeaders() {
+        var q = document.getElementById('shib-filter').value.toLowerCase();
+        var tbody = document.getElementById('shib-headers-tbody');
+        if (!tbody) return;
+        var rows = tbody.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var tds = rows[i].getElementsByTagName('td');
+            if (tds.length < 2) continue;
+            var name = (tds[0].innerText || tds[0].textContent).toLowerCase();
+            var value = (tds[1].innerText || tds[1].textContent).toLowerCase();
+            rows[i].style.display = (name.indexOf(q) !== -1 || value.indexOf(q) !== -1) ? '' : 'none';
+        }
+    }
+
+    // Copie tous les en-têtes en texte formaté "Nom: Valeur\n" dans le presse-papier
+    function copyHeaders() {
+        var tbody = document.getElementById('shib-headers-tbody');
+        if (!tbody) return;
+        var rows = tbody.getElementsByTagName('tr');
+        var lines = [];
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].style.display === 'none') continue; // ignore filtered out
+            var tds = rows[i].getElementsByTagName('td');
+            if (tds.length < 2) continue;
+            var name = (tds[0].innerText || tds[0].textContent).trim();
+            var value = (tds[1].innerText || tds[1].textContent).trim();
+            lines.push(name + ': ' + value);
+        }
+        var text = lines.join('\n');
+        if (!navigator.clipboard) {
+            // fallback
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); alert('En-têtes copiés.'); } catch (e) { alert('Impossible de copier automatiquement.'); }
+            document.body.removeChild(ta);
+            return;
+        }
+        navigator.clipboard.writeText(text).then(function() {
+            // petite confirmation non bloquante
+            var btn = document.querySelector('.copy-btn');
+            if (btn) {
+                var old = btn.innerText;
+                btn.innerText = 'Copié ✓';
+                setTimeout(function(){ btn.innerText = old; }, 1500);
+            }
+        }, function() { alert('Impossible de copier dans le presse-papier.'); });
+    }
+</script>
+
+</body>
+</html>
