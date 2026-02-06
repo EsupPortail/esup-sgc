@@ -424,7 +424,7 @@ public class UserInfoService {
             LocalDateTime dateFinDroits = appliConfigService.getDefaultDateFinDroits();
 			user.setDueDate(dateFinDroits);
 		} 
-		if(!userInfos.containsKey("institute") || (userInfos.get("institute")).isEmpty()) {
+		if(!userInfos.containsKey("institute") || userInfos.get("institute") == null || (userInfos.get("institute")).isEmpty()) {
 			user.setInstitute(user.getEppn().replaceAll(".*@", ""));
 		}
 	}
