@@ -233,7 +233,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
             userDaoService.persist(user);
 		}
 		
-		resynchronisationUserService.synchronizeUserInfo(eppn);
+		resynchronisationUserService.synchronizeUserInfoNoTx(eppn);
 		ldapGroup2UserRoleService.syncUser(eppn);
 		
 		return new ResponseEntity<String>(eppn + " has been synchronized.", HttpStatus.OK);
