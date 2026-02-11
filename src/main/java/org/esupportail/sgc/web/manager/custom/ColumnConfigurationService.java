@@ -416,6 +416,69 @@ public class ColumnConfigurationService {
         return dafaultVisibleColumns;
     }
 
+    private Map<String, ColumnDefinition> getAllAvailableColumnsMap() {
+        return getAllAvailableColumns().stream()
+                .collect(Collectors.toMap(ColumnDefinition::getKey, Function.identity(), (a, b) -> a, LinkedHashMap::new));
+    }
+
+    private List<String> getDefaultOrder() {
+        return new ArrayList<>(getAllAvailableColumnsMap().keySet());
+    }
+
+    private List<String> normalizeOrder(List<String> order, Collection<String> allKeys) {
+        LinkedHashSet<String> normalized = new LinkedHashSet<>();
+        if (order != null) {
+            for (String key : order) {
+                if (allKeys.contains(key)) {
+                    normalized.add(key);
+                }
+            }
+        }
+        for (String key : allKeys) {
+            normalized.add(key);
+        }
+        return new ArrayList<>(normalized);
+    }
+
+    private static class ColumnPrefData {
+        private final RenderSize renderSize;
+        private final boolean visible;
+
+        private ColumnPrefData(RenderSize renderSize, boolean visible) {
+            this.renderSize = renderSize;
+            this.visible = visible;
+        }
+    }
+
+    private Map<String, ColumnPrefData> parsePrefValue(String prefValue) {
+        Map<String, ColumnPrefData> data = new LinkedHashMap<>();
+        if (prefValue == null || prefValue.isEmpty()) {
+            return data;
+        }
+        for (String entry : prefValue.split(",")) {
+            String[] parts = entry.split(":");
+            if (parts.length == 0) {
+                continue;
+            }
+            String key = parts[0];
+            RenderSize renderSize = null;
+            Boolean visible = null;
+            for (int i = 1; i < parts.length; i++) {
+                String part = parts[i];
+                try {
+                    renderSize = RenderSize.valueOf(part);
+                    continue;
+                } catch (IllegalArgumentException ignored) {
+                }
+                if ("1".equals(part) || "0".equals(part) || "true".equalsIgnoreCase(part) || "false".equalsIgnoreCase(part)) {
+                    visible = "1".equals(part) || "true".equalsIgnoreCase(part);
+                }
+            }
+            data.put(key, new ColumnPrefData(renderSize, visible == null || visible));
+        }
+        return data;
+    }
+
     public List<ColumnDefinition> getRenderingColumns(List<ColumnDefinition> columnsWithVisibility, List<Card> cards) {
 
         List<ColumnDefinition> columns = columnsWithVisibility.stream().filter(ColumnDefinition::isVisible).collect(Collectors.toList());
@@ -433,39 +496,67 @@ public class ColumnConfigurationService {
      * Pour la configuration (sans pré-rendu)
      */
     public List<ColumnDefinition> getColumnsWithVisibility(String eppn) {
+        Map<String, ColumnDefinition> allAvailableColumnsMap = getAllAvailableColumnsMap();
+        List<String> allKeys = new ArrayList<>(allAvailableColumnsMap.keySet());
+        Set<String> defaultVisible = getDefaultVisibleColumns();
 
-        List<ColumnDefinition> allAvailableColumns = getAllAvailableColumns();
-        Map<String, ColumnDefinition> allAvailableColumnsMap = allAvailableColumns.stream().collect(Collectors.toMap(ColumnDefinition::getKey, c -> c));
-        Set<String> visibleColumnKeys = getVisibleColumnKeys(eppn);
-        Map<String, RenderSize> visibleKeys =  visibleColumnKeys.stream().collect(Collectors.toMap(s -> s.split(":")[0],
-                s -> s.split(":").length>1 ?
-                        RenderSize.valueOf(s.split(":")[1]) :
-                        allAvailableColumnsMap.get(s).getRenderSize()));
+        String prefValue = preferencesService.getPrefValue(eppn, Prefs.PrefKey.PREF_VISIBLE_COLUMNS);
+        Map<String, ColumnPrefData> prefData = parsePrefValue(prefValue);
 
-        List<ColumnDefinition> columns = allAvailableColumns.stream()
-                .peek(col -> col.setVisible(visibleKeys.containsKey(col.getKey())))
-                .peek(col -> col.setRenderSize(
-                        visibleKeys.get(col.getKey()) != null ? visibleKeys.get(col.getKey()) : allAvailableColumnsMap.get(col.getKey()).getRenderSize()))
-                .collect(Collectors.toList());
+        List<String> prefOrder = prefData.isEmpty()
+                ? getDefaultOrder()
+                : normalizeOrder(new ArrayList<>(prefData.keySet()), allKeys);
+
+        List<ColumnDefinition> columns = new ArrayList<>();
+        for (String key : prefOrder) {
+            ColumnDefinition base = allAvailableColumnsMap.get(key);
+            if (base == null) {
+                continue;
+            }
+            ColumnPrefData data = prefData.get(key);
+            boolean visible = data != null ? data.visible : defaultVisible.contains(key);
+            RenderSize renderSize = data != null && data.renderSize != null ? data.renderSize : base.getRenderSize();
+
+            base.setVisible(visible);
+            base.setRenderSize(renderSize);
+            columns.add(base);
+        }
 
         return columns;
     }
 
-    private Set<String> getVisibleColumnKeys(String eppn) {
-        String visibleColumnsStr = preferencesService.getPrefValue(eppn, Prefs.PrefKey.PREF_VISIBLE_COLUMNS);
+    public void saveColumnPreferences(String eppn, List<String> visibleColumns, List<String> columnsRenders, List<String> columnsOrder) {
+        Map<String, ColumnDefinition> allAvailableColumnsMap = getAllAvailableColumnsMap();
+        List<String> allKeys = new ArrayList<>(allAvailableColumnsMap.keySet());
+        Set<String> visibleSet = visibleColumns != null ? new HashSet<>(visibleColumns) : Collections.emptySet();
 
-        if (visibleColumnsStr != null && !visibleColumnsStr.isEmpty()) {
-            return new LinkedHashSet<>(Arrays.asList(visibleColumnsStr.split(",")));
+        Map<String, RenderSize> renderSizes = new HashMap<>();
+        if (columnsRenders != null) {
+            for (String entry : columnsRenders) {
+                String[] parts = entry.split(":");
+                if (parts.length >= 2) {
+                    try {
+                        renderSizes.put(parts[0], RenderSize.valueOf(parts[1]));
+                    } catch (IllegalArgumentException ignored) {
+                    }
+                }
+            }
         }
 
-        return getDefaultVisibleColumns();
-    }
+        List<String> order = normalizeOrder(columnsOrder, allKeys);
+        List<String> serialized = new ArrayList<>();
+        for (String key : order) {
+            ColumnDefinition base = allAvailableColumnsMap.get(key);
+            if (base == null) {
+                continue;
+            }
+            RenderSize size = renderSizes.getOrDefault(key, base.getRenderSize());
+            boolean visible = visibleSet.contains(key);
+            serialized.add(key + ":" + size.name() + ":" + (visible ? "1" : "0"));
+        }
 
-    public void saveColumnPreferences(String eppn, List<String> visibleColumns) {
-
-        String columnsStr = visibleColumns != null ?
-                String.join(",", visibleColumns) : "";
-
+        String columnsStr = serialized.isEmpty() ? "" : String.join(",", serialized);
         preferencesService.setPrefs(eppn, Prefs.PrefKey.PREF_VISIBLE_COLUMNS, columnsStr);
     }
 }
+

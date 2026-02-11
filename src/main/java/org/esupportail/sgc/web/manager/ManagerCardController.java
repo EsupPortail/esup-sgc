@@ -983,12 +983,10 @@ public class ManagerCardController {
 		@PostMapping("/preferences/columns")
 		public String saveColumnPreferences(@RequestParam(value = "columns", required = false) List<String> columns,
 											@RequestParam(value="columns_render", required = false) List<String>  columnsRenders,
+											@RequestParam(value = "columns_order", required = false) List<String> columnsOrder,
 											Authentication auth) {
-			List<String> columnsRendersChecked = columns == null ? new ArrayList<>() :
-					columnsRenders.stream()
-					.filter(s -> columns.contains(s.split(":")[0]))
-					.collect(Collectors.toList());
-			columnService.saveColumnPreferences(auth.getName(), columnsRendersChecked);
+			List<String> safeColumnsRenders = columnsRenders != null ? columnsRenders : new ArrayList<>();
+			columnService.saveColumnPreferences(auth.getName(), columns, safeColumnsRenders, columnsOrder);
 			return "redirect:/manager";
 		}
 

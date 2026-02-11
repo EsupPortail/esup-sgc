@@ -123,7 +123,7 @@
                     <button type="button" class="close" data-dismiss="modal"><span th:utext="#{common.times}">&times;</span></button>
                     <h4 class="modal-title" th:text="#{list.columns.config}">Configuration des colonnes</h4>
                 </div>
-                <form th:action="@{/manager/preferences/columns}" method="POST">
+                <form th:action="@{/manager/preferences/columns}" method="POST" id="columnsConfigForm">
                     <div class="modal-body">
                         <p class="text-muted" th:text="#{list.columns.select}">Cochez les colonnes que vous souhaitez afficher dans le tableau.</p>
                         <div class="row">
@@ -134,8 +134,8 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6" th:each="col : ${availableColumns}">
+                        <div class="row columns-container">
+                            <div class="col-md-6 column-config-item" th:each="col : ${availableColumns}" th:attr="data-key=${col.key}">
                                 <div class="checkbox">
                                     <label>
                                         <input type="checkbox"
@@ -155,6 +155,14 @@
                                         </select>
                                         <small class="text-muted" th:if="${col.description}" th:text="' - ' + ${col.description}"></small>
                                     </label>
+                                    <div class="btn-group btn-group-xs" role="group">
+                                        <button type="button" class="btn btn-default move-up" title="Monter">
+                                            <span class="glyphicon glyphicon-arrow-up"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default move-down" title="Descendre">
+                                            <span class="glyphicon glyphicon-arrow-down"></span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -179,6 +187,41 @@
                                         selectAll.indeterminate = true;
                                     }
                                 }));
+
+                                const container = document.querySelector(".columns-container");
+                                container.addEventListener("click", (event) => {
+                                    const button = event.target.closest(".move-up, .move-down");
+                                    if (!button) {
+                                        return;
+                                    }
+                                    const item = button.closest(".column-config-item");
+                                    if (!item) {
+                                        return;
+                                    }
+                                    if (button.classList.contains("move-up")) {
+                                        const prev = item.previousElementSibling;
+                                        if (prev) {
+                                            container.insertBefore(item, prev);
+                                        }
+                                    } else {
+                                        const next = item.nextElementSibling;
+                                        if (next) {
+                                            container.insertBefore(next, item);
+                                        }
+                                    }
+                                });
+
+                                const form = document.getElementById("columnsConfigForm");
+                                form.addEventListener("submit", () => {
+                                    form.querySelectorAll("input[name='columns_order']").forEach(el => el.remove());
+                                    container.querySelectorAll(".column-config-item").forEach(item => {
+                                        const input = document.createElement("input");
+                                        input.type = "hidden";
+                                        input.name = "columns_order";
+                                        input.value = item.getAttribute("data-key");
+                                        form.appendChild(input);
+                                    });
+                                });
                             });
                             /*]]>*/
                         </script>
