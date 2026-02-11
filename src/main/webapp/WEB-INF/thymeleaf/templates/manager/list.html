@@ -135,7 +135,7 @@
                             </div>
                         </div>
                         <div class="row columns-container">
-                            <div class="col-md-6 column-config-item" th:each="col : ${availableColumns}" th:attr="data-key=${col.key}">
+                            <div class="col-md-6 column-config-item" th:each="col : ${availableColumns}" th:attr="data-key=${col.key}" draggable="true">
                                 <div class="checkbox">
                                     <label>
                                         <input type="checkbox"
@@ -156,11 +156,17 @@
                                         <small class="text-muted" th:if="${col.description}" th:text="' - ' + ${col.description}"></small>
                                     </label>
                                     <div class="btn-group btn-group-xs" role="group">
+                                        <button type="button" class="btn btn-default move-top" title="Tout en haut">
+                                            <span class="glyphicon glyphicon-upload"></span>
+                                        </button>
                                         <button type="button" class="btn btn-default move-up" title="Monter">
                                             <span class="glyphicon glyphicon-arrow-up"></span>
                                         </button>
                                         <button type="button" class="btn btn-default move-down" title="Descendre">
                                             <span class="glyphicon glyphicon-arrow-down"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default move-bottom" title="Tout en bas">
+                                            <span class="glyphicon glyphicon-download"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -190,7 +196,7 @@
 
                                 const container = document.querySelector(".columns-container");
                                 container.addEventListener("click", (event) => {
-                                    const button = event.target.closest(".move-up, .move-down");
+                                    const button = event.target.closest(".move-top, .move-up, .move-down, .move-bottom");
                                     if (!button) {
                                         return;
                                     }
@@ -198,17 +204,56 @@
                                     if (!item) {
                                         return;
                                     }
-                                    if (button.classList.contains("move-up")) {
+                                    if (button.classList.contains("move-top")) {
+                                        container.insertBefore(item, container.firstElementChild);
+                                    } else if (button.classList.contains("move-up")) {
                                         const prev = item.previousElementSibling;
                                         if (prev) {
                                             container.insertBefore(item, prev);
                                         }
-                                    } else {
+                                    } else if (button.classList.contains("move-down")) {
                                         const next = item.nextElementSibling;
                                         if (next) {
                                             container.insertBefore(next, item);
                                         }
+                                    } else {
+                                        container.appendChild(item);
                                     }
+                                });
+
+                                let draggedItem = null;
+                                container.addEventListener("dragstart", (event) => {
+                                    const item = event.target.closest(".column-config-item");
+                                    if (!item) {
+                                        return;
+                                    }
+                                    draggedItem = item;
+                                    event.dataTransfer.effectAllowed = "move";
+                                    event.dataTransfer.setData("text/plain", item.getAttribute("data-key") || "");
+                                });
+                                container.addEventListener("dragover", (event) => {
+                                    if (!draggedItem) {
+                                        return;
+                                    }
+                                    event.preventDefault();
+                                    event.dataTransfer.dropEffect = "move";
+                                });
+                                container.addEventListener("drop", (event) => {
+                                    event.preventDefault();
+                                    const target = event.target.closest(".column-config-item");
+                                    if (!draggedItem || !target || draggedItem === target) {
+                                        return;
+                                    }
+                                    const rect = target.getBoundingClientRect();
+                                    const before = event.clientY < rect.top + rect.height / 2;
+                                    if (before) {
+                                        container.insertBefore(draggedItem, target);
+                                    } else {
+                                        container.insertBefore(draggedItem, target.nextElementSibling);
+                                    }
+                                });
+                                container.addEventListener("dragend", () => {
+                                    draggedItem = null;
                                 });
 
                                 const form = document.getElementById("columnsConfigForm");
