@@ -383,7 +383,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>com.github.mwiede</groupId>
+            <artifactId>jsch</artifactId>
+            <version>2.27.7</version>
+        </dependency>
         <dependency>
             <groupId>eu.agno3.jcifs</groupId>
             <artifactId>jcifs-ng</artifactId>
