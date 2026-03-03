@@ -28,6 +28,34 @@
         </form>
     </div>
     <div>
+        <form th:action="@{/admin/crouscards}" method="get" class="navbar-form navbar-left form-inline well" th:object="${searchCrousSmartCard}">
+            <input name="sortFieldName" value="zdcCreationDate" type="hidden"/>
+            <input name="sortOrder" value="desc" type="hidden"/>
+            <input name="size" value="10" type="hidden"/>
+            <div class="form-group">
+                <label for="uid">CSN</label>
+                <div class="input-group">
+                    <input type="text" th:field="*{uid}" class="form-control"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="idTransmitter" th:text="#{common.transmitter}">Id Transmitter</label>
+                <div class="input-group">
+                    <input type="number" th:field="*{idTransmitter}" class="form-control"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="idZdc" th:text="#{common.zdc}">Id Zdc</label>
+                <div class="input-group">
+                    <input type="number" th:field="*{idZdc}" class="form-control"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" type="submit">OK</button>
+            </div>
+        </form>
+    </div>
+    <div>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
@@ -70,6 +98,7 @@
                     <div class="btn-group dropup" sd:page-size-selector="dropdown" style="margin-top: 20px"></div>
                     <ul class="btn-group pagination" sd:pagination="full"></ul>
                 </div>
+                 [<span th:text="${croussmartcards.totalElements}">0</span>]
             </nav>
         </div>
     </div>

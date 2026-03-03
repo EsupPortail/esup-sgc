@@ -1,9 +1,9 @@
 package org.esupportail.sgc.dao;
 
-import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.CrousSmartCard;
-import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.repositories.CrousSmartCardRepository;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,7 @@ import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class CrousSmartCardDaoService {
@@ -43,8 +41,15 @@ public class CrousSmartCardDaoService {
         return entityManager.find(CrousSmartCard.class, id);
     }
 
-    public Page<CrousSmartCard> findCrousSmartCardEntries(Pageable pageable) {
-        return crousSmartCardRepository.findAll(pageable);
+    public Page<CrousSmartCard> findCrousSmartCardEntries(CrousSmartCard searchCrousSmartCard, Pageable pageable) {
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnoreNullValues()
+                .withIgnoreCase()
+                .withMatcher("uid", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("idTransmitter", ExampleMatcher.GenericPropertyMatchers.exact())
+                .withMatcher("idZdc", ExampleMatcher.GenericPropertyMatchers.exact());
+        Example<CrousSmartCard> crousSmartCardSearchQuery = Example.of(searchCrousSmartCard, matcher);
+        return crousSmartCardRepository.findAll(crousSmartCardSearchQuery, pageable);
     }
 
     @Transactional

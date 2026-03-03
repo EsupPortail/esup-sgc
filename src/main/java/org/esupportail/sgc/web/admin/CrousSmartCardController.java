@@ -3,23 +3,23 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.dao.CrousSmartCardDaoService;
-import org.esupportail.sgc.domain.AppliConfig;
 import org.esupportail.sgc.domain.CrousSmartCard;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.crous.CrousSmartCardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,14 +39,23 @@ public class CrousSmartCardController {
 	@Resource
 	CrousSmartCardService crousSmartCardService;
 
-    @Resource
+	@Resource
     CrousSmartCardDaoService crousSmartCardDaoService;
 	
+	/*
+	  Empty value strings are trimmed to null.
+	  Usefull for jpa repositories to avoid empty string queries.
+	 */
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+	}
+
 	@ModelAttribute("active")
 	public String getActiveMenu() {
 		return "crous";
-	}   
-	
+	}
+
 	@ModelAttribute("help")
 	public String getHelp() {
 		return appliConfigService.getHelpAdmin();
@@ -84,10 +93,15 @@ public class CrousSmartCardController {
 
 	@RequestMapping(produces = "text/html")
     public String list(@PageableDefault(size = 10, direction = Sort.Direction.DESC, sort = "zdcCreationDate") Pageable pageable,
+                       CrousSmartCard searchCrousSmartCard,
                        Model uiModel,
                        HttpServletRequest request
                        ) {
-        Page<CrousSmartCard> crousSmartCards = crousSmartCardDaoService.findCrousSmartCardEntries(pageable);
+        if(searchCrousSmartCard == null) {
+            searchCrousSmartCard = new CrousSmartCard();
+        }
+        uiModel.addAttribute("searchCrousSmartCard", searchCrousSmartCard);
+        Page<CrousSmartCard> crousSmartCards = crousSmartCardDaoService.findCrousSmartCardEntries(searchCrousSmartCard, pageable);
         uiModel.addAttribute("croussmartcards", crousSmartCards);
         return "templates/admin/crouscards/list";
     }
