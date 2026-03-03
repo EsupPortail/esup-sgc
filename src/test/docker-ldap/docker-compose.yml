@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+
+  my-ldap:
+    image: osixia/openldap:1.5.0
+    container_name: my-ldap
+    environment:
+      LDAP_DOMAIN: "univ-ville.fr"
+      LDAP_ADMIN_PASSWORD: "esup"
+    command: --copy-service
+    volumes:
+      - ./config/eduperson.schema:/container/service/slapd/assets/config/bootstrap/schema/01-eduperson.schema
+      - ./config/schac.schema:/container/service/slapd/assets/config/bootstrap/schema/02-schac.schema
+      - ./config/supann-2021-10-01.schema:/container/service/slapd/assets/config/bootstrap/schema/03-supann-2021-10-01.schema
+      - ./config/memberof-fix.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/10-memberof-fix.ldif
+      - ./config/data.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/11-data.ldif      
+    ports:
+      - "3890:389"

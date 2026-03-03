@@ -1,0 +1,91 @@
+dn: ou=people,dc=univ-ville,dc=fr
+changetype: add
+ou: people
+objectclass: organizationalunit
+
+dn: cn=admin,dc=univ-ville,dc=fr
+changetype: add
+uid: admin
+sn: admin
+cn: admin
+objectClass: inetOrgPerson
+userPassword: esup
+mail: admin@univ-ville.fr
+
+dn: uid=adminsgc,ou=people,dc=univ-ville,dc=fr
+changetype: add
+uid: adminsgc
+sn: adminsgc
+cn: adminsgc
+objectClass: inetOrgPerson
+objectClass: eduPerson
+objectClass: schacEntryMetadata
+objectClass: schacPersonalCharacteristics
+objectClass: supannPerson
+userPassword: esup
+mail: adminsgc@univ-ville.fr
+eduPersonPrincipalName: adminsgc@univ-ville.fr
+eduPersonPrimaryAffiliation: staff
+#supannEtuId:
+supannEmpId: 45678
+#supannCodeINE:
+#supannEntiteAffectationPrincipale:
+schacDateOfBirth: 20040123
+supannEtablissement: {UAI}0123456Y
+supannRefId: {UIA:0123456Y:EXEMPLE_NUMERO_INDIVIDU}45678
+#jpegPhoto:
+givenname: adminsgc
+schacExpiryDate: 29990607012345Z
+
+dn: uid=user,ou=people,dc=univ-ville,dc=fr
+changetype: add
+uid: user
+sn: user
+cn: user
+objectClass: inetOrgPerson
+objectClass: eduPerson
+objectClass: schacEntryMetadata
+objectClass: schacPersonalCharacteristics
+objectClass: supannPerson
+userPassword: esup
+mail: user@univ-ville.fr
+eduPersonPrincipalName: user@univ-ville.fr
+eduPersonPrimaryAffiliation: student
+supannEtuId: 123456
+#supannEmpId:
+supannCodeINE: 0123456789A
+#supannEntiteAffectationPrincipale:
+schacDateOfBirth: 20040123
+supannEtablissement: {UAI}0123456Y
+supannRefId: {UIA:0123456Y:EXEMPLE_NUMERO_ETUDIANT}123456
+supannRefId: {UIA:0123456Y:EXEMPLE_NUMERO_INDIVIDU}234567
+#jpegPhoto:
+givenname: user
+schacExpiryDate: 29990607012345Z
+
+dn: ou=groups,dc=univ-ville,dc=fr
+changetype: add
+ou: groups
+objectclass: organizationalunit
+
+dn: cn=for.esup-sgc.admin,ou=groups,dc=univ-ville,dc=fr
+changetype: add
+objectClass: groupOfNames
+objectClass: top
+cn: for.esup-sgc.admin
+member: uid=adminsgc,ou=people,dc=univ-ville,dc=fr
+
+dn: cn=for.esup-sgc.user,ou=groups,dc=univ-ville,dc=fr
+changetype: add
+objectClass: groupOfNames
+objectClass: top
+cn: for.esup-sgc.user
+member: uid=user,ou=people,dc=univ-ville,dc=fr
+member: uid=adminsgc,ou=people,dc=univ-ville,dc=fr
+
+dn: cn=for.esup-nfc-tag.admin,ou=groups,dc=univ-ville,dc=fr
+changetype: add
+objectClass: groupOfNames
+objectClass: top
+cn: for.esup-nfc-tag.admin
+member: uid=adminsgc,ou=people,dc=univ-ville,dc=fr
