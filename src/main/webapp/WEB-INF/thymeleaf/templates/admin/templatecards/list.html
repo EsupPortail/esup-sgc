@@ -69,7 +69,7 @@
                         </a>
                     </td>
                     <td>
-                        <form th:action="@{/admin/templatecards/{id}(id=${tc.id}}" th:method="DELETE" class="form-inline">
+                        <form th:action="@{/admin/templatecards/{id}(id=${tc.id})}" th:method="DELETE" class="form-inline">
                             <button class="btn btn-danger" type="submit" th:onclick="|return confirm('#{templatecards.confirm.delete}')|">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>

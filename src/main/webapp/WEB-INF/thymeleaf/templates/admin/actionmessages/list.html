@@ -153,7 +153,7 @@
                         </a>
                     </td>
                     <td>
-                        <form th:action="@{/admin/actionmessages/{id}(id=${msg.id}}" th:method="DELETE" class="form-inline">
+                        <form th:action="@{/admin/actionmessages/{id}(id=${msg.id})}" th:method="DELETE" class="form-inline">
                             <button class="btn btn-danger" type="submit" th:onclick="|return confirm('#{action.messages.confirm.delete}')|">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
