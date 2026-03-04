@@ -126,7 +126,7 @@ public class TemplateCardController {
         return "templates/admin/templatecards/list";
     }
     
-    @RequestMapping(method = RequestMethod.POST, produces = "text/html", value="update" )//You should send POST and set _method to PUT (same as sending forms) to make your files visible
+    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
     public String update(@Valid TemplateCard templateCard, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) throws IOException {
         LocalDateTime currentTime = LocalDateTime.now();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
