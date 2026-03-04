@@ -21,7 +21,7 @@
                     <h5 th:text="#{update.edition}">Édition</h5>
                 </div>
                 <div class="panel-body">
-                    <form th:action="@{/admin/templatecards/update}" th:object="${templateCard}" method="post" enctype="multipart/form-data" class="form-horizontal well">
+                    <form th:action="@{/admin/templatecards}" th:object="${templateCard}" method="put" enctype="multipart/form-data" class="form-horizontal well">
                         <input type="hidden" th:field="*{id}"/>
                         <div class="form-group">
                             <label class="col-md-3 control-label" for="key" th:text="#{common.key}">Clé</label>
