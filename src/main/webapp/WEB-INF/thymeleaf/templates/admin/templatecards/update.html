@@ -21,7 +21,7 @@
                     <h5 th:text="#{update.edition}">Édition</h5>
                 </div>
                 <div class="panel-body">
-                    <form th:action="@{/admin/templatecards}" th:object="${templateCard}" method="put" enctype="multipart/form-data" class="form-horizontal well">
+                    <form th:action="@{/admin/templatecards}" th:object="${templateCard}" th:method="put" enctype="multipart/form-data" class="form-horizontal well">
                         <input type="hidden" th:field="*{id}"/>
                         <div class="form-group">
                             <label class="col-md-3 control-label" for="key" th:text="#{common.key}">Clé</label>
@@ -68,7 +68,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label" for="templateMasque" th:text="#{common.mask}">Masque</label>
                             <div class="col-md-6">
-                                <input id="templateMasque" name="masque" type="file"/>
+                                <input id="templateMasque" th:field="*{masque}" type="file"/>
                                 <div>
                                     <img class="thumb-image" th:src="${photoLocalPrefix + 'masque/' + templateCard.id}" th:alt="#{common.mask}"/>
                                 </div>
@@ -77,7 +77,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label" for="templateLogo" th:text="#{common.logo}">Logo</label>
                             <div class="col-md-6">
-                                <input id="templateLogo" name="logo" type="file"/>
+                                <input id="templateLogo" th:field="*{logo}" type="file"/>
                                 <div>
                                     <img class="thumb-image" th:src="${photoLocalPrefix + 'logo/' + templateCard.id}" th:alt="#{common.logo}"/>
                                 </div>
@@ -86,7 +86,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label" for="templateQrCode" th:text="#{common.code}">Qr Code</label>
                             <div class="col-md-6">
-                                <input id="templateQrCode" name="qrCode" type="file"/>
+                                <input id="templateQrCode" th:field="*{qrCode}" type="file"/>
                                 <div>
                                     <img class="thumb-image" th:src="${photoLocalPrefix + 'qrCode/' + templateCard.id}" th:alt="#{common.qrcode}"/>
                                 </div>

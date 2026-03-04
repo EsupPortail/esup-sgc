@@ -146,21 +146,21 @@ public class TemplateCardController {
 		beforeMaj.setBackSupported(templateCard.getBackSupported());
     	beforeMaj.setModificateur(eppn);
     	templateCardDaoService.merge(beforeMaj);
-    	if(templateCard.getLogo().isEmpty()){
+    	if(templateCard.getLogo() == null || templateCard.getLogo().isEmpty()){
     		templateCard.setPhotoFileLogo(beforeMaj.getPhotoFileLogo());
     	}else{
     		templateCardService.setTemplateCardPhotofile(templateCard, "logo");
     		beforeMaj.setPhotoFileLogo(templateCard.getPhotoFileLogo());
             photoFileDaoService.persist(beforeMaj.getPhotoFileLogo());
     	}
-    	if(templateCard.getMasque().isEmpty()){
+    	if(templateCard.getMasque() == null || templateCard.getMasque().isEmpty()){
     		templateCard.setPhotoFileMasque(beforeMaj.getPhotoFileMasque());
     	}else{
     		templateCardService.setTemplateCardPhotofile(templateCard, "masque");
     		beforeMaj.setPhotoFileMasque(templateCard.getPhotoFileMasque());
             photoFileDaoService.persist(beforeMaj.getPhotoFileMasque());
     	}
-    	if(templateCard.getQrCode().isEmpty()){
+    	if(templateCard.getQrCode() == null || templateCard.getQrCode().isEmpty()){
     		templateCard.setPhotoFileQrCode(beforeMaj.getPhotoFileQrCode());
     	}else{
     		templateCardService.setTemplateCardPhotofile(templateCard, "qrCode");

@@ -10,7 +10,7 @@
 <body>
 <div layout:fragment="content">
     <h2 th:text="#{common.crous}">Modifier une règle tarifaire CROUS</h2>
-    <form th:action="@{/admin/crousrules}" th:object="${crousRule}" method="put" class="form-horizontal well">
+    <form th:action="@{/admin/crousrules}" th:object="${crousRule}" th:method="put" class="form-horizontal well">
         <input type="hidden" th:field="*{id}"/>
         <div class="form-group">
             <label class="col-md-3 control-label" for="rne">RNE</label>
