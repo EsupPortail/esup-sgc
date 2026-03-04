@@ -9,8 +9,9 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <form th:action="@{/admin/navbars}" th:object="${navBarApp}" method="post" class="form-horizontal well" id="fu_org_esupportail_sgc_domain_NavBarApp">
+    <form th:action="@{/admin/navbars}" th:object="${navBarApp}" method="put" class="form-horizontal well" id="fu_org_esupportail_sgc_domain_NavBarApp">
         <!-- Titre -->
+        <input type="hidden" th:field="*{id}" />
         <div class="form-group">
             <label class="col-lg-4 control-label" for="title" th:text="#{common.title}">Titre</label>
             <div class="col-lg-8">
