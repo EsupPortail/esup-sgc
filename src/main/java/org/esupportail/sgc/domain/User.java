@@ -135,6 +135,8 @@ public class User {
 	private boolean editable = true;
 	
 	private boolean requestFree = true;
+
+	private boolean firstRequestFree = true;
 	
 	private String address = "";
 	
@@ -712,6 +714,14 @@ public class User {
 	public void setRequestFree(boolean requestFree) {
         this.requestFree = requestFree;
     }
+
+	public boolean isFirstRequestFree() {
+		return this.firstRequestFree;
+	}
+
+	public void setFirstRequestFree(boolean firstRequestFree) {
+		this.firstRequestFree = firstRequestFree;
+	}
 
 	public String getAddress() {
         return this.address;

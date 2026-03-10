@@ -60,9 +60,13 @@ public class UserService {
 		return cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(user.getEppn(), Arrays.asList(new Etat[] {Etat.CANCELED})) == 0;
 	}
 
-    public boolean isFreeRenewal(User user){
+    public boolean isFreeRenewal(User user) {
 		return user.isRequestFree() && !isFirstRequest(user) && !isOutOfDueDate(user) && !hasRequestCard(user) && !user.getHasExternalCard();
     }
+
+	public boolean isFreeNew(User user) {
+		return user.isFirstRequestFree() && !isOutOfDueDate(user) && !hasRequestCard(user) && !user.getHasExternalCard();
+	}
 
 	public boolean isPaidRenewal(User user){
 		boolean isPaidRenewal = false;
@@ -72,7 +76,7 @@ public class UserService {
 		}
 		return isPaidRenewal;
 	}
-	
+
 	public boolean displayRenewalForm(User user, boolean isFreeRenewal, boolean isPaidRenewal) {
 
 		boolean displayRenewalForm = isFreeRenewal || isPaidRenewal;
@@ -85,9 +89,21 @@ public class UserService {
 		return displayRenewalForm;
 	}
 
-	public boolean displayForm(User user, boolean requestUserIsManager, boolean displayRenewalForm, boolean isFirstRequest){
-		boolean displayForm = displayRenewalForm;
-		if(isFirstRequest){
+	public boolean displayNewForm(User user, boolean isFreeNew, boolean isPaidNew) {
+
+		boolean displayNewForm = isFreeNew || isPaidNew;
+
+		if(user != null && user.getHasExternalCard()) {
+			displayNewForm = false;
+		}
+
+		displayNewForm = displayNewForm && !hasRequestCard(user);
+		return displayNewForm;
+	}
+
+	public boolean displayForm(User user, boolean requestUserIsManager, boolean displayRenewalForm, boolean isFirstRequest, boolean displayNewForm){
+		boolean displayForm = displayRenewalForm || displayNewForm;
+		if(isFirstRequest && !displayNewForm){
 			displayForm = ((isEsupSgcUser(user) && !isOutOfDueDate(user))) ;
 		} 
 		return displayForm || requestUserIsManager;
@@ -111,7 +127,14 @@ public class UserService {
 		if(user != null && user.getHasExternalCard()) {
 			return false;
 		}
-		return !isOutOfDueDate(user) && !user.isRequestFree() && !isPaidRenewal(user) && !hasRequestCard(user);
+		return !isOutOfDueDate(user) && !user.isRequestFree() && !isPaidRenewal(user) && !hasRequestCard(user) && !isFirstRequest(user);
+	}
+
+	public Boolean canPaidNew(User user) {
+		if(user != null && user.getHasExternalCard()) {
+			return false;
+		}
+		return !isOutOfDueDate(user) && !user.isFirstRequestFree() && !isPaidRenewal(user) && !hasRequestCard(user) && isFirstRequest(user);
 	}
 	
 	private boolean isOutOfDueDate(User user) {
@@ -155,6 +178,7 @@ public class UserService {
 		getConfigMsgsUser.put("freeRenewalMsg", appliConfigService.getUseFreeRenewalMsg());
 		getConfigMsgsUser.put("paidRenewalMsg", appliConfigService.getUserPaidRenewalMsg());
 		getConfigMsgsUser.put("canPaidRenewalMsg", appliConfigService.getUserCanPaidRenewalMsg());
+		getConfigMsgsUser.put("canPaidNewMsg", appliConfigService.getUserCanPaidNewMsg());
 		getConfigMsgsUser.put("newCardMsg", appliConfigService.getNewCardlMsg());
 		getConfigMsgsUser.put("checkedOrEncodedCardMsg", appliConfigService.getCheckedOrEncodedCardMsg());
 		getConfigMsgsUser.put("rejectedCardMsg", appliConfigService.getRejectedCardMsg());
@@ -188,16 +212,24 @@ public class UserService {
 		stopWatch.start("isFreeRenewal");
 		boolean isFreeRenewal = this.isFreeRenewal(user);
 		displayFormParts.put("isFreeRenewal",  isFreeRenewal);
+		stopWatch.start("isFreeNew");
+		boolean isFreeNew = this.isFreeNew(user);
+		displayFormParts.put("isFreeNew",  isFreeNew);
 		stopWatch.start("isFirstRequest");
 		boolean isFirstRequest = this.isFirstRequest(user);
 		displayFormParts.put("isFirstRequest", isFirstRequest);
 		stopWatch.start("displayRenewalForm");
 		boolean displayRenewalForm = this.displayRenewalForm(user, isFreeRenewal, isPaidRenewal);
 		displayFormParts.put("displayRenewalForm",  displayRenewalForm);
+		stopWatch.start("displayNewForm");
+		boolean displayNewForm = this.displayNewForm(user, isFreeNew, isPaidRenewal);
+		displayFormParts.put("displayNewForm",  displayNewForm);
 		stopWatch.start("displayForm");
-		displayFormParts.put("displayForm",  this.displayForm(user, requestUserIsManager, displayRenewalForm, isFirstRequest));
+		displayFormParts.put("displayForm",  this.displayForm(user, requestUserIsManager, displayRenewalForm, isFirstRequest, displayNewForm));
 		stopWatch.start("canPaidRenewal");
 		displayFormParts.put("canPaidRenewal",  this.canPaidRenewal(user));
+		stopWatch.start("canPaidNew");
+		displayFormParts.put("canPaidNew",  this.canPaidNew(user));
 		stopWatch.start("hasDeliveredCard");
 		displayFormParts.put("hasDeliveredCard",  this.hasDeliveredCard(user));
 		stopWatch.start("enableEuropeanCard");

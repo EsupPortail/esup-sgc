@@ -141,8 +141,8 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 			ldapGroup2UserRoleService.syncUser(eppn);
 			
 			// check rights 
-			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn)) {
-			
+			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) || userService.isPaidRenewal(user) || userService.isFreeNew(user) || cardEtatService.hasRejectedCard(eppn)) {
+
 				if(!cardEtatService.hasNewCard(eppn)){
 					UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
 					String navigateur = userAgentUtils.getBrowser().getName();

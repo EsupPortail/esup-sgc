@@ -74,6 +74,8 @@
                                 <dd th:utext="${user.address}"></dd>
                                 <dt th:text="#{show.address.external}">Adresse Externe :</dt>
                                 <dd th:utext="${user.externalAddress}"></dd>
+                                <dt th:text="#{show.free.new}">Demande de première carte gratuite :</dt>
+                                <dd th:utext="${user.firstRequestFree} ? #{megamenu.yes} : #{megamenu.no}"></dd>
                                 <dt th:text="#{show.free.renewal}">Demande de nouvelle carte gratuite :</dt>
                                 <dd th:utext="${user.requestFree} ? #{megamenu.yes} : #{megamenu.no}"></dd>
                                 <dt th:text="#{show.editable}">Editable :</dt>

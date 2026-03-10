@@ -24,6 +24,8 @@ public class LdapGroup2OneUserRoleService {
 			user.setEditable(true);
 		} else if(LdapGroup2UserRoleService.ROLE_USER_RENEWAL_PAYED.equals(role)) {
 			user.setRequestFree(true);
+		} else if(LdapGroup2UserRoleService.ROLE_USER_NEW_PAYED.equals(role)) {
+			user.setFirstRequestFree(true);
 		}
 		user.getRoles().remove(role);
 		return true;
@@ -35,6 +37,8 @@ public class LdapGroup2OneUserRoleService {
 			user.setEditable(false);
 		} else if(LdapGroup2UserRoleService.ROLE_USER_RENEWAL_PAYED.equals(role)) {
 			user.setRequestFree(false);
+		} else if(LdapGroup2UserRoleService.ROLE_USER_NEW_PAYED.equals(role)) {
+			user.setFirstRequestFree(false);
 		}
 		if(!user.getRoles().contains(role)) {
 			user.getRoles().add(role);

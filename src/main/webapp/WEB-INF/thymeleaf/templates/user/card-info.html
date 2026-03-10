@@ -376,6 +376,10 @@
                     <span th:utext="${configUserMsgs['paidRenewalMsg']}"></span>
                     <a th:href="@{/user/card-request-form}" class="btn btn-warning" th:text="#{card.info.renewal.form}">Formulaire de renouvellement de carte</a>
                 </div>
+                <div class="alert alert-info" th:if="${displayFormParts['canPaidNew']}">
+                    <span th:utext="${configUserMsgs['canPaidNewMsg']}"></span>
+                    <a th:href="@{/user/card-payment}" class="btn btn-primary" th:text="#{card.info.access.payment}">Accéder au paiement</a>
+                </div>
             </th:block>
         </th:block>
     </div>

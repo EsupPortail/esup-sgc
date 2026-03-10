@@ -142,8 +142,7 @@ public class UserCardController {
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
-		User user = new User ();
-		user.setEppn(eppn);
+		User user = userDaoService.findUser(eppn);
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
 		if(userService.isFirstRequest(user)) {
 			Card externalCard = externalCardService.getExternalCard(eppn, request);
@@ -151,11 +150,12 @@ public class UserCardController {
 			if(externalCard != null) {
 				return viewExternalCardRequestForm(uiModel, externalCard);
 			} else {
-				return viewCardRequestForm(uiModel, userAgent);
+				if(userService.isFreeNew(user)) {
+					return viewCardRequestForm(uiModel, userAgent);
+				}
 			}
-		} else {
-			return viewCardInfo(uiModel);
 		}
+		return viewCardInfo(uiModel);
 	}
 	
 	@Transactional
@@ -230,8 +230,9 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		User user = userDaoService.findUser(eppn);
-		if(! userService.isFreeRenewal(user)){
+		if(!userService.isFreeRenewal(user) || !userService.isFreeNew(user)){
 			uiModel.addAttribute("isFreeRenewal",  userService.isFreeRenewal(user));
+			uiModel.addAttribute("isFreeNew",  userService.isFreeNew(user));
 			PayBoxForm payBoxForm = payBoxService.getPayBoxForm(eppn, user.getEmail(), appliConfigService.getMontantRenouvellement());
 			uiModel.addAttribute("payBoxForm", payBoxForm);
 			uiModel.addAttribute("displayPayboxForm", true);
@@ -403,8 +404,8 @@ public class UserCardController {
 		synchronized (eppn.intern()) {
 			
 			// check rights  sur String est global - à éviter - TODO ?
-			if(!requestUserIsManager && (userService.isFirstRequest(user) || userService.isFreeRenewal(user) ||  userService.isPaidRenewal(user) || cardEtatService.hasRejectedCard(eppn)) || requestUserIsManager) {
-			
+			if(!requestUserIsManager && (userService.isFirstRequest(user) || userService.isFreeRenewal(user) || userService.isPaidRenewal(user) || userService.isFreeNew(user) || cardEtatService.hasRejectedCard(eppn)) || requestUserIsManager) {
+
 				if(!cardEtatService.hasNewCard(eppn) || requestUserIsManager) {
 					boolean emptyPhoto = cardService.requestNewCard(card, userAgent, eppn, request, requestUserIsManager);
 					

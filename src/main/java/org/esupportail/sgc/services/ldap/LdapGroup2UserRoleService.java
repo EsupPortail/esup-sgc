@@ -27,6 +27,8 @@ public class LdapGroup2UserRoleService {
 	public final static String ROLE_USER_NO_EDITABLE = "ROLE_USER_NO_EDITABLE";
 	
 	public final static String ROLE_USER_RENEWAL_PAYED = "ROLE_USER_RENEWAL_PAYED";
+
+	public final static String ROLE_USER_NEW_PAYED = "ROLE_USER_NEW_PAYED";
 	
 	protected GroupService groupService;
 
