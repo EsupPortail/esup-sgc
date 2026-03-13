@@ -282,6 +282,9 @@ public class UserInfoService {
 			} else if("schacDateOfBirth".equalsIgnoreCase(key)) {
                 LocalDateTime birthday = dateUtils.parseSchacDateOfBirth(userInfos.get(key));
 				user.setBirthday(birthday);
+			} else if("supannOIDCDateDeNaissance".equalsIgnoreCase(key)) {
+				LocalDateTime birthday = dateUtils.parseSupannOIDCDateDeNaissance(userInfos.get(key));
+				user.setBirthday(birthday);
 			} else if("supannRefId4ExternalCard".equalsIgnoreCase(key)) {
 				// supannRefId4ExternalCard deprecated : use csn4ExternalCard and access-control4ExternalCard fields
 				List<String> supannRefIds = Arrays.asList((userInfos.get(key)).split(";"));

@@ -20,10 +20,14 @@ public class DateUtils {
 	private final static String DATE_FORMAT_FR = "dd/MM/yyyy";
 	
 	private final static String DATE_FORMAT_SCHACBIRTH_LDAP = "yyyyMMdd";
+
+    private final static String DATE_FORMAT_SUPANN_OIDC_DATE_DE_NAISSANCE = "yyyy-MM-dd";
 	
 	private DateTimeFormatter dateTimeFormatterSchacOfBirth = DateTimeFormatter.ofPattern(DATE_FORMAT_SCHACBIRTH_LDAP);
 	
 	private DateTimeFormatter dateFormatterFr = DateTimeFormatter.ofPattern(DATE_FORMAT_FR);
+
+    private DateTimeFormatter dateTimeFormatterSupannOIDCDateDeNaissance =  DateTimeFormatter.ofPattern(DATE_FORMAT_SUPANN_OIDC_DATE_DE_NAISSANCE);
 
     /*
         Don't remove it : can be used in applicationContext-services.xml
@@ -45,9 +49,7 @@ public class DateUtils {
         if (dateString == null || dateString.isEmpty()) {
             return null;
         }
-
         log.trace("parsing of date : " + dateString);
-
         try {
             LocalDate date = LocalDate.parse(dateString, dateTimeFormatterSchacOfBirth);
             return date.atStartOfDay(); // transforme la date en LocalDateTime à 00:00
@@ -62,4 +64,18 @@ public class DateUtils {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss'Z'");
 		return date.format(dateFormatter);
 	}
+
+    public LocalDateTime parseSupannOIDCDateDeNaissance(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            return null;
+        }
+        log.trace("parsing of date : " + dateString);
+        try {
+            LocalDate date = LocalDate.parse(dateString, dateTimeFormatterSupannOIDCDateDeNaissance);
+            return date.atStartOfDay(); // transforme la date en LocalDateTime à 00:00
+        } catch (DateTimeParseException e) {
+            log.error("parsing of date " + dateString + " failed: " + e.getMessage(), e);
+            return null;
+        }
+    }
 }
