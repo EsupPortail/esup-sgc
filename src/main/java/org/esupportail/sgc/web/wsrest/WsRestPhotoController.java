@@ -5,8 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.dao.CardDaoService;
+import org.esupportail.sgc.dao.UserDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
+import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.esupportail.sgc.web.manager.ManagerCardControllerNoHtml;
 import org.slf4j.Logger;
@@ -41,6 +43,9 @@ public class WsRestPhotoController extends AbstractRestController {
 
     @Resource
     CardDaoService cardDaoService;
+
+	@Resource
+	UserDaoService userDaoService;
 	
 	/**
 	 * Examples :
@@ -149,6 +154,23 @@ public class WsRestPhotoController extends AbstractRestController {
 			headers.setContentType(MediaType.IMAGE_PNG);
 			return new ResponseEntity(IOUtils.toByteArray(noImg.getInputStream()), headers, HttpStatus.NOT_FOUND);
 		}
+	}
+
+
+	@RequestMapping(value="/{supannEtuId}/photoSupannEtuId")
+	public ResponseEntity getPhotoFromSupannEtuId(@PathVariable String supannEtuId, @RequestParam(required=false) Etat cardEtat,
+	                               @RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime dateEtatAfter, HttpServletResponse response) throws IOException, SQLException {
+		User user = userDaoService.findUserbySupannEtuId(supannEtuId);
+		String eppn = user != null ? user.getEppn() : null;
+		return getPhoto(eppn, cardEtat, dateEtatAfter, response);
+	}
+
+	@RequestMapping(value="/{supannEtuId}/restrictedPhotoSupannEtuId")
+	public ResponseEntity getAuthorizedPhotoFromSupannEtuId(@PathVariable String supannEtuId, @RequestParam(required=false) Etat cardEtat,
+	                               @RequestParam(required=false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime dateEtatAfter, HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
+		User user = userDaoService.findUserbySupannEtuId(supannEtuId);
+		String eppn = user != null ? user.getEppn() : null;
+		return getAuthorizedPhoto(eppn, cardEtat, dateEtatAfter, request, response);
 	}
 
 }

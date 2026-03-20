@@ -446,4 +446,12 @@ public class UserDaoService {
         return merged;
     }
 
+    public User findUserbySupannEtuId(String supannEtuId) {
+        TypedQuery<User> q = entityManager.createQuery("SELECT o FROM User AS o WHERE o.supannEtuId = :supannEtuId", User.class).setParameter("supannEtuId", supannEtuId);
+        if(q.getResultList().isEmpty())  {
+            return null;
+        } else {
+            return q.getResultList().get(0);
+        }
+    }
 }
