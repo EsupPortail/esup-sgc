@@ -317,7 +317,7 @@ public class ManagerCardController {
 			}
 		}
 		uiModel.asMap().clear();
-		return "redirect:/manager/";
+		return "redirect:/manager";
 	}
 
 	@PreAuthorize("hasPermission(#cardId, 'manage')")
