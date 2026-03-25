@@ -4,16 +4,20 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.exceptions.SgcRuntimeException;
 import org.esupportail.sgc.services.rest.RequireRestAuth;
 import org.esupportail.sgc.services.rest.RestAuthProvider;
 import org.slf4j.Logger;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RestUserInfoService implements ExtUserInfoService {
@@ -34,6 +38,8 @@ public class RestUserInfoService implements ExtUserInfoService {
     String eppnFilter = ".*";
 
     String beanName;
+
+    Map<String, List<String>> headers;
 
     public Long getOrder() {
         return order;
@@ -67,6 +73,10 @@ public class RestUserInfoService implements ExtUserInfoService {
         this.sgcParam2jsonPath = sgcParam2jsonPath;
     }
 
+    public void setHeaders(Map<String, List<String>> headers) {
+        this.headers = headers;
+    }
+
     @Override
     public String getBeanName() {
         return beanName;
@@ -88,19 +98,35 @@ public class RestUserInfoService implements ExtUserInfoService {
         if(urlWithParams != null) {
             HttpHeaders headers = new HttpHeaders();
             authProvider.configureHeaders(headers);
+            if(this.headers != null) {
+                headers.addAll(CollectionUtils.toMultiValueMap(this.headers));
+            }
             HttpEntity entity = new HttpEntity<>(headers);
+            ResponseEntity<byte[]> response;
+            try {
+                response = restTemplate.exchange(urlWithParams, HttpMethod.GET, entity, byte[].class);
+                log.trace("RestUserInfoService response for user {}: {}", user.getEppn(), response.getBody());
+            } catch(HttpClientErrorException e) {
+                if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                    // RequireRestAuth -> barer will be renewed and request retried
+                    throw e;
+                }
+                throw  new SgcRuntimeException("Error when calling RestUserInfoService for user " + user.getEppn() + " at URL " + urlWithParams + " : " + e.getResponseBodyAsString(), e);
+            }
 
-            ResponseEntity<String> response = restTemplate.exchange(urlWithParams, org.springframework.http.HttpMethod.GET, entity, String.class);
-            log.trace("RestUserInfoService response for user {}: {}", user.getEppn(), response.getBody());
-
-            DocumentContext jsonContext = JsonPath.parse(response.getBody());
-
-            for (Map.Entry<String, String> mapping : sgcParam2jsonPath.entrySet()) {
-                try {
-                    Object value = jsonContext.read(mapping.getValue());
-                    userInfos.put(mapping.getKey(), String.valueOf(value));
-                } catch (PathNotFoundException e) {
-                    log.trace("JSON path not found for user {}: {}", user.getEppn(), mapping.getValue());
+            if(response.getHeaders().getContentType() != null && response.getHeaders().getContentType().toString().startsWith("image/")) {
+                byte[] imageAsBytes = response.getBody();
+                String imageAsBase64 = Base64.getEncoder().encodeToString(imageAsBytes);
+                userInfos.put( sgcParam2jsonPath.entrySet().stream().findFirst().orElseThrow(() -> new SgcRuntimeException("No mapping defined for image content in RestUserInfoService " + beanName, null)).getKey(), imageAsBase64);
+            } else {
+                DocumentContext jsonContext = JsonPath.parse(new String(response.getBody()));
+                for (Map.Entry<String, String> mapping : sgcParam2jsonPath.entrySet()) {
+                    try {
+                        Object value = jsonContext.read(mapping.getValue());
+                        userInfos.put(mapping.getKey(), String.valueOf(value));
+                    } catch (PathNotFoundException e) {
+                        log.trace("JSON path not found for user {}: {}", user.getEppn(), mapping.getValue());
+                    }
                 }
             }
         }

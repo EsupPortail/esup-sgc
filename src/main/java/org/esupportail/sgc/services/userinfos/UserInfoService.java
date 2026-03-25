@@ -339,8 +339,7 @@ public class UserInfoService {
 					user.getDefaultPhoto().setFileSize((long)bytes.length);
 					user.getDefaultPhoto().setContentType(ImportExportCardService.DEFAULT_PHOTO_MIME_TYPE);
 				}
-			} 
-
+			}
 		}
 		
 		setDefaultValues4NullAttributes(userInfos, user);

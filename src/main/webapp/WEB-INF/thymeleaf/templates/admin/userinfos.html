@@ -35,8 +35,9 @@
                     <li th:each="userInfo : ${userInfosMap[beanNameRegexMatch.key]}"
                         th:classappend="${beanNameFinal4UserInfo[userInfo.key] == beanNameRegexMatch.key} ? 'bold'">
                         <span th:text="${userInfo.key}"></span> :
-                        <span th:classappend="${beanNameFinal4UserInfo[userInfo.key] == beanNameRegexMatch.key} ? 'text-success' : 'text-warning'"
+                        <span th:unless="${userInfo.key == 'jpegPhoto'}" th:classappend="${beanNameFinal4UserInfo[userInfo.key] == beanNameRegexMatch.key} ? 'text-success' : 'text-warning'"
                               th:text="${userInfo.value}"></span>
+                        <img th:if="${userInfo.key == 'jpegPhoto'}" th:src="|data:image/jpg;base64,${userInfo.value}|" width="100"/>
                     </li>
                 </ul>
             </div>
@@ -46,7 +47,8 @@
             <ul>
                 <li th:each="userInfo : ${userInfosFinal}" class="bold">
                     <span th:text="${userInfo.key}"></span> :
-                    <span class="text-success" th:text="${userInfo.value}"></span>
+                    <span th:unless="${userInfo.key == 'jpegPhoto'}" class="text-success" th:text="${userInfo.value}"></span>
+                    <img th:if="${userInfo.key == 'jpegPhoto'}" th:src="|data:image/jpg;base64,${userInfo.value}|" width="100"/>
                 </li>
             </ul>
         </div>
