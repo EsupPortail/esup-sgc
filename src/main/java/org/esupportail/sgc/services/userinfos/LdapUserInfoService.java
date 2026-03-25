@@ -38,10 +38,13 @@ public class LdapUserInfoService implements ExtUserInfoService {
 
 	String searchFilter = "(eduPersonPrincipalName={eppn})";
 
+	String spelFilter;
+
 	@Override
 	public String getBeanName() {
 		return beanName;
 	}
+
 	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
@@ -65,6 +68,14 @@ public class LdapUserInfoService implements ExtUserInfoService {
 
 	public void setSearchFilter(String searchFilter) {
 		this.searchFilter = searchFilter;
+	}
+
+	public String getSpelFilter() {
+		return spelFilter;
+	}
+
+	public void setSpelFilter(String spelFilter) {
+		this.spelFilter = spelFilter;
 	}
 
 	public void setSgcParam2ldapAttr(Map<String, String> sgcParam2ldapAttr) {

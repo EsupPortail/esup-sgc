@@ -30,12 +30,13 @@ public class RestUserInfoService implements ExtUserInfoService {
 
     RestAuthProvider authProvider;
 
-
     Map<String, String> sgcParam2jsonPath;
 
     Long order = Long.valueOf(0);
 
     String eppnFilter = ".*";
+
+    String spelFilter;
 
     String beanName;
 
@@ -55,6 +56,14 @@ public class RestUserInfoService implements ExtUserInfoService {
 
     public void setEppnFilter(String eppnFilter) {
         this.eppnFilter = eppnFilter;
+    }
+
+    public String getSpelFilter() {
+        return spelFilter;
+    }
+
+    public void setSpelFilter(String spelFilter) {
+        this.spelFilter = spelFilter;
     }
 
     public void setRestTemplate(RestTemplate restTemplate) {

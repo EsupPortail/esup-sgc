@@ -34,6 +34,8 @@ public class SqlUserInfoService implements ExtUserInfoService {
 	
 	private String eppnFilter = ".*";
 
+	String spelFilter;
+
 	String beanName;
 
 	@Override
@@ -64,6 +66,12 @@ public class SqlUserInfoService implements ExtUserInfoService {
 	public void setEppnFilter(String eppnFilter) {
 		this.eppnFilter = eppnFilter;
 	}
+
+	public String getSpelFilter() {
+		return spelFilter;
+	}
+
+	public void setSpelFilter(String spelFilter) {}
 
 	public void setSqlQuery(String sqlQuery) {
 		this.sqlQuery = sqlQuery;

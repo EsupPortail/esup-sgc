@@ -67,7 +67,7 @@ public class UserInfosController {
 		long totalTime = System.currentTimeMillis();
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
 			String beanNameLabel = extUserInfoService.getBeanName() + " #" + extUserInfoService.getOrder();
-			beanNamesRegexMatch.put(beanNameLabel, eppn.matches(extUserInfoService.getEppnFilter()));
+			beanNamesRegexMatch.put(beanNameLabel, eppn.matches(extUserInfoService.getEppnFilter()) && extUserInfoService.matchFilter(user,  useRequest ? request : null, userInfosInComputing));
 			if(beanNamesRegexMatch.get(beanNameLabel)) {
 				long time = System.currentTimeMillis();
 				Map<String, String> userInfos = extUserInfoService.getUserInfos(user, useRequest ? request : null, userInfosInComputing);

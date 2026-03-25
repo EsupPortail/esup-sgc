@@ -27,10 +27,13 @@ public class SpelUserInfoService implements ExtUserInfoService {
 
 	String beanName;
 
+	String spelFilter;
+
 	@Override
 	public String getBeanName() {
 		return beanName;
 	}
+
 	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
@@ -50,6 +53,14 @@ public class SpelUserInfoService implements ExtUserInfoService {
 
 	public void setEppnFilter(String eppnFilter) {
 		this.eppnFilter = eppnFilter;
+	}
+
+	public String getSpelFilter() {
+		return spelFilter;
+	}
+
+	public void setSpelFilter(String spelFilter) {
+		this.spelFilter = spelFilter;
 	}
 
 	public void setSgcParam2spelExp(Map<String, String> sgcParam2spelExp) {

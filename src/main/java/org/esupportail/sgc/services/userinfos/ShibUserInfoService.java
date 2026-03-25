@@ -15,6 +15,7 @@ public class ShibUserInfoService implements ExtUserInfoService {
 
 	private String eppnFilter = ".*";
 
+	String spelFilter;
 
 	String beanName;
 
@@ -42,6 +43,12 @@ public class ShibUserInfoService implements ExtUserInfoService {
 	public void setEppnFilter(String eppnFilter) {
 		this.eppnFilter = eppnFilter;
 	}
+
+	public String getSpelFilter() {
+		return spelFilter;
+	}
+
+	public void setSpelFilter(String spelFilter) {}
 
 	public void setSgcParam2requestHeader(Map<String, String> sgcParam2requestHeader) {
 		this.sgcParam2requestHeader = sgcParam2requestHeader;

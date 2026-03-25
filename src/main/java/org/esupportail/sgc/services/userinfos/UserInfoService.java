@@ -139,7 +139,7 @@ public class UserInfoService {
 		}
 
 		for(ExtUserInfoService extUserInfoService : extUserInfoServices) {
-			if(user.getEppn().matches(extUserInfoService.getEppnFilter())) {
+			if(user.getEppn().matches(extUserInfoService.getEppnFilter()) && extUserInfoService.matchFilter(user, request, userInfos)) {
 				userInfos.putAll(extUserInfoService.getUserInfos(user, request, userInfos));
 			}
 		}
