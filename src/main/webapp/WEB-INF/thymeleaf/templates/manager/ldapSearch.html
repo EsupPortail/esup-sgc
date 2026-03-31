@@ -57,6 +57,7 @@
                 <th th:text="#{ldap.search.card.count}">Nb de cartes</th>
                 <th th:text="#{common.type}">Type</th>
                 <th th:text="#{ldap.search.affectation}">Affectation</th>
+                <th th:text="#{common.photo}">Photo</th>
                 <th th:text="#{common.action}">ACTION</th>
             </tr>
         </thead>
@@ -70,6 +71,9 @@
                 <td th:text="${user.nbCards}"></td>
                 <td th:text="${user.userType}"></td>
                 <td th:text="${user.supannEntiteAffectationPrincipale}"></td>
+                <td>
+                    <img th:if="${user.defaultPhoto?.fileSize>0 or !#lists.isEmpty(user.cards)}" th:src="@{/manager/photo(eppn=${user.eppn})}" width="100"/>
+                </td>
                 <td>
                     <div th:if="${user.cards != null and #lists.size(user.cards) > 0}">
                         <div th:if="${user.viewRight}">

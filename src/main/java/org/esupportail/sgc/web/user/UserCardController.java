@@ -432,9 +432,13 @@ public class UserCardController {
 		Card lastCard = cardService.findLastCardByEppnEquals(eppn);
 		User user = userDaoService.findUser(eppn);
 		if(lastCard !=null){
+			log.debug("user {} has cards, get photo from last card", eppn);
 			photoFile = lastCard.getPhotoFile();
 		} else if(user.getDefaultPhoto() != null && user.getDefaultPhoto().getBigFile().getMd5() != null) {
+			log.debug("user {} has no card but has default photo, get it", eppn);
 			photoFile = user.getDefaultPhoto();
+		} else {
+			log.debug("user {} has no card and not default photo", eppn);
 		}
 		if(photoFile != null) {
 			Long size = photoFile.getFileSize();
