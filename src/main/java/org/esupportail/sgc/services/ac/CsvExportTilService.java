@@ -43,7 +43,18 @@ public class CsvExportTilService implements Export2AccessControlService {
 
     @Resource
     UserDaoService userDaoService;
-	
+
+	String beanName;
+
+	public String getBeanName() {
+		return beanName;
+	}
+
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
+
 	public CsvExportTilService(AccessService accessService) {
 		super();
 		this.accessService = accessService;
@@ -80,8 +91,8 @@ public class CsvExportTilService implements Export2AccessControlService {
 		InputStream csv = IOUtils.toInputStream(csvStr, ENCODING_TIL);
 		accessService.putFile(null, eppn + "_" + filename, csv, true);
 	}
-	
-	private StringBuffer sgc2csv(List<String> eppns4UpdateSynchronic) {
+
+	public StringBuffer sgc2csv(List<String> eppns4UpdateSynchronic) {
 
 		StringBuffer sBuffer = new StringBuffer();
 

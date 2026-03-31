@@ -46,7 +46,18 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 
     @Resource
     UserDaoService userDaoService;
-	
+
+	String beanName;
+
+	public String getBeanName() {
+		return beanName;
+	}
+
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
+
 	public CsvExportSynchronicService(AccessService accessService) {
 		super();
 		this.accessService = accessService;
@@ -76,8 +87,8 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		InputStream csv = IOUtils.toInputStream(csvStr, ENCODING_P2S);
 		accessService.putFile(null, eppn + "_" + filename, csv, true);
 	}
-	
-	private StringBuffer sgc2csv(List<String> eppns4UpdateSynchronic) {
+
+	public StringBuffer sgc2csv(List<String> eppns4UpdateSynchronic) {
 
 		StringBuffer sBuffer = new StringBuffer();
 		
@@ -102,7 +113,6 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	}
 	
 	public StringBuffer sgc2csv4eppn(String eppn) {
-
 		return sgc2csv(Arrays.asList(new String[] {eppn}));
 	}
 	
@@ -111,7 +121,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	 * @return Leocode;NOM;Prénom;IDP2S;Date_début;Date_fin;Bloqué;Date_Naissance;Société 
 	 * Exemple : 112340000987;DALTON;JOE;10340000987;20140101;20371231;NON;31/12/1987;Université de Ville
 	 */
-	private String sgc2csv(Card card) {
+	public String sgc2csv(Card card) {
 		ArrayList<String> fields = new ArrayList<String>();
 		
 		User user = userDaoService.findUser(card.getEppn());
