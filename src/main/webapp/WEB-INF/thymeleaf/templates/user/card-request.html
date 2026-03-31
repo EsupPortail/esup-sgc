@@ -7,7 +7,7 @@
 
     <script type="text/javascript">
         var isRejected = [[${isRejected}]];
-        var defaultPhotoUrl = "[[${requestUserIsManager ? '/manager/photo?eppn=' + user.eppn : '/user/photo'}]]";
+        var defaultPhotoUrl = `[[${requestUserIsManager} ? @{/manager/photo(eppn=${user.eppn})} : @{/user/photo}]]`;
         var defaultPhotoMd5 = "[[${defaultPhotoMd5}]]";
         var isISmartPhone = [[${isISmartPhone}]];
         var photoSizeMax = "[[${photoSizeMax}]]";
