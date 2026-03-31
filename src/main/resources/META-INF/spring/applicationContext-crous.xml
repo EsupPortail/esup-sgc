@@ -16,7 +16,7 @@
 	<bean id="httpClientFactory"
 		class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
 		<property name="connectTimeout" value="10000" />
-		<property name="readTimeout" value="10000" />
+		<property name="readTimeout" value="30000" />
 		<property name="httpClient" ref="httpClient"/>
 	</bean>
 
