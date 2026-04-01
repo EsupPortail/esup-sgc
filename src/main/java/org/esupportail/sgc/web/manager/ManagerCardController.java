@@ -17,8 +17,6 @@ import org.esupportail.sgc.security.ShibUser;
 import org.esupportail.sgc.services.*;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
-import org.esupportail.sgc.services.ac.AccessControlService;
-import org.esupportail.sgc.services.ac.Export2AccessControlService;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -30,7 +28,6 @@ import org.esupportail.sgc.web.manager.custom.ColumnConfigurationService;
 import org.esupportail.sgc.web.manager.custom.ColumnDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
@@ -138,9 +135,6 @@ public class ManagerCardController {
 
 	@Resource
 	private ColumnConfigurationService columnService;
-
-	@Autowired
-	List<Export2AccessControlService> export2AccessControlServices;
 
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -429,7 +423,7 @@ public class ManagerCardController {
 		Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 		CardSearchBean searchBean = new CardSearchBean();
 		searchBean.setType(permissionService.getDefaultTypeTab(roles));
-		return search(params, pageable, searchBean, index, false, null, uiModel, request, response, auth);
+		return search(params, pageable, searchBean, index, false, uiModel, request, response, auth);
 	}
 
 
@@ -440,7 +434,6 @@ public class ManagerCardController {
 						 @Valid CardSearchBean searchBean,
 						 @RequestParam(value = "index", required = false) String index,
 						 @RequestParam(required = false) Boolean zipExport,
-						 @RequestParam(required = false) String accessControlService2exportCsv,
 						 Model uiModel,
 						 HttpServletRequest request,
 						 HttpServletResponse response,
@@ -452,25 +445,6 @@ public class ManagerCardController {
 				importExportController.export(response, searchBean);
 				return null;
 			}
-		}
-
-		if(StringUtils.isNotEmpty(accessControlService2exportCsv)) {
-			Export2AccessControlService export2AccessControlService = export2AccessControlServices.stream().filter(s -> s.getBeanName().equals(accessControlService2exportCsv)).findFirst().orElse(null);
-			if (export2AccessControlService != null) {
-				List<String> eppns = cardDaoService.findCards(searchBean, auth.getName()).getResultList().stream().map(Card::getEppn)
-						.distinct()
-						.collect(Collectors.toList());
-				StringBuffer csvAsBuffer = export2AccessControlService.sgc2csv(eppns);
-				response.setContentType("text/csv");
-				response.setCharacterEncoding("UTF-8");
-				response.setContentLength(csvAsBuffer.length());
-				response.setHeader("Content-Disposition", "attachment; filename=export2accesscontrol.csv");
-                try {
-                    response.getOutputStream().write(csvAsBuffer.toString().getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
 		}
 
 		// used to keep search params in the tabs links
@@ -622,9 +596,6 @@ public class ManagerCardController {
 		List<ColumnDefinition> visibleColumns = columnService.getRenderingColumns(availableColumns, cards);
 		uiModel.addAttribute("availableColumns", availableColumns);
 		uiModel.addAttribute("visibleColumns", visibleColumns);
-
-		List<String> accessControlServices = export2AccessControlServices.stream().map(Export2AccessControlService::getBeanName).collect(Collectors.toList());
-		uiModel.addAttribute("accessControlServices", accessControlServices);
 
 		return "templates/manager/list";
 	}

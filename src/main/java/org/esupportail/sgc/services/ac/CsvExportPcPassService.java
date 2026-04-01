@@ -47,17 +47,6 @@ public class CsvExportPcPassService implements Export2AccessControlService {
 
 	Map<String, String> queueEppns2Update = new HashMap<>();
 
-	String beanName;
-
-	public String getBeanName() {
-		return beanName;
-	}
-
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
-
-
 	public String getEppnFilter() {
 		return eppnFilter;
 	}
@@ -105,8 +94,8 @@ public class CsvExportPcPassService implements Export2AccessControlService {
 			}
 		}
 	}
-
-	public StringBuffer sgc2csv(List<String> eppn4Update) {
+	
+	private StringBuffer sgc2csv(List<String> eppn4Update) {
 		StringBuffer sBuffer = new StringBuffer();
 		List<Card> cards = cardEtatService.getAllEncodedCards(eppn4Update);
         for(Card card : cards) {

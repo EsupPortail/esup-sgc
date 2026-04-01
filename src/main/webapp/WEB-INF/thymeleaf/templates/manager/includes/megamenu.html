@@ -102,19 +102,8 @@
                             </div>
                         </div>
                         <div sec:authorize="hasRole('ROLE_ADMIN')">
-                            <div class="col-lg-2">
-                                <input type="checkbox" name="zipExport" id="zipExport" />
-                                <label for="zipExport" th:text="#{megamenu.export.zip}">Export ZIP</label>
-                            </div>
-                            <div class="col-lg-2">
-                                <select name="accessControlService2exportCsv" id="accessControlService2exportCsv">
-                                    <option value="" data-placeholder="true"></option>
-                                    <option th:each="accessControlService : ${accessControlServices}"
-                                            th:value="${accessControlService}"
-                                            th:text="${accessControlService}">
-                                    </option>
-                                </select>
-                                <label for="accessControlService2exportCsv" th:text="#{megamenu.export.csv}">Export CSV</label>
+                            <input type="checkbox" name="zipExport" id="zipExport" />
+                            <label for="zipExport" th:text="#{megamenu.export.zip}">Export ZIP</label>
                         </div>
                     </div>
                 </form>

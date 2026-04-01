@@ -48,17 +48,7 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService {
 	CardEtatService cardEtatService;
 
 	private Map<String, String> queueEppns2Update = new HashMap<>();
-
-	String beanName;
-
-	public String getBeanName() {
-		return beanName;
-	}
-
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
-
+	
 	public CsvExportUniLaSalleService(AccessService accessService) {
 		super();
 		this.accessService = accessService;
@@ -107,8 +97,8 @@ public class CsvExportUniLaSalleService implements Export2AccessControlService {
 			}
 		}
 	}
-
-	public StringBuffer sgc2csv(List<String> eppn4Update) {
+	
+	private StringBuffer sgc2csv(List<String> eppn4Update) {
 		StringBuffer sBuffer = new StringBuffer();
 		List<Card> cards = cardEtatService.getAllEncodedCards(eppn4Update);
         for(Card card : cards) {

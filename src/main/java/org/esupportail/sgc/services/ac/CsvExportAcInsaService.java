@@ -49,16 +49,6 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 
     @Resource
     UserDaoService userDaoService;
-
-	String beanName;
-
-	public String getBeanName() {
-		return beanName;
-	}
-
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
 	
 	public CsvExportAcInsaService(AccessService accessService) {
 		super();
@@ -93,8 +83,8 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 		InputStream csv = IOUtils.toInputStream(csvStr, ENCODING);
 		accessService.putFile(null, eppn + "_" + CSV_FILENAME, csv, true);
 	}
-
-	public StringBuffer sgc2csv(List<String> eppns) {
+	
+	private StringBuffer sgc2csv(List<String> eppns) {
 
 		StringBuffer sBuffer = new StringBuffer();
 		
@@ -116,6 +106,7 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 	}
 	
 	private StringBuffer sgc2csv4eppn(String eppn) {
+
 		return sgc2csv(Arrays.asList(new String[] {eppn}));
 	}
 	

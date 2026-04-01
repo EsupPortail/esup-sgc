@@ -53,19 +53,8 @@ public class CsvExportP2sService implements Export2AccessControlService, Applica
 	Map<String, String> queueEppns2Update = new HashMap<>();
 
 	String filename;
-
 	int nbLinesMax;
-
-	String beanName;
-
-	public String getBeanName() {
-		return beanName;
-	}
-
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
-
+	
 	public CsvExportP2sService(AccessService accessService) {
 		super();
 		this.accessService = accessService;
@@ -151,7 +140,7 @@ public class CsvExportP2sService implements Export2AccessControlService, Applica
 		}
 	}
 	
-	public StringBuffer sgc2csv(List<String> eppn4UpdateP2S) {
+	private StringBuffer sgc2csv(List<String> eppn4UpdateP2S) {
 
 		StringBuffer sBuffer = new StringBuffer();
 
