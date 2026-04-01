@@ -467,7 +467,6 @@ public class ManagerCardController {
 				response.setHeader("Content-Disposition", "attachment; filename=export2accesscontrol.csv");
                 try {
                     response.getOutputStream().write(csvAsBuffer.toString().getBytes());
-					return null;
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

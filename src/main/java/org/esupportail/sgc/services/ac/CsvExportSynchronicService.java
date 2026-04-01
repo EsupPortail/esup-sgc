@@ -25,22 +25,22 @@ import java.util.Date;
 import java.util.List;
 
 public class CsvExportSynchronicService implements Export2AccessControlService {
-
+	
 	private final Logger log = LoggerFactory.getLogger(getClass());
-
+	
 	final static String ENCODING_P2S = "ISO-8859-1";
-
+	
 	final static LocalDateTime DATE_MAX = LocalDateTime.of(2037, 12, 31, 0, 0);
-
+	
 	public final static List<String> genericCartesLibelles = Arrays.asList(new String[] {"Exterieur", "Service"});
-
+	
 	private String eppnFilter = ".*";
-
+	
 	@Resource
 	CardEtatService cardEtatService;
-
+	
 	AccessService accessService;
-
+	
 	@Resource
 	AppliConfigService appliConfigService;
 
@@ -48,8 +48,6 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
     UserDaoService userDaoService;
 
 	String beanName;
-
-	AcFamilyService acFamilyService;
 
 	public String getBeanName() {
 		return beanName;
@@ -59,15 +57,12 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		this.beanName = beanName;
 	}
 
-	public void setAcFamilyService(AcFamilyService acFamilyService) {
-		this.acFamilyService = acFamilyService;
-	}
 
 	public CsvExportSynchronicService(AccessService accessService) {
 		super();
 		this.accessService = accessService;
 	}
-
+	
 	public String getEppnFilter() {
 		return eppnFilter;
 	}
@@ -81,14 +76,14 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		InputStream csv = IOUtils.toInputStream(sgc2csv(eppns).toString(), ENCODING_P2S);
 		String filename = appliConfigService.getSynchronicExportcsvFilename();
 		accessService.putFile(null, filename, csv, true);
-	}
-
+	} 
+	
 	public void sync(String eppn) throws IOException {
-
+		
 		String filename = appliConfigService.getSynchronicExportcsvFilename();
-
+		
 		String csvStr = sgc2csv4eppn(eppn).toString();
-
+		
 		InputStream csv = IOUtils.toInputStream(csvStr, ENCODING_P2S);
 		accessService.putFile(null, eppn + "_" + filename, csv, true);
 	}
@@ -96,7 +91,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 	public StringBuffer sgc2csv(List<String> eppns4UpdateSynchronic) {
 
 		StringBuffer sBuffer = new StringBuffer();
-
+		
 		/* Synchronic ne s'attend à avoir qu'une seule carte par individu - il faut donc lui transmettre la dernière en date */
 		List<Card> cards = null;
 		if(eppns4UpdateSynchronic == null) {
@@ -104,7 +99,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		} else {
 			cards = cardEtatService.getAllEnableableCardsWithEppnDistinct(eppns4UpdateSynchronic);
 		}
-
+		
         for(Card card : cards) {
         	if(card.getEtat().equals(Etat.ENABLED) || card.getEtat().equals(Etat.DISABLED) || card.getEtat().equals(Etat.CADUC)) {
 				if (card.getEnnabledDate() != null) {
@@ -113,51 +108,46 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 				}
         	}
 		}
-
+        
         return sBuffer;
 	}
-
+	
 	public StringBuffer sgc2csv4eppn(String eppn) {
 		return sgc2csv(Arrays.asList(new String[] {eppn}));
 	}
-
+	
 	/**
 	 * @param card
-	 * @return Leocode;NOM;Prénom;IDP2S;Date_début;Date_fin;Bloqué;Date_Naissance;Société
-	 * Exemple : 112340000987;DALTON;JOE;10340000987;20140101;20371231;NON;31/12/1987;Université de Ville[,familles]...
+	 * @return Leocode;NOM;Prénom;IDP2S;Date_début;Date_fin;Bloqué;Date_Naissance;Société 
+	 * Exemple : 112340000987;DALTON;JOE;10340000987;20140101;20371231;NON;31/12/1987;Université de Ville
 	 */
 	public String sgc2csv(Card card) {
 		ArrayList<String> fields = new ArrayList<String>();
-
+		
 		User user = userDaoService.findUser(card.getEppn());
-
+		
 		fields.add(user.getSecondaryId());
-		fields.add(user.getName());
+		fields.add(user.getName());	
 		fields.add(user.getFirstname());
-
+		
 		String desfireId = card.getDesfireIds().get(AccessControlService.AC_APP_NAME);
 		fields.add(desfireId);
-
+		
 		fields.add(formatDate4Synchronic(card.getEnnabledDate()));
 		fields.add(formatDate4Synchronic(card.getDueDate()));
-
+		
 		String statusSynchronic = Etat.ENABLED.equals(card.getEtat()) ? "NON" : "OUI";
 		fields.add(statusSynchronic);
-
+		
 		// birthday can't be null in the access control
 		String birthday = formatDate(user.getBirthday());
 		if(birthday.isEmpty()) {
 			birthday = formatDate(card.getDateEtat());
 		}
 		fields.add(birthday);
-
-		List<String> families = new ArrayList<>();
-		families.add(user.getInstitute());
-		if(acFamilyService != null) {
-			families.addAll(acFamilyService.getFamilies(user.getEppn()));
-		}
-		fields.add(StringUtils.join(families, ","));
-
+		
+		fields.add(user.getInstitute());
+		
 		return StringUtils.join(fields, ";");
 	}
 
@@ -173,7 +163,7 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		}
 		return dateFt;
 	}
-
+	
 
 	/**
 	 * -> YYYY/MM/DD
@@ -190,13 +180,13 @@ public class CsvExportSynchronicService implements Export2AccessControlService {
 		}
 		return dateFt;
 	}
-
+	
 	/**
 	 * -> YYYY/MM/DD
 	 * @return
 	 */
 	private String hexAsInt(String hex) {
-		BigInteger value = new BigInteger(hex, 16);
+		BigInteger value = new BigInteger(hex, 16);  
 		return value.toString();
 	}
 
