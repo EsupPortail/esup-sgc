@@ -114,7 +114,6 @@ public class RestUserInfoService implements ExtUserInfoService {
             ResponseEntity<byte[]> response;
             try {
                 response = restTemplate.exchange(urlWithParams, HttpMethod.GET, entity, byte[].class);
-                log.trace("RestUserInfoService response for user {}: {}", user.getEppn(), response.getBody());
             } catch(HttpClientErrorException e) {
                 if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
                     // RequireRestAuth -> barer will be renewed and request retried
@@ -128,11 +127,20 @@ public class RestUserInfoService implements ExtUserInfoService {
                 String imageAsBase64 = Base64.getEncoder().encodeToString(imageAsBytes);
                 userInfos.put( sgcParam2jsonPath.entrySet().stream().findFirst().orElseThrow(() -> new SgcRuntimeException("No mapping defined for image content in RestUserInfoService " + beanName, null)).getKey(), imageAsBase64);
             } else {
-                DocumentContext jsonContext = JsonPath.parse(new String(response.getBody()));
+                String json =  new String(response.getBody());
+                log.trace("RestUserInfoService response for user {}: {}", user.getEppn(), json);
+                DocumentContext jsonContext = JsonPath.parse(json);
                 for (Map.Entry<String, String> mapping : sgcParam2jsonPath.entrySet()) {
                     try {
                         Object value = jsonContext.read(mapping.getValue());
-                        userInfos.put(mapping.getKey(), String.valueOf(value));
+                        if(value != null) {
+                            if(value instanceof String) {
+                                userInfos.put(mapping.getKey(), (String) value);
+                            } else if(value instanceof List) {
+                                List<String> valueList = (List<String>) value;
+                                userInfos.put(mapping.getKey(), StringUtils.join(valueList, ","));
+                            }
+                        }
                     } catch (PathNotFoundException e) {
                         log.trace("JSON path not found for user {}: {}", user.getEppn(), mapping.getValue());
                     }
