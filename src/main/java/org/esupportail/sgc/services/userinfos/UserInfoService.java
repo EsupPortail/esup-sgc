@@ -325,6 +325,9 @@ public class UserInfoService {
 				if(academicLevel != null && !academicLevel.isEmpty()) {
 					user.setAcademicLevel(Long.valueOf(academicLevel));
 				}
+				else {
+					user.setAcademicLevel(null);
+				}
 			} else if("pic".equalsIgnoreCase(key)) {
 				String pic = userInfos.get("pic");
 				user.setPic(pic);
