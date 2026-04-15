@@ -22,7 +22,7 @@ public class EscPersonDaoService {
     }
 
     public TypedQuery<EscPerson> findEscPersonsByIdenfifierEquals(String identifier) {
-        return entityManager.createQuery("SELECT o FROM EscPerson o WHERE o.identifier = :identifier", EscPerson.class)
+        return entityManager.createQuery("SELECT o FROM EscPerson o WHERE lower(o.identifier) = lower(:identifier)", EscPerson.class)
                 .setParameter("identifier", identifier);
     }
 
