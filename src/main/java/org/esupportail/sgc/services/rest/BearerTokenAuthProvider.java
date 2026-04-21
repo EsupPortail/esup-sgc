@@ -10,7 +10,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Provider Bearer Token avec renouvellement automatique thread-safe
@@ -27,11 +26,7 @@ public class BearerTokenAuthProvider implements RestAuthProvider {
 
     String tokenJsonPath = "$";
 
-    // Token actuel (volatile pour visibilité entre threads)
-    private volatile String currentToken;
-
-    // Lock pour synchroniser le renouvellement
-    private final ReentrantLock renewalLock = new ReentrantLock();
+    private String currentToken;
 
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -56,28 +51,14 @@ public class BearerTokenAuthProvider implements RestAuthProvider {
 
     @Override
     public synchronized void renewToken() {
-        renewalLock.lock();
-        try {
-            log.info("Renewing authentication token from {}", tokenEndpoint);
-            currentToken = fetchNewToken();
-            log.info("Token successfully renewed");
-        } finally {
-            renewalLock.unlock();
-        }
+        log.info("Renewing authentication token from {}", tokenEndpoint);
+        currentToken = fetchNewToken();
+        log.info("Token successfully renewed");
     }
 
     @Override
     public boolean supportsRenewal() {
         return true;
-    }
-
-    /**
-     * Détermine si le token a besoin d'être renouvelé
-     * Dans cette implémentation, on renouvelle uniquement sur 401 ou 403
-     */
-    private boolean needsRenewal() {
-        // Retourne false car on renouvelle uniquement sur 401 ou 403 via l'aspect
-        return false;
     }
 
     /**
@@ -110,6 +91,5 @@ public class BearerTokenAuthProvider implements RestAuthProvider {
         }
 
         return token;
-
     }
 }
