@@ -36,7 +36,7 @@ public class RestAuthRetryAspect {
 
             // Vérifier si c'est une erreur 401
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                log.warn("Received 401 Unauthorized, attempting token renewal");
+                log.warn("Received {} Unauthorized, attempting token renewal", e.getStatusCode());
 
                 authProvider.renewToken();
 

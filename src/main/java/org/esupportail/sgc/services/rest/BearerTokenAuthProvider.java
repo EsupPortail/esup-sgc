@@ -55,20 +55,14 @@ public class BearerTokenAuthProvider implements RestAuthProvider {
     }
 
     @Override
-    public void renewToken() {
-        // Double-check locking pattern pour performance
-        if (currentToken == null || needsRenewal()) {
-            renewalLock.lock();
-            try {
-                // Re-vérifier après avoir acquis le lock (un autre thread a peut-être déjà renouvelé)
-                if (currentToken == null || needsRenewal()) {
-                    log.info("Renewing authentication token from {}", tokenEndpoint);
-                    currentToken = fetchNewToken();
-                    log.info("Token successfully renewed");
-                }
-            } finally {
-                renewalLock.unlock();
-            }
+    public synchronized void renewToken() {
+        renewalLock.lock();
+        try {
+            log.info("Renewing authentication token from {}", tokenEndpoint);
+            currentToken = fetchNewToken();
+            log.info("Token successfully renewed");
+        } finally {
+            renewalLock.unlock();
         }
     }
 
@@ -79,10 +73,10 @@ public class BearerTokenAuthProvider implements RestAuthProvider {
 
     /**
      * Détermine si le token a besoin d'être renouvelé
-     * Dans cette implémentation, on renouvelle uniquement sur 401
+     * Dans cette implémentation, on renouvelle uniquement sur 401 ou 403
      */
     private boolean needsRenewal() {
-        // Retourne false car on renouvelle uniquement sur 401 via l'aspect
+        // Retourne false car on renouvelle uniquement sur 401 ou 403 via l'aspect
         return false;
     }
 
