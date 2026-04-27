@@ -119,6 +119,10 @@ public class RestUserInfoService implements ExtUserInfoService {
                     // RequireRestAuth -> barer will be renewed and request retried
                     throw e;
                 }
+                if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    log.info("RestUserInfoService returned 404 for user {} at URL {} - return empty infos", user.getEppn(), urlWithParams);
+                    return userInfos;
+                }
                 throw  new SgcRuntimeException("Error when calling RestUserInfoService for user " + user.getEppn() + " at URL " + urlWithParams + " : " + e.getResponseBodyAsString(), e);
             }
 
