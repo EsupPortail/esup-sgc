@@ -92,7 +92,7 @@ public class CardActionMessageController {
         }
         uiModel.asMap().clear();
         cardActionMessageService.persist(cardActionMessage);
-        return "redirect:/admin/actionmessages/" + encodeUrlPathSegment(cardActionMessage.getId().toString(), httpServletRequest);
+        return "redirect:/admin/actionmessages";
     }
     
     @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
@@ -103,7 +103,7 @@ public class CardActionMessageController {
         }
         uiModel.asMap().clear();
         cardActionMessageService.merge(cardActionMessage);
-        return "redirect:/admin/actionmessages/" + encodeUrlPathSegment(cardActionMessage.getId().toString(), request);
+        return "redirect:/admin/actionmessages";
     }
 
 

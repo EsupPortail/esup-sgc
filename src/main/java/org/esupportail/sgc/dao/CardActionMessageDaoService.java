@@ -132,7 +132,7 @@ public class CardActionMessageDaoService {
             logMail.setCardActionMessage(null);
         }
         log.info("Remove reference to this CardActionMessage on LogMails before deleting");
-        this.entityManager.remove(this);
+        this.entityManager.remove(cardActionMessage);
         log.info("CardActionMessage deleted");
     }
 }
