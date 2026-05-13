@@ -84,13 +84,13 @@
                         </div>
                     </div>
                     <div th:unless="${user.cards != null and #lists.size(user.cards) > 0}">
-                        <div th:if="${user.externalCard == null or user.externalCard.csn == null}">
+                        <div th:if="${user.externalCard == null or #strings.isEmpty(user.externalCard.csn)}">
                             <form th:if="${user.newCardRight}" class="form-horizontal" th:action="@{/manager/ldapUserForm}" method="post">
                                 <input type="hidden" th:value="${user.eppn}" name="eppn" />
                                 <button type="submit" class="btn btn-primary" th:text="#{show.make.request}">Faire une demande</button>
                             </form>
                         </div>
-                        <div th:if="${user.externalCard != null and user.externalCard.csn != null}">
+                        <div th:if="${user.externalCard != null and not #strings.isEmpty(user.externalCard.csn)}">
                             <form th:if="${user.importExtCardRight}" class="form-horizontal" th:action="@{/manager/ldapUserExtForm}" method="post">
                                 <input type="hidden" th:value="${user.eppn}" name="eppn" />
                                 <button type="submit" class="btn btn-danger" th:text="#{ldap.search.import.external}">Importer la carte extérieure</button>
