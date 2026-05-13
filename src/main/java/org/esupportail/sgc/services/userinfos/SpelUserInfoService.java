@@ -7,6 +7,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.esupportail.sgc.domain.User;
+import org.esupportail.sgc.tools.CodeBarreUtils;
 import org.esupportail.sgc.tools.DateUtils;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -24,6 +25,9 @@ public class SpelUserInfoService implements ExtUserInfoService {
 	
 	@Resource
 	DateUtils dateUtils;
+
+	@Resource
+	CodeBarreUtils codeBarreUtils;
 
 	String beanName;
 
@@ -81,6 +85,7 @@ public class SpelUserInfoService implements ExtUserInfoService {
 			context.setVariable("request", request);
 			context.setVariable("userInfosInComputing", userInfosInComputing);
 			context.setVariable("dateUtils", dateUtils);
+			context.setVariable("codeBarreUtils", codeBarreUtils);
 			
 			String value = (String) exp.getValue(context);
 			userInfos.put(name, value);

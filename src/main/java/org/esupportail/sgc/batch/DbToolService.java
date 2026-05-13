@@ -455,6 +455,12 @@ public class DbToolService {
 				doSqlUpdate(sqlUpdate);
 				esupSgcVersion = "3.3.x";
 			}
+
+			if("3.3.x".equals(esupSgcVersion)) {
+				String sqlUpdate = "create sequence if not exists seq_for_code_barre_comue_lyon_st_etienne increment by 1 minvalue 0 maxvalue 99999999 no cycle start with 1 cache 1;";
+				doSqlUpdate(sqlUpdate);
+				esupSgcVersion = "3.4.x";
+			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
             appliVersionDaoService.merge(appliVersion);
 			log.warn("\n\n#####\n\t" +

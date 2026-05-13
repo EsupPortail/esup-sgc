@@ -180,7 +180,7 @@
 	<!-- 
 	On calcule l'insitute en fonction de l'eppn
 	On calcule le userType en fonction de eduPersonPrimaryAffiliation
-        On calcule le template de la carte en fonction de l'eppn
+    On calcule le template de la carte en fonction de l'eppn
 	-->
 	<bean id="spelUserInfoService" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="5">
 		<property name="sgcParam2spelExp">
@@ -190,14 +190,15 @@
 					#userInfosInComputing['eduPersonPrimaryAffiliation'] == 'student' ? 'E' : 
 					#userInfosInComputing['eduPersonPrimaryAffiliation'] == 'staff' or #userInfosInComputing['eduPersonPrimaryAffiliation'] == 'teacher' or #userInfosInComputing['eduPersonPrimaryAffiliation'] == 'employee' ? 'P' : 
 					'I'"/>
-				<entry key="template" value="#user.eppn matches '.*@univ-ville.fr' ? 'univ-ville' : 'default'"/>                                
+				<entry key="template" value="#user.eppn matches '.*@univ-ville.fr' ? 'univ-ville' : 'default'"/>
 			</map>
 		</property>	
 	</bean>
 
         <!--
             Si recto1 et recot4 non trouvé/configuré encore on les calcule en fonction du userType et de schacDateOfBirth
-            on reformatte recto7 : 2017/2018 -> 2017<br/>2018 - cf propriété recto7Replace donnée dans sgc.properties
+            On genere eventuellement un code barre pour les bibliotheques de la COMUE Lyon/St-Etienne que l'on stocke dans le recto6
+            On reformatte recto7 : 2017/2018 -> 2017<br/>2018 - cf propriété recto7Replace donnée dans sgc.properties
         -->
         <bean id="spelUserInfoServiceRecto1Recto4" class="org.esupportail.sgc.services.userinfos.SpelUserInfoService" p:order="6">
             <property name="sgcParam2spelExp">
@@ -209,7 +210,8 @@
                         'extérieur'"/>
                     <entry key="recto4" value="#userInfosInComputing['recto4'] != Null ? #userInfosInComputing['recto4'] :
                                                #userInfosInComputing['schacDateOfBirth']  != Null ? 'Né le : ' + #dateUtils.schadDateOfBirthDay2FrenchDate(#userInfosInComputing['schacDateOfBirth']) : ''"/>
-                    <entry key="recto7" value="${recto7Replace}"/>
+					<entry key="recto6" value="#codeBarreUtils.genereCodeBarreBuComueLyonStEtienne(6900,0)"/>
+					<entry key="recto7" value="${recto7Replace}"/>
                 </map>
             </property>
         </bean>
