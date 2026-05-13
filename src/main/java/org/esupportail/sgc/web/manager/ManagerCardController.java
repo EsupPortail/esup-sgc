@@ -372,9 +372,9 @@ public class ManagerCardController {
 				Map<Card, TemplateCard> userTemplatesCards = new HashMap<>();
 				userTemplatesCards.put(card, templateCardDaoService.getTemplateCard(card.getUser()));
 				uiModel.addAttribute("userTemplatesCards", userTemplatesCards);
-				Map<Long, CardPrintInfo> cardPrintInfos = new HashMap<>();
-				cardPrintInfos.put(card.getId(), userInfoService.getCardPrintInfo(card));
-				uiModel.addAttribute("cardPrintInfos", cardPrintInfos);
+				Map<Long, CardPrintInfo> printInfosByCardId = new HashMap<>();
+				printInfosByCardId.put(card.getId(), userInfoService.getCardPrintInfo(card));
+				uiModel.addAttribute("printInfosByCardId", printInfosByCardId);
 			}
 			return "templates/manager/print-card";
 		} else {
