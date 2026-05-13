@@ -91,7 +91,7 @@ public class UserService {
 
 	public boolean displayNewForm(User user, boolean isFreeNew, boolean isPaidNew) {
 
-		boolean displayNewForm = isFreeNew || isPaidNew;
+		boolean displayNewForm = isEsupSgcUser(user) && (isFreeNew || isPaidNew);
 
 		if(user != null && user.getHasExternalCard()) {
 			displayNewForm = false;
