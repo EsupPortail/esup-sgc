@@ -1,0 +1,125 @@
+<!-- src/main/webapp/WEB-INF/thymeleaf/templates/admin/userformcontext.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/user.html}">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{userformcontext.title}">Contexte formulaire utilisateur (debug)</title>
+    <style>
+        .badge-true  { background-color: #5cb85c; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
+        .badge-false { background-color: #d9534f; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
+        .diff-row td { background-color: #fcf8e3; }
+        .field-name  { font-family: monospace; font-size: 13px; }
+        .section-foundations { border-left: 4px solid #337ab7; }
+        .section-rights      { border-left: 4px solid #5cb85c; }
+        .section-display     { border-left: 4px solid #f0ad4e; }
+        .section-card        { border-left: 4px solid #9b59b6; }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h2 th:text="#{userformcontext.page.title}">Contexte d'affichage du formulaire (debug/admin)</h2>
+
+    <!-- Formulaire de recherche par EPPN -->
+    <form th:action="@{/admin/userformcontext}" method="get">
+        <div class="jumbotron">
+            <div class="form-group">
+                <label for="searchEppn" class="control-label col-lg-3 col-md-3 col-xs-6"
+                       th:text="#{common.eppn.target}">Entrez l'EPPN de l'utilisateur cible :</label>
+                <div class="col-lg-2 col-md-2 col-xs-4">
+                    <input type="text" class="form-control" th:placeholder="#{common.eppn}"
+                           id="searchEppn" name="eppn" maxlength="100" th:value="${eppn}"/>
+                </div>
+                <button type="submit" class="btn btn-primary col-lg-1 col-md-1"
+                        th:text="#{userformcontext.compute}">Calculer</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Résumé utilisateur -->
+    <div class="panel panel-default" th:if="${user != null}">
+        <div class="panel-heading"><strong th:text="#{userformcontext.user.summary}">Résumé utilisateur</strong></div>
+        <div class="panel-body">
+            <dl class="dl-horizontal">
+                <dt th:text="#{common.eppn}">EPPN</dt>
+                <dd th:text="${user.eppn}"></dd>
+                <dt th:text="#{userformcontext.user.name}">Nom</dt>
+                <dd th:text="${user.name + ' ' + (user.firstname ?: '')}"></dd>
+                <dt th:text="#{userformcontext.user.type}">Type</dt>
+                <dd th:text="${user.userType}"></dd>
+                <dt th:text="#{userformcontext.user.duedate}">Date de validité</dt>
+                <dd th:text="${user.dueDate}"></dd>
+                <dt th:text="#{userformcontext.user.roles}">Rôles</dt>
+                <dd th:text="${user.roles}"></dd>
+                <dt th:text="#{userformcontext.user.requestfree}">Renouvellement gratuit</dt>
+                <dd>
+                    <span th:classappend="${user.requestFree} ? 'badge-true' : 'badge-false'"
+                          th:text="${user.requestFree}"></span>
+                </dd>
+                <dt th:text="#{userformcontext.user.firstrequestfree}">1ère demande gratuite</dt>
+                <dd>
+                    <span th:classappend="${user.firstRequestFree} ? 'badge-true' : 'badge-false'"
+                          th:text="${user.firstRequestFree}"></span>
+                </dd>
+                <dt th:text="#{userformcontext.user.nbcards}">Nombre de cartes</dt>
+                <dd th:text="${#lists.size(user.cards)}"></dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Tableau des drapeaux -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <strong th:text="#{userformcontext.flags.title}">Drapeaux du UserFormContext</strong>
+            <span class="text-muted pull-right">
+                <span th:text="#{userformcontext.duration.user}">Vue utilisateur</span> :
+                <strong th:text="${durationUser} + ' ms'"></strong>
+                &nbsp;—&nbsp;
+                <span th:text="#{userformcontext.duration.manager}">Vue manager</span> :
+                <strong th:text="${durationManager} + ' ms'"></strong>
+            </span>
+        </div>
+        <div class="panel-body">
+            <p class="text-muted" th:text="#{userformcontext.flags.legend}">
+                Les lignes surlignées indiquent une différence entre la vue utilisateur et la vue manager.
+            </p>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th th:text="#{userformcontext.col.section}">Section</th>
+                        <th th:text="#{userformcontext.col.field}">Champ</th>
+                        <th th:text="#{userformcontext.col.description}">Description</th>
+                        <th th:text="#{userformcontext.col.user}">Vue utilisateur</th>
+                        <th th:text="#{userformcontext.col.manager}">Vue manager</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="row : ${fieldRows}"
+                        th:classappend="${row.valueUser != row.valueManager} ? 'diff-row'">
+                        <td>
+                            <span th:text="#{|userformcontext.section.${row.name}|}"></span>
+                        </td>
+                        <td class="field-name" th:text="${row.name}"></td>
+                        <td class="text-muted small">
+                            <span th:text="#{|userformcontext.desc.${row.name}|}"></span>
+                        </td>
+                        <td>
+                            <span th:classappend="${row.valueUser} ? 'badge-true' : 'badge-false'"
+                                  th:text="${row.valueUser}"></span>
+                        </td>
+                        <td>
+                            <span th:classappend="${row.valueManager} ? 'badge-true' : 'badge-false'"
+                                  th:text="${row.valueManager}"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
+

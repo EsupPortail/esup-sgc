@@ -92,7 +92,7 @@ public class ConfigInterceptor implements WebRequestInterceptor{
                         "admin", "sessions", "paybox", "logs", "nfc", "crousError", "crouspatchids",
                         "configs", "crous", "import", "actionmsgs", "tools", "prefs", "template",
                         "navbar", "crousrules", "logmails", "purge", "printers", "userinfos",
-                        "groupsroles", "locations", "javaperf"
+                        "userformcontext", "groupsroles", "locations", "javaperf"
                 ).contains(active)) {
                     role = "admin";
                 } else {

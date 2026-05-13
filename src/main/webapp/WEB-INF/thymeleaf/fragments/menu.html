@@ -77,6 +77,9 @@
                         <li th:classappend="${active} == 'userinfos' ? 'active'">
                             <a th:href="@{/admin/userinfos}" th:text="#{menu.userinfos}">UserInfos</a>
                         </li>
+                        <li th:classappend="${active} == 'userformcontext' ? 'active'">
+                            <a th:href="@{/admin/userformcontext}" th:text="#{menu.userformcontext}">UserFormContext</a>
+                        </li>
                         <li th:classappend="${active} == 'groupsroles' ? 'active'">
                             <a th:href="@{/admin/groupsroles}" th:text="#{menu.groupsroles}">GroupsRoles</a>
                         </li>
