@@ -24,6 +24,10 @@ public record UserFormContext(
         boolean canPaidNew,
         boolean hasDeliveredCard,
         boolean enableEuropeanCard,
-        boolean displayEuropeanCard
+        boolean displayEuropeanCard,
+        boolean hasExternalCard,
+        boolean showCrousSection,
+        boolean canEnableCrous,
+        boolean showEuropeanCardSection
 ) {}
 

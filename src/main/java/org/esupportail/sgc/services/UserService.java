@@ -143,7 +143,7 @@ public class UserService {
 	public UserFormContext displayFormParts(User user, boolean requestUserIsManager) {
 		StopWatch stopWatch = new PrettyStopWatch();
 
-		// ── Fondations : appels potentiellement coûteux (DB / service externe) ──
+		// Fondations : appels potentiellement coûteux (DB / service externe)
 		stopWatch.start("isFirstRequest");
 		final boolean isFirstRequest   = isFirstRequest(user);
 		stopWatch.start("hasRequestCard");
@@ -151,12 +151,12 @@ public class UserService {
 		stopWatch.start("isPaidRenewal");
 		final boolean isPaidRenewal    = isPaidRenewal(user);
 
-		// ── Dérivés directs depuis l'objet User (lecture en mémoire) ──
+		// Dérivés directs depuis l'objet User (lecture en mémoire)
 		final boolean isOutOfDueDate  = isOutOfDueDate(user);
 		final boolean hasExternalCard = user.getHasExternalCard();
 		final boolean isEsupSgcUser   = isEsupSgcUser(user);
 
-		// ── Flags de droits ──
+		// Flags de droits
 		stopWatch.start("isFreeRenewal");
 		final boolean isFreeRenewal = user.isRequestFree()
 				&& !isFirstRequest && !isOutOfDueDate && !hasRequestCard && !hasExternalCard;
@@ -165,7 +165,7 @@ public class UserService {
 		final boolean isFreeNew     = user.isFirstRequestFree()
 				&& !isOutOfDueDate && !hasRequestCard && !hasExternalCard;
 
-		// ── Flags d'affichage formulaire ──
+		// Flags d'affichage formulaire
 		stopWatch.start("displayRenewalForm");
 		final boolean displayRenewalForm = (isFreeRenewal || isPaidRenewal)
 				&& !hasExternalCard && !hasRequestCard;
@@ -192,7 +192,7 @@ public class UserService {
 		stopWatch.start("hasDeliveredCard");
 		final boolean hasDeliveredCard = hasDeliveredCard(user);
 
-		// ── Appels CardService ──
+		// Appels CardService
 		stopWatch.start("displayCnil");
 		final boolean displayCnil         = cardService.displayFormCnil(user.getUserType());
 		stopWatch.start("displayCrous");
@@ -207,6 +207,14 @@ public class UserService {
 		final boolean enableEuropeanCard  = cardService.isEuropeanCardEnabled(user);
 		stopWatch.start("displayEuropeanCard");
 		final boolean displayEuropeanCard = cardService.displayFormEuropeanCardEnabled(user);
+		// Champs dérivés pour éliminer les expressions composites des templates
+		final boolean showCrousSection        = displayCrous || enableCrous;
+		final String  crousIdentifier         = user.getCrousIdentifier();
+		final boolean canEnableCrous          = displayCrous
+				&& (crousIdentifier == null || crousIdentifier.isEmpty());
+		final boolean showEuropeanCardSection = displayEuropeanCard
+				|| Boolean.TRUE.equals(user.getEuropeanStudentCard());
+
 		stopWatch.stop();
 
 		log.trace(stopWatch.prettyPrint());
@@ -216,7 +224,8 @@ public class UserService {
 				isPaidRenewal, isFreeRenewal, isFreeNew,
 				isFirstRequest, displayRenewalForm, displayNewForm,
 				displayForm, canPaidRenewal, canPaidNew,
-				hasDeliveredCard, enableEuropeanCard, displayEuropeanCard
+				hasDeliveredCard, enableEuropeanCard, displayEuropeanCard,
+				hasExternalCard, showCrousSection, canEnableCrous, showEuropeanCardSection
 		);
 	}
 

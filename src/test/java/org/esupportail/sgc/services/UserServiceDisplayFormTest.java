@@ -796,7 +796,9 @@ class UserServiceDisplayFormTest {
                     ctx.isPaidRenewal(), ctx.isFreeRenewal(), ctx.isFreeNew(),
                     ctx.isFirstRequest(), ctx.displayRenewalForm(), ctx.displayNewForm(),
                     ctx.displayForm(), ctx.canPaidRenewal(), ctx.canPaidNew(),
-                    ctx.hasDeliveredCard(), ctx.enableEuropeanCard(), ctx.displayEuropeanCard()
+                    ctx.hasDeliveredCard(), ctx.enableEuropeanCard(), ctx.displayEuropeanCard(),
+                    ctx.hasExternalCard(), ctx.showCrousSection(), ctx.canEnableCrous(),
+                    ctx.showEuropeanCardSection()
             );
             assertTrue(allFields.stream().allMatch(v -> v != null), "Aucun champ ne doit être null");
         }
@@ -892,6 +894,7 @@ class UserServiceDisplayFormTest {
             assertFalse(ctx.displayRenewalForm(),  "displayRenewalForm doit être false");
             assertFalse(ctx.canPaidNew(),          "canPaidNew doit être false");
             assertFalse(ctx.canPaidRenewal(),      "canPaidRenewal doit être false");
+            assertTrue(ctx.hasExternalCard(),      "hasExternalCard doit être true");
         }
 
         @Test

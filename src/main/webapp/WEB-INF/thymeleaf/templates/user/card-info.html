@@ -30,15 +30,15 @@
                         <dt th:text="#{common.limit.date}">Date limite :</dt>
                         <dd th:text="${#temporals.format(user.dueDate, 'dd/MM/yyyy')}"></dd>
                         <dt th:text="#{common.email}">Email :</dt><dd th:text="${user.email}"></dd>
-                        <th:block th:if="${!user.hasExternalCard}">
-                            <th:block th:if="${displayFormParts.displayCrous or displayFormParts.enableCrous}">
+                        <th:block th:if="${!displayFormParts.hasExternalCard}">
+                            <th:block th:if="${displayFormParts.showCrousSection}">
                                 <dt>
                                     <span th:text="#{card.info.services.crous}">Services Crous/Izly</span>
                                     <a href="#" data-toggle="tooltip" title="" th:title="#{card.info.crous.title}">*</a>
                                 </dt>
                                 <dd>
                                     <span th:text="${user.crous} ? #{megamenu.yes} : #{megamenu.no}"></span>&nbsp;
-                                    <th:block th:if="${!user.crous or displayFormParts.displayCrous and #strings.isEmpty(user.crousIdentifier)}">
+                                    <th:block th:if="${!user.crous or displayFormParts.canEnableCrous}">
                                         <button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#crousCollapse" th:text="#{common.edit}">Modifier</button>
                                     </th:block>
                                 </dd>
@@ -50,7 +50,7 @@
                                     </dd>
                                 </th:block>
                             </th:block>
-                            <th:block th:if="${displayFormParts.displayEuropeanCard or user.europeanStudentCard}">
+                            <th:block th:if="${displayFormParts.showEuropeanCardSection}">
                                 <dt th:text="#{card.info.european.card}">Carte européenne :</dt>
                                 <dd>
                                     <span th:text="${user.europeanStudentCard} ? #{megamenu.yes} : #{megamenu.no}"></span>&nbsp;
@@ -89,7 +89,7 @@
                         </form>
                     </div>
                     <!-- Collapse Crous Enable -->
-                    <div class="collapse" id="crousCollapse" th:if="${displayFormParts.displayCrous and #strings.isEmpty(user.crousIdentifier)}">
+                    <div class="collapse" id="crousCollapse" th:if="${displayFormParts.canEnableCrous}">
                         <form th:action="@{/user/enableCrous}" method="post" id="crousForm" th:if="${!user.crous}">
                             <div class="alert alert-warning">
                                 <strong><span th:text="#{card.info.crous.wish}">Je souhaite bénéficier des services Crous/Izly</span>
@@ -357,7 +357,7 @@
 
     <!-- Colonne droite -->
     <div class="col-lg-4">
-        <th:block th:if="${!user.hasExternalCard}">
+        <th:block th:if="${!displayFormParts.hasExternalCard}">
             <th:block sec:authorize="hasRole('ROLE_PREVIOUS_ADMINISTRATOR')">
                 <div class="alert alert-danger" th:if="${!displayFormParts.isFreeRenewal}">
                     <span th:utext="${configUserMsgs['userFreeForcedRenewal']}"></span>
@@ -368,7 +368,7 @@
             </th:block>
             <div class="alert alert-info" th:utext="${configUserMsgs['helpMsg']}"></div>
             <th:block th:if="${displayFormParts.hasDeliveredCard}">
-                <div class="alert alert-danger" th:if="${displayFormParts.hasDeliveredCard}" th:utext="${configUserMsgs['userTipMsg']}"></div>
+                <div class="alert alert-danger" th:utext="${configUserMsgs['userTipMsg']}"></div>
                 <div class="alert alert-info" th:if="${displayFormParts.isFreeRenewal}">
                     <p th:utext="${configUserMsgs['freeRenewalMsg']}"></p>
                     <a th:href="@{/user/card-request-form}" class="btn btn-danger" th:text="#{card.info.renewal.form}">Formulaire de renouvellement de carte</a>
