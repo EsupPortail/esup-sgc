@@ -568,8 +568,8 @@ public class UserCardController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 		User user = userDaoService.findUser(eppn);
-		// autorisé qu'en cas d'erreur crous
-		if(user.getCrousError() != null && !user.getCrousError().isEmpty()) {
+		// autorisé qu'en cas d'erreur crous ou si le crous n'est pas encore activé
+		if(user.getCrousError() != null && !user.getCrousError().isEmpty() || !StringUtils.hasLength(user.getCrousIdentifier())) {
 			user.setCrous(false);
             userDaoService.merge(user);
 		}

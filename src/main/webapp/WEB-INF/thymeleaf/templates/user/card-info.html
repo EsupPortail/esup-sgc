@@ -38,7 +38,7 @@
                                 </dt>
                                 <dd>
                                     <span th:text="${user.crous} ? #{megamenu.yes} : #{megamenu.no}"></span>&nbsp;
-                                    <th:block th:if="${!user.crous}">
+                                    <th:block th:if="${!user.crous or displayFormParts['displayCrous'] and #strings.isEmpty(crousIdentifier)}">
                                         <button type="button" class="btn btn-sm btn-warning" data-toggle="collapse" data-target="#crousCollapse" th:text="#{common.edit}">Modifier</button>
                                     </th:block>
                                 </dd>
@@ -89,8 +89,8 @@
                         </form>
                     </div>
                     <!-- Collapse Crous Enable -->
-                    <div class="collapse" id="crousCollapse">
-                        <form th:action="@{/user/enableCrous}" method="post" id="crousForm">
+                    <div class="collapse" id="crousCollapse" th:if="${displayFormParts['displayCrous'] and #strings.isEmpty(crousIdentifier)}">
+                        <form th:action="@{/user/enableCrous}" method="post" id="crousForm" th:if="${!user.crous}">
                             <div class="alert alert-warning">
                                 <strong><span th:text="#{card.info.crous.wish}">Je souhaite bénéficier des services Crous/Izly</span>
                                     <a href="#" data-toggle="tooltip" title="" th:title="#{common.cafe}">*</a>
@@ -101,6 +101,11 @@
                                 <input type="submit" class="btn btn-success" th:value="#{common.validate}"/>
                             </div>
                         </form>
+                        <th:block th:if="${user.crous}">
+                            <form th:action="@{/user/disableCrous}" method="post" id="crousForm">
+                                <input type="submit" class="btn btn-danger" th:value="#{card.info.disable.crous}"/>
+                            </form>
+                        </th:block>
                     </div>
                     <!-- Collapse Crous Error -->
                     <div class="collapse" id="disableCrousCollapse">
