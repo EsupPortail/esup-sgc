@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -782,67 +781,65 @@ class UserServiceDisplayFormTest {
         }
 
         @Test
-        @DisplayName("contient toutes les clés attendues")
-        void containsAllExpectedKeys() {
+        @DisplayName("contient toutes les valeurs attendues (aucune NullPointerException)")
+        void containsAllExpectedFields() {
             when(cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(anyString(), anyList()))
                     .thenReturn(0L);
-            Map<String, Boolean> parts = userService.displayFormParts(baseUser(), false);
+            UserFormContext ctx = userService.displayFormParts(baseUser(), false);
 
-            List<String> expectedKeys = Arrays.asList(
-                    "displayCnil", "displayCrous", "enableCrous",
-                    "displayRules", "displayAdresse",
-                    "isPaidRenewal", "isFreeRenewal", "isFreeNew",
-                    "isFirstRequest", "displayRenewalForm", "displayNewForm",
-                    "displayForm", "canPaidRenewal", "canPaidNew",
-                    "hasDeliveredCard", "enableEuropeanCard", "displayEuropeanCard"
+            // Vérifie que l'objet est bien construit (pas de NPE, accès aux champs)
+            assertNotNull(ctx);
+            // Accès à chaque champ pour détecter toute régression structurelle
+            List<Boolean> allFields = Arrays.asList(
+                    ctx.displayCnil(), ctx.displayCrous(), ctx.enableCrous(),
+                    ctx.displayRules(), ctx.displayAdresse(),
+                    ctx.isPaidRenewal(), ctx.isFreeRenewal(), ctx.isFreeNew(),
+                    ctx.isFirstRequest(), ctx.displayRenewalForm(), ctx.displayNewForm(),
+                    ctx.displayForm(), ctx.canPaidRenewal(), ctx.canPaidNew(),
+                    ctx.hasDeliveredCard(), ctx.enableEuropeanCard(), ctx.displayEuropeanCard()
             );
-            for (String key : expectedKeys) {
-                assertTrue(parts.containsKey(key), "Clé manquante : " + key);
-                assertNotNull(parts.get(key), "Valeur null pour la clé : " + key);
-            }
+            assertTrue(allFields.stream().allMatch(v -> v != null), "Aucun champ ne doit être null");
         }
 
         @Test
         @DisplayName("scénario : nouvel utilisateur ROLE_USER, première demande gratuite")
         void scenario_firstRequest_freeNew() {
-            // isFirstRequest = true (0 cartes)
             when(cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(anyString(), anyList()))
                     .thenReturn(0L);
-            User user = baseUser(); // firstRequestFree=true, dueDate futur
+            User user = baseUser();
             withRoleUser(user);
 
-            Map<String, Boolean> parts = userService.displayFormParts(user, false);
+            UserFormContext ctx = userService.displayFormParts(user, false);
 
-            assertTrue(parts.get("isFirstRequest"),    "isFirstRequest doit être true");
-            assertTrue(parts.get("isFreeNew"),         "isFreeNew doit être true");
-            assertFalse(parts.get("isFreeRenewal"),    "isFreeRenewal doit être false (1ère demande)");
-            assertFalse(parts.get("isPaidRenewal"),    "isPaidRenewal doit être false");
-            assertTrue(parts.get("displayNewForm"),    "displayNewForm doit être true");
-            assertFalse(parts.get("displayRenewalForm"), "displayRenewalForm doit être false");
-            assertTrue(parts.get("displayForm"),       "displayForm doit être true");
-            assertFalse(parts.get("canPaidNew"),       "canPaidNew doit être false (déjà gratuit)");
-            assertFalse(parts.get("canPaidRenewal"),   "canPaidRenewal doit être false (1ère demande)");
+            assertTrue(ctx.isFirstRequest(),      "isFirstRequest doit être true");
+            assertTrue(ctx.isFreeNew(),            "isFreeNew doit être true");
+            assertFalse(ctx.isFreeRenewal(),       "isFreeRenewal doit être false (1ère demande)");
+            assertFalse(ctx.isPaidRenewal(),       "isPaidRenewal doit être false");
+            assertTrue(ctx.displayNewForm(),       "displayNewForm doit être true");
+            assertFalse(ctx.displayRenewalForm(),  "displayRenewalForm doit être false");
+            assertTrue(ctx.displayForm(),          "displayForm doit être true");
+            assertFalse(ctx.canPaidNew(),          "canPaidNew doit être false (déjà gratuit)");
+            assertFalse(ctx.canPaidRenewal(),      "canPaidRenewal doit être false (1ère demande)");
         }
 
         @Test
         @DisplayName("scénario : renouvellement gratuit")
         void scenario_freeRenewal() {
-            // Pas première demande
             when(cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(anyString(), anyList()))
                     .thenReturn(1L);
-            User user = baseUser(); // requestFree=true
+            User user = baseUser();
             withRoleUser(user);
 
-            Map<String, Boolean> parts = userService.displayFormParts(user, false);
+            UserFormContext ctx = userService.displayFormParts(user, false);
 
-            assertFalse(parts.get("isFirstRequest"),   "isFirstRequest doit être false");
-            assertTrue(parts.get("isFreeRenewal"),     "isFreeRenewal doit être true");
+            assertFalse(ctx.isFirstRequest(),      "isFirstRequest doit être false");
+            assertTrue(ctx.isFreeRenewal(),        "isFreeRenewal doit être true");
             // Note: isFreeNew ne dépend PAS de isFirstRequest, seulement de firstRequestFree + dueDate + etc.
             // Donc isFreeNew=true ici (firstRequestFree=true par défaut), mais displayNewForm=false (pas ROLE_USER)
-            assertTrue(parts.get("isFreeNew"),         "isFreeNew est true car firstRequestFree=true (indépendant de isFirstRequest)");
-            assertTrue(parts.get("displayRenewalForm"), "displayRenewalForm doit être true");
-            assertTrue(parts.get("displayForm"),       "displayForm doit être true");
-            assertFalse(parts.get("canPaidRenewal"),   "canPaidRenewal doit être false (déjà gratuit)");
+            assertTrue(ctx.isFreeNew(),            "isFreeNew est true car firstRequestFree=true (indépendant de isFirstRequest)");
+            assertTrue(ctx.displayRenewalForm(),   "displayRenewalForm doit être true");
+            assertTrue(ctx.displayForm(),          "displayForm doit être true");
+            assertFalse(ctx.canPaidRenewal(),      "canPaidRenewal doit être false (déjà gratuit)");
         }
 
         @Test
@@ -851,14 +848,14 @@ class UserServiceDisplayFormTest {
             when(cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(anyString(), anyList()))
                     .thenReturn(1L);
             User user = baseUser();
-            user.setRequestFree(false);    // pas de renouvellement gratuit
+            user.setRequestFree(false);
 
-            Map<String, Boolean> parts = userService.displayFormParts(user, false);
+            UserFormContext ctx = userService.displayFormParts(user, false);
 
-            assertFalse(parts.get("isFreeRenewal"),    "isFreeRenewal doit être false");
-            assertFalse(parts.get("isPaidRenewal"),    "isPaidRenewal doit être false (pas encore payé)");
-            assertTrue(parts.get("canPaidRenewal"),    "canPaidRenewal doit être true");
-            assertFalse(parts.get("displayRenewalForm"), "displayRenewalForm doit être false (pas encore payé)");
+            assertFalse(ctx.isFreeRenewal(),       "isFreeRenewal doit être false");
+            assertFalse(ctx.isPaidRenewal(),       "isPaidRenewal doit être false (pas encore payé)");
+            assertTrue(ctx.canPaidRenewal(),       "canPaidRenewal doit être true");
+            assertFalse(ctx.displayRenewalForm(),  "displayRenewalForm doit être false (pas encore payé)");
         }
 
         @Test
@@ -870,12 +867,12 @@ class UserServiceDisplayFormTest {
             User user = baseUser();
             user.setRequestFree(false);
 
-            Map<String, Boolean> parts = userService.displayFormParts(user, false);
+            UserFormContext ctx = userService.displayFormParts(user, false);
 
-            assertTrue(parts.get("isPaidRenewal"),     "isPaidRenewal doit être true");
-            assertTrue(parts.get("displayRenewalForm"), "displayRenewalForm doit être true");
-            assertTrue(parts.get("displayForm"),       "displayForm doit être true");
-            assertFalse(parts.get("canPaidRenewal"),   "canPaidRenewal doit être false (paiement déjà fait)");
+            assertTrue(ctx.isPaidRenewal(),        "isPaidRenewal doit être true");
+            assertTrue(ctx.displayRenewalForm(),   "displayRenewalForm doit être true");
+            assertTrue(ctx.displayForm(),          "displayForm doit être true");
+            assertFalse(ctx.canPaidRenewal(),      "canPaidRenewal doit être false (paiement déjà fait)");
         }
 
         @Test
@@ -887,14 +884,14 @@ class UserServiceDisplayFormTest {
             withRoleUser(user);
             withExternalCard(user);
 
-            Map<String, Boolean> parts = userService.displayFormParts(user, false);
+            UserFormContext ctx = userService.displayFormParts(user, false);
 
-            assertFalse(parts.get("isFreeNew"),        "isFreeNew doit être false");
-            assertFalse(parts.get("isFreeRenewal"),    "isFreeRenewal doit être false");
-            assertFalse(parts.get("displayNewForm"),   "displayNewForm doit être false");
-            assertFalse(parts.get("displayRenewalForm"), "displayRenewalForm doit être false");
-            assertFalse(parts.get("canPaidNew"),       "canPaidNew doit être false");
-            assertFalse(parts.get("canPaidRenewal"),   "canPaidRenewal doit être false");
+            assertFalse(ctx.isFreeNew(),           "isFreeNew doit être false");
+            assertFalse(ctx.isFreeRenewal(),       "isFreeRenewal doit être false");
+            assertFalse(ctx.displayNewForm(),      "displayNewForm doit être false");
+            assertFalse(ctx.displayRenewalForm(),  "displayRenewalForm doit être false");
+            assertFalse(ctx.canPaidNew(),          "canPaidNew doit être false");
+            assertFalse(ctx.canPaidRenewal(),      "canPaidRenewal doit être false");
         }
 
         @Test
@@ -904,11 +901,11 @@ class UserServiceDisplayFormTest {
                     .thenReturn(1L);
             User user = baseUser();
             user.setRequestFree(false);
-            user.setDueDate(LocalDateTime.now().minusYears(1)); // date dépassée : plus de droits standards
+            user.setDueDate(LocalDateTime.now().minusYears(1));
 
-            Map<String, Boolean> parts = userService.displayFormParts(user, true); // manager=true
+            UserFormContext ctx = userService.displayFormParts(user, true);
 
-            assertTrue(parts.get("displayForm"), "displayForm doit être true pour un manager");
+            assertTrue(ctx.displayForm(), "displayForm doit être true pour un manager");
         }
 
         @Test
@@ -920,13 +917,13 @@ class UserServiceDisplayFormTest {
             withRoleUser(user);
             user.setDueDate(LocalDateTime.now().minusDays(1));
 
-            Map<String, Boolean> parts = userService.displayFormParts(user, false);
+            UserFormContext ctx = userService.displayFormParts(user, false);
 
-            assertFalse(parts.get("isFreeNew"),        "isFreeNew doit être false (date dépassée)");
-            assertFalse(parts.get("isFreeRenewal"),    "isFreeRenewal doit être false (date dépassée)");
-            assertFalse(parts.get("displayNewForm"),   "displayNewForm doit être false");
-            assertFalse(parts.get("displayForm"),      "displayForm doit être false");
-            assertFalse(parts.get("canPaidNew"),       "canPaidNew doit être false (date dépassée)");
+            assertFalse(ctx.isFreeNew(),           "isFreeNew doit être false (date dépassée)");
+            assertFalse(ctx.isFreeRenewal(),       "isFreeRenewal doit être false (date dépassée)");
+            assertFalse(ctx.displayNewForm(),      "displayNewForm doit être false");
+            assertFalse(ctx.displayForm(),         "displayForm doit être false");
+            assertFalse(ctx.canPaidNew(),          "canPaidNew doit être false (date dépassée)");
         }
 
         // Helper pour this inner class

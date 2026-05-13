@@ -162,24 +162,22 @@ public class UserServiceTest {
         user.setDueDate(LocalDateTime.now().plusYears(1));
 
         try {
-            var displayFormParts = userService.displayFormParts(user, false);
+            UserFormContext ctx = userService.displayFormParts(user, false);
 
-            // Vérifie que les nouvelles clés sont présentes
-            assertTrue(displayFormParts.containsKey("isPaidRenewal"),
-                "displayFormParts devrait contenir la clé 'isPaidRenewal'");
-            assertTrue(displayFormParts.containsKey("isFreeNew"),
-                "displayFormParts devrait contenir la clé 'isFreeNew'");
-            assertTrue(displayFormParts.containsKey("displayNewForm"),
-                "displayFormParts devrait contenir la clé 'displayNewForm'");
-            assertTrue(displayFormParts.containsKey("canPaidNew"),
-                "displayFormParts devrait contenir la clé 'canPaidNew'");
+            // Vérifie que tous les champs sont accessibles (type safety)
+            assertNotNull(ctx, "Le contexte ne doit pas être null");
+            // Vérifie les champs qui étaient des nouvelles clés lors de l'ajout de la feature
+            assertFalse(ctx.isPaidRenewal(),  "isPaidRenewal doit être accessible");
+            assertFalse(ctx.isFreeNew(),      "isFreeNew doit être accessible (firstRequestFree=false)");
+            assertFalse(ctx.displayNewForm(), "displayNewForm doit être accessible");
+            assertNotNull(ctx.canPaidNew(),   "canPaidNew doit être accessible");
 
-            log.info("isPaidRenewal: " + displayFormParts.get("isPaidRenewal"));
-            log.info("isFreeNew: " + displayFormParts.get("isFreeNew"));
-            log.info("displayNewForm: " + displayFormParts.get("displayNewForm"));
-            log.info("canPaidNew: " + displayFormParts.get("canPaidNew"));
+            log.info("isPaidRenewal: " + ctx.isPaidRenewal());
+            log.info("isFreeNew: " + ctx.isFreeNew());
+            log.info("displayNewForm: " + ctx.displayNewForm());
+            log.info("canPaidNew: " + ctx.canPaidNew());
 
-            log.info("Test réussi: displayFormParts contient toutes les nouvelles clés");
+            log.info("Test réussi: UserFormContext contient tous les champs attendus");
         } catch (Exception e) {
             fail("displayFormParts a levé une exception: " + e.getMessage());
         }

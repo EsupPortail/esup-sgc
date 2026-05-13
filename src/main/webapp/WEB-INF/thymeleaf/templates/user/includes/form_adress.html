@@ -1,5 +1,5 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/form_adress.html -->
-<div th:fragment="form_adress" th:if="${displayFormParts['displayAdresse']}">
+<div th:fragment="form_adress" th:if="${displayFormParts.displayAdresse}">
     <fieldset class="scheduler-border">
         <legend class="scheduler-border" th:text="#{common.address}">Adresse</legend>
         <p th:text="#{form.address.return}">Adresse à laquelle la carte doit être retournée :</p>

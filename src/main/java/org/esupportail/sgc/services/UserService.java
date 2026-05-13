@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import jakarta.annotation.Resource;
@@ -193,53 +192,52 @@ public class UserService {
 		
 	}
 	
-	public Map<String,Boolean> displayFormParts(User user, boolean requestUserIsManager){
-		Map<String,Boolean> displayFormParts = new HashMap<String, Boolean>();
+	public UserFormContext displayFormParts(User user, boolean requestUserIsManager){
 		StopWatch stopWatch = new PrettyStopWatch();
 		stopWatch.start("displayCnil");
-		displayFormParts.put("displayCnil", cardService.displayFormCnil(user.getUserType()));
+		boolean displayCnil = cardService.displayFormCnil(user.getUserType());
 		stopWatch.start("displayCrous");
-		displayFormParts.put("displayCrous", cardService.displayFormCrous(user));
+		boolean displayCrous = cardService.displayFormCrous(user);
 		stopWatch.start("enableCrous");
-		displayFormParts.put("enableCrous", cardService.isCrousEnabled(user));
+		boolean enableCrous = cardService.isCrousEnabled(user);
 		stopWatch.start("displayRules");
-		displayFormParts.put("displayRules", cardService.displayFormRules(user.getUserType()));
+		boolean displayRules = cardService.displayFormRules(user.getUserType());
 		stopWatch.start("displayAdresse");
-		displayFormParts.put("displayAdresse", cardService.displayFormAdresse(user.getUserType()));
+		boolean displayAdresse = cardService.displayFormAdresse(user.getUserType());
 		stopWatch.start("isPaidRenewal");
 		boolean isPaidRenewal = this.isPaidRenewal(user);
-		displayFormParts.put("isPaidRenewal",  isPaidRenewal);
 		stopWatch.start("isFreeRenewal");
 		boolean isFreeRenewal = this.isFreeRenewal(user);
-		displayFormParts.put("isFreeRenewal",  isFreeRenewal);
 		stopWatch.start("isFreeNew");
 		boolean isFreeNew = this.isFreeNew(user);
-		displayFormParts.put("isFreeNew",  isFreeNew);
 		stopWatch.start("isFirstRequest");
 		boolean isFirstRequest = this.isFirstRequest(user);
-		displayFormParts.put("isFirstRequest", isFirstRequest);
 		stopWatch.start("displayRenewalForm");
 		boolean displayRenewalForm = this.displayRenewalForm(user, isFreeRenewal, isPaidRenewal);
-		displayFormParts.put("displayRenewalForm",  displayRenewalForm);
 		stopWatch.start("displayNewForm");
 		boolean displayNewForm = this.displayNewForm(user, isFreeNew, isPaidRenewal);
-		displayFormParts.put("displayNewForm",  displayNewForm);
 		stopWatch.start("displayForm");
-		displayFormParts.put("displayForm",  this.displayForm(user, requestUserIsManager, displayRenewalForm, isFirstRequest, displayNewForm));
+		boolean displayForm = this.displayForm(user, requestUserIsManager, displayRenewalForm, isFirstRequest, displayNewForm);
 		stopWatch.start("canPaidRenewal");
-		displayFormParts.put("canPaidRenewal",  this.canPaidRenewal(user));
+		boolean canPaidRenewal = this.canPaidRenewal(user);
 		stopWatch.start("canPaidNew");
-		displayFormParts.put("canPaidNew",  this.canPaidNew(user));
+		boolean canPaidNew = this.canPaidNew(user);
 		stopWatch.start("hasDeliveredCard");
-		displayFormParts.put("hasDeliveredCard",  this.hasDeliveredCard(user));
+		boolean hasDeliveredCard = this.hasDeliveredCard(user);
 		stopWatch.start("enableEuropeanCard");
-		displayFormParts.put("enableEuropeanCard",  cardService.isEuropeanCardEnabled(user));
+		boolean enableEuropeanCard = cardService.isEuropeanCardEnabled(user);
 		stopWatch.start("displayEuropeanCard");
-		displayFormParts.put("displayEuropeanCard",  cardService.displayFormEuropeanCardEnabled(user));
+		boolean displayEuropeanCard = cardService.displayFormEuropeanCardEnabled(user);
 		stopWatch.stop();
 		log.trace(stopWatch.prettyPrint());
-		return displayFormParts;
-		
+		return new UserFormContext(
+				displayCnil, displayCrous, enableCrous,
+				displayRules, displayAdresse,
+				isPaidRenewal, isFreeRenewal, isFreeNew,
+				isFirstRequest, displayRenewalForm, displayNewForm,
+				displayForm, canPaidRenewal, canPaidNew,
+				hasDeliveredCard, enableEuropeanCard, displayEuropeanCard
+		);
 	}
 	
 	public List<User> getSgcLdapMix(String cn, String ldapTemplateName){

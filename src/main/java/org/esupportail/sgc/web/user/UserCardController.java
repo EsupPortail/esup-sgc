@@ -214,8 +214,8 @@ public class UserCardController {
 		uiModel.addAttribute("defaultPhotoMd5", defaultPhotoMd5);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(user));
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
-		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, false);
-		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
+            UserFormContext displayFormParts = userService.displayFormParts(user, false);
+                log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
 		uiModel.addAttribute("requestUserIsManager", false);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());

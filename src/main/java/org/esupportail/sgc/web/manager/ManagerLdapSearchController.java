@@ -3,7 +3,7 @@ package org.esupportail.sgc.web.manager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+
 import java.util.Set;
 
 import jakarta.annotation.Resource;
@@ -20,6 +20,7 @@ import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.CardService;
 import org.esupportail.sgc.services.ExternalCardService;
 import org.esupportail.sgc.services.TemplateCardService;
+import org.esupportail.sgc.services.UserFormContext;
 import org.esupportail.sgc.services.UserService;
 import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
@@ -144,8 +145,8 @@ public class ManagerLdapSearchController {
 		uiModel.addAttribute("defaultPhotoMd5", defaultPhotoMd5);
 		uiModel.addAttribute("isEsupSgcUser", userService.isEsupSgcUser(user));
 		uiModel.addAttribute("isISmartPhone",  userService.isISmartphone(userAgent));
-		Map<String, Boolean> displayFormParts = userService.displayFormParts(user, true);
-		log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
+            UserFormContext displayFormParts = userService.displayFormParts(user, true);
+                log.debug("displayFormParts for " + eppn + " : " + displayFormParts);
 		uiModel.addAttribute("displayFormParts", displayFormParts);
 		uiModel.addAttribute("requestUserIsManager", true);
 		uiModel.addAttribute("eppn", eppn);

@@ -1,5 +1,5 @@
 <!-- src/main/webapp/WEB-INF/thymeleaf/templates/user/includes/form_cnil.html -->
-<div th:fragment="form_cnil" th:if="${displayFormParts['displayCnil']}">
+<div th:fragment="form_cnil" th:if="${displayFormParts.displayCnil}">
     <fieldset class="scheduler-border">
         <legend class="scheduler-border" th:text="#{form.cnil.photo.sharing}">Diffusion de la photo</legend>
         <div class="alert alert-warning" th:text="#{common.photo.auth}">J'autorise la diffusion de la photo pour un usage interne:</div>
