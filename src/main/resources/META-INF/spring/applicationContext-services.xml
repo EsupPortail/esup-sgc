@@ -376,5 +376,18 @@
                 </map>
             </property>
 	</bean>
+
+	<bean id="cardPrintSpelService" class="org.esupportail.sgc.services.cardprint.CardPrintSpelService">
+		<property name="fieldExpressions">
+			<map>
+				<!--
+				Contexte SpEL disponible à l'impression :
+				#card, #user, #cardIdsService, #dateUtils, #fieldName, #currentValue
+				Exemple d'override d'un champ imprimé à partir d'un CardIdService :
+				<entry key="recto6" value="#cardIdsService.generateCardId(#card.id, 'access-control')"/>
+				-->
+			</map>
+		</property>
+	</bean>
 	
 </beans>
