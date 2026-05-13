@@ -52,13 +52,13 @@
                         </style>
                         <div id="specimenCarte">
                             <div id="left">
-                                <p id="recto1" th:utext="${user.recto1}"></p>
-                                <p id="recto2" th:utext="${user.recto2}"></p>
-                                <p id="recto3" th:utext="${user.recto3}"></p>
-                                <p id="recto4" th:utext="${user.recto4}"></p>
-                                <p id="recto5" th:utext="${user.recto5}"></p>
-                                <p id="recto6" th:utext="${user.recto6}"></p>
-                                <p id="recto7" th:utext="${user.recto7}"></p>
+                                <p id="recto1" th:utext="${previewPrintInfo != null ? previewPrintInfo.recto1 : user.recto1}"></p>
+                                <p id="recto2" th:utext="${previewPrintInfo != null ? previewPrintInfo.recto2 : user.recto2}"></p>
+                                <p id="recto3" th:utext="${previewPrintInfo != null ? previewPrintInfo.recto3 : user.recto3}"></p>
+                                <p id="recto4" th:utext="${previewPrintInfo != null ? previewPrintInfo.recto4 : user.recto4}"></p>
+                                <p id="recto5" th:utext="${previewPrintInfo != null ? previewPrintInfo.recto5 : user.recto5}"></p>
+                                <p id="recto6" th:utext="${previewPrintInfo != null ? previewPrintInfo.recto6 : user.recto6}"></p>
+                                <p id="recto7" th:utext="${previewPrintInfo != null ? previewPrintInfo.recto7 : user.recto7}"></p>
                                 <img th:alt="#{common.qrcode}" id="qrcode" th:src="@{/user/templatePhoto/qrCode/{id}(id=${templateCard.id})}"/>
                             </div>
                             <div id="right">

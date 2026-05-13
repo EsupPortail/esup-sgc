@@ -14,6 +14,8 @@ import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.CardEtatService;
 import org.esupportail.sgc.services.UserService;
+import org.esupportail.sgc.services.cardprint.CardPrintInfo;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.esupportail.sgc.web.manager.ManagerCardController;
 import org.esupportail.sgc.web.user.StepDisplay;
 import org.esupportail.sgc.web.user.UserCardController;
@@ -37,7 +39,10 @@ public class WsRestHtmlController {
 	
 	@Resource
 	ManagerCardController managerCardController;
-	
+
+	@Resource
+	UserInfoService userInfoService;
+
 	@Resource
 	CardEtatService cardEtatService;
 
@@ -95,16 +100,19 @@ public class WsRestHtmlController {
 		
         User user = userDaoService.findUser(eppn);
         if(user != null) {
+			Map<Long, CardPrintInfo> printInfosByCardId = new HashMap<>();
 			if (!user.getCards().isEmpty()) {
 				for (Card cardItem : user.getCards()) {
 					cardEtatService.updateEtatsAvailable4Card(cardItem);
 					cardItem.setIsPhotoEditable(cardEtatService.isPhotoEditable(cardItem));
+					printInfosByCardId.put(cardItem.getId(), userInfoService.getCardPrintInfo(cardItem));
 				}
 				uiModel.addAttribute("currentCard", user.getCards().get(0));
 
 			}
 
 			uiModel.addAttribute("user", user);
+			uiModel.addAttribute("printInfosByCardId", printInfosByCardId);
 			uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
 
 		}
@@ -156,6 +164,8 @@ public class WsRestHtmlController {
 		uiModel.addAttribute("masqueBase64", masqueBase64);
 		uiModel.addAttribute("qrcodeBase64", qrcodeBase64);
 		uiModel.addAttribute("card", card);
+		CardPrintInfo cardPrintInfo = userInfoService.getCardPrintInfo(card);
+		uiModel.addAttribute("cardPrintInfo", cardPrintInfo);
 		uiModel.addAttribute("type", type);
 		uiModel.addAttribute("templateCard", templateCard);
 		if("back".equals(type)) {

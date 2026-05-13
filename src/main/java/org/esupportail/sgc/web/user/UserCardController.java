@@ -220,6 +220,7 @@ public class UserCardController {
 		uiModel.addAttribute("requestUserIsManager", false);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
 		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
+		uiModel.addAttribute("previewPrintInfo", null);
 
         return "templates/user/card-request";
 	}

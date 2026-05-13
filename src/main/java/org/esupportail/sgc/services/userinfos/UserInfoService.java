@@ -13,6 +13,8 @@ import org.esupportail.sgc.domain.PhotoFile;
 import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.User.CnousReferenceStatut;
+import org.esupportail.sgc.services.cardprint.CardPrintInfo;
+import org.esupportail.sgc.services.cardprint.CardPrintSpelService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.ac.AccessControlService;
 import org.esupportail.sgc.services.crous.CrousService;
@@ -76,7 +78,10 @@ public class UserInfoService {
 
     @Resource
     UserDaoService userDaoService;
-	
+
+	@Autowired(required = false)
+	CardPrintSpelService cardPrintSpelService;
+
 	@Autowired
 	public void setExtUserInfoServices(List<ExtUserInfoService> extUserInfoServices) {
 		this.extUserInfoServices = extUserInfoServices;
@@ -409,19 +414,53 @@ public class UserInfoService {
 	
 	public void setPrintedInfo(Card card) {
 		User user = card.getUser();
-		card.setRecto1Printed(user.getRecto1());
-		card.setRecto2Printed(user.getRecto2());
-		card.setRecto3Printed(user.getRecto3());
-		card.setRecto4Printed(user.getRecto4());
-		card.setRecto5Printed(user.getRecto5());
-		card.setRecto6Printed(user.getRecto6());
-		card.setRecto7Printed(user.getRecto7());
+		CardPrintInfo printInfo = getCardPrintInfo(card);
+		card.setRecto1Printed(printInfo.getRecto1());
+		card.setRecto2Printed(printInfo.getRecto2());
+		card.setRecto3Printed(printInfo.getRecto3());
+		card.setRecto4Printed(printInfo.getRecto4());
+		card.setRecto5Printed(printInfo.getRecto5());
+		card.setRecto6Printed(printInfo.getRecto6());
+		card.setRecto7Printed(printInfo.getRecto7());
         TemplateCard templateCard = templateCardDaoService.getTemplateCard(user);
 		if(templateCard.getBackSupported()) {
-			card.setVersoTextPrinted(StringUtils.join(user.getVersoText(), "\n"));
+			card.setVersoTextPrinted(printInfo.getVersoText());
 		}
 		card.setTemplateCard(templateCard);
         card.getUser().setLastCardTemplatePrinted(templateCard);
+	}
+
+	public CardPrintInfo getCardPrintInfo(Card card) {
+		CardPrintInfo printInfo = new CardPrintInfo();
+		if(card.isPrinted()) {
+			printInfo.setRecto1(card.getRecto1Printed());
+			printInfo.setRecto2(card.getRecto2Printed());
+			printInfo.setRecto3(card.getRecto3Printed());
+			printInfo.setRecto4(card.getRecto4Printed());
+			printInfo.setRecto5(card.getRecto5Printed());
+			printInfo.setRecto6(card.getRecto6Printed());
+			printInfo.setRecto7(card.getRecto7Printed());
+			printInfo.setVersoText(card.getVersoTextPrinted());
+			return printInfo;
+		}
+
+		User user = card.getUser();
+		printInfo.setRecto1(resolvePrintedField(card, "recto1", user.getRecto1()));
+		printInfo.setRecto2(resolvePrintedField(card, "recto2", user.getRecto2()));
+		printInfo.setRecto3(resolvePrintedField(card, "recto3", user.getRecto3()));
+		printInfo.setRecto4(resolvePrintedField(card, "recto4", user.getRecto4()));
+		printInfo.setRecto5(resolvePrintedField(card, "recto5", user.getRecto5()));
+		printInfo.setRecto6(resolvePrintedField(card, "recto6", user.getRecto6()));
+		printInfo.setRecto7(resolvePrintedField(card, "recto7", user.getRecto7()));
+		printInfo.setVersoText(StringUtils.join(user.getVersoText(), "\n"));
+		return printInfo;
+	}
+
+	private String resolvePrintedField(Card card, String fieldName, String fallbackValue) {
+		if(cardPrintSpelService == null) {
+			return fallbackValue;
+		}
+		return cardPrintSpelService.resolve(card, fieldName, fallbackValue);
 	}
 
 	public void setDefaultValues4NullAttributes(Map<String, String> userInfos, User user) {

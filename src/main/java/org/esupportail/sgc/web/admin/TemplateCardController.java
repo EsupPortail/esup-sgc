@@ -17,6 +17,8 @@ import org.esupportail.sgc.domain.TemplateCard;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.EsupSgcBmpAsBase64Service;
 import org.esupportail.sgc.services.TemplateCardService;
+import org.esupportail.sgc.services.cardprint.CardPrintInfo;
+import org.esupportail.sgc.services.userinfos.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -69,6 +71,9 @@ public class TemplateCardController {
 
 	@Resource
 	ObjectMapper objectMapper;
+
+  @Resource
+  UserInfoService userInfoService;
 
 
     @ModelAttribute("active")
@@ -243,14 +248,15 @@ public class TemplateCardController {
 	public String getCardRectoData( @RequestParam(value="searchText") String searchText) {
 		String jsonInString = "Aucune donnée à récupérer";
 		Card card = cardDaoService.findCardsByEppnEquals(searchText).getResultList().get(0);
+    CardPrintInfo cardPrintInfo = userInfoService.getCardPrintInfo(card);
 		LinkedHashMap<String, String> mapCarte = new LinkedHashMap<>();
-		mapCarte.put("recto1", card.getUserAccount().getRecto1());
-		mapCarte.put("recto2", card.getUserAccount().getRecto2());
-		mapCarte.put("recto3", card.getUserAccount().getRecto3());
-		mapCarte.put("recto4", card.getUserAccount().getRecto4());
-		mapCarte.put("recto5", card.getUserAccount().getRecto5());
-		mapCarte.put("recto6", card.getUserAccount().getRecto6());
-		mapCarte.put("recto7", card.getUserAccount().getRecto7());
+    mapCarte.put("recto1", cardPrintInfo.getRecto1());
+    mapCarte.put("recto2", cardPrintInfo.getRecto2());
+    mapCarte.put("recto3", cardPrintInfo.getRecto3());
+    mapCarte.put("recto4", cardPrintInfo.getRecto4());
+    mapCarte.put("recto5", cardPrintInfo.getRecto5());
+    mapCarte.put("recto6", cardPrintInfo.getRecto6());
+    mapCarte.put("recto7", cardPrintInfo.getRecto7());
 		mapCarte.put("verso1", card.getUserAccount().getVerso1());
 		mapCarte.put("verso2", card.getUserAccount().getVerso2());
 		mapCarte.put("verso3", card.getUserAccount().getVerso3());

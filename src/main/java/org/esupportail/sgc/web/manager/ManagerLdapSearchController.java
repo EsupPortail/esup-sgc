@@ -152,6 +152,7 @@ public class ManagerLdapSearchController {
 		uiModel.addAttribute("eppn", eppn);
 		uiModel.addAttribute("photoSizeMax", appliConfigService.getFileSizeMax());
 		uiModel.addAttribute("europeanCardInfo", appliConfigService.getEuropeanCardInfo());
+		uiModel.addAttribute("previewPrintInfo", null);
 		return "templates/user/card-request";
 
 	}

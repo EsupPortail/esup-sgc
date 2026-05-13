@@ -323,6 +323,7 @@
                                                                 <div class="modal-body"
                                                                      th:with="
                                                                         currentTemplate=${card.templateCard} == null ? ${userTemplateCard} : ${card.templateCard},
+                                                                         cardPrintInfo=${printInfosByCardId.get(card.id)},
                                                                         cssId=${'specimenCarte' + iStat.index},
                                                                         css=${#strings.replace(currentTemplate.cssStyle, 'specimenCarte', 'specimenCarte' + iStat.index)},
                                                                         cssMobileStyle=${#strings.replace(currentTemplate.cssMobileStyle, 'specimenCarte', 'specimenCarte' + iStat.index)},
@@ -355,13 +356,13 @@
                                                                     </style>
                                                                     <div th:id="${cssId}">
                                                                         <div id="left">
-                                                                            <p id="recto1" th:utext="${card.printed} ? ${card.recto1Printed} : ${card.user.recto1}"></p>
-                                                                            <p id="recto2" th:utext="${card.printed} ? ${card.recto2Printed} : ${card.user.recto2}"></p>
-                                                                            <p id="recto3" th:utext="${card.printed} ? ${card.recto3Printed} : ${card.user.recto3}"></p>
-                                                                            <p id="recto4" th:utext="${card.printed} ? ${card.recto4Printed} : ${card.user.recto4}"></p>
-                                                                            <p id="recto5" th:utext="${card.printed} ? ${card.recto5Printed} : ${card.user.recto5}"></p>
-                                                                            <p id="recto6" th:utext="${card.printed} ? ${card.recto6Printed} : ${card.user.recto6}"></p>
-                                                                            <p id="recto7" th:utext="${card.printed} ? ${card.recto7Printed} : ${card.user.recto7}"></p>
+                                                                            <p id="recto1" th:utext="${cardPrintInfo.recto1}"></p>
+                                                                            <p id="recto2" th:utext="${cardPrintInfo.recto2}"></p>
+                                                                            <p id="recto3" th:utext="${cardPrintInfo.recto3}"></p>
+                                                                            <p id="recto4" th:utext="${cardPrintInfo.recto4}"></p>
+                                                                            <p id="recto5" th:utext="${cardPrintInfo.recto5}"></p>
+                                                                            <p id="recto6" th:utext="${cardPrintInfo.recto6}"></p>
+                                                                            <p id="recto7" th:utext="${cardPrintInfo.recto7}"></p>
                                                                             <img th:alt="#{common.qrcode}" id="qrcode" th:src="${QRCodeUrl}"/>
                                                                         </div>
                                                                         <div id="right">

@@ -58,13 +58,13 @@
 <body>
     <div id="specimenCarte">
         <div id="left">
-            <p id="recto1" th:utext="${card.user.recto1}"></p>
-            <p id="recto2" th:utext="${card.user.recto2}"></p>
-            <p id="recto3" th:utext="${card.user.recto3}"></p>
-            <p id="recto4" th:utext="${card.user.recto4}"></p>
-            <p id="recto5" th:utext="${card.user.recto5}"></p>
-            <p id="recto6" th:utext="${card.user.recto6}"></p>
-            <p id="recto7" th:utext="${card.user.recto7}"></p>
+            <p id="recto1" th:utext="${cardPrintInfo.recto1}"></p>
+            <p id="recto2" th:utext="${cardPrintInfo.recto2}"></p>
+            <p id="recto3" th:utext="${cardPrintInfo.recto3}"></p>
+            <p id="recto4" th:utext="${cardPrintInfo.recto4}"></p>
+            <p id="recto5" th:utext="${cardPrintInfo.recto5}"></p>
+            <p id="recto6" th:utext="${cardPrintInfo.recto6}"></p>
+            <p id="recto7" th:utext="${cardPrintInfo.recto7}"></p>
             <img th:alt="#{common.qrcode}" th:src="'data:image/png;base64, ' + ${qrcodeBase64}" id="qrcode"/>
         </div>
         <div id="right">

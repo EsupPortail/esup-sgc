@@ -17,6 +17,7 @@ import org.esupportail.sgc.security.ShibUser;
 import org.esupportail.sgc.services.*;
 import org.esupportail.sgc.services.LogService.ACTION;
 import org.esupportail.sgc.services.LogService.RETCODE;
+import org.esupportail.sgc.services.cardprint.CardPrintInfo;
 import org.esupportail.sgc.services.crous.CrousService;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.services.sync.ResynchronisationUserService;
@@ -265,6 +266,11 @@ public class ManagerCardController {
 		uiModel.addAttribute("motifsList", MotifDisable.getMotifsList());
 		uiModel.addAttribute("hasRequestCard", cardEtatService.hasRequestCard(user.getEppn()));
 		uiModel.addAttribute("userTemplateCard", templateCardDaoService.getTemplateCard(user));
+		Map<Long, CardPrintInfo> printInfosByCardId = new HashMap<>();
+		for (Card cardItem : user.getCards()) {
+			printInfosByCardId.put(cardItem.getId(), userInfoService.getCardPrintInfo(cardItem));
+		}
+		uiModel.addAttribute("printInfosByCardId", printInfosByCardId);
 
 		return "templates/manager/show";
 	}
@@ -366,6 +372,9 @@ public class ManagerCardController {
 				Map<Card, TemplateCard> userTemplatesCards = new HashMap<>();
 				userTemplatesCards.put(card, templateCardDaoService.getTemplateCard(card.getUser()));
 				uiModel.addAttribute("userTemplatesCards", userTemplatesCards);
+				Map<Long, CardPrintInfo> cardPrintInfos = new HashMap<>();
+				cardPrintInfos.put(card.getId(), userInfoService.getCardPrintInfo(card));
+				uiModel.addAttribute("cardPrintInfos", cardPrintInfos);
 			}
 			return "templates/manager/print-card";
 		} else {
@@ -659,10 +668,13 @@ public class ManagerCardController {
 		if (Etat.IN_PRINT.equals(etatFinal) && StringUtils.isEmpty(printerEppn)) {
 			uiModel.addAttribute("cards", cards);
 			Map<Card, TemplateCard> userTemplatesCards = new HashMap<>();
+			Map<Long, CardPrintInfo> printInfosByCardId = new HashMap<>();
 			for (Card card : cards) {
 				userTemplatesCards.put(card, templateCardDaoService.getTemplateCard(card.getUser()));
+				printInfosByCardId.put(card.getId(), userInfoService.getCardPrintInfo(card));
 			}
 			uiModel.addAttribute("userTemplatesCards", userTemplatesCards);
+			uiModel.addAttribute("printInfosByCardId", printInfosByCardId);
 			return "templates/manager/print-card";
 		}
 
