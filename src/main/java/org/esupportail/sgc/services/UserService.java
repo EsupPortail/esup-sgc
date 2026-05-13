@@ -3,7 +3,6 @@ package org.esupportail.sgc.services;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +15,6 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Card.Etat;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.domain.ldap.PersonLdap;
-import org.esupportail.sgc.security.PermissionService;
 import org.esupportail.sgc.services.ldap.LdapPersonService;
 import org.esupportail.sgc.tools.DateUtils;
 import org.esupportail.sgc.tools.PrettyStopWatch;
@@ -31,204 +29,186 @@ public class UserService {
 
 	public final Logger log = LoggerFactory.getLogger(getClass());
 
-	@Resource
-	CardService cardService;
-	
-	@Resource
-	CardEtatService cardEtatService;
-	
-	@Resource
-	ExtUserRuleService extUserRuleService;
-	
-	@Resource
-	AppliConfigService appliConfigService;
-	
-	@Resource
-	LdapPersonService ldapPersonService;
-	
-	@Resource
-	DateUtils dateUtils;
+	@Resource CardService cardService;
+	@Resource CardEtatService cardEtatService;
+	@Resource ExtUserRuleService extUserRuleService;
+	@Resource AppliConfigService appliConfigService;
+	@Resource LdapPersonService ldapPersonService;
+	@Resource DateUtils dateUtils;
+	@Resource CardDaoService cardDaoService;
+	@Resource UserDaoService userDaoService;
 
-    @Resource
-    CardDaoService cardDaoService;
+	// =========================================================================
+	// Méthodes publiques — API observable (utilisée depuis les contrôleurs et
+	// les tests unitaires). Chacune est autonome et fait ses propres appels.
+	// =========================================================================
 
-    @Resource
-    UserDaoService userDaoService;
-
-	public boolean isFirstRequest(User user){
-		return cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(user.getEppn(), Arrays.asList(new Etat[] {Etat.CANCELED})) == 0;
+	public boolean isFirstRequest(User user) {
+		return cardDaoService.countfindCardsByEppnEqualsAndEtatNotIn(
+				user.getEppn(), Arrays.asList(Etat.CANCELED)) == 0;
 	}
 
-    public boolean isFreeRenewal(User user) {
-		return user.isRequestFree() && !isFirstRequest(user) && !isOutOfDueDate(user) && !hasRequestCard(user) && !user.getHasExternalCard();
-    }
+	public boolean isFreeRenewal(User user) {
+		return user.isRequestFree()
+				&& !isFirstRequest(user)
+				&& !isOutOfDueDate(user)
+				&& !hasRequestCard(user)
+				&& !user.getHasExternalCard();
+	}
 
 	public boolean isFreeNew(User user) {
-		return user.isFirstRequestFree() && !isOutOfDueDate(user) && !hasRequestCard(user) && !user.getHasExternalCard();
+		return user.isFirstRequestFree()
+				&& !isOutOfDueDate(user)
+				&& !hasRequestCard(user)
+				&& !user.getHasExternalCard();
 	}
 
-	public boolean isPaidRenewal(User user){
-		boolean isPaidRenewal = false;
-		String reference = cardService.getPaymentWithoutCard(user.getEppn());
-		if(!reference.isEmpty()){
-			isPaidRenewal = true;
-		}
-		return isPaidRenewal;
+	public boolean isPaidRenewal(User user) {
+		return !cardService.getPaymentWithoutCard(user.getEppn()).isEmpty();
 	}
 
 	public boolean displayRenewalForm(User user, boolean isFreeRenewal, boolean isPaidRenewal) {
-
-		boolean displayRenewalForm = isFreeRenewal || isPaidRenewal;
-		
-		if(user != null && user.getHasExternalCard()) {
-			displayRenewalForm = false;
-		}
-		
-		displayRenewalForm = displayRenewalForm && !hasRequestCard(user);
-		return displayRenewalForm;
+		return (isFreeRenewal || isPaidRenewal)
+				&& !user.getHasExternalCard()
+				&& !hasRequestCard(user);
 	}
 
 	public boolean displayNewForm(User user, boolean isFreeNew, boolean isPaidNew) {
-
-		boolean displayNewForm = isEsupSgcUser(user) && (isFreeNew || isPaidNew);
-
-		if(user != null && user.getHasExternalCard()) {
-			displayNewForm = false;
-		}
-
-		displayNewForm = displayNewForm && !hasRequestCard(user);
-		return displayNewForm;
+		return isEsupSgcUser(user)
+				&& (isFreeNew || isPaidNew)
+				&& !user.getHasExternalCard()
+				&& !hasRequestCard(user);
 	}
 
-	public boolean displayForm(User user, boolean requestUserIsManager, boolean displayRenewalForm, boolean isFirstRequest, boolean displayNewForm){
+	public boolean displayForm(User user, boolean requestUserIsManager,
+			boolean displayRenewalForm, boolean isFirstRequest, boolean displayNewForm) {
 		boolean displayForm = displayRenewalForm || displayNewForm;
-		if(isFirstRequest && !displayNewForm){
-			displayForm = ((isEsupSgcUser(user) && !isOutOfDueDate(user))) ;
-		} 
+		if (isFirstRequest && !displayNewForm) {
+			displayForm = isEsupSgcUser(user) && !isOutOfDueDate(user);
+		}
 		return displayForm || requestUserIsManager;
 	}
-	
-	private boolean hasRequestCard(User user){
-		return cardEtatService.hasRequestCard(user.getEppn());
+
+	public boolean canPaidRenewal(User user) {
+		return !user.getHasExternalCard()
+				&& !isOutOfDueDate(user)
+				&& !user.isRequestFree()
+				&& !isPaidRenewal(user)
+				&& !hasRequestCard(user)
+				&& !isFirstRequest(user);
 	}
-	
-	
+
+	public boolean canPaidNew(User user) {
+		return !user.getHasExternalCard()
+				&& !isOutOfDueDate(user)
+				&& !user.isFirstRequestFree()
+				&& !isPaidRenewal(user)
+				&& !hasRequestCard(user)
+				&& isFirstRequest(user);
+	}
+
+	public boolean hasDeliveredCard(User user) {
+		if (!"TRUE".equalsIgnoreCase(appliConfigService.getModeLivraison())) {
+			return true; // mode livraison désactivé : on considère la carte comme livrée
+		}
+		return user.getCards().stream()
+				.filter(card -> !Etat.CANCELED.equals(card.getEtat()))
+				.allMatch(card -> card.getDeliveredDate() != null);
+	}
+
 	public boolean isEsupSgcUser(User user) {
-		String eppn = user.getEppn();
-		return user.getReachableRoles().contains("ROLE_USER") || extUserRuleService.isExtEsupSgcUser(eppn);
+		return user.getReachableRoles().contains("ROLE_USER")
+				|| extUserRuleService.isExtEsupSgcUser(user.getEppn());
 	}
-	
+
 	public boolean isEsupManager(User user) {
 		return user.getReachableRoles().contains("ROLE_MANAGER");
 	}
 
-	public Boolean canPaidRenewal(User user) {
-		if(user != null && user.getHasExternalCard()) {
-			return false;
-		}
-		return !isOutOfDueDate(user) && !user.isRequestFree() && !isPaidRenewal(user) && !hasRequestCard(user) && !isFirstRequest(user);
+	public boolean isISmartphone(String userAgent) {
+		return userAgent.contains("iPhone") || userAgent.contains("iPad");
 	}
 
-	public Boolean canPaidNew(User user) {
-		if(user != null && user.getHasExternalCard()) {
-			return false;
-		}
-		return !isOutOfDueDate(user) && !user.isFirstRequestFree() && !isPaidRenewal(user) && !hasRequestCard(user) && isFirstRequest(user);
-	}
-	
-	private boolean isOutOfDueDate(User user) {
-		return user.getDueDate()==null || user.getDueDate().isBefore(LocalDateTime.now());
-	}
-	
-	public boolean hasDeliveredCard(User user){
-		
-		// si mode livraison non activée, on considère la carte comme livrée
-		if(!"TRUE".equalsIgnoreCase(appliConfigService.getModeLivraison())) {
-			return true;
-		}
-		
-		boolean hasDeliveredCard = true;
-		if (!user.getCards().isEmpty()){
-			for(Card card : user.getCards()){
-				if(!Etat.CANCELED.equals(card.getEtat()) && card.getDeliveredDate() == null){
-					hasDeliveredCard = false; 
-					break;
-				}
-			}
-		}
-		return hasDeliveredCard;
-	}
-	
-	public boolean isISmartphone(String userAgent){
-		boolean isISmartphone = false;
-		
-		if(userAgent.contains("iPhone") || userAgent.contains("iPad")){
-			isISmartphone = true;
-		}
-		
-		return isISmartphone;
-	}
-	
-	public HashMap<String,String> getConfigMsgsUser(){
-		
-		HashMap<String,String> getConfigMsgsUser = new HashMap<String, String>();
-		
-		getConfigMsgsUser.put("helpMsg", appliConfigService.getUserHelpMsg());
-		getConfigMsgsUser.put("freeRenewalMsg", appliConfigService.getUseFreeRenewalMsg());
-		getConfigMsgsUser.put("paidRenewalMsg", appliConfigService.getUserPaidRenewalMsg());
-		getConfigMsgsUser.put("canPaidRenewalMsg", appliConfigService.getUserCanPaidRenewalMsg());
-		getConfigMsgsUser.put("canPaidNewMsg", appliConfigService.getUserCanPaidNewMsg());
-		getConfigMsgsUser.put("newCardMsg", appliConfigService.getNewCardlMsg());
-		getConfigMsgsUser.put("checkedOrEncodedCardMsg", appliConfigService.getCheckedOrEncodedCardMsg());
-		getConfigMsgsUser.put("rejectedCardMsg", appliConfigService.getRejectedCardMsg());
-		getConfigMsgsUser.put("enabledCardMsg", appliConfigService.getEnabledCardMsg());
-		getConfigMsgsUser.put("enabledCardPersMsg", appliConfigService.getEnabledCardPersMsg());
-		getConfigMsgsUser.put("userFormRejectedMsg", appliConfigService.getUserFormRejectedMsg());
-		getConfigMsgsUser.put("userFormRules", appliConfigService.getUserFormRules());
-		getConfigMsgsUser.put("userFreeForcedRenewal", appliConfigService.getUserFreeForcedRenewal());
-		getConfigMsgsUser.put("userTipMsg", appliConfigService.getUserTipMsg());
-		
-		return getConfigMsgsUser;
-		
-	}
-	
-	public UserFormContext displayFormParts(User user, boolean requestUserIsManager){
+	// =========================================================================
+	// Constructeur du contexte d'affichage — calcule chaque valeur une seule
+	// fois pour éviter les appels redondants à la base de données / services.
+	//
+	// Les fondations (isFirstRequest, hasRequestCard, isPaidRenewal) déclenchent
+	// des requêtes SQL ou des appels réseau : elles sont résolues en premier et
+	// passées aux dérivés. La logique de chaque dérivé est identique à celle de
+	// la méthode publique correspondante — toute divergence est détectée par les
+	// tests unitaires de UserServiceDisplayFormTest.
+	// =========================================================================
+
+	public UserFormContext displayFormParts(User user, boolean requestUserIsManager) {
 		StopWatch stopWatch = new PrettyStopWatch();
-		stopWatch.start("displayCnil");
-		boolean displayCnil = cardService.displayFormCnil(user.getUserType());
-		stopWatch.start("displayCrous");
-		boolean displayCrous = cardService.displayFormCrous(user);
-		stopWatch.start("enableCrous");
-		boolean enableCrous = cardService.isCrousEnabled(user);
-		stopWatch.start("displayRules");
-		boolean displayRules = cardService.displayFormRules(user.getUserType());
-		stopWatch.start("displayAdresse");
-		boolean displayAdresse = cardService.displayFormAdresse(user.getUserType());
-		stopWatch.start("isPaidRenewal");
-		boolean isPaidRenewal = this.isPaidRenewal(user);
-		stopWatch.start("isFreeRenewal");
-		boolean isFreeRenewal = this.isFreeRenewal(user);
-		stopWatch.start("isFreeNew");
-		boolean isFreeNew = this.isFreeNew(user);
+
+		// ── Fondations : appels potentiellement coûteux (DB / service externe) ──
 		stopWatch.start("isFirstRequest");
-		boolean isFirstRequest = this.isFirstRequest(user);
+		final boolean isFirstRequest   = isFirstRequest(user);
+		stopWatch.start("hasRequestCard");
+		final boolean hasRequestCard   = hasRequestCard(user);
+		stopWatch.start("isPaidRenewal");
+		final boolean isPaidRenewal    = isPaidRenewal(user);
+
+		// ── Dérivés directs depuis l'objet User (lecture en mémoire) ──
+		final boolean isOutOfDueDate  = isOutOfDueDate(user);
+		final boolean hasExternalCard = user.getHasExternalCard();
+		final boolean isEsupSgcUser   = isEsupSgcUser(user);
+
+		// ── Flags de droits ──
+		stopWatch.start("isFreeRenewal");
+		final boolean isFreeRenewal = user.isRequestFree()
+				&& !isFirstRequest && !isOutOfDueDate && !hasRequestCard && !hasExternalCard;
+
+		stopWatch.start("isFreeNew");
+		final boolean isFreeNew     = user.isFirstRequestFree()
+				&& !isOutOfDueDate && !hasRequestCard && !hasExternalCard;
+
+		// ── Flags d'affichage formulaire ──
 		stopWatch.start("displayRenewalForm");
-		boolean displayRenewalForm = this.displayRenewalForm(user, isFreeRenewal, isPaidRenewal);
+		final boolean displayRenewalForm = (isFreeRenewal || isPaidRenewal)
+				&& !hasExternalCard && !hasRequestCard;
+
 		stopWatch.start("displayNewForm");
-		boolean displayNewForm = this.displayNewForm(user, isFreeNew, isPaidRenewal);
+		final boolean displayNewForm = isEsupSgcUser && (isFreeNew || isPaidRenewal)
+				&& !hasExternalCard && !hasRequestCard;
+
 		stopWatch.start("displayForm");
-		boolean displayForm = this.displayForm(user, requestUserIsManager, displayRenewalForm, isFirstRequest, displayNewForm);
+		boolean displayForm = displayRenewalForm || displayNewForm;
+		if (isFirstRequest && !displayNewForm) {
+			displayForm = isEsupSgcUser && !isOutOfDueDate;
+		}
+		displayForm = displayForm || requestUserIsManager;
+
 		stopWatch.start("canPaidRenewal");
-		boolean canPaidRenewal = this.canPaidRenewal(user);
+		final boolean canPaidRenewal = !hasExternalCard && !isOutOfDueDate
+				&& !user.isRequestFree() && !isPaidRenewal && !hasRequestCard && !isFirstRequest;
+
 		stopWatch.start("canPaidNew");
-		boolean canPaidNew = this.canPaidNew(user);
+		final boolean canPaidNew     = !hasExternalCard && !isOutOfDueDate
+				&& !user.isFirstRequestFree() && !isPaidRenewal && !hasRequestCard && isFirstRequest;
+
 		stopWatch.start("hasDeliveredCard");
-		boolean hasDeliveredCard = this.hasDeliveredCard(user);
+		final boolean hasDeliveredCard = hasDeliveredCard(user);
+
+		// ── Appels CardService ──
+		stopWatch.start("displayCnil");
+		final boolean displayCnil         = cardService.displayFormCnil(user.getUserType());
+		stopWatch.start("displayCrous");
+		final boolean displayCrous        = cardService.displayFormCrous(user);
+		stopWatch.start("enableCrous");
+		final boolean enableCrous         = cardService.isCrousEnabled(user);
+		stopWatch.start("displayRules");
+		final boolean displayRules        = cardService.displayFormRules(user.getUserType());
+		stopWatch.start("displayAdresse");
+		final boolean displayAdresse      = cardService.displayFormAdresse(user.getUserType());
 		stopWatch.start("enableEuropeanCard");
-		boolean enableEuropeanCard = cardService.isEuropeanCardEnabled(user);
+		final boolean enableEuropeanCard  = cardService.isEuropeanCardEnabled(user);
 		stopWatch.start("displayEuropeanCard");
-		boolean displayEuropeanCard = cardService.displayFormEuropeanCardEnabled(user);
+		final boolean displayEuropeanCard = cardService.displayFormEuropeanCardEnabled(user);
 		stopWatch.stop();
+
 		log.trace(stopWatch.prettyPrint());
 		return new UserFormContext(
 				displayCnil, displayCrous, enableCrous,
@@ -239,17 +219,48 @@ public class UserService {
 				hasDeliveredCard, enableEuropeanCard, displayEuropeanCard
 		);
 	}
-	
-	public List<User> getSgcLdapMix(String cn, String ldapTemplateName){
-		
-		ArrayList<User> users = new ArrayList<User>();
-		
-		List<PersonLdap> ldapResults =   ldapPersonService.searchByCommonName(cn, ldapTemplateName);
-		
-		for(PersonLdap item: ldapResults){
-			if(item.getEduPersonPrincipalName() !=null && !item.getEduPersonPrincipalName().isEmpty()) {
+
+	// =========================================================================
+	// Helpers privés
+	// =========================================================================
+
+	private boolean hasRequestCard(User user) {
+		return cardEtatService.hasRequestCard(user.getEppn());
+	}
+
+	private boolean isOutOfDueDate(User user) {
+		return user.getDueDate() == null || user.getDueDate().isBefore(LocalDateTime.now());
+	}
+
+	// =========================================================================
+	// Autres méthodes publiques
+	// =========================================================================
+
+	public HashMap<String, String> getConfigMsgsUser() {
+		HashMap<String, String> msgs = new HashMap<>();
+		msgs.put("helpMsg",               appliConfigService.getUserHelpMsg());
+		msgs.put("freeRenewalMsg",        appliConfigService.getUseFreeRenewalMsg());
+		msgs.put("paidRenewalMsg",        appliConfigService.getUserPaidRenewalMsg());
+		msgs.put("canPaidRenewalMsg",     appliConfigService.getUserCanPaidRenewalMsg());
+		msgs.put("canPaidNewMsg",         appliConfigService.getUserCanPaidNewMsg());
+		msgs.put("newCardMsg",            appliConfigService.getNewCardlMsg());
+		msgs.put("checkedOrEncodedCardMsg", appliConfigService.getCheckedOrEncodedCardMsg());
+		msgs.put("rejectedCardMsg",       appliConfigService.getRejectedCardMsg());
+		msgs.put("enabledCardMsg",        appliConfigService.getEnabledCardMsg());
+		msgs.put("enabledCardPersMsg",    appliConfigService.getEnabledCardPersMsg());
+		msgs.put("userFormRejectedMsg",   appliConfigService.getUserFormRejectedMsg());
+		msgs.put("userFormRules",         appliConfigService.getUserFormRules());
+		msgs.put("userFreeForcedRenewal", appliConfigService.getUserFreeForcedRenewal());
+		msgs.put("userTipMsg",            appliConfigService.getUserTipMsg());
+		return msgs;
+	}
+
+	public List<User> getSgcLdapMix(String cn, String ldapTemplateName) {
+		ArrayList<User> users = new ArrayList<>();
+		for (PersonLdap item : ldapPersonService.searchByCommonName(cn, ldapTemplateName)) {
+			if (item.getEduPersonPrincipalName() != null && !item.getEduPersonPrincipalName().isEmpty()) {
 				User user = userDaoService.findUser(item.getEduPersonPrincipalName());
-				if(user == null){
+				if (user == null) {
 					user = new User();
 					user.setEppn(item.getEduPersonPrincipalName());
 					user.setFirstname(item.getGivenName());
@@ -257,17 +268,15 @@ public class UserService {
 					user.setEmail(item.getMail());
 					user.setSupannEntiteAffectationPrincipale(item.getSupannEntiteAffectationPrincipale());
 					user.setUserType(item.getEduPersonPrimaryAffiliation());
-				    user.setBirthday(dateUtils.parseSchacDateOfBirth(item.getSchacDateOfBirth()));
+					user.setBirthday(dateUtils.parseSchacDateOfBirth(item.getSchacDateOfBirth()));
 				}
 				users.add(user);
 			}
 		}
-		
 		return users;
 	}
 
 	public List<String> getLdapTemplatesNames() {
 		return ldapPersonService.getLdapTemplatesNames();
 	}
-	
 }
