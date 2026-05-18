@@ -44,7 +44,6 @@
 		<custom-filter ref="concurrencyFilter" position="CONCURRENT_SESSION_FILTER" />
 		<custom-filter ref="resourceUrlEncodingFilter" position="LAST"/>        
 		<logout logout-success-url="/" />
-		<csrf disabled="true"/>
     </http>
 
 	<beans:bean id="resourceUrlEncodingFilter"

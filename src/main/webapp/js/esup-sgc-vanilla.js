@@ -23,6 +23,54 @@ window.alert = function(message) {
 var photoExportZoom = 2;
 var suneditor = null;
 
+function getCsrfMetaValue(name) {
+	var meta = document.querySelector('meta[name="' + name + '"]');
+	return meta ? meta.getAttribute('content') : null;
+}
+
+function isSafeHttpMethod(method) {
+	return /^(GET|HEAD|OPTIONS|TRACE)$/i.test(method || 'GET');
+}
+
+function isSameOrigin(url) {
+	try {
+		var anchor = document.createElement('a');
+		anchor.href = url;
+		return anchor.protocol === window.location.protocol && anchor.host === window.location.host;
+	} catch (e) {
+		return false;
+	}
+}
+
+function applyCsrfHeader(request, method, url) {
+	var csrfToken = getCsrfMetaValue('_csrf');
+	var csrfHeader = getCsrfMetaValue('_csrf_header');
+	if (!request || !csrfToken || !csrfHeader || isSafeHttpMethod(method) || !isSameOrigin(url)) {
+		return;
+	}
+	request.setRequestHeader(csrfHeader, csrfToken);
+}
+
+(function() {
+	if (window.XMLHttpRequest && !XMLHttpRequest.prototype._sgcCsrfPatched) {
+		var originalOpen = XMLHttpRequest.prototype.open;
+		var originalSend = XMLHttpRequest.prototype.send;
+
+		XMLHttpRequest.prototype.open = function(method, url) {
+			this._sgcMethod = method;
+			this._sgcUrl = url;
+			return originalOpen.apply(this, arguments);
+		};
+
+		XMLHttpRequest.prototype.send = function() {
+			applyCsrfHeader(this, this._sgcMethod, this._sgcUrl);
+			return originalSend.apply(this, arguments);
+		};
+
+		XMLHttpRequest.prototype._sgcCsrfPatched = true;
+	}
+})();
+
 //Configs
 function createSunEditor(){
   	const editor = SUNEDITOR.create('valeur',{
