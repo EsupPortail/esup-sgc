@@ -103,8 +103,8 @@
 
         <!--
     <bean class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close" id="dbExtDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://ext-test-db.univ-ville.fr:3306/siBase?zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true"/>
+        <property name="driverClassName" value="org.mariadb.jdbc.Driver"/>
+        <property name="url" value="jdbc:mariadb://ext-test-db.univ-ville.fr:3306/siBase?zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true"/>
         <property name="username" value="toto"/>
         <property name="password" value="tata"/>
         <property name="testOnBorrow" value="true" />
