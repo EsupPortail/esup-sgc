@@ -248,17 +248,27 @@ public class CardDaoService {
                                         TemplateCard templateCard = templateCardDaoService.findTemplateCard(Long.valueOf(v));
                                         orPredicates.add(criteriaBuilder.equal(tc, templateCard));
                                     } else {
-                                        orPredicates.add(criteriaBuilder.equal(c.get(camelString.substring("card.".length())), v));
+                                        String cardColumn = camelString.substring("card.".length());
+                                        try {
+                                            orPredicates.add(criteriaBuilder.equal(c.get(cardColumn), v));
+                                        } catch (IllegalArgumentException e) {
+                                            log.warn(String.format("Column %s not found on Card entity", cardColumn));
+                                        }
                                     }
                                 } else if(camelString.startsWith("userAccount.")) {
-                                    if(User.BOOLEAN_FIELDS.contains(camelString.substring("userAccount.".length()))) {
-                                        if("true".equalsIgnoreCase(v)) {
-                                            orPredicates.add(criteriaBuilder.isTrue(u.get(camelString.substring("userAccount.".length()))));
+                                    String userColumn = camelString.substring("userAccount.".length());
+                                    try {
+                                        if(User.BOOLEAN_FIELDS.contains(userColumn)) {
+                                            if("true".equalsIgnoreCase(v)) {
+                                                orPredicates.add(criteriaBuilder.isTrue(u.get(userColumn)));
+                                            } else {
+                                                orPredicates.add(criteriaBuilder.isFalse(u.get(userColumn)));
+                                            }
                                         } else {
-                                            orPredicates.add(criteriaBuilder.isFalse(u.get(camelString.substring("userAccount.".length()))));
+                                            orPredicates.add(criteriaBuilder.equal(u.get(userColumn), v));
                                         }
-                                    } else {
-                                        orPredicates.add(criteriaBuilder.equal(u.get(camelString.substring("userAccount.".length())), v));
+                                    } catch (IllegalArgumentException e) {
+                                        log.warn(String.format("Column %s not found on Card entity", userColumn));
                                     }
                                 } else if(camelString.startsWith("desfireIds")) {
                                     orPredicates.add(criteriaBuilder.equal(c.joinMap("desfireIds").value(), v));
