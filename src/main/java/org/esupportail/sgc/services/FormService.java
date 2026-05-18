@@ -1,5 +1,8 @@
 package org.esupportail.sgc.services;
 
+import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.apache.commons.codec.binary.Hex;
 import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.dao.TemplateCardDaoService;
@@ -10,7 +13,6 @@ import org.esupportail.sgc.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -25,10 +27,15 @@ public class FormService {
 	}
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
+
+	@PersistenceContext
+	private EntityManager entityManager;
 	
 	private Map<String, String> idsMap = new HashMap<String, String>();
 	
 	private Map<String, String> fieldsList = new HashMap<String, String>();
+
+	private Map<String, String> fieldsList4Search = new HashMap<String, String>();
 	
 	private int nbFields = 3;
 	
@@ -62,12 +69,18 @@ public class FormService {
 	public void setFieldsValuesNbMax(int fieldsValuesNbMax) {
 		this.fieldsValuesNbMax = fieldsValuesNbMax;
 	}
-	public Map<String, String> getFieldsList() {
-		return fieldsList;
+	public Map<String, String> getFieldsList4Search() {
+		return fieldsList4Search;
 	}
 	
 	public void setFieldsList(Map<String, String> fieldsList) {
 		this.fieldsList = fieldsList;
+		for(Map.Entry<String, String> entry : fieldsList.entrySet()) {
+			String key = CardDaoService.snakeToCamel(entry.getKey());
+			if (isMappedInDb(key)) {
+				fieldsList4Search.put(key, entry.getValue());
+			}
+		}
 	}
 
 	public void setHashType(HashType hashType) {
@@ -120,7 +133,7 @@ public class FormService {
 		Map<String, String> mapWithEncodedString = new HashMap<String, String>(); 
 		// prevent sql injection here
 		if(fieldsList.keySet().contains(field)) {
-			if(field.equals("card.template_card")) {
+			if(field.equals("card.templateCard")) {
 				for(TemplateCard tc : templateCardDaoService.findAllTemplateCards()) {
 					mapWithEncodedString.put(encodeUrlString(tc.getId().toString()), tc.toString());
 				}
@@ -133,16 +146,16 @@ public class FormService {
 					} else {
 						fields = cardDaoService.getDistinctFreeField(field.substring("card.".length()));
 					}
-				} else if(field.startsWith("user_account.")) {
-					long nbFields = userDaoService.getCountDistinctFreeField(field.substring("user_account.".length()));
+				} else if(field.startsWith("userAccount.")) {
+					long nbFields = userDaoService.getCountDistinctFreeField(field.substring("userAccount.".length()));
 					if(nbFields>fieldsValuesNbMax) {
 						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
 					} else {
-						fields = userDaoService.getDistinctFreeField(field.substring("user_account.".length()));
+						fields = userDaoService.getDistinctFreeField(field.substring("userAccount.".length()));
 					}
 				} else if(field.contains(".")) {
 					log.debug(String.format("champ %s inconnu ?", field));
-				} else if(!"desfire_ids".equals(field)) {
+				} else if(!"desfireIds".equals(field)) {
 					long nbFields = userDaoService.getCountDistinctFreeField(field);
 					if(nbFields>fieldsValuesNbMax) {
 						log.debug(String.format("%s entrées pour le champ %s (> %s)", nbFields, field, fieldsValuesNbMax));
@@ -165,6 +178,51 @@ public class FormService {
 			mapWithEncodedString.put(encodeUrlString(s), s);
 		}
 		return mapWithEncodedString;
+	}
+
+
+
+
+	private boolean isMappedInDb(String field) {
+		if ("desfireIds".equals(field)) {
+			return true;
+		}
+		if ("card.templateCard".equals(field)) {
+			return true;
+		}
+		if (field.startsWith("card.")) {
+			String attr = CardDaoService.snakeToCamel(field.substring("card.".length()));
+			return isCardField(attr);
+		}
+		if (field.startsWith("userAccount.")) {
+			String attr = CardDaoService.snakeToCamel(field.substring("userAccount.".length()));
+			return isUserField(attr);
+		}
+		log.warn("field {} is not mapped in db", field);
+		return false;
+	}
+
+
+	private boolean isCardField(String fieldName) {
+		try {
+			return entityManager.getMetamodel()
+					.entity(Card.class)
+					.getAttribute(fieldName) != null;
+		} catch (IllegalArgumentException e) {
+			log.warn("field {} not found in Card entity", fieldName);
+			return false;
+		}
+	}
+
+	private boolean isUserField(String fieldName) {
+		try {
+			return entityManager.getMetamodel()
+					.entity(User.class)
+					.getAttribute(fieldName) != null;
+		} catch (IllegalArgumentException e) {
+			log.warn("field {} not found in User entity", fieldName);
+			return false;
+		}
 	}
 
 }
