@@ -132,7 +132,7 @@ public class FormService {
 	public Map<String, String> getFieldsValuesMap(String field) {
 		Map<String, String> mapWithEncodedString = new HashMap<String, String>(); 
 		// prevent sql injection here
-		if(fieldsList.keySet().contains(field)) {
+		if(fieldsList4Search.keySet().contains(field)) {
 			if(field.equals("card.templateCard")) {
 				for(TemplateCard tc : templateCardDaoService.findAllTemplateCards()) {
 					mapWithEncodedString.put(encodeUrlString(tc.getId().toString()), tc.toString());

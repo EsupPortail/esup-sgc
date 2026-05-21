@@ -284,8 +284,8 @@ public class UserDaoService {
     public List<String> getDistinctFreeField(String field) {
         EntityManager em = entityManager;
         // FormService.getField1List uses its preventing sql injection
-        String req = "SELECT DISTINCT CAST(" + field + " AS VARCHAR) FROM user_account WHERE " + field  + " IS NOT NULL ORDER BY " + field;
-        Query q = em.createNativeQuery(req);
+        String req = "SELECT DISTINCT " + field + " FROM User WHERE " + field  + " IS NOT NULL ORDER BY " + field;
+        Query q = em.createQuery(req);
         List<String> distinctResults = q.getResultList();
         return distinctResults;
     }
@@ -293,8 +293,8 @@ public class UserDaoService {
     public Long getCountDistinctFreeField(String field) {
         EntityManager em = entityManager;
         // FormService.getField1List uses its preventing sql injection
-        String req = "SELECT count(DISTINCT(" + field + ")) FROM user_account WHERE " + field  + " IS NOT NULL";
-        Query q = em.createNativeQuery(req);
+        String req = "SELECT count(DISTINCT(" + field + ")) FROM User WHERE " + field  + " IS NOT NULL";
+        Query q = em.createQuery(req);
         return ((Long)q.getSingleResult());
     }
 
