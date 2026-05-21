@@ -286,7 +286,10 @@ public class UserDaoService {
         // FormService.getField1List uses its preventing sql injection
         String req = "SELECT DISTINCT " + field + " FROM User WHERE " + field  + " IS NOT NULL ORDER BY " + field;
         Query q = em.createQuery(req);
-        List<String> distinctResults = q.getResultList();
+        List distinctResults = new ArrayList<>();
+        for(Object v : q.getResultList()) {
+            distinctResults.add(v.toString());
+        }
         return distinctResults;
     }
 
