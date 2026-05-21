@@ -26,7 +26,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "3.3.x";
+	final static String currentEsupSgcVersion = "3.4.x";
 
 	@Resource
 	DataSource dataSource;
@@ -454,6 +454,9 @@ public class DbToolService {
 				sqlUpdate += "INSERT INTO appli_config (id, key, value, description, type) SELECT nextval('hibernate_sequence'), 'USER_MSG_CAN_PAID_NEW', '<p>Vous ne pouvez pas demander votre première carte gratuitement. Vous devez payer la somme de 10 € avant de pouvoir accéder au formulaire de demande de carte.</p><p><strong>Ce paiement permet uniquement de faire une demande de carte.</strong></p>', 'Message de l''interface ''Utilisateur'' indiquant que la première demande de carte est payante. N''est affiché que si ces conditions sont remplies.', 'HTML' WHERE NOT EXISTS (SELECT 1 FROM appli_config WHERE key = 'USER_MSG_CAN_PAID_NEW');";
 				doSqlUpdate(sqlUpdate);
 				esupSgcVersion = "3.3.x";
+			}
+			if("3.3.x".equals(esupSgcVersion)) {
+				esupSgcVersion = "3.4.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
             appliVersionDaoService.merge(appliVersion);
