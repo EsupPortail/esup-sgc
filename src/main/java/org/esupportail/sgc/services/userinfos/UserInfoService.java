@@ -291,20 +291,22 @@ public class UserInfoService {
 				LocalDateTime birthday = dateUtils.parseSupannOIDCDateDeNaissance(userInfos.get(key));
 				user.setBirthday(birthday);
 			} else if("supannRefId4ExternalCard".equalsIgnoreCase(key)) {
-				// supannRefId4ExternalCard deprecated : use csn4ExternalCard and access-control4ExternalCard fields
-				List<String> supannRefIds = Arrays.asList((userInfos.get(key)).split(";"));
-				for(String supannRefId: supannRefIds) {
-					if(StringUtils.contains(supannRefId, "{ISO15693}")) {
-						user.getExternalCard().setUserAccount(user);
-						String csnExternalCard = supannRefId.replaceAll("\\{ISO15693\\}", "");
-						user.getExternalCard().setCsn(csnExternalCard);
+				if (userInfos.get(key) != null && !userInfos.get(key).isEmpty()) {
+					// supannRefId4ExternalCard deprecated : use csn4ExternalCard and access-control4ExternalCard fields
+					List<String> supannRefIds = Arrays.asList((userInfos.get(key)).split(";"));
+					for (String supannRefId : supannRefIds) {
+						if (StringUtils.contains(supannRefId, "{ISO15693}")) {
+							user.getExternalCard().setUserAccount(user);
+							String csnExternalCard = supannRefId.replaceAll("\\{ISO15693\\}", "");
+							user.getExternalCard().setCsn(csnExternalCard);
+						}
+						// TODO : {LEOCARTE:ACCESS-CONTROL} en dur :(
+						if (StringUtils.contains(supannRefId, "{LEOCARTE:ACCESS-CONTROL}")) {
+							String desfireIdExternalCard = supannRefId.replaceAll("\\{LEOCARTE:ACCESS-CONTROL\\}", "");
+							user.getExternalCard().getDesfireIds().put(AccessControlService.AC_APP_NAME, desfireIdExternalCard);
+						}
 					}
-					// TODO : {LEOCARTE:ACCESS-CONTROL} en dur :(
-					if(StringUtils.contains(supannRefId, "{LEOCARTE:ACCESS-CONTROL}")) {
-						String desfireIdExternalCard = supannRefId.replaceAll("\\{LEOCARTE:ACCESS-CONTROL\\}", "");
-						user.getExternalCard().getDesfireIds().put(AccessControlService.AC_APP_NAME, desfireIdExternalCard);
-					}
-				}
+			}
 			} else if("access-control4ExternalCard".equalsIgnoreCase(key)) {
 				user.getExternalCard().setUserAccount(user);
 				user.getExternalCard().getDesfireIds().put(AccessControlService.AC_APP_NAME, userInfos.get(key));
