@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.ldap.pool.factory.PoolingContextSource;
+import org.springframework.ldap.pool2.factory.PooledContextSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,7 +29,7 @@ public class JavaPerfController {
 	List<BasicDataSource> basicDataSources;
 
 	@Autowired(required = false)
-	List<PoolingContextSource> poolingContextSources = new ArrayList<>();
+	List<PooledContextSource> poolingContextSources = new ArrayList<>();
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -62,8 +62,8 @@ public class JavaPerfController {
 
 		uiModel.addAttribute("basicDataSources", basicDataSources);
 
-		Map<PoolingContextSource, String> ldapContextSources = new HashMap<>();
-		for(PoolingContextSource p : poolingContextSources) {
+		Map<PooledContextSource, String> ldapContextSources = new HashMap<>();
+		for(PooledContextSource p : poolingContextSources) {
 			LdapContextSource ldapContextSource = (LdapContextSource) p.getContextSource();
 			String urls = StringUtils.join(ldapContextSource.getUrls(), ", ");
 			ldapContextSources.put(p, urls);

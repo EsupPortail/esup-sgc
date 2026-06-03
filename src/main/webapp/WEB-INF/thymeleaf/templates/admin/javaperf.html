@@ -44,8 +44,8 @@
                 <ul>
                     <li><span th:text="#{javaperf.active}">active :</span> <span th:text="${ldapContextSource.key.numActive}"></span></li>
                     <li><span th:text="#{javaperf.idle}">idle :</span> <span th:text="${ldapContextSource.key.numIdle}"></span></li>
-                    <li><span th:text="#{javaperf.max.active}">max active :</span> <span th:text="${ldapContextSource.key.maxActive}"></span></li>
-                    <li><span th:text="#{javaperf.max.idle}">max idle :</span> <span th:text="${ldapContextSource.key.maxIdle}"></span></li>
+                    <li><span th:text="#{javaperf.max.idle}">max idle :</span> <span th:text="${ldapContextSource.key.poolConfig.maxIdlePerKey}"></span></li>
+                    <li><span th:text="#{javaperf.max.total}">max total :</span> <span th:text="${ldapContextSource.key.poolConfig.maxTotalPerKey}"></span></li>
                 </ul>
             </li>
         </ul>
