@@ -65,7 +65,9 @@
         <th:block sec:authorize="hasRole('ROLE_PREVIOUS_ADMINISTRATOR')">
             <ul class="nav navbar-nav navbar-right esupsgc-supervisor-nav">
                 <li>
-                    <a th:href="@{/logout}" class="btn btn-warning" th:text="#{navbar.exit.su}">SORTIR DU SU !</a>
+                    <form th:action="@{/j_spring_security_logout}" method="post">
+                        <input type="submit" class="btn btn-warning" th:value="#{navbar.exit.su}"/>
+                    </form>
                 </li>
             </ul>
         </th:block>
