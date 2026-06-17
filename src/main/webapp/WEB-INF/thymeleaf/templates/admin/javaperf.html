@@ -21,6 +21,13 @@
         </ul>
     </div>
 
+    <div th:class="${orphanLargeObjectsCount > 0} ? 'alert alert-danger' : ''">
+        <h3><span th:text="${orphanLargeObjectsCount}"></span> <span th:text="#{javaperf.orphanedlargeobjects}">orphaned large objects</span></h3>
+        <p th:if="${orphanLargeObjectsCount > 0}" th:text="#{javaperf.orphaned.largeobjects.description}">
+        </p>
+    </div>
+
+
     <div>
         <h3 th:text="#{javaperf.db.pools}">Databases - pools de connexions</h3>
         <ul class="list">

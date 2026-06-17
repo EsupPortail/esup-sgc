@@ -44,4 +44,13 @@ public class BigFileDaoService {
         bigFile.updateMd5();
     }
 
+    public long countOrphanLargeObjects() {
+        String sql = "SELECT count(*)\n" +
+                "    FROM pg_largeobject_metadata lo\n" +
+                "    WHERE NOT EXISTS (\n" +
+                "        SELECT 1 FROM big_file bf WHERE bf.binary_file = lo.oid\n" +
+                "    )";
+        return ((Number) entityManager.createNativeQuery(sql).getSingleResult()).longValue();
+    }
+
 }

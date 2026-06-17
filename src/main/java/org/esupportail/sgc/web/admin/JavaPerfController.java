@@ -3,6 +3,7 @@ package org.esupportail.sgc.web.admin;
 import jakarta.annotation.Resource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
+import org.esupportail.sgc.dao.BigFileDaoService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -27,6 +28,9 @@ public class JavaPerfController {
 
 	@Resource
 	List<BasicDataSource> basicDataSources;
+
+    @Resource
+    BigFileDaoService bigFileDaoService;
 
 	@Autowired(required = false)
 	List<PooledContextSource> poolingContextSources = new ArrayList<>();
@@ -59,6 +63,8 @@ public class JavaPerfController {
 		uiModel.addAttribute("totalMemoryInMB", totalMemoryInMB);
 		uiModel.addAttribute("freeMemoryInMB", freeMemoryInMB);
 		uiModel.addAttribute("usedMemoryInMB", usedMemoryInMB);
+
+        uiModel.addAttribute("orphanLargeObjectsCount", bigFileDaoService.countOrphanLargeObjects());
 
 		uiModel.addAttribute("basicDataSources", basicDataSources);
 
