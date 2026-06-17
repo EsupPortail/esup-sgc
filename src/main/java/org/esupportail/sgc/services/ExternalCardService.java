@@ -63,6 +63,7 @@ public class ExternalCardService {
 			}
 		}
 		if(externalCard == null) {
+			resynchronisationUserService.synchronizeUserInfoNoTx(eppn);
 			externalCard = initExternalCard(user);
 		}
 		resynchronisationUserService.synchronizeUserInfoNoTx(eppn);
@@ -77,11 +78,12 @@ public class ExternalCardService {
 		externalCard.setUserAccount(user);
 		user.getCards().add(externalCard);
 		externalCard.setEppn(user.getEppn());
-        externalCard.setEtat(Etat.DISABLED);
+		externalCard.setEtat(Etat.NEW);
         externalCard.setDateEtat(LocalDateTime.now());
         externalCard.setDeliveredDate(LocalDateTime.now());
         externalCard.setExternal(true);
         userInfoService.setPrintedInfo(externalCard);
+		externalCard.setEtat(Etat.DISABLED);
         user.setCrous(false);
         user.setDifPhoto(false);
         cardDaoService.persist(externalCard);
