@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -182,8 +183,8 @@ public class CsvExportAcInsaService implements Export2AccessControlService {
 			if(date2print.isAfter(DATE_MAX)) {
 				date2print = DATE_MAX;
 			}
-			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-			dateFt = "'"+df.format(date2print);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			dateFt = "'"+date2print.format(formatter);
 		}
 		return dateFt;
 	}
