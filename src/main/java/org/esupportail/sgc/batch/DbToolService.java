@@ -26,7 +26,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "3.4.x";
+	final static String currentEsupSgcVersion = "3.5.x";
 
 	@Resource
 	DataSource dataSource;
@@ -457,6 +457,22 @@ public class DbToolService {
 			}
 			if("3.3.x".equals(esupSgcVersion)) {
 				esupSgcVersion = "3.4.x";
+			}
+			if("3.4.x".equals(esupSgcVersion)) {
+				// Fix rectox of external cards - bug introduced on 3.4.0
+				String sql = "update card set " +
+						"recto1printed=user_account.recto1, " +
+						"recto2printed=user_account.recto2, " +
+						"recto3printed=user_account.recto3, " +
+						"recto4printed=user_account.recto4, " +
+						"recto5printed=user_account.recto5, " +
+						"recto6printed=user_account.recto6, " +
+						"recto7printed=user_account.recto7 " +
+						"from user_account " +
+						"where card.eppn=user_account.eppn and card.external=true and " +
+						"recto1printed='' and recto2printed='' and recto3printed='' and recto4printed='' and recto5printed='' and recto6printed='' and recto7printed='';";
+				doSqlUpdate(sql);
+				esupSgcVersion = "3.5.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
             appliVersionDaoService.merge(appliVersion);
