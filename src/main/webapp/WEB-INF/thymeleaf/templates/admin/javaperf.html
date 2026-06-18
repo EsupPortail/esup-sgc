@@ -31,11 +31,12 @@
         <ul>
             <li th:each="trigger : ${showTriggersOnBigFileTable}" th:text="${trigger}"/>
         </ul>
-        <p th:if="${showTriggersOnBigFileTable.size() == 0}">
-            <span th:text="#{javaperf.big_file.trigger.none}"/>
-        <pre>
-        CREATE TRIGGER t_big_file BEFORE UPDATE OR DELETE ON big_file FOR EACH ROW EXECUTE PROCEDURE lo_manage(binary_file);
-        </pre>
+        <div th:if="${showTriggersOnBigFileTable.size() == 0}">
+            <span th:text="#{javaperf.big_file.trigger.none}"></span>
+            <pre>
+                CREATE TRIGGER t_big_file BEFORE UPDATE OR DELETE ON big_file FOR EACH ROW EXECUTE PROCEDURE lo_manage(binary_file);
+            </pre>
+        </div>
     </div>
 
 
