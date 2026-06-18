@@ -65,6 +65,7 @@ public class JavaPerfController {
 		uiModel.addAttribute("usedMemoryInMB", usedMemoryInMB);
 
         uiModel.addAttribute("orphanLargeObjectsCount", bigFileDaoService.countOrphanLargeObjects());
+        uiModel.addAttribute("showTriggersOnBigFileTable", bigFileDaoService.showTriggersOnBigFileTable());
 
 		uiModel.addAttribute("basicDataSources", basicDataSources);
 

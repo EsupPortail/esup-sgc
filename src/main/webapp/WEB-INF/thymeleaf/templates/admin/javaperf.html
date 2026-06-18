@@ -26,6 +26,17 @@
         <p th:if="${orphanLargeObjectsCount > 0}" th:text="#{javaperf.orphaned.largeobjects.description}">
         </p>
     </div>
+    <div th:class="${showTriggersOnBigFileTable.size() == 0} ? 'alert alert-danger' : ''">
+        <h4 th:text="#{javaperf.big_file.trigger}"></h4>
+        <ul>
+            <li th:each="trigger : ${showTriggersOnBigFileTable}" th:text="${trigger}"/>
+        </ul>
+        <p th:if="${showTriggersOnBigFileTable.size() == 0}">
+            <span th:text="#{javaperf.big_file.trigger.none}"/>
+        <pre>
+        CREATE TRIGGER t_big_file BEFORE UPDATE OR DELETE ON big_file FOR EACH ROW EXECUTE PROCEDURE lo_manage(binary_file);
+        </pre>
+    </div>
 
 
     <div>
