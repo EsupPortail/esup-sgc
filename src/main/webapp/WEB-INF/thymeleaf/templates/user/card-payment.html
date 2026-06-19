@@ -14,7 +14,7 @@
     </script>
     <h2 th:text="#{common.payment}">Paiement</h2>
     <div class="col-lg-2" th:if="${payBoxForm != null}">
-        <form method="POST" th:action="${payBoxForm.actionUrl}" id="payboxForm">
+        <form method="POST" th:attr="action=${payBoxForm.actionUrl}" id="payboxForm">
             <input type="hidden" th:each="payBoxParam : ${payBoxForm.orderedParams}"
                    th:name="${payBoxParam.key}" th:value="${payBoxParam.value}" />
             <input type="hidden" name="PBX_HMAC" th:value="${payBoxForm.hmac}" />
