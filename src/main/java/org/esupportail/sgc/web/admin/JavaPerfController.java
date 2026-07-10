@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.dao.BigFileDaoService;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class JavaPerfController {
 
 	@Autowired(required = false)
 	List<PooledContextSource> poolingContextSources = new ArrayList<>();
+
+    @Autowired
+    ApplicationContext applicationContext;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -63,11 +67,13 @@ public class JavaPerfController {
 		uiModel.addAttribute("totalMemoryInMB", totalMemoryInMB);
 		uiModel.addAttribute("freeMemoryInMB", freeMemoryInMB);
 		uiModel.addAttribute("usedMemoryInMB", usedMemoryInMB);
+        uiModel.addAttribute("memoryStats", new MemoryStats(maxMemoryInMB, totalMemoryInMB, freeMemoryInMB, usedMemoryInMB));
 
         uiModel.addAttribute("orphanLargeObjectsCount", bigFileDaoService.countOrphanLargeObjects());
         uiModel.addAttribute("showTriggersOnBigFileTable", bigFileDaoService.showTriggersOnBigFileTable());
 
 		uiModel.addAttribute("basicDataSources", basicDataSources);
+        uiModel.addAttribute("dataSourceStats", getDataSourceStats());
 
 		Map<PooledContextSource, String> ldapContextSources = new HashMap<>();
 		for(PooledContextSource p : poolingContextSources) {
@@ -76,6 +82,7 @@ public class JavaPerfController {
 			ldapContextSources.put(p, urls);
 		}
 		uiModel.addAttribute("ldapContextSources", ldapContextSources);
+        uiModel.addAttribute("ldapStats", getLdapStats());
 
 		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 		List<ThreadInfo> threadInfos = Arrays.asList(threadMXBean.dumpAllThreads(true, true));
@@ -100,6 +107,165 @@ public class JavaPerfController {
         return "templates/admin/javaperf";
 	}
 
+    private List<DataSourceStats> getDataSourceStats() {
+        Map<String, BasicDataSource> dataSourcesByName = applicationContext.getBeansOfType(BasicDataSource.class);
+        List<DataSourceStats> dataSourceStats = new ArrayList<>();
+        if (!dataSourcesByName.isEmpty()) {
+            for (Map.Entry<String, BasicDataSource> entry : dataSourcesByName.entrySet()) {
+                dataSourceStats.add(new DataSourceStats(entry.getKey(), entry.getValue()));
+            }
+        } else {
+            int index = 1;
+            for (BasicDataSource basicDataSource : basicDataSources) {
+                dataSourceStats.add(new DataSourceStats("dataSource" + index++, basicDataSource));
+            }
+        }
+        return dataSourceStats;
+    }
+
+    private List<LdapStats> getLdapStats() {
+        Map<String, PooledContextSource> contextSourcesByName = applicationContext.getBeansOfType(PooledContextSource.class);
+        List<LdapStats> ldapStats = new ArrayList<>();
+        if (!contextSourcesByName.isEmpty()) {
+            for (Map.Entry<String, PooledContextSource> entry : contextSourcesByName.entrySet()) {
+                ldapStats.add(new LdapStats(entry.getKey(), entry.getValue()));
+            }
+        } else {
+            int index = 1;
+            for (PooledContextSource poolingContextSource : poolingContextSources) {
+                ldapStats.add(new LdapStats("ldapContextSource" + index++, poolingContextSource));
+            }
+        }
+        return ldapStats;
+    }
+
+    class MemoryStats {
+        private final long maxMemoryInMB;
+        private final long totalMemoryInMB;
+        private final long freeMemoryInMB;
+        private final long usedMemoryInMB;
+
+        public MemoryStats(long maxMemoryInMB, long totalMemoryInMB, long freeMemoryInMB, long usedMemoryInMB) {
+            this.maxMemoryInMB = maxMemoryInMB;
+            this.totalMemoryInMB = totalMemoryInMB;
+            this.freeMemoryInMB = freeMemoryInMB;
+            this.usedMemoryInMB = usedMemoryInMB;
+        }
+
+        public long getMaxMemoryInMB() {
+            return maxMemoryInMB;
+        }
+
+        public long getTotalMemoryInMB() {
+            return totalMemoryInMB;
+        }
+
+        public long getFreeMemoryInMB() {
+            return freeMemoryInMB;
+        }
+
+        public long getUsedMemoryInMB() {
+            return usedMemoryInMB;
+        }
+
+        public long getUsedPercent() {
+            return maxMemoryInMB > 0 ? Math.min(100, usedMemoryInMB * 100 / maxMemoryInMB) : 0;
+        }
+    }
+
+    class DataSourceStats {
+        private final String name;
+        private final BasicDataSource basicDataSource;
+
+        public DataSourceStats(String name, BasicDataSource basicDataSource) {
+            this.name = name;
+            this.basicDataSource = basicDataSource;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getType() {
+            return basicDataSource.getClass().getSimpleName();
+        }
+
+        public String getUrl() {
+            return basicDataSource.getUrl();
+        }
+
+        public String getDriver() {
+            return basicDataSource.getDriverClassName();
+        }
+
+        public String getUsername() {
+            return basicDataSource.getUsername();
+        }
+
+        public Integer getActive() {
+            return basicDataSource.getNumActive();
+        }
+
+        public Integer getIdle() {
+            return basicDataSource.getNumIdle();
+        }
+
+        public Integer getMaxTotal() {
+            return basicDataSource.getMaxTotal();
+        }
+
+        public Integer getMaxIdle() {
+            return basicDataSource.getMaxIdle();
+        }
+
+        public Integer getMinIdle() {
+            return basicDataSource.getMinIdle();
+        }
+    }
+
+    class LdapStats {
+        private final String name;
+        private final PooledContextSource pooledContextSource;
+        private final LdapContextSource ldapContextSource;
+
+        public LdapStats(String name, PooledContextSource pooledContextSource) {
+            this.name = name;
+            this.pooledContextSource = pooledContextSource;
+            this.ldapContextSource = (LdapContextSource) pooledContextSource.getContextSource();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getUrls() {
+            return StringUtils.join(ldapContextSource.getUrls(), ", ");
+        }
+
+        public String getBase() {
+            return ldapContextSource.getBaseLdapPathAsString();
+        }
+
+        public boolean isPooled() {
+            return true;
+        }
+
+        public Integer getActive() {
+            return pooledContextSource.getNumActive();
+        }
+
+        public Integer getIdle() {
+            return pooledContextSource.getNumIdle();
+        }
+
+        public Integer getMaxActive() {
+            return pooledContextSource.getPoolConfig().getMaxTotalPerKey();
+        }
+
+        public Integer getMaxIdle() {
+            return pooledContextSource.getPoolConfig().getMaxIdlePerKey();
+        }
+    }
 
     class JavaPerfWrapper {
         private final ThreadMXBean threadMXBean;
@@ -119,6 +285,12 @@ public class JavaPerfController {
         }
         public int getPeakThreadCount() {
             return threadMXBean.getPeakThreadCount();
+        }
+        public long getTotalStartedThreadCount() {
+            return threadMXBean.getTotalStartedThreadCount();
+        }
+        public boolean isThreadContentionMonitoringSupported() {
+            return threadMXBean.isThreadContentionMonitoringSupported();
         }
         public List<ThreadInfoWrapper> getThreadInfoWrappers() {
             List<ThreadInfoWrapper> wrappers = new ArrayList<>();
