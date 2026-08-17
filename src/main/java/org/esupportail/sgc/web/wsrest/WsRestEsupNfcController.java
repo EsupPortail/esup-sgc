@@ -671,7 +671,7 @@ public class WsRestEsupNfcController {
 			emptyResult.setResult("");
 			return emptyResult;
 		}
-		printerService.setMaintenanInfo(eppnInit, maintenanceInfo, request.getRemoteAddr());
+		printerService.setMaintenanceInfo(eppnInit, maintenanceInfo, request.getRemoteAddr());
 		return encodeAndPringLongPollService.encodePrintHeartbeat(eppnInit);
 	}
 	

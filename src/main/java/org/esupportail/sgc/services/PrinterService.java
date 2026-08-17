@@ -3,6 +3,8 @@ package org.esupportail.sgc.services;
 import org.esupportail.sgc.dao.PrinterDaoService;
 import org.esupportail.sgc.domain.Printer;
 import org.esupportail.sgc.services.ldap.GroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.Resource;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,8 @@ import java.util.TreeMap;
 
 @Service
 public class PrinterService {
+
+    Logger log = LoggerFactory.getLogger(getClass());
 
     @Resource
     GroupService groupService;
@@ -31,9 +34,9 @@ public class PrinterService {
 
     @Transactional
     @Async
-    public void setMaintenanInfo(String eppn, String maiuntenanceInfo, String ip) {
+    public void setMaintenanceInfo(String eppn, String maintenanceInfo, String ip) {
         Printer printer = null;
-        List<Printer> printers = printerDaoService. findPrintersByEppn(eppn).getResultList();
+        List<Printer> printers = printerDaoService.findPrintersByEppn(eppn).getResultList();
         if(printers.size()!=0) {
             printer = printers.get(0);
         } else {
@@ -42,8 +45,9 @@ public class PrinterService {
             printerDaoService.persist(printer);
         }
         printer.setIp(ip);
-        printer.setMaintenanceInfo(maiuntenanceInfo);
+        printer.setMaintenanceInfo(maintenanceInfo);
         printer.setConnectionDate(LocalDateTime.now());
+        log.trace("MaintenanceInfo for {} persisted : {}", eppn, maintenanceInfo);
     }
 
     /*
