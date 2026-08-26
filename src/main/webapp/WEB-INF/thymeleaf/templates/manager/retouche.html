@@ -16,7 +16,7 @@
     </script>
     <h2>
         <span th:text="#{retouche.title}">Retouche</span>
-        <a class="btn btn-primary pull-right hidden-print" th:href="@{/manager(index='first')}" type="button">
+        <a class="btn btn-primary pull-right hidden-print" th:href="@{/manager} + '?' + ${(redirectParams != null and !#strings.isEmpty(redirectParams)) ? redirectParams : 'index=first'}" type="button">
             <span class="glyphicon glyphicon-home"></span>
         </a>
     </h2>
@@ -115,8 +115,9 @@
                 </button>
                 <input type="hidden" th:value="${joinIds}" name="listeIds"/>
                 <input type="hidden" value="REQUEST_CHECKED" name="etatFinal"/>
+                <input type="hidden" name="redirectParams" th:value="${redirectParams}" />
             </form>
-            <a th:href="@{/manager(index='first')}" class="btn btn-info">
+            <a th:href="@{/manager} + '?' + ${(redirectParams != null and !#strings.isEmpty(redirectParams)) ? redirectParams : 'index=first'}" class="btn btn-info">
                 <strong th:text="#{retouche.back.home}">Retourner à la page d'accueil</strong>
             </a>
         </div>

@@ -614,7 +614,9 @@ public class ManagerCardController {
 	// No @Transactional here so that exception catching on ManagerController.multiUpdate works well
 	public String multiUpdate(@RequestParam(value = "comment", defaultValue = "") String comment,
 							  @RequestParam List<Long> listeIds, @RequestParam(value = "etatFinal", required = false) Etat etatFinal, @RequestParam(value = "forcedEtatFinal", required = false) Etat forcedEtatFinal,
-							  @RequestParam(value = "updateEtatAdmin", required = false) String updateEtatAdmin, @RequestHeader("User-Agent") String userAgent, @SessionAttribute(required = false) String printerEppn,
+							  @RequestParam(value = "updateEtatAdmin", required = false) String updateEtatAdmin,
+							  @RequestParam(value = "redirectParams", required = false, defaultValue = "") String redirectParams,
+							  @RequestHeader("User-Agent") String userAgent, @SessionAttribute(required = false) String printerEppn,
 							  final RedirectAttributes redirectAttributes, Model uiModel, HttpServletRequest request) {
 
 		List<Long> listeIdsErrors = new ArrayList<Long>();
@@ -686,13 +688,16 @@ public class ManagerCardController {
 
     	return search(searchBean, null, null, "dateEtat", "DESC", uiModel, request);
     	 */
-		return "redirect:/manager?" + request.getQueryString();
+		String qs = !redirectParams.isEmpty() ? redirectParams : (request.getQueryString() != null ? request.getQueryString() : "");
+		return "redirect:/manager?" + qs;
 	}
 
 	@PreAuthorize("hasPermission(#cardIds, 'manage')")
 	@RequestMapping(value = "/getMultiUpdateForm")
 	@Transactional(readOnly = true)
-	public String getMultiUpdateForm(@RequestParam List<Long> cardIds, @SessionAttribute(required = false) String printerEppn, Model uiModel, HttpServletRequest request) {
+	public String getMultiUpdateForm(@RequestParam List<Long> cardIds,
+									 @RequestParam(value = "redirectParams", required = false, defaultValue = "") String redirectParams,
+									 @SessionAttribute(required = false) String printerEppn, Model uiModel, HttpServletRequest request) {
 		if (cardIds.isEmpty()) {
 			uiModel.addAttribute("cardIds", cardIds);
 		} else {
@@ -707,6 +712,7 @@ public class ManagerCardController {
 			uiModel.addAttribute("validatedFlag", cardEtatService.areCardsReadyToBeValidated(cardIds));
 		}
 		uiModel.addAttribute("userAgent", request.getHeader("User-Agent"));
+		uiModel.addAttribute("redirectParams", redirectParams);
 		return "templates/manager/multiUpdateForm";
 	}
 
@@ -832,7 +838,8 @@ public class ManagerCardController {
 	@RequestMapping(value = "/savePrefs")
 	public String savePrefs(@RequestParam(value = "editable", required = false) String editable,
 							@RequestParam(value = "ownOrFreeCard", required = false) String ownOrFreeCard,
-							@RequestParam(value = "userType", required = false) String userType, Model uiModel) {
+							@RequestParam(value = "userType", required = false) String userType,
+							Model uiModel) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String eppn = auth.getName();
 
@@ -913,13 +920,15 @@ public class ManagerCardController {
 
 	@PreAuthorize("hasPermission(#listeIds, 'manage')")
 	@RequestMapping(value = "/retouche", method = RequestMethod.POST)
-	public String getRetouchePage(@RequestParam("listeIds") List<Long> listeIds, Model uiModel) {
+	public String getRetouchePage(@RequestParam("listeIds") List<Long> listeIds,
+								  @RequestParam(value = "redirectParams", required = false, defaultValue = "") String redirectParams,
+								  Model uiModel) {
 		List<Card> cards = cardDaoService.findAllCards(listeIds);
 		uiModel.addAttribute("cardIds", listeIds);
 		uiModel.addAttribute("cards", cards);
 		String joinIds = StringUtils.join(listeIds.toArray(new Long[listeIds.size()]), ",");
 		uiModel.addAttribute("joinIds", joinIds);
-
+		uiModel.addAttribute("redirectParams", redirectParams);
 		return "templates/manager/retouche";
 	}
 

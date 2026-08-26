@@ -19,6 +19,7 @@
                                     <input type="hidden" name="forcedEtatFinal" value="" />
                                     <input type="hidden" name="userAgent" th:value="${userAgent}" />
                                     <input type="hidden" name="printerEppn" th:value="${printerEppn}" />
+                                    <input type="hidden" name="redirectParams" th:value="${redirectParams}" />
                                     <th:block th:each="cardId : ${cardIds}">
                                         <input type="hidden" name="listeIds" th:value="${cardId}" />
                                     </th:block>
@@ -87,6 +88,7 @@
                                     <th:block th:each="cardId : ${cardIds}">
                                         <input type="hidden" name="listeIds" th:value="${cardId}" />
                                     </th:block>
+                                    <input type="hidden" name="redirectParams" th:value="${redirectParams}" />
                                     <input type="submit" th:value="#{common.retouch}" />
                                 </form>
                             </th:block>
@@ -197,22 +199,23 @@
         </th:block>
         <div class="col-lg-12">
             <div class="collapse" id="collapseEtat">
-                <div class="alert alert-danger">
-                    <form th:action="@{/manager/multiUpdate}" method="post" id="forcedForm" class="form-inline">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <input type="checkbox" id="checkAdmin" name="updateEtatAdmin" />
-                            </span>
-                            <select id="forcedEtatFinal" name="forcedEtatFinal" class="form-control">
-                                <option value="" th:text="#{multiupdate.no.action}">Aucune action</option>
-                                <option th:each="etat : ${allEtats}" th:value="${etat}" class="etat"
-                                    th:text="#{|card.step.${etat}|}"></option>
-                            </select>
-                            <th:block th:each="cardId : ${cardIds}">
-                                <input type="hidden" name="listeIds" th:value="${cardId}" />
-                            </th:block>
-                        </div>
-                        <input type="submit" class="btn btn-danger" value="Changer" />
+                    <div class="alert alert-danger">
+                        <form th:action="@{/manager/multiUpdate}" method="post" id="forcedForm" class="form-inline">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" id="checkAdmin" name="updateEtatAdmin" />
+                                </span>
+                                <select id="forcedEtatFinal" name="forcedEtatFinal" class="form-control">
+                                    <option value="" th:text="#{multiupdate.no.action}">Aucune action</option>
+                                    <option th:each="etat : ${allEtats}" th:value="${etat}" class="etat"
+                                        th:text="#{|card.step.${etat}|}"></option>
+                                </select>
+                                <th:block th:each="cardId : ${cardIds}">
+                                    <input type="hidden" name="listeIds" th:value="${cardId}" />
+                                </th:block>
+                            </div>
+                            <input type="hidden" name="redirectParams" th:value="${redirectParams}" />
+                            <input type="submit" class="btn btn-danger" value="Changer" />
                     </form>
                     <hr />
                 </div>

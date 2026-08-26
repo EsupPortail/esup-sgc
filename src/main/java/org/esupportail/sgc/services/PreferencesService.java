@@ -45,7 +45,7 @@ public class PreferencesService {
 			}
 			logService.log(null, ACTION.UPDATEPREFS, RETCODE.SUCCESS, key.name(), eppn, null);
 		} catch (Exception e) {
-			log.warn("Erreur lors de mise à jour ou création d'une préférence, " + key);
+			log.warn("Erreur lors de mise à jour ou création d'une préférence, " + key, e);
 		}
 		
 	}

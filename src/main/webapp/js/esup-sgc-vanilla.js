@@ -344,6 +344,7 @@ function multiUpdateForm(idArray) {
 		request.open('POST', multiUpdateFormUrl, true);
 		var data = new FormData();
 		data.append('cardIds', idArray.toString());
+		data.append('redirectParams', window.location.search.replace(/^\?/, ''));
 		request.onload = function() {
 		  if (request.status >= 200 && request.status < 400) {
 			  document.getElementById("traitementLot").innerHTML = this.response;
