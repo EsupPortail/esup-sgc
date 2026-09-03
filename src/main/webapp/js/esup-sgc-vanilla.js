@@ -1383,7 +1383,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		var filterSliders = document.getElementById('filterSliders');
 		var container = document.getElementById('container');
 		var ezcropInfo = document.getElementById('ezcrop-info');
-		var orientation = "1";
 		//surcharge les valeurs par defaut de ezcrop.js
 		exportDefaults = {
 		        type: 'image/jpeg',
@@ -1407,51 +1406,14 @@ document.addEventListener('DOMContentLoaded', function() {
 				  if(ezcropInfo != null){
 					  ezcropInfo.classList.remove('ezcrop-converting');
 				  }
-			  },onFileChange: function(e) {
-		        var file = e.target.files[0];
-		        //on reinitialise l'orientation a chaque nouveau fichier pour eviter de garder
-		        //une valeur obsolete si l'image n'a pas (ou plus) de tag EXIF
-		        orientation = "1";
-			    if (file && file.name) {
-			       EXIF.getData(file, function() {
-			       var exifData = EXIF.pretty(this);
-			       orientation = EXIF.getTag(file, "Orientation") || "1";
-			       });
-			    }
-		      },previewSize:{
+			  },previewSize:{
 		    	  width: 150, height: 188},
 		    	  maxZoom:1.8,
 		    	  minZoom: 'fit'
 	        });
-
-		//iOS/Safari applique correctement l'orientation EXIF pour l'affichage <img>
-		//(preview a l'ecran) mais PAS pour le rendu canvas utilise par
-		//cropper.getCroppedImageData() (drawImage ignore le tag EXIF).
-		//Resultat : la photo exportee/decoupee est retournee alors que l'apercu semble correct.
-		//Cette fonction calcule le nombre de rotations de 90° (CW) a appliquer temporairement
-		//au cropper avant l'export pour compenser ce defaut, uniquement sur iPhone/iPad
-		//(isISmartPhone), les autres navigateurs/plateformes n'etant pas concernes.
-		function getExifCwSteps() {
-			if (!isISmartPhone) {
-				return 0;
-			}
-			switch (String(orientation)) {
-				case "3": return 2;  // 180°
-				case "6": return 1;  // 90° CW
-				case "8": return -1; // 90° CCW (= -90°)
-				default: return 0;   // 1 (et les cas de miroir 2/4/5/7, non geres)
-			}
-		}
-
-		function applyExifRotation(steps) {
-			for (var i = 0; i < Math.abs(steps); i++) {
-				if (steps > 0) {
-					cropper.rotateCW();
-				} else {
-					cropper.rotateCCW();
-				}
-			}
-		}
+		//NB : la correction de l'orientation EXIF (photos iPhone/HEIC) est geree
+		//directement dans ezcrop.js (loadFile/normalizeOrientation), en amont de
+		//tout apercu/export, il n'y a donc plus besoin de hack ici.
 
 		function changeMsg(){
 			if(confirmPreview != null){
@@ -1506,17 +1468,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		        }
 		    	currentImg.setAttribute("id","image-preview");
 		    	var imageExif = document.getElementById('image-preview');
-		    	//hack iphone,iPad : compense l'absence de prise en compte du tag EXIF
-		    	//par le canvas d'export sur iOS/Safari (voir getExifCwSteps ci-dessus)
-		    	var exifSteps = getExifCwSteps();
-		    	applyExifRotation(exifSteps);
 		    	cropper.options.exportZoom = photoExportZoom;
 
 		    	var image = cropper.getCroppedImageData();
 		    	document.querySelector('#specimenCarte img#photo').setAttribute("src", image);
 		    	document.querySelectorAll('.ezcrop-image-data')[0].value=image;
-		    	//on annule la rotation temporaire pour ne pas fausser l'affichage/la suite de l'edition
-		    	applyExifRotation(-exifSteps);
 			 });
 		 }
 		 if(document.getElementById('confirmPhoto') != null){

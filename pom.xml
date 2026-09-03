@@ -539,6 +539,14 @@
             <version>2.3.0</version>
         </dependency>
 
+        <!-- Lecture de l'orientation EXIF, y compris pour les fichiers HEIC/HEIF
+             (contrairement a exif-js qui ne sait lire que les JPEG/TIFF classiques). -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>exifr</artifactId>
+            <version>7.1.3</version>
+        </dependency>
+
         <!-- Conversion cote client des photos HEIC/HEIF (smartphones recents type Samsung/iPhone)
              en JPEG, format que les navigateurs savent afficher/dessiner sur un canvas. -->
         <dependency>

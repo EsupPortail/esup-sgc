@@ -118,6 +118,160 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  }
 
+	  // ---------------------------------------------------------------------
+	  // Correction de l'orientation EXIF
+	  // ---------------------------------------------------------------------
+	  // Deux cas de figure font que l'image affichee/exportee peut se retrouver
+	  // pivotee par rapport a ce que l'utilisateur attend :
+	  //  1) JPEG classique (photo prise directement depuis un iPhone) : les pixels
+	  //     sont stockes "bruts" (souvent en paysage) et le tag EXIF Orientation
+	  //     indique la rotation a appliquer a l'affichage. L'element <img> utilise
+	  //     pour l'apercu applique cette rotation automatiquement, mais le canvas
+	  //     utilise par ezcrop pour decouper/exporter l'image (drawImage) l'ignore.
+	  //  2) Photo HEIC/HEIF (format par defaut des iPhone recents) : le conteneur
+	  //     HEIF stocke une information de rotation similaire, mais la librairie de
+	  //     conversion heic2any ne l'applique pas toujours correctement lors de la
+	  //     conversion en JPEG (bug connu de la librairie).
+	  // Dans les deux cas, on corrige nous-memes les pixels UNE SEULE FOIS, des la
+	  // selection du fichier, en redessinant l'image sur un canvas selon la
+	  // matrice de transformation correspondant au tag EXIF Orientation. Le
+	  // fichier obtenu (sans metadonnee EXIF, deja "droit") est ensuite le seul
+	  // utilise par ezcrop, pour l'apercu comme pour l'export : les deux seront
+	  // donc toujours coherents, quel que soit le navigateur.
+	  // On utilise la librairie "exifr" (et non exif-js) car elle sait lire le tag
+	  // Orientation aussi bien sur des JPEG que sur des fichiers HEIC/HEIF.
+	  function getFileOrientation(file) {
+	    if (typeof window === 'undefined' || typeof window.exifr === 'undefined' || typeof window.exifr.orientation !== 'function') {
+	      return Promise.resolve(1);
+	    }
+	    return window.exifr.orientation(file).then(function (o) {
+	      return o || 1;
+	    })['catch'](function () {
+	      return 1;
+	    });
+	  }
+
+	  // ---------------------------------------------------------------------
+	  // Detection de capacite du navigateur : sait-il DEJA appliquer tout seul
+	  // la rotation EXIF lors du decodage d'une image (<img>/Image()) ?
+	  // ---------------------------------------------------------------------
+	  // Depuis 2020 environ (Chrome 81+, Firefox, et Safari 13.1+/iOS 13.4+),
+	  // les navigateurs appliquent par defaut `image-orientation: from-image`
+	  // : le tag EXIF Orientation est pris en compte des le DECODAGE de
+	  // l'image, ce qui affecte non seulement l'affichage <img> mais aussi
+	  // tout ce qui consomme ensuite ce bitmap, y compris canvas.drawImage().
+	  // Si on applique EN PLUS notre propre correction manuelle (en supposant,
+	  // comme le faisaient les tres vieux navigateurs, que le canvas ignore
+	  // l'EXIF), on pivote l'image DEUX FOIS (bug constate sur iPhone recents
+	  // : les dimensions "corrigees" restent identiques a l'original au lieu
+	  // d'etre inversees, symptome caracteristique d'une double rotation).
+	  // On detecte donc reellement la capacite du navigateur au lieu de
+	  // supposer, via une micro-image de test (2x1 px, orientation EXIF = 6) :
+	  // si le navigateur corrige tout seul, l'image chargee fera 1x2 px.
+	  var _browserAutoOrientPromise = null;
+	  // Image JPEG 2x1 px valide avec un vrai segment EXIF (APP1/TIFF) contenant
+	  // le tag Orientation=6. (Attention : un JPEG genere par de simples outils
+	  // comme ImageMagick "-set exif:Orientation" n'ecrit PAS forcement un
+	  // segment EXIF reel ; celui-ci a ete construit et verifie manuellement
+	  // pour contenir un veritable tag TIFF Orientation.)
+	  var ORIENTATION_TEST_IMAGE_B64 = '/9j/4QAiRXhpZgAASUkqAAgAAAABABIBAwABAAAABgAAAAAAAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAIDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAj/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=';
+
+	  function detectBrowserCanAutoOrientImage() {
+	    if (_browserAutoOrientPromise) {
+	      return _browserAutoOrientPromise;
+	    }
+	    _browserAutoOrientPromise = new Promise(function (resolve) {
+	      if (typeof Image === 'undefined') {
+	        resolve(false);
+	        return;
+	      }
+	      var img = new Image();
+	      img.onload = function () {
+	        resolve(img.width === 1 && img.height === 2);
+	      };
+	      img.onerror = function () { resolve(false); };
+	      img.src = 'data:image/jpeg;base64,' + ORIENTATION_TEST_IMAGE_B64;
+	    });
+	    return _browserAutoOrientPromise;
+	  }
+
+	  function applyOrientationTransform(ctx, orientation, width, height) {
+	    switch (orientation) {
+	      case 2: ctx.transform(-1, 0, 0, 1, width, 0); break;
+	      case 3: ctx.transform(-1, 0, 0, -1, width, height); break;
+	      case 4: ctx.transform(1, 0, 0, -1, 0, height); break;
+	      case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
+	      case 6: ctx.transform(0, 1, -1, 0, height, 0); break;
+	      case 7: ctx.transform(0, -1, -1, 0, height, width); break;
+	      case 8: ctx.transform(0, -1, 1, 0, 0, width); break;
+	      default: break; // 1 : rien a faire
+	    }
+	  }
+
+	  // Redessine `file` (une image JPEG/PNG deja decodable par le navigateur) sur un
+	  // canvas en appliquant la rotation/le miroir correspondant a `orientation`
+	  // (valeur EXIF 1 a 8), et renvoie un nouveau fichier "droit" (sans tag EXIF).
+	  function redrawWithOrientation(file, orientation) {
+	    return new Promise(function (resolve) {
+	      if (!file || !orientation || orientation === 1) {
+	        resolve(file);
+	        return;
+	      }
+	      var reader = new FileReader();
+	      reader.onload = function (e) {
+	        var img = new Image();
+	        img.onload = function () {
+	          var w = img.naturalWidth;
+	          var h = img.naturalHeight;
+	          var canvas = document.createElement('canvas');
+	          if (orientation >= 5 && orientation <= 8) {
+	            canvas.width = h;
+	            canvas.height = w;
+	          } else {
+	            canvas.width = w;
+	            canvas.height = h;
+	          }
+	          var ctx = canvas.getContext('2d');
+	          applyOrientationTransform(ctx, orientation, w, h);
+	          ctx.drawImage(img, 0, 0, w, h);
+	          canvas.toBlob(function (blob) {
+	            if (!blob) {
+	              resolve(file);
+	              return;
+	            }
+	            var newName = (file.name || 'photo.jpg').replace(/\.(png|jpe?g)$/i, '') + '.jpg';
+	            try {
+	              resolve(new File([blob], newName, { type: 'image/jpeg' }));
+	            } catch (e2) {
+	              blob.name = newName;
+	              resolve(blob);
+	            }
+	          }, 'image/jpeg', 0.92);
+	        };
+	        img.onerror = function () { resolve(file); };
+	        img.src = e.target.result;
+	      };
+	      reader.onerror = function () { resolve(file); };
+	      reader.readAsDataURL(file);
+	    });
+	  }
+
+	  // Corrige l'orientation d'un fichier JPEG/PNG "classique" (non HEIC) en se basant
+	  // sur son propre tag EXIF. NE FAIT RIEN si le navigateur sait deja
+	  // appliquer cette correction tout seul (cf. detectBrowserCanAutoOrientImage) :
+	  // sinon on pivoterait l'image une seconde fois (double rotation).
+	  function normalizeOrientation(file) {
+	    return detectBrowserCanAutoOrientImage().then(function (canAutoOrient) {
+	      if (canAutoOrient) {
+	        return file;
+	      }
+	      return getFileOrientation(file).then(function (orientation) {
+	        return redrawWithOrientation(file, orientation);
+	      });
+	    });
+	  }
+
+
 	  _createClass(Ezcrop, [{
 	    key: 'init',
 	    value: function init() {
@@ -242,11 +396,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (typeof this.options.onHeicConversionStart === 'function') {
 	          this.options.onHeicConversionStart();
 	        }
-	        convertHeicFileToJpeg(file).then(function (jpegFile) {
+	        // On lit l'orientation du fichier HEIC ORIGINAL (exifr sait le faire,
+	        // contrairement a exif-js) en parallele de sa conversion en JPEG par
+	        // heic2any, puis on applique cette orientation au resultat converti :
+	        // heic2any n'applique pas toujours correctement la rotation stockee
+	        // dans le conteneur HEIF, et ne recopie generalement aucun tag EXIF
+	        // dans le JPEG produit (le navigateur ne peut donc pas la corriger
+	        // tout seul). Par securite (si une version de heic2any recopiait
+	        // malgre tout un tag EXIF), on verifie l'orientation du JPEG
+	        // converti lui-meme : si un tag y est deja present ET que le
+	        // navigateur sait l'appliquer tout seul, on ne corrige pas nous-
+	        // memes pour eviter une double rotation.
+	        Promise.all([getFileOrientation(file), convertHeicFileToJpeg(file), detectBrowserCanAutoOrientImage()]).then(function (results) {
+	          var orientation = results[0];
+	          var jpegFile = results[1];
+	          var canAutoOrient = results[2];
+	          return getFileOrientation(jpegFile).then(function (jpegOwnOrientation) {
+	            if (canAutoOrient && jpegOwnOrientation > 1) {
+	              return jpegFile;
+	            }
+	            return redrawWithOrientation(jpegFile, orientation);
+	          });
+	        }).then(function (correctedFile) {
 	          if (typeof _this4.options.onHeicConversionEnd === 'function') {
 	            _this4.options.onHeicConversionEnd();
 	          }
-	          _this4.readFile(jpegFile);
+	          _this4.readFile(correctedFile);
 	        })['catch'](function () {
 	          if (typeof _this4.options.onHeicConversionEnd === 'function') {
 	            _this4.options.onHeicConversionEnd();
@@ -256,7 +431,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 
-	      this.readFile(file);
+	      normalizeOrientation(file).then(function (correctedFile) {
+	        _this4.readFile(correctedFile);
+	      })['catch'](function () {
+	        _this4.readFile(file);
+	      });
 	    }
 	  }, {
 	    key: 'readFile',
@@ -382,6 +561,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.setImageLoadedClass();
 
 	      this.imageLoaded = true;
+
 
 	      this.options.onImageLoaded();
 	    }
