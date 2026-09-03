@@ -15,6 +15,7 @@ var messages = {
 		REJECTED: "REJETÉ",
 		NEW: "NOUVEAU",
 		REQUEST_CHECKED: "VALIDÉ",
-		alertForcedEtat: "Vous devez cocher la case et choisir une action"
+		alertForcedEtat: "Vous devez cocher la case et choisir une action",
+		photoUnsupportedFormat: "Le format de cette photo n'est pas supporté ou n'a pas pu être converti. Essayez de désactiver le format HEIC/HEIF dans les réglages de l'appareil photo de votre téléphone (préférez JPEG), ou choisissez une autre photo."
 	};
 

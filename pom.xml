@@ -539,6 +539,14 @@
             <version>2.3.0</version>
         </dependency>
 
+        <!-- Conversion cote client des photos HEIC/HEIF (smartphones recents type Samsung/iPhone)
+             en JPEG, format que les navigateurs savent afficher/dessiner sur un canvas. -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>heic2any</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>

@@ -1397,6 +1397,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		    		alert(messages['photoTooSmall']);
 		    		return false;
 		    	}
+			  },onFileReaderError: function() {
+				  alert(messages['photoUnsupportedFormat']);
+			  },onHeicConversionStart: function() {
+				  if(ezcropInfo != null){
+					  ezcropInfo.classList.add('ezcrop-converting');
+				  }
+			  },onHeicConversionEnd: function() {
+				  if(ezcropInfo != null){
+					  ezcropInfo.classList.remove('ezcrop-converting');
+				  }
 			  },onFileChange: function(e) {
 		        var file = e.target.files[0];
 		        //on reinitialise l'orientation a chaque nouveau fichier pour eviter de garder

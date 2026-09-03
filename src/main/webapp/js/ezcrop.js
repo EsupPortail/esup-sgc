@@ -87,6 +87,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.init();
 	  }
 
+	  // Detecte les fichiers HEIC/HEIF (photos issues des iPhone/Samsung recents).
+	  // Le type MIME n'est pas toujours renseigne correctement par le navigateur/OS
+	  // (parfois vide, parfois 'image/heic'), on verifie donc aussi l'extension.
+	  function isHeicFile(file) {
+	    var type = (file.type || '').toLowerCase();
+	    if (type === 'image/heic' || type === 'image/heif' || type === 'image/heic-sequence' || type === 'image/heif-sequence') {
+	      return true;
+	    }
+	    var name = (file.name || '').toLowerCase();
+	    return (/\.(heic|heif)$/).test(name);
+	  }
+
+	  // Convertit un fichier HEIC/HEIF en JPEG via la librairie heic2any (chargee globalement),
+	  // afin que le canvas/Image du navigateur (qui ne sait pas decoder le HEIC) puisse l'afficher.
+	  function convertHeicFileToJpeg(file) {
+	    if (typeof window === 'undefined' || typeof window.heic2any !== 'function') {
+	      return Promise.reject(new Error('heic2any is not loaded'));
+	    }
+	    return window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 }).then(function (result) {
+	      var convertedBlob = Array.isArray(result) ? result[0] : result;
+	      var newName = (file.name || 'photo.heic').replace(/\.(heic|heif)$/i, '') + '.jpg';
+	      try {
+	        return new File([convertedBlob], newName, { type: 'image/jpeg' });
+	      } catch (e) {
+	        // Certains vieux navigateurs mobiles ne supportent pas le constructeur File
+	        convertedBlob.name = newName;
+	        return convertedBlob;
+	      }
+	    });
+	  }
+
 	  _createClass(Ezcrop, [{
 	    key: 'init',
 	    value: function init() {
@@ -201,8 +232,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'loadFile',
 	    value: function loadFile(file) {
+	      var _this4 = this;
+
+	      if (!file) {
+	        return;
+	      }
+
+	      if (isHeicFile(file)) {
+	        if (typeof this.options.onHeicConversionStart === 'function') {
+	          this.options.onHeicConversionStart();
+	        }
+	        convertHeicFileToJpeg(file).then(function (jpegFile) {
+	          if (typeof _this4.options.onHeicConversionEnd === 'function') {
+	            _this4.options.onHeicConversionEnd();
+	          }
+	          _this4.readFile(jpegFile);
+	        })['catch'](function () {
+	          if (typeof _this4.options.onHeicConversionEnd === 'function') {
+	            _this4.options.onHeicConversionEnd();
+	          }
+	          _this4.onFileReaderError();
+	        });
+	        return;
+	      }
+
+	      this.readFile(file);
+	    }
+	  }, {
+	    key: 'readFile',
+	    value: function readFile(file) {
 	      var fileReader = new FileReader();
-	      if (file && file.type.match('image')) {
+	      if (file && file.type && file.type.match('image')) {
 	        fileReader.readAsDataURL(file);
 	        fileReader.onload = this.onFileReaderLoaded.bind(this);
 	        fileReader.onerror = this.onFileReaderError.bind(this);
@@ -241,7 +301,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var files = Array.prototype.slice.call(e.dataTransfer.files, 0);
 	      files.some(function (file) {
-	        if (!file.type.match('image')) {
+	        if (!(file.type && file.type.match('image')) && !isHeicFile(file)) {
 	          return false;
 	        }
 

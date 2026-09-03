@@ -137,6 +137,26 @@ legend.scheduler-border {
     margin-top: 10px;
 }
 
+/* Indicateur visuel pendant la conversion cote client d'une photo HEIC/HEIF en JPEG */
+#image-cropper #ezcrop-info.ezcrop-converting {
+    opacity: 0.5;
+    pointer-events: none;
+    position: relative;
+}
+#image-cropper #ezcrop-info.ezcrop-converting::after {
+    content: "\21bb";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 28px;
+    transform: translate(-50%, -50%);
+    animation: ezcrop-spin 1s linear infinite;
+}
+@keyframes ezcrop-spin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
 #image-cropper .ezcrop-image-zoom-input {
   width : 170px;
   margin-left: 10px
