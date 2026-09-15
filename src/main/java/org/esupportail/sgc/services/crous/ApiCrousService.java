@@ -340,7 +340,11 @@ public class ApiCrousService {
 
 	private CrousResponseStatus postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {
 		if(user.getDueDate()!=null && user.getDueDate().isBefore(LocalDateTime.now())) {
-			log.info(String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
+			String errorMsg = String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate());
+			log.info(errorMsg);
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(errorMsg, user.getEppn(), null, null, esupSgcOperation, null);
+			crousHttpStatusCodeException.setBlocking(true);
+			crousLogService.logErrorCrous(crousHttpStatusCodeException);
 			return CrousResponseStatus.KO_BLOCKED;
 		}
 		String url = webUrl + "/beforeizly/v1/rightholders";
@@ -380,7 +384,11 @@ public class ApiCrousService {
 		RightHolder rightHolder = this.computeEsupSgcRightHolder(user, false);
 		// hack crous étudiant doit rester étudiant - si on tente de changer - log d'erreur, on ne met pas à jour, et on n'envoie pas la carte dans le crous/izly (return false)
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate()) && !Long.valueOf(10).equals(rightHolder.getIdCompanyRate())) {
-			log.error(String.format("%s is student in crous/izly (IdCompagnYRate = 10) - IdCompagnYRate %s can't be updated to %s", eppn, oldRightHolder.getIdCompanyRate(), rightHolder.getIdCompanyRate()));
+			String errorMsg = String.format("%s is student in crous/izly (IdCompagnYRate = 10) - IdCompagnYRate %s can't be updated to %s", eppn, oldRightHolder.getIdCompanyRate(), rightHolder.getIdCompanyRate());
+			log.error(errorMsg);
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException(errorMsg, eppn, null, null, esupSgcOperation, null);
+			crousHttpStatusCodeException.setBlocking(true);
+			crousLogService.logErrorCrous(crousHttpStatusCodeException);
 			return CrousResponseStatus.KO_BLOCKED;
 		}
 		// hack crous tarifs spéciaux étudiants ~boursiers
