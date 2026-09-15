@@ -4,13 +4,14 @@ import org.esupportail.sgc.services.crous.CrousErrorLog;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
-public interface CrousErrorLogRepository extends PagingAndSortingRepository<CrousErrorLog, Long>, CrudRepository<CrousErrorLog, Long> {
+public interface CrousErrorLogRepository extends PagingAndSortingRepository<CrousErrorLog, Long>, CrudRepository<CrousErrorLog, Long>, JpaSpecificationExecutor<CrousErrorLog> {
     Page<CrousErrorLog> findAll(Example<CrousErrorLog> searchCrousErrorLogQuery, Pageable pageable);
 
     @Query("SELECT DISTINCT c.code FROM CrousErrorLog c WHERE c.code IS NOT NULL order by c.code")

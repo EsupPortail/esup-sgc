@@ -62,7 +62,55 @@ public class CrousErrorLog {
     private String crousUrl;
 
     Integer tryCount = 1;
-    
+
+    /*
+        Transient search-only fields used by the crouserrorlogs search form (like filtering).
+        Not persisted : they are matched against userAccount.name, userAccount.email, userAccount.eppn and card.csn.
+    */
+    @Transient
+    private String name;
+
+    @Transient
+    private String mail;
+
+    @Transient
+    private String eppn;
+
+    @Transient
+    private String csn;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMail() {
+        return this.mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public String getEppn() {
+        return this.eppn;
+    }
+
+    public void setEppn(String eppn) {
+        this.eppn = eppn;
+    }
+
+    public String getCsn() {
+        return this.csn;
+    }
+
+    public void setCsn(String csn) {
+        this.csn = csn;
+    }
+
     public Long getCardId() {
     	if(card!=null) {
     		return card.getId();

@@ -50,8 +50,28 @@
                             <option th:each="msg : ${crousMessages}" th:value="${msg}" th:text="${msg}"></option>
                         </select>
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-md-3">
-                        <br/>
+                        <label th:text="#{common.name}">Nom</label>
+                        <input type="text" class="form-control" th:field="*{name}"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label th:text="#{common.mail}">Mail</label>
+                        <input type="text" class="form-control" th:field="*{mail}"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label>EPPN</label>
+                        <input type="text" class="form-control" th:field="*{eppn}"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label>CSN</label>
+                        <input type="text" class="form-control" th:field="*{csn}"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <br/>
+                    <div class="col-md-3">
                         <button type="submit" class="btn btn-success"   th:text="#{list.filter}">Filtrer</button>
                     </div>
                 </div>

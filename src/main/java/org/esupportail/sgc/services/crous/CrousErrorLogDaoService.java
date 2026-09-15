@@ -4,10 +4,13 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.Log;
 import org.esupportail.sgc.domain.User;
 import org.esupportail.sgc.repositories.CrousErrorLogRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,7 +74,41 @@ public class CrousErrorLogDaoService {
                 .withIgnoreCase();
         Example<CrousErrorLog> searchCrousErrorLogQuery = Example.of(searchCrousErrorLog, matcher);
 
-        return crousErrorLogRepository.findAll(searchCrousErrorLogQuery, pageable);
+        Specification<CrousErrorLog> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Reuse the existing exact-match / case-insensitive behavior for the persisted fields
+            Predicate examplePredicate = QueryByExamplePredicateBuilder.getPredicate(root, cb, searchCrousErrorLogQuery);
+            if (examplePredicate != null) {
+                predicates.add(examplePredicate);
+            }
+
+            // Additional "like" filters on name / mail / csn / eppn (from related userAccount / card entities)
+            if (StringUtils.isNotBlank(searchCrousErrorLog.getName())) {
+                Join<CrousErrorLog, User> userJoin = root.join("userAccount", JoinType.LEFT);
+                predicates.add(cb.like(cb.lower(userJoin.get("name")), "%" + searchCrousErrorLog.getName().toLowerCase() + "%"));
+            }
+            if (StringUtils.isNotBlank(searchCrousErrorLog.getMail())) {
+                Join<CrousErrorLog, User> userJoin = root.join("userAccount", JoinType.LEFT);
+                predicates.add(cb.like(cb.lower(userJoin.get("email")), "%" + searchCrousErrorLog.getMail().toLowerCase() + "%"));
+            }
+            if (StringUtils.isNotBlank(searchCrousErrorLog.getEppn())) {
+                Join<CrousErrorLog, User> userJoin = root.join("userAccount", JoinType.LEFT);
+                predicates.add(cb.like(cb.lower(userJoin.get("eppn")), "%" + searchCrousErrorLog.getEppn().toLowerCase() + "%"));
+            }
+            if (StringUtils.isNotBlank(searchCrousErrorLog.getCsn())) {
+                Join<CrousErrorLog, Card> cardJoin = root.join("card", JoinType.LEFT);
+                predicates.add(cb.like(cb.lower(cardJoin.get("csn")), "%" + searchCrousErrorLog.getCsn().toLowerCase() + "%"));
+            }
+
+            if (predicates.isEmpty()) {
+                return cb.conjunction();
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+
+        return crousErrorLogRepository.findAll(spec, pageable);
     }
 
     public Long countFindCrousErrorLogsByCard(Card card) {
