@@ -172,11 +172,13 @@
                                                th:if="${searchBean.freeField != null}"
                                                th:id="'freeField' + ${status.index}"
                                                th:name="'freeField[' + ${status.index} + ']'"
-                                               th:value="${searchBean.freeField[status.index]}" />
+                                               th:value="${searchBean.freeField[status.index]}"
+                                               th:unless="${searchBean.freeField[status.index] == null}"
+                                        />
 
                                         <div th:if="${fieldsValueEncoded != null}">
                                             <div th:each="entry : ${fieldsValueEncoded}">
-                                                <div th:if="${entry.key == status.index}">
+                                                <div th:if="${entry.key eq status.index.toString()}">
                                                     <div th:each="entry2 : ${entry.value}">
                                                         <input type="hidden"
                                                                th:id="'freeFieldValue' + ${entry.key}"
