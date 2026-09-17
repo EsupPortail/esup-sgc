@@ -511,6 +511,7 @@ public class UserCardController {
 		if(shibService.isPreviousAdmin(auth)){
 			User user = userDaoService.findUser(eppn);
 			user.setRequestFree(true);
+			user.setFirstRequestFree(true);
             userDaoService.merge(user);
 			logService.log(user.getCards().get(0).getId(), ACTION.FORCEDFREEREQUEST, RETCODE.SUCCESS, "", user.getEppn(), null);
 		}

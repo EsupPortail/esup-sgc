@@ -96,6 +96,7 @@ public class ResynchronisationUserService {
 		dummyUser.setExternalCard(user.getExternalCard());
 		dummyUser.setNbCards(user.getNbCards());
 		dummyUser.setRequestFree(user.isRequestFree());
+		dummyUser.setFirstRequestFree(user.isFirstRequestFree());
 		dummyUser.setDifPhoto(user.getDifPhoto());
 
 		UserInfoService.SynchroCmd syncUserInfoServiceFlag = userInfoService.setAdditionalsInfo(dummyUser, null);
