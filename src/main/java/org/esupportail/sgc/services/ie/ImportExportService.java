@@ -29,12 +29,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.supercsv.cellprocessor.ConvertNullTo;
-import org.supercsv.cellprocessor.FmtDate;
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.dozer.CsvDozerBeanWriter;
-import org.supercsv.prefs.CsvPreference;
+import org.apache.commons.csv.CSVPrinter;
 
 @Service
 public class ImportExportService {
@@ -102,21 +97,17 @@ public class ImportExportService {
 	}
 
 
-	public static CellProcessor[] getProcessors(List<String> fields) {
+	public static boolean[] getDateFieldsMask(List<String> fields) {
 
 		int fieldsSize = fields.size();
-		final CellProcessor[] processors = new CellProcessor[fieldsSize];
+		final boolean[] isDateField = new boolean[fieldsSize];
 		int i = 0;
 		for(String field : fields){
-			if(Arrays.asList(processorsDateType).contains(field)){
-				processors[i] =  new Optional(new FmtDate("dd-MM-yyyy HH:mm"));
-			}else{
-				processors[i] = new ConvertNullTo("");
-			}
+			isDateField[i] = Arrays.asList(processorsDateType).contains(field);
 			i++;
 		}
 
-		return processors;
+		return isDateField;
 	}
 
 	public List<String> getHeadersFromProperties(List<String> fields){
@@ -139,13 +130,11 @@ public class ImportExportService {
 
 	@Transactional(readOnly = true)
 	public void exportCsv2OutputStream(CardSearchBean searchBean, String eppn, List<String> fields, OutputStream outputStream) {
-		CsvDozerBeanWriter beanWriter = null;
+		CSVPrinter csvPrinter = null;
 		Writer writer = null;
-		String[] FIELD_MAPPING = new String[fields.size()];
-		int i = 0;
+		List<String> fieldMapping = new ArrayList<String>(fields.size());
 		for(String field : fields) {
-			FIELD_MAPPING[i] = field.replaceFirst("card.", "");
-			i++;
+			fieldMapping.add(field.replaceFirst("card.", ""));
 		}
 		
 		try{
@@ -153,17 +142,13 @@ public class ImportExportService {
 			log.info("CSV export start: {} cards, {} fields, batchSize={}", totalCards, fields.size(), CSV_EXPORT_BATCH_SIZE);
 			writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
 
-			beanWriter =  new CsvDozerBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+			csvPrinter = new CSVPrinter(writer, CsvExportUtils.EXCEL_NORTH_EUROPE);
 
 			List<String> fieldsProperties = getHeadersFromProperties(fields);
 
-			String headerFr[] = (String[]) fieldsProperties.toArray(new String[0]);
-
-			beanWriter.writeHeader(headerFr);
+			csvPrinter.printRecord(fieldsProperties);
 			
-			final CellProcessor[] processors = this.getProcessors(fields);
-
-            beanWriter.configureBeanMapping(Card.class, FIELD_MAPPING);
+			final boolean[] isDateField = this.getDateFieldsMask(fields);
 
 			int firstResult = 0;
 			long exportedCards = 0;
@@ -176,10 +161,11 @@ public class ImportExportService {
 					break;
 				}
 				for(Card card : cards) {
-					beanWriter.write(card, processors);
+					Object[] row = CsvExportUtils.extractRow(card, fieldMapping, isDateField, "dd-MM-yyyy HH:mm");
+					csvPrinter.printRecord(row);
 					exportedCards++;
 				}
-				beanWriter.flush();
+				csvPrinter.flush();
 				log.trace("CSV export progress: {}/{} cards written, heapUsed={} MB", exportedCards, totalCards, usedHeapMb());
 				entityManager.clear();
 				firstResult += cards.size();
@@ -188,9 +174,9 @@ public class ImportExportService {
 		} catch(Exception e){
 			log.warn("Interruption de l'export", e);
 		} finally {
-			if(beanWriter!=null) {
+			if(csvPrinter!=null) {
 				try {
-					beanWriter.close();
+					csvPrinter.close();
 				} catch (IOException e) {
 					log.warn("IOException ...", e);
 				}

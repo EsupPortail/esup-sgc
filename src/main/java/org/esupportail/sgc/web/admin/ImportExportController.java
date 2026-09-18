@@ -19,6 +19,7 @@ import org.esupportail.sgc.domain.Card;
 import org.esupportail.sgc.domain.ExportBean;
 import org.esupportail.sgc.services.AppliConfigService;
 import org.esupportail.sgc.services.ExportService;
+import org.esupportail.sgc.services.ie.CsvExportUtils;
 import org.esupportail.sgc.services.ie.ImportExportService;
 import org.esupportail.sgc.web.manager.CardSearchBean;
 import org.slf4j.Logger;
@@ -29,9 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
+import org.apache.commons.csv.CSVPrinter;
 
 @RequestMapping("/admin/import")
 @Controller
@@ -106,10 +105,10 @@ public class ImportExportController {
 		
 		Writer writer = new OutputStreamWriter(response.getOutputStream(), "UTF8");
 		
-		ICsvBeanWriter beanWriter =  new CsvBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+		CSVPrinter csvPrinter = new CSVPrinter(writer, CsvExportUtils.EXCEL_NORTH_EUROPE);
 
-		beanWriter.writeHeader(header);
-		
+		csvPrinter.printRecord((Object[]) header);
+
 		try{
 			if("editable".equals(stats)) {
 				int firstResult = 0;
@@ -119,26 +118,26 @@ public class ImportExportController {
 						break;
 					}
 					for(Object[] row : rows) {
-						beanWriter.write(exportService.toEditableExportBean(row), header);
+						csvPrinter.printRecord(CsvExportUtils.extractRow(exportService.toEditableExportBean(row), header));
 					}
-					beanWriter.flush();
+					csvPrinter.flush();
 					firstResult += rows.size();
 				}
 			} else {
 				List<ExportBean>  objs = exportService.getBean(stats, locale);
 				for(ExportBean item : objs) {
-					beanWriter.write(item, header);
+					csvPrinter.printRecord(CsvExportUtils.extractRow(item, header));
 				}
 			}
-			beanWriter.flush();
-			
+			csvPrinter.flush();
+
 			writer.close();
 			
 		}catch(Exception e){
 			log.error("interruption de l'export !",e);
 		} finally {
-            if( beanWriter != null ) {
-                beanWriter.close();
+            if( csvPrinter != null ) {
+                csvPrinter.close();
             }
 		}
 	}
@@ -155,24 +154,24 @@ public class ImportExportController {
 		
 		Writer writer = new OutputStreamWriter(response.getOutputStream(), "UTF8");
 		
-		ICsvBeanWriter beanWriter =  new CsvBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+		CSVPrinter csvPrinter = new CSVPrinter(writer, CsvExportUtils.EXCEL_NORTH_EUROPE);
 
-		beanWriter.writeHeader(header);
-		
+		csvPrinter.printRecord((Object[]) header);
+
 		try{
 			List<ExportBean>  objs = exportService.getBeanTableStats(locale);
 			for(ExportBean item : objs) {
-				beanWriter.write(item, header);
+				csvPrinter.printRecord(CsvExportUtils.extractRow(item, header));
 			}
-			beanWriter.flush();
-			
+			csvPrinter.flush();
+
 			writer.close();
 			
 		}catch(Exception e){
 			log.error("interruption de l'export !",e);
 		} finally {
-            if( beanWriter != null ) {
-                beanWriter.close();
+            if( csvPrinter != null ) {
+                csvPrinter.close();
             }
 		}
 	}

@@ -36,10 +36,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.supercsv.cellprocessor.ConvertNullTo;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.dozer.CsvDozerBeanWriter;
-import org.supercsv.prefs.CsvPreference;
+import org.apache.commons.csv.CSVPrinter;
+import org.esupportail.sgc.services.ie.CsvExportUtils;
 
 @RequestMapping("/admin/crouserrorlogs")
 @Controller
@@ -51,11 +49,6 @@ public class CrousErrorLogController {
 	public final static String[] CSV_FIELDS = new String[] {"code", "message", "field", "crousOperation", "esupSgcOperation", "date", "blocking", "eppn", "ine", "name", "mail", "csn", "crousUrl"};
 	
 	public final static String[] FIELD_MAPPING = new String[] {"code", "message", "field", "crousOperation", "esupSgcOperation", "date", "blocking", "userAccount.eppn", "userAccount.supannCodeINE", "userAccount.name", "userAccount.email", "card.csn", "crousUrl"};
-	
-	public final static CellProcessor[] CSV_PROCESSORS = new CellProcessor[] {new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
-																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
-																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), 
-																			 new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo(""), new ConvertNullTo("")};
 
 	@Resource
 	CrousService crousService;
@@ -216,15 +209,14 @@ public class CrousErrorLogController {
 		response.setHeader("Set-Cookie", "fileDownload=true; path=/");
 		response.setHeader("Content-disposition", "attachment;filename=" + reportName);
 		
-		CsvDozerBeanWriter beanWriter = null;
+		CSVPrinter csvPrinter = null;
 		Writer writer = null;
 		try{
 			OutputStream outputStream = response.getOutputStream();
 			writer = new OutputStreamWriter(outputStream, "UTF8");
-			beanWriter =  new CsvDozerBeanWriter(writer, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-			beanWriter.writeHeader(CSV_FIELDS);
+			csvPrinter = new CSVPrinter(writer, CsvExportUtils.EXCEL_NORTH_EUROPE);
+			csvPrinter.printRecord((Object[]) CSV_FIELDS);
 
-            beanWriter.configureBeanMapping(CrousErrorLog.class, FIELD_MAPPING);
 			int firstResult = 0;
 			while(true) {
 				List<CrousErrorLog> logs = crousErrorLogDaoService.findAllCrousErrorLogs("date", "desc", firstResult, CSV_EXPORT_BATCH_SIZE);
@@ -232,18 +224,18 @@ public class CrousErrorLogController {
 					break;
 				}
 				for(CrousErrorLog log : logs) {
-					beanWriter.write(log, CSV_PROCESSORS);
+					csvPrinter.printRecord(CsvExportUtils.extractRow(log, FIELD_MAPPING));
 				}
-				beanWriter.flush();
+				csvPrinter.flush();
 				entityManager.clear();
 				firstResult += logs.size();
 			}
 		} catch(Exception e){
 			log.warn("Interruption de l'export", e);
 		} finally {
-			if(beanWriter!=null) {
+			if(csvPrinter!=null) {
 				try {
-					beanWriter.close();
+					csvPrinter.close();
 				} catch (IOException e) {
 					log.warn("IOException ...", e);
 				}
