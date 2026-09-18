@@ -179,7 +179,7 @@
         <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-core</artifactId>
-            <version>3.3.3</version>
+            <version>3.3.8</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-core</artifactId>
