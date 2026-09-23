@@ -1433,6 +1433,16 @@ document.addEventListener('DOMContentLoaded', function() {
 			ezcropPreview.style.border = "2px dashed #ccc";
 		});
 
+		//clic sur l'aperçu (No_image_s.jpg) => ouvre le sélecteur de fichier tant qu'aucune photo n'est chargée
+		ezcropPreview.addEventListener('click', function() {
+			if (!ezcropPreview.classList.contains('ezcrop-image-loaded')) {
+				var fileInput = document.querySelector('.ezcrop-image-input');
+				if (fileInput != null) {
+					fileInput.click();
+				}
+			}
+		});
+
 	    document.getElementById('rotate-ccw').addEventListener('click', function() {
 	        cropper.rotateCCW();
 	        cropper.options.exportZoom = 2;

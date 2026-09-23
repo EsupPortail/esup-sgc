@@ -132,6 +132,10 @@ legend.scheduler-border {
   text-align: center;
 }
 
+#image-cropper .ezcrop-preview:not(.ezcrop-image-loaded) {
+  cursor: pointer;
+}
+
 #image-cropper #ezcrop-info p {
     font-weight: bold;
     margin-top: 10px;
