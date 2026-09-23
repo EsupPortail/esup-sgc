@@ -487,6 +487,15 @@ public class DbToolService {
 				// UserAgentParserService (le "Mac OS X" des vrais Mac de bureau reste inchangé).
 				sql += "update card set request_os='iOS' where request_os in ('Mac OS X (iPhone)', 'Mac OS X (iPad)');";
 
+				// Les variantes de version/type d'appareil ("iOS 7 (iPhone)", "iOS 9 (iPad)"...)
+				// sont elles aussi ramenées au simple libellé "iOS".
+				sql += "update card set request_os='iOS' where request_os like 'iOS%' and request_os<>'iOS';";
+
+				// Idem pour Android : toutes les variantes de version/type d'appareil ("Android 1.x",
+				// "Android 4.x Tablet", "Android Mobile", "Android Tablet"...) sont ramenées au simple
+				// libellé "Android".
+				sql += "update card set request_os='Android' where request_os like 'Android%' and request_os<>'Android';";
+
 				// Le numéro de version majeur du navigateur n'est plus stocké (cf. UserAgentParserService) :
 				// on retire ici le numéro de version en fin de valeur (ex : "Chrome 152" -> "Chrome",
 				// "Firefox 15" -> "Firefox") pour les données déjà en base. Les libellés sans version
