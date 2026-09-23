@@ -340,8 +340,8 @@ public class ApiCrousService {
 
 	private CrousResponseStatus postRightHolder(User user, EsupSgcOperation esupSgcOperation) throws CrousHttpStatusCodeException {
 		if(user.getDueDate()!=null && user.getDueDate().isBefore(LocalDateTime.now())) {
-			log.info(String.format("%s not sent in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
-			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException("Appel api crous avorté : la date de fin de l'utilisateur est dans le passé", user.getEppn(), null, null, esupSgcOperation, null);
+			log.info(String.format("%s not sent/posted/created in CROUS because his due date is in past : %s", user.getEppn(), user.getDueDate()));
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException("Appel API CROUS avorté : l'utilisateur a une date de fin Esup-SGC dépassée et ne peut pas être créé dans le CROUS.", user.getEppn(), null, null, esupSgcOperation, null);
 			crousHttpStatusCodeException.setBlocking(true);
 			crousLogService.logErrorCrousAsync(crousHttpStatusCodeException);
 			return CrousResponseStatus.KO_BLOCKED;
@@ -384,7 +384,7 @@ public class ApiCrousService {
 		// hack crous étudiant doit rester étudiant - si on tente de changer - log d'erreur, on ne met pas à jour, et on n'envoie pas la carte dans le crous/izly (return false)
 		if(Long.valueOf(10).equals(oldRightHolder.getIdCompanyRate()) && !Long.valueOf(10).equals(rightHolder.getIdCompanyRate())) {
 			log.error(String.format("%s is student in crous/izly (IdCompagnYRate = 10) - IdCompagnYRate %s can't be updated to %s", eppn, oldRightHolder.getIdCompanyRate(), rightHolder.getIdCompanyRate()));
-			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException("Appel api crous avorté : l'utilisateur a un tarif étudiant et ne peut pas être modifié sur un autre tarif", eppn, null, null, esupSgcOperation, null);
+			CrousHttpStatusCodeException crousHttpStatusCodeException = new CrousHttpStatusCodeException("Appel API CROUS avorté : le compte CROUS est associé à un tarif étudiant qui ne peut pas être remplacé par un autre tarif.", eppn, null, null, esupSgcOperation, null);
 			crousHttpStatusCodeException.setBlocking(true);
 			crousLogService.logErrorCrousAsync(crousHttpStatusCodeException);
 			return CrousResponseStatus.KO_BLOCKED;
