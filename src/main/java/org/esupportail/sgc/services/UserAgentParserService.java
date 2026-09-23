@@ -6,12 +6,15 @@ import ua_parser.Parser;
 
 /**
  * Remplace l'ancienne librairie eu.bitwalker:UserAgentUtils (abandonnée depuis 2016)
- * par com.github.ua-parser:uap-java, activement maintenue.
+ * par com.github.ua-parser:uap-java.
  *
- * Depuis la "UA string freeze" imposée par les navigateurs (Chrome/Edge/Firefox), l'entête
- * User-Agent ne permet plus de distinguer Windows 10 de Windows 11 : les deux se présentent
- * comme "Windows NT 10.0". On regroupe donc volontairement ces 2 OS sous le libellé
- * "Windows 10/11" (voir aussi la migration de données dans DbToolService, passage en 3.6.x).
+ * Navigateur et OS ne sont plus renvoyés qu'à granularité "famille" (ex : "Chrome",
+ * "Windows", "iOS"), sans numéro de version ni distinction d'appareil : les versions de
+ * navigateurs évoluent trop vite pour rester statistiquement utiles, et depuis la "UA string
+ * freeze" imposée par les navigateurs (Chrome/Edge/Firefox), l'entête User-Agent ne permet
+ * plus de distinguer par exemple Windows 10 de Windows 11 (les deux se présentent comme
+ * "Windows NT 10.0"). Voir aussi la migration des données déjà en base dans DbToolService,
+ * passage en 3.6.x.
  */
 @Service
 public class UserAgentParserService {
@@ -41,9 +44,9 @@ public class UserAgentParserService {
 			// conserve le libellé historique produit par UserAgentUtils
 			family = "Microsoft Edge";
 		}
-		if (client.userAgent.major != null) {
-			return family + " " + client.userAgent.major;
-		}
+		// Le numéro de version majeur n'a plus d'intérêt statistique (mises à jour trop
+		// fréquentes des navigateurs) : on ne conserve que la famille (ex : "Chrome",
+		// "Firefox"), cf. migration 3.6.x dans DbToolService qui aligne les données déjà en base.
 		return family;
 	}
 
@@ -52,24 +55,11 @@ public class UserAgentParserService {
 		if (family == null || family.isEmpty() || "Other".equals(family)) {
 			return "";
 		}
-		String deviceFamily = client.device.family;
-		if ("iOS".equals(family)) {
-			// UserAgentUtils exposait l'OS des idevices comme des variantes de "Mac OS X"
-			if (deviceFamily != null && deviceFamily.contains("iPad")) {
-				return "Mac OS X (iPad)";
-			}
-			return "Mac OS X (iPhone)";
-		}
-		if ("Windows".equals(family)) {
-			// Windows 10 et 11 sont indiscernables via le User-Agent (UA string freeze)
-			if ("10".equals(client.os.major)) {
-				return "Windows 10/11";
-			}
-			return client.os.major != null ? family + " " + client.os.major : family;
-		}
-		// Pour les autres OS (Mac OS X, Android, Chrome OS, Ubuntu, Linux...), on ne garde
-		// que la famille : historiquement peu/pas de granularité utile était stockée pour
-		// ces plateformes, et cela évite de fragmenter les statistiques inutilement.
+		// On ne garde que la famille de l'OS, sans version ni distinction d'appareil
+		// (ex : "Windows" pour toutes versions - indiscernables via l'User-Agent depuis la
+		// UA string freeze -, "iOS" pour iPhone/iPad, "Mac OS X", "Android", "Chrome OS",
+		// "Ubuntu", "Linux"...) : cf. migration 3.6.x dans DbToolService qui aligne les
+		// données déjà en base.
 		return family;
 	}
 

@@ -476,13 +476,25 @@ public class DbToolService {
 			}
 			if("3.5.x".equals(esupSgcVersion)) {
 				// Migration eu.bitwalker:UserAgentUtils (abandonnée depuis 2016) -> com.github.ua-parser:uap-java.
-				// Les navigateurs figent désormais l'User-Agent à "Windows NT 10.0" pour Windows 10
-				// ET Windows 11 (UA string freeze) : les 2 OS sont donc indiscernables via l'entête
-				// HTTP. Les valeurs déjà stockées sous "Windows 10" sont donc renommées en
-				// "Windows 10/11" pour refléter cette ambiguïté, valeur qui sera aussi produite par
-				// UserAgentParserService pour toute nouvelle demande de carte.
-				String sql2 = "update card set request_os='Windows 10/11' where request_os='Windows 10';";
-				doSqlUpdate(sql2);
+				// Windows 10, 11... sont indiscernables via l'User-Agent (UA string freeze) : on
+				// aligne toutes les valeurs "Windows*" déjà en base (Windows 7, Windows 8,
+				// Windows 8.1, Windows 10...) sur le simple libellé "Windows", qui sera aussi
+				// produit par UserAgentParserService pour toute nouvelle demande de carte.
+				String sql = "update card set request_os='Windows' where request_os like 'Windows%' and request_os<>'Windows';";
+
+				// De même, les OS iPhone/iPad étaient historiquement stockés comme des variantes
+				// de "Mac OS X" ; on les aligne sur le simple libellé "iOS" désormais produit par
+				// UserAgentParserService (le "Mac OS X" des vrais Mac de bureau reste inchangé).
+				sql += "update card set request_os='iOS' where request_os in ('Mac OS X (iPhone)', 'Mac OS X (iPad)');";
+
+				// Le numéro de version majeur du navigateur n'est plus stocké (cf. UserAgentParserService) :
+				// on retire ici le numéro de version en fin de valeur (ex : "Chrome 152" -> "Chrome",
+				// "Firefox 15" -> "Firefox") pour les données déjà en base. Les libellés sans version
+				// en fin de chaîne (ex : "Chrome Mobile", "Safari", "Microsoft Edge") ne sont pas affectés.
+				sql += "update card set request_browser=regexp_replace(request_browser, '\\s+[0-9]+(\\.[0-9]+)*$', '') where request_browser ~ '\\s+[0-9]+(\\.[0-9]+)*$';";
+
+				doSqlUpdate(sql);
+
 				esupSgcVersion = "3.6.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
