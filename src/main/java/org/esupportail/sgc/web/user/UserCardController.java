@@ -1,6 +1,6 @@
 package org.esupportail.sgc.web.user;
 
-import eu.bitwalker.useragentutils.UserAgent;
+import org.esupportail.sgc.services.UserAgentParserService;
 import org.apache.commons.io.IOUtils;
 import org.esupportail.sgc.dao.*;
 import org.esupportail.sgc.domain.*;
@@ -136,6 +136,9 @@ public class UserCardController {
 
     @Resource
     TemplateCardDaoService templateCardDaoService;
+
+	@Resource
+	UserAgentParserService userAgentParserService;
 	
 	@RequestMapping
 	public String index(Locale locale, HttpServletRequest request, Model uiModel, @RequestHeader("User-Agent") String userAgent) {
@@ -206,9 +209,9 @@ public class UserCardController {
 			defaultPhotoMd5 = user.getDefaultPhoto().getBigFile().getMd5();
 		}
 		
-		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
+		UserAgentParserService.ParsedUserAgent parsedUserAgent = userAgentParserService.parse(userAgent);
 		uiModel.addAttribute("sizeMax", appliConfigService.getFileSizeMax()/1000);
-		uiModel.addAttribute("deviceType", userAgentUtils.getOperatingSystem().getDeviceType());
+		uiModel.addAttribute("deviceType", parsedUserAgent.deviceType());
 		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user));
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
 		uiModel.addAttribute("defaultPhotoMd5", defaultPhotoMd5);

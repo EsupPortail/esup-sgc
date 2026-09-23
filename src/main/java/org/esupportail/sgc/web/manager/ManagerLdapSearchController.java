@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import eu.bitwalker.useragentutils.UserAgent;
+import org.esupportail.sgc.services.UserAgentParserService;
 
 @RequestMapping("/manager")
 @Controller	
@@ -74,6 +74,9 @@ public class ManagerLdapSearchController {
 
     @Resource
     UserDaoService userDaoService;
+
+	@Resource
+	UserAgentParserService userAgentParserService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -137,9 +140,9 @@ public class ManagerLdapSearchController {
 			defaultPhotoMd5 = user.getDefaultPhoto().getBigFile().getMd5();
 		}
 
-		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
-		
-		uiModel.addAttribute("deviceType", userAgentUtils.getOperatingSystem().getDeviceType());
+		UserAgentParserService.ParsedUserAgent parsedUserAgent = userAgentParserService.parse(userAgent);
+
+		uiModel.addAttribute("deviceType", parsedUserAgent.deviceType());
 		uiModel.addAttribute("templateCard", templateCardService.getTemplateCard(user));
 		uiModel.addAttribute("configUserMsgs", userService.getConfigMsgsUser());
 		uiModel.addAttribute("defaultPhotoMd5", defaultPhotoMd5);

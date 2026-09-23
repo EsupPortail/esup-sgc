@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import eu.bitwalker.useragentutils.UserAgent;
+import org.esupportail.sgc.services.UserAgentParserService;
 import org.esupportail.sgc.dao.BigFileDaoService;
 import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.dao.UserDaoService;
@@ -111,6 +111,9 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 	@Resource
 	ObjectMapper objectMapper;
 
+	@Resource
+	UserAgentParserService userAgentParserService;
+
 	/**
 	 * Example to use it :
 	 * curl   -F "eppn=toto@univ-ville.fr" -F "difPhotoTransient=true" -F "crousTransient=true" -F "europeanTransient=true" -F "PhotoFile.file=@/tmp/photo-toto.jpg" https://esup-sgc.univ-ville.fr/wsrest/api
@@ -144,9 +147,9 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 			if(userService.isFirstRequest(user) || userService.isFreeRenewal(user) || userService.isPaidRenewal(user) || userService.isFreeNew(user) || cardEtatService.hasRejectedCard(eppn)) {
 
 				if(!cardEtatService.hasNewCard(eppn)){
-					UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
-					String navigateur = userAgentUtils.getBrowser().getName();
-					String systeme = userAgentUtils.getOperatingSystem().getName();
+					UserAgentParserService.ParsedUserAgent parsedUserAgent = userAgentParserService.parse(userAgent);
+					String navigateur = parsedUserAgent.browserName();
+					String systeme = parsedUserAgent.osName();
 			
 					// TODO : use cardEtatService.setCardEtat !
 					card.setEppn(eppn);

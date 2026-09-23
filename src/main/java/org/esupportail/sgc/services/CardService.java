@@ -6,7 +6,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.commons.codec.binary.Base64;
 import org.esupportail.sgc.dao.*;
 import org.esupportail.sgc.domain.*;
@@ -75,6 +74,9 @@ public class CardService {
 
     @Resource
     UserDaoService userDaoService;
+
+	@Resource
+	UserAgentParserService userAgentParserService;
 
     public Card findLastCardByEppnEquals(String eppn) {
 		Card lastCard = null;
@@ -257,9 +259,9 @@ public class CardService {
 	public boolean requestNewCard(Card card, String userAgent, String eppn, HttpServletRequest request, boolean requestUserIsManager){
 
 		boolean emptyPhoto = false;
-		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
-		String navigateur = userAgentUtils.getBrowser().getName();
-		String systeme = userAgentUtils.getOperatingSystem().getName();
+		UserAgentParserService.ParsedUserAgent parsedUserAgent = userAgentParserService.parse(userAgent);
+		String navigateur = parsedUserAgent.browserName();
+		String systeme = parsedUserAgent.osName();
 
 		card.setEppn(eppn);
 		card.setRequestDate(LocalDateTime.now());

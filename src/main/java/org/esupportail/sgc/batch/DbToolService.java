@@ -26,7 +26,7 @@ public class DbToolService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	final static String currentEsupSgcVersion = "3.5.x";
+	final static String currentEsupSgcVersion = "3.6.x";
 
 	@Resource
 	DataSource dataSource;
@@ -473,6 +473,17 @@ public class DbToolService {
 						"recto1printed='' and recto2printed='' and recto3printed='' and recto4printed='' and recto5printed='' and recto6printed='' and recto7printed='';";
 				doSqlUpdate(sql);
 				esupSgcVersion = "3.5.x";
+			}
+			if("3.5.x".equals(esupSgcVersion)) {
+				// Migration eu.bitwalker:UserAgentUtils (abandonnée depuis 2016) -> com.github.ua-parser:uap-java.
+				// Les navigateurs figent désormais l'User-Agent à "Windows NT 10.0" pour Windows 10
+				// ET Windows 11 (UA string freeze) : les 2 OS sont donc indiscernables via l'entête
+				// HTTP. Les valeurs déjà stockées sous "Windows 10" sont donc renommées en
+				// "Windows 10/11" pour refléter cette ambiguïté, valeur qui sera aussi produite par
+				// UserAgentParserService pour toute nouvelle demande de carte.
+				String sql2 = "update card set request_os='Windows 10/11' where request_os='Windows 10';";
+				doSqlUpdate(sql2);
+				esupSgcVersion = "3.6.x";
 			}
 			appliVersion.setEsupSgcVersion(currentEsupSgcVersion);
             appliVersionDaoService.merge(appliVersion);

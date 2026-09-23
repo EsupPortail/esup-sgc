@@ -30,7 +30,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import eu.bitwalker.useragentutils.UserAgent;
+import org.esupportail.sgc.services.UserAgentParserService;
 import flexjson.JSONSerializer;
 
 
@@ -60,6 +60,9 @@ public class StatsController {
 
 	@Resource
 	ObjectMapper objectMapper;
+
+	@Resource
+	UserAgentParserService userAgentParserService;
 	
 	@ModelAttribute("active")
 	public String getActiveMenu() {
@@ -113,9 +116,9 @@ public class StatsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		UserAgent userAgentUtils = UserAgent.parseUserAgentString(userAgent);
+		UserAgentParserService.ParsedUserAgent parsedUserAgent = userAgentParserService.parse(userAgent);
 		uiModel.addAttribute("prefs",jsonStats);
-		uiModel.addAttribute("userAgent", userAgentUtils.getOperatingSystem().getDeviceType());
+		uiModel.addAttribute("userAgent", parsedUserAgent.deviceType());
 		uiModel.addAttribute("prefsRm",jsonStatsRm);
 		uiModel.addAttribute("prefsRmList",prefsStatsRm);
 		uiModel.addAttribute("annees",statsService.getAnneeUnivs());
