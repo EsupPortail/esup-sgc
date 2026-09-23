@@ -717,18 +717,21 @@ public class CardDaoService {
     public List<String> getDistinctFreeField(String field) {
         EntityManager em = entityManager;
         // FormService.getField1List uses its preventing sql injection
-        String req = "SELECT DISTINCT CAST(" + field + " AS VARCHAR) FROM card WHERE " + field  + " IS NOT NULL ORDER BY " + field;
-        Query q = em.createNativeQuery(req);
-        List<String> distinctResults = q.getResultList();
+        String req = "SELECT DISTINCT " + field + " FROM Card WHERE " + field  + " IS NOT NULL ORDER BY " + field;
+        Query q = em.createQuery(req);
+        List distinctResults = new ArrayList<>();
+        for(Object v : q.getResultList()) {
+            distinctResults.add(v.toString());
+        }
         return distinctResults;
     }
 
     public Long getCountDistinctFreeField(String field) {
         EntityManager em = entityManager;
         // FormService.getField1List uses its preventing sql injection
-        String req = "SELECT count(DISTINCT(" + field + ")) FROM card WHERE " + field  + " IS NOT NULL";
-        Query q = em.createNativeQuery(req);
-        return (Long)q.getSingleResult();
+        String req = "SELECT count(DISTINCT(" + field + ")) FROM Card WHERE " + field  + " IS NOT NULL";
+        Query q = em.createQuery(req);
+        return ((Long)q.getSingleResult());
     }
 
     public TypedQuery<Card> findCardsWithEscnAndCsn() {
