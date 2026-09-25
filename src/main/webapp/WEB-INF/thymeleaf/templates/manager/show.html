@@ -328,8 +328,8 @@
                                                                         css=${#strings.replace(currentTemplate.cssStyle, 'specimenCarte', 'specimenCarte' + iStat.index)},
                                                                         cssMobileStyle=${#strings.replace(currentTemplate.cssMobileStyle, 'specimenCarte', 'specimenCarte' + iStat.index)},
                                                                         photoLocalPrefix=@{/manager/templatePhoto/},
-                                                                        masqueUrl=@{${photoLocalPrefix} + 'masque/' + ${currentTemplate.id}},
-                                                                        logoUrl=@{${photoLocalPrefix} + 'logo/' + ${currentTemplate.id}},
+                                                                        masqueUrl=${photoLocalPrefix + 'masque/' + currentTemplate.id},
+                                                                        logoUrl=${photoLocalPrefix + 'logo/' + currentTemplate.id},
                                                                         photoUrl=@{/manager/photo/{id}(id=${card.id})},
                                                                         QRCodeUrl=@{/manager/QRCode(cardId=${card.id})}
                                                                      ">
@@ -348,10 +348,10 @@
                                                                     </style>
                                                                     <style id="mainStyle" th:inline="text">
                                                                         @media screen and (min-width: 451px) {
-                                                                            [[${css}]]
+                                                                            [(${css})]
                                                                         }
                                                                         @media screen and (max-width: 450px) {
-                                                                            [[${cssMobileStyle}]]
+                                                                            [(${cssMobileStyle})]
                                                                         }
                                                                     </style>
                                                                     <div th:id="${cssId}">
