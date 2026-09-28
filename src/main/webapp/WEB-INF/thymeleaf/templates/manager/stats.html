@@ -279,6 +279,24 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editablesParAdresse">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5><span th:text="#{stats.editable.by.address}">Demandes éditables par adresse</span>
+                                    <button class="btn btn-xs btn-primary pull-right remove" th:title="#{common.delete}">
+                                        <span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></button>
+                                </h5>
+                            </div>
+                            <div class="panel-body ">
+                                <canvas id="editableByAdress" width="400" height="400" th:text="#{common.ampnbsp}">&amp;nbsp;</canvas>
+                                <div class="chartjs-tooltip">
+                                    <table>
+                                        <!--  -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-lg-3 col-md-6 col-sm-6 statsDrag" id="editeesNonLivrees">
                         <div class="panel panel-primary">
                             <div class="panel-heading">

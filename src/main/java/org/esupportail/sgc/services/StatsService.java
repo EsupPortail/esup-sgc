@@ -205,6 +205,8 @@ public List mapFieldWith2Labels(List<Object[]> queryResults, boolean order) {
 	        		put("deliveryByAdress", mapFieldWith1Labels(cardDaoService.countDeliveryByAddress()));
 	        	}else if("noneditableByAdress".equals(typeStats)){
 	        		put("noneditableByAdress", mapFieldWith1Labels(cardDaoService.countNonEditableByAddress()));
+			}else if("editableByAdress".equals(typeStats)){
+				put("editableByAdress", mapFieldWith1Labels(cardDaoService.countEditableByAddress()));
 	        	}else if("userDeliveries".equals(typeStats)){
 	        		put("userDeliveries", mapFieldWith1Labels(logDaoService.countUserDeliveries()));
 	        	}else if("tarifsCrousBars".equals(typeStats)){

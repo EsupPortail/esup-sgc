@@ -629,6 +629,13 @@ public class CardDaoService {
         return q.getResultList();
     }
 
+    public List<Object[]> countEditableByAddress() {
+        EntityManager em = entityManager;
+        String sql = "SELECT address, count(*) FROM card INNER JOIN user_account ON card.user_account=user_account.id AND editable and etat='NEW' GROUP BY address ORDER BY count DESC";
+        Query q = em.createNativeQuery(sql);
+        return q.getResultList();
+    }
+
     public Boolean areCardsReadyToBeDelivered(List<Long> cardIds) {
         EntityManager em = entityManager;
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Card AS o WHERE o.id in (:cardIds) and o.etat in (:etatsEncoded) AND o.deliveredDate IS NULL AND NOT o.external", Long.class);

@@ -1006,6 +1006,7 @@ document.addEventListener('DOMContentLoaded', function() {
     	getStats("notDelivered", "multiBar", selectedType, nbGraph++);
     	getStats("deliveryByAdress", "pie", selectedType, nbGraph++, "legend");
     	getStats("noneditableByAdress", "pie", selectedType, nbGraph++, "legend");
+		getStats("editableByAdress", "pie", selectedType, nbGraph++, "legend");
     	getStats("userDeliveries", "chartBar", selectedType, nbGraph++);
     	getStats("tarifsCrousBars", "multiBarLoga", selectedType, nbGraph++);
     	getStats("cardsByMonth", "chartBar", selectedType, nbGraph++, null, null, null, "Demandes", "encodedCardsByMonth", "Carte encodées");
@@ -2094,4 +2095,3 @@ document.addEventListener('DOMContentLoaded', function() {
 window.onload = window.onresize = function() {
   equalize('.boxes > *');
 };
-
