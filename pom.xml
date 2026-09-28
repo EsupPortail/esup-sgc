@@ -10,12 +10,12 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>2.0.17</slf4j.version>
-        <spring.version>6.2.18</spring.version>
-        <spring-security.version>6.5.10</spring-security.version>
-        <hibernate.version>7.1.26.Final</hibernate.version>
+        <slf4j.version>2.0.20</slf4j.version>
+        <spring.version>6.2.19</spring.version>
+        <spring-security.version>6.5.11</spring-security.version>
+        <hibernate.version>7.4.11.Final</hibernate.version>
         <thymeleaf.version>3.1.5.RELEASE</thymeleaf.version>
-        <jackson.version>2.21.3</jackson.version>
+        <jackson.version>2.22.3</jackson.version>
         <skipTests>true</skipTests>
     </properties>
 
@@ -31,19 +31,19 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.18.0</version>
+            <version>5.24.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.18.0</version>
+            <version>5.24.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.13.4</version>
+            <version>5.14.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.22</version>
+            <version>1.5.38</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
+            <version>3.20.0</version>
         </dependency>
         <!-- Spring dependencies -->
         <dependency>
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>3.5.3</version>
+            <version>3.5.13</version>
             <exclusions>
                 <exclusion>
                     <artifactId>antlr4-runtime</artifactId>
@@ -128,12 +128,12 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.11</version>
+            <version>42.7.13</version>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>3.5.8</version>
+            <version>3.5.10</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -148,7 +148,7 @@
         <dependency>
             <groupId>org.hibernate.models</groupId>
             <artifactId>hibernate-models</artifactId>
-            <version>1.0.1</version>
+            <version>1.3.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jboss-logging</artifactId>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>9.0.1.Final</version>
+            <version>9.1.4.Final</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -174,12 +174,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
-            <version>2.12.1</version>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.ldap</groupId>
             <artifactId>spring-ldap-core</artifactId>
-            <version>3.3.3</version>
+            <version>3.3.8</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-core</artifactId>
@@ -207,12 +207,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.20.0</version>
+            <version>2.22.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <version>2.13.0</version>
+            <version>2.14.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jakarta.transaction-api</artifactId>
@@ -257,7 +257,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.18.0</version>
+            <version>1.22.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -339,7 +339,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.17.6</version>
+            <version>1.18.14</version>
         </dependency>
 
         <dependency>
@@ -357,13 +357,13 @@
         <dependency>
             <groupId>org.eclipse.angus</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>2.0.4</version>
+            <version>2.0.5</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.angus</groupId>
             <artifactId>angus-activation</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.3</version>
         </dependency>
 
         <dependency>
@@ -375,13 +375,13 @@
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
-            <version>3.5.3</version>
+            <version>3.5.4</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
-            <version>3.5.3</version>
+            <version>3.5.4</version>
         </dependency>
 
         <dependency>
@@ -398,12 +398,12 @@
         <dependency>
             <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId>
-            <version>2.27.7</version>
+            <version>2.28.7</version>
         </dependency>
         <dependency>
             <groupId>eu.agno3.jcifs</groupId>
             <artifactId>jcifs-ng</artifactId>
-            <version>2.1.9</version>
+            <version>2.1.10</version>
             <exclusions>
                 <exclusion>
                     <artifactId>bcprov-jdk15on</artifactId>
@@ -419,7 +419,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>5.5</version>
+            <version>5.6.4</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-codec</artifactId>
@@ -439,13 +439,13 @@
         <dependency>
             <groupId>eu.europeanstudentcard</groupId>
             <artifactId>escn-generator</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.1</version>
         </dependency>
 
         <dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
         </dependency>
 
         <dependency>
@@ -457,7 +457,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator</artifactId>
-            <version>0.42</version>
+            <version>0.52</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-lang3</artifactId>
@@ -487,7 +487,7 @@
         <dependency>
             <groupId>org.webjars.npm</groupId>
             <artifactId>slim-select</artifactId>
-            <version>2.9.2</version>
+            <version>2.12.1</version>
         </dependency>
 
         <dependency>
@@ -533,18 +533,18 @@
         <dependency>
             <groupId>org.webjars.npm</groupId>
             <artifactId>heic2any</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4</version>
         </dependency>
 
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.ws</groupId>
             <artifactId>jakarta.xml.ws-api</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.3</version>
         </dependency>
 
         <dependency>
@@ -556,7 +556,7 @@
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.30.2-GA</version>
+            <version>3.33.0-GA</version>
         </dependency>
 
         <dependency>
@@ -609,7 +609,7 @@
         <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>4.0.25</version>
+            <version>4.0.33</version>
             <scope>compile</scope>
         </dependency>
 
