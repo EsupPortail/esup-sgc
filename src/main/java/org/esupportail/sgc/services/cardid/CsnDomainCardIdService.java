@@ -13,6 +13,7 @@ import org.esupportail.sgc.dao.CardDaoService;
 import org.esupportail.sgc.domain.Card;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CsnDomainCardIdService implements CardIdService {
 	
@@ -54,13 +55,13 @@ public class CsnDomainCardIdService implements CardIdService {
 	}
 
 	@Override
+	@Transactional
 	public String generateCardId(Long cardId) {
 		Card card = cardDaoService.findCard(cardId);
 		String domain = card.getEppn().replaceAll(".*@", "");
 		String desfireId = MessageFormat.format(identifierFormat, card.getCsn(), domain);
 		if(!desfireId.equals(card.getDesfireIds().get(appName))) {
 			card.getDesfireIds().put(appName, desfireId);
-            cardDaoService.merge(card);
 			log.info("generate card Id for " + card.getEppn() + " : " + appName + " -> "  + desfireId);
 		}
 		return card.getDesfireIds().get(appName);

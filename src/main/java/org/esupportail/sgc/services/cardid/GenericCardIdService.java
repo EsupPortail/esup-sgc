@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public class GenericCardIdService implements CardIdService {
 	
@@ -51,6 +52,7 @@ public class GenericCardIdService implements CardIdService {
 	}
 
 	@Override
+	@Transactional
 	public String generateCardId(Long cardId) {
 		Card card = cardDaoService.findCard(cardId);
 		if(card.getDesfireIds().get(appName) == null || card.getDesfireIds().get(appName).isEmpty()) {
@@ -65,7 +67,6 @@ public class GenericCardIdService implements CardIdService {
 			Long nextVal = (Long)nextValQuery.list().get(0);
 			String desfireId = Long.toString(nextVal.longValue() + getIdCounterBegin(card));
 			card.getDesfireIds().put(appName, desfireId);
-            cardDaoService.merge(card);
 			log.info("generate card Id for " + card.getEppn() + " : " + appName + " -> "  + desfireId);
 		}
 		return card.getDesfireIds().get(appName);

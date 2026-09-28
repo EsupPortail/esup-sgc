@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.esupportail.sgc.domain.Card;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * CardIdService générant le code barre utilisé dans les bibliothèques (BU)
@@ -59,6 +60,7 @@ public class BuComueLyonStEtienneCardIdService extends GenericCardIdService {
      * suivants retrouvent directement la valeur finale.
      */
     @Override
+    @Transactional
     public String generateCardId(Long cardId) {
         Card card = cardDaoService.findCard(cardId);
         String appName = getAppName();
@@ -79,7 +81,6 @@ public class BuComueLyonStEtienneCardIdService extends GenericCardIdService {
         // Remplacement du numéro brut par le code barre final dans desfireIds
         card = cardDaoService.findCard(cardId);
         card.getDesfireIds().put(appName, codeBarre);
-        cardDaoService.merge(card);
         log.info("generate BU barcode for {} : {} -> {}", card.getEppn(), appName, codeBarre);
         return codeBarre;
     }
