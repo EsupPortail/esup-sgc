@@ -10,4 +10,8 @@ public interface CardIdService {
 
 	String decodeCardId(String desfireId);
 
+	default boolean isCrousEncodeEnabled() {
+		throw new UnsupportedOperationException();
+	}
+
 }

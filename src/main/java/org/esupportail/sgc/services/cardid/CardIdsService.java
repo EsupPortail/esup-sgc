@@ -58,7 +58,7 @@ public class CardIdsService {
 	}
 
 	public Boolean isCrousEncodeEnabled() {
-		return cardIdServices.get("crous") != null && ((CnousCardIdService)cardIdServices.get("crous")).isCrousEncodeEnabled();
+		return cardIdServices.get("crous") != null && (cardIdServices.get("crous")).isCrousEncodeEnabled();
 	}
 
 	public Card findCardsByDesfireId(String desfireIdEncoded, String appName) {

@@ -47,6 +47,7 @@ public class CnousCardIdService extends GenericCardIdService {
 		return smartCard.getIdZdc().toString();
 	}
 
+	@Override
 	public boolean isCrousEncodeEnabled() {
 		return crousEncodeEnabled;
 	}
