@@ -302,7 +302,7 @@ public class WsRestEsupSgcApiController extends AbstractRestController {
 			}
 		}
 		FilterProvider filters = new SimpleFilterProvider()
-				.addFilter("userFilter", SimpleBeanPropertyFilter.filterOutAllExcept("eppn", "cards", "crous", "europeanStudentCard", "difPhoto", "name", "firstname", "birthday", "email", "dueDate"))
+				.addFilter("userFilter", SimpleBeanPropertyFilter.filterOutAllExcept("eppn", "cards", "crous", "europeanStudentCard", "difPhoto", "name", "firstname", "birthday", "email", "dueDate","userType"))
 				.addFilter("cardFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id", "csn", "etat", "dateEtat", "desfireIds", "escnUid"));
 		String jsonUsers = objectMapper.writer(filters).writeValueAsString(users);
 		return new ResponseEntity<String>(jsonUsers, HttpStatus.OK);
