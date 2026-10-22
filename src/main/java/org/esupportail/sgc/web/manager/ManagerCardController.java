@@ -275,6 +275,18 @@ public class ManagerCardController {
 		return "templates/manager/show";
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@RequestMapping(value = "/{cardId}/crous", method = RequestMethod.POST)
+	public String updateCrousFlag(@PathVariable Long cardId, @RequestParam boolean crous, Model uiModel) {
+		Card card = cardDaoService.findCard(cardId);
+		if (card == null) {
+			throw new SgcNotFoundException(String.format("Card %s not found", cardId), null);
+		}
+		userDaoService.updateCrousFlag(card.getEppn(), crous);
+		uiModel.asMap().clear();
+		return "redirect:/manager/" + cardId;
+	}
+
 	@PreAuthorize("hasPermission(#cardId, 'manage')")
 	@RequestMapping(value = "{cardId}/resync-user/{eppn:.+}", produces = "text/html")
 	@Transactional

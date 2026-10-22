@@ -51,6 +51,15 @@ public class UserDaoService {
         if (id == null) return null;
         return entityManager.find(User.class, id);
     }
+
+    @Transactional
+    public void updateCrousFlag(String eppn, boolean crous) {
+        // Target only the local flag, without triggering synchronization or entity callbacks.
+        entityManager.createQuery("UPDATE User u SET u.crous = :crous WHERE u.eppn = :eppn")
+                .setParameter("crous", crous)
+                .setParameter("eppn", eppn)
+                .executeUpdate();
+    }
     
     public List<String> findAllUsersEppns() {
         return entityManager.createQuery("SELECT o.eppn FROM User o", String.class).getResultList();

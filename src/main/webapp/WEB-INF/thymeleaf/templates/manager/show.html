@@ -81,7 +81,12 @@
                                 <dt th:text="#{show.editable}">Editable :</dt>
                                 <dd th:utext="${user.editable} ? #{megamenu.yes} : #{megamenu.no}"></dd>
                                 <dt class="fieldWs" th:text="#{show.crous}">Crous :</dt>
-                                <dd class="fieldWs" th:text="${user.crous} ? #{megamenu.yes} : #{megamenu.no}"></dd>
+                                <dd class="fieldWs">
+                                    <span th:text="${user.crous} ? #{megamenu.yes} : #{megamenu.no}"></span>
+                                    <button sec:authorize="hasRole('ROLE_ADMIN')" type="button" class="btn btn-warning btn-xs"
+                                            data-toggle="modal" data-target="#updateCrousFlagModal"
+                                            th:text="${user.crous} ? #{show.crous.flag.disable} : #{show.crous.flag.enable}"></button>
+                                </dd>
                                 <dt class="fieldWs" th:text="#{show.crous.identifier}">Identifiant Crous :</dt>
                                 <dd class="fieldWs" th:text="${user.crousIdentifier}"></dd>
                                 <span th:unless="${#strings.isEmpty(user.crousError)}">
@@ -173,6 +178,28 @@
                                 <dt th:text="#{show.freefield7}">freeField7</dt>
                                 <dd th:utext="${user.freeField7}"></dd>
                             </dl>
+                            <div sec:authorize="hasRole('ROLE_ADMIN')" class="modal fade" id="updateCrousFlagModal"
+                                 tabindex="-1" role="dialog" aria-labelledby="updateCrousFlagTitle">
+                                <div class="modal-dialog" role="document">
+                                    <form class="modal-content" method="POST"
+                                          th:action="@{/manager/{cardId}/crous(cardId=${currentCard.id})}">
+                                        <div class="modal-header">
+                                            <button class="close" data-dismiss="modal" type="button" th:attr="aria-label=#{common.close}" th:utext="#{common.times}">&times;</button>
+                                            <h3 class="modal-title" id="updateCrousFlagTitle" th:text="#{show.crous.flag.title}">Modification du témoin CROUS</h3>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="alert alert-warning" th:text="#{show.crous.flag.warning}"></p>
+                                            <p th:text="#{show.crous.flag.explanation}"></p>
+                                            <p th:text="${user.crous} ? #{show.crous.flag.confirm.disable} : #{show.crous.flag.confirm.enable}"></p>
+                                            <input type="hidden" name="crous" th:value="${!user.crous}"/>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" th:text="#{common.cancel}">Annuler</button>
+                                            <button type="submit" class="btn btn-warning" th:text="#{common.confirm}">Confirmer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                             <h3 th:text="#{show.update}">
                                 Mise à jour
                             </h3>
