@@ -101,7 +101,7 @@ public class RestUserInfoService implements ExtUserInfoService {
     public Map<String, String> getUserInfos(User user, HttpServletRequest request, final Map<String, String> userInfosInComputing) {
         Map<String, String> userInfos = new HashMap<>();
 
-        String urlWithParams = buildUrl(user, request, userInfosInComputing);
+        String urlWithParams = computeDynamicValueFromParams(url, user, request, userInfosInComputing);
         log.trace("RestUserInfoService URL for user {}: {}", user.getEppn(), urlWithParams);
 
         if(urlWithParams != null) {
@@ -136,7 +136,10 @@ public class RestUserInfoService implements ExtUserInfoService {
                 DocumentContext jsonContext = JsonPath.parse(json);
                 for (Map.Entry<String, String> mapping : sgcParam2jsonPath.entrySet()) {
                     try {
-                        Object value = jsonContext.read(mapping.getValue());
+                        String jsonPathWithParams = mapping.getValue();
+                        String jsonPathWithParamsComputed = computeDynamicValueFromParams(jsonPathWithParams, user, request, userInfosInComputing);
+                        log.trace("jsonPathWithParamsComputed for user {}: {}", user.getEppn(), jsonPathWithParamsComputed);
+                        Object value = jsonContext.read(jsonPathWithParamsComputed);
                         if(value != null) {
                             if(value instanceof String) {
                                 userInfos.put(mapping.getKey(), (String) value);
@@ -155,20 +158,20 @@ public class RestUserInfoService implements ExtUserInfoService {
         return userInfos;
     }
 
-    String buildUrl(User user, HttpServletRequest request, Map<String, String> userInfosInComputing) {
-        String urlWithParams = url.replace("{eppn}", user.getEppn());
+    String computeDynamicValueFromParams(String value, User user, HttpServletRequest request, Map<String, String> userInfosInComputing) {
+        String valueWithParams = value.replace("{eppn}", user.getEppn());
         if(userInfosInComputing != null) {
             for (String key : userInfosInComputing.keySet()) {
-                if (urlWithParams.contains("{" + key + "}")) {
+                if (valueWithParams.contains("{" + key + "}")) {
                     if (userInfosInComputing.get(key) == null) {
                         log.info("User info {} is null for user {} - abort", key, user.getEppn());
                         return null;
                     }
-                    urlWithParams = urlWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
+                    valueWithParams = valueWithParams.replace("{" + key + "}", userInfosInComputing.get(key));
                 }
             }
         }
-        return urlWithParams;
+        return valueWithParams;
     }
 }
 
